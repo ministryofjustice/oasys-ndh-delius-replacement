@@ -8,6 +8,7 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -17,6 +18,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 
 @SpringBootApplication
 @Slf4j
@@ -44,6 +46,16 @@ public class ThatsNotMyNDH {
         jsonConverter.setObjectMapper(objectMapper);
         return jsonConverter;
     }
+
+    @Bean
+    public MappingJackson2XmlHttpMessageConverter xmlConverter() {
+        final MappingJackson2XmlHttpMessageConverter mappingJackson2XmlHttpMessageConverter = new MappingJackson2XmlHttpMessageConverter();
+
+        mappingJackson2XmlHttpMessageConverter.getObjectMapper()
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        return mappingJackson2XmlHttpMessageConverter;
+    }
+
 
     @Bean
     public ApplicationListener<ApplicationReadyEvent> buildInfoLogger() {
