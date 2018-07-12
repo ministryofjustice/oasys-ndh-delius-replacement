@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.ndh.api;
+package uk.gov.justice.digital.ndh.api.oasys;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
