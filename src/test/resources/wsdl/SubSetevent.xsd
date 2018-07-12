@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2010 rel. 2 (http://www.altova.com) by XMLSpy 2010 Enterprise Ed. Release 2, Installed for 6 users (Electronic Data Systems Ltd.) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:cmn="http://www.bconline.co.uk/oasys/common" xmlns="http://www.bconline.co.uk/oasys/event" targetNamespace="http://www.bconline.co.uk/oasys/event" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://www.bconline.co.uk/oasys/common" schemaLocation="common_types.xsd"/>
+	<xs:complexType name="SubSetEventType">
+		<xs:sequence>
+			<xs:element name="EventNumber" type="cmn:EventNumberType">
+				<xs:annotation>
+					<xs:appinfo>Offender.Event.EventNumber</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CommencementDate" type="xs:date" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>Offender.Event.Disposal.DisposalDate</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="OrderType" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>Offender.Event.Disposal.DisposalType.Code</xs:appinfo>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="10"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2010 (http://www.altova.com) by Oliver Connolly (Beaumont Colson Ltd) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:cmn="http://www.bconline.co.uk/oasys/common" xmlns="http://www.bconline.co.uk/oasys/messages" xmlns:ns1="http://www.bconline.co.uk/oasys/risk" targetNamespace="http://www.bconline.co.uk/oasys/risk" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://www.bconline.co.uk/oasys/common" schemaLocation="common_types.xsd"/>
+	<xs:element name="RiskType">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="CaseReferenceNumber" type="cmn:CaseReferenceNumberType">
+					<xs:annotation>
+						<xs:appinfo>Offender.CRN</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="RiskOfHarm">
+					<xs:annotation>
+						<xs:appinfo>Offender.RiskAssessment.RiskOfHarm.Code</xs:appinfo>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:minLength value="1"/>
+							<xs:maxLength value="20"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

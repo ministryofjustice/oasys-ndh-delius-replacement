@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2010 (http://www.altova.com) by Oliver Connolly (Beaumont Colson Ltd) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.bconline.co.uk/oasys/fault" targetNamespace="http://www.bconline.co.uk/oasys/fault" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:complexType name="ErrorType">
+		<xs:sequence>
+			<xs:element name="Code" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>A unique code identifying the type of this fault.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Description" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Containing specific details for an error, e.g. - 'Offender with CRN 1234567' could not be found'.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Timestamp" type="xs:dateTime"/>
+			<xs:element name="RequestMessage" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>The contents of the SOAP request body that caused this fault</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="ValidationFailureException" type="ErrorType">
+		<xs:annotation>
+			<xs:documentation>Used to indicate that the incoming request is not valid according to the schema.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="AuthorisationFailureException" type="ErrorType">
+		<xs:annotation>
+			<xs:documentation>Used to indicate that the client is not authorised to access the requested service.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="ServerRuntimeException" type="ErrorType">
+		<xs:annotation>
+			<xs:documentation>Used to indicate that an unexpected problem occurred during server side processing that has prevented the request from being fulfilled, e.g.-  database constraint violation when attemping to persist new data from IAPS or oasys.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="BusinessException" type="ErrorType">
+		<xs:annotation>
+			<xs:documentation>Used to indicate that a business error occured that prevented the request from being fulfilled, e.g. -' Offender with CRN 1234567' could not be found'.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+</xs:schema>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2010 rel. 2 (http://www.altova.com) by XMLSpy 2010 Enterprise Ed. Release 2, Installed for 6 users (Electronic Data Systems Ltd.) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:cmn="http://www.bconline.co.uk/oasys/common" xmlns="http://www.bconline.co.uk/oasys/offender" targetNamespace="http://www.bconline.co.uk/oasys/offender" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://www.bconline.co.uk/oasys/common" schemaLocation="common_types.xsd"/>
+	<xs:complexType name="SubSetOffenderType">
+		<xs:sequence>
+			<xs:element name="LAOIndicator" type="cmn:LAOIndicator">
+				<xs:annotation>
+					<xs:appinfo>Offender.LAO</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CaseReferenceNumber" type="cmn:CaseReferenceNumberType">
+				<xs:annotation>
+					<xs:appinfo>Offender.CRN</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="LastName" type="cmn:SurnameType" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>Offender.Surname</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Forename1" type="cmn:ForenameType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Offender.FirstName</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="DateOfBirth" type="xs:date" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>Offender.DateOfBirth</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Gender" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:length value="2"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

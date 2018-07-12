@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2011 sp1 (http://www.altova.com) by Chris Dundon (Steria Ltd) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:cmn="http://www.bconline.co.uk/oasys/common" xmlns="http://www.bconline.co.uk/oasys/event" targetNamespace="http://www.bconline.co.uk/oasys/event" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://www.bconline.co.uk/oasys/common" schemaLocation="common_types.xsd"/>
+	<xs:simpleType name="OrderStatusType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Uncommenced"/>
+			<xs:enumeration value="Commenced"/>
+			<xs:enumeration value="Released"/>
+			<xs:enumeration value="Terminated"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="RequirementType">
+		<xs:sequence>
+			<xs:element name="Code">
+				<xs:annotation>
+					<xs:appinfo>Offender.Event.Disposal.Requirement.RequirementType.Code</xs:appinfo>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="10"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="MainCategory">
+				<xs:annotation>
+					<xs:appinfo>Offender.Event.Disposal.Requirement.RequirementType.MainCategory</xs:appinfo>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="20"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="SubCategory">
+				<xs:annotation>
+					<xs:appinfo>Offender.Event.Disposal.Requirement.RequirementType.SubCategory</xs:appinfo>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="20"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="RequirementDetails" type="RequirementDetailsType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="AdditionalRequirementType">
+		<xs:sequence>
+			<xs:element name="Code">
+				<xs:annotation>
+					<xs:appinfo>Offender.Event.Disposal.Requirement.AdditionalRequirementType.Code</xs:appinfo>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="10"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="MainCategory">
+				<xs:annotation>
+					<xs:appinfo>Offender.Event.Disposal.Requirement.AdditionalRequirementType.MainCategory</xs:appinfo>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="20"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="SubCategory">
+				<xs:annotation>
+					<xs:appinfo>Offender.Event.Disposal.Requirement.AdditionalRequirementType.SubCategory</xs:appinfo>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="20"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="RequirementDetails" type="RequirementDetailsType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="RequirementDetailsType">
+		<xs:sequence>
+			<xs:element name="Length" type="xs:integer">
+				<xs:annotation>
+					<xs:appinfo>Offender.Event.Disposal.Requirement.Length</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PreCJALicenceConditionType">
+		<xs:sequence>
+			<xs:element name="Code">
+				<xs:annotation>
+					<xs:appinfo>Offender.Event.Disposal.LicenceCondition.PreCJALicenceConditionType.Code</xs:appinfo>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="10"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="MainCategory" type="xs:integer">
+				<xs:annotation>
+					<xs:appinfo>Offender.Event.Disposal.LicenceCondition.PreCJALicenceConditionType.MainCategory</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="SubCategory" type="xs:integer">
+				<xs:annotation>
+					<xs:appinfo>Offender.Event.Disposal.LicenceCondition.PreCJALicenceConditionType.SubCategory</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PostCJALicenceConditionType">
+		<xs:sequence>
+			<xs:element name="Code">
+				<xs:annotation>
+					<xs:appinfo>Offender.Event.Disposal.LicenceCondition.PostCJALicenceConditionType.Code</xs:appinfo>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="10"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="MainCategory" type="xs:integer">
+				<xs:annotation>
+					<xs:appinfo>Offender.Event.Disposal.LicenceCondition.PostCJALicenceConditionType.MainCategory</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="SubCategory" type="xs:integer">
+				<xs:annotation>
+					<xs:appinfo>Offender.Event.Disposal.LicenceCondition.PostCJALicenceConditionType.SubCategory</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="LicenceConditionType">
+		<xs:sequence>
+			<xs:element name="Type" type="LicenceConditionType_Type"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="LicenceConditionType_Type">
+		<xs:choice>
+			<xs:element name="PreCJALicenceConditionType" type="PreCJALicenceConditionType"/>
+			<xs:element name="PostCJALicenceConditionType" type="PostCJALicenceConditionType"/>
+		</xs:choice>
+	</xs:complexType>
+	<xs:complexType name="CustodyType">
+		<xs:sequence>
+			<xs:element name="ReleaseDate" type="xs:date" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>Offender.Event.Disposal.Custody.ReleaseOrRecall.ReleaseDate</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ReleaseType" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>Offender.Event.Disposal.Custody.ReleaseOrRecall.ReleaseType.Code</xs:appinfo>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="10"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="LicenceConditions" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="LicenceCondition" type="LicenceConditionType" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="EventType">
+		<xs:sequence minOccurs="0">
+			<xs:element name="EventNumber" type="cmn:EventNumberType">
+				<xs:annotation>
+					<xs:appinfo>Offender.Event.EventNumber</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="OffenceCode" type="cmn:OffenderCodeType" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>Offender.Event.MainOffence.Offence.Code</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="OffenceDate" type="xs:date" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>Offender.Event.MainOffence.OffenceDate</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CommencementDate" type="xs:date" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>Offender.Event.Disposal.DisposalDate</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="OrderType" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>Offender.Event.Disposal.DisposalType.Code</xs:appinfo>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="10"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="OrderLength" type="xs:integer" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>Offender.Event.Disposal.Length</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Court" type="cmn:CourtNameType" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>Offender.Event.CourtAppearance.Court.CourtName</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CourtType" type="cmn:CourtType" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>Offender.Event.CourtAppearance.Court.CourtType.Code</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="UWHours" type="xs:integer" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>Offender.Event.Disposal.UPWDetails.Length</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Requirements" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Requirement" type="RequirementType" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="AdditionalRequirements" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="AdditionalRequirement" type="AdditionalRequirementType" maxOccurs="3"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Custody" type="CustodyType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

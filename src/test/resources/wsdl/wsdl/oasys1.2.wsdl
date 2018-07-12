@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tns="http://www.bconline.co.uk/oasys/wsdl" xmlns:mes="http://www.bconline.co.uk/oasys/messages" xmlns:f="http://www.bconline.co.uk/oasys/fault" xmlns:ns="http://www.bconline.co.uk/oasys/common" xmlns:ns1="http://www.bconline.co.uk/oasys/event" xmlns:ns2="http://www.bconline.co.uk/oasys/offender" xmlns:ns3="http://www.bconline.co.uk/oasys/assessment" xmlns:ns4="http://www.bconline.co.uk/oasys/risk" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://www.bconline.co.uk/oasys/wsdl">
+	<wsdl:types>
+		<xs:schema targetNamespace="http://www.bconline.co.uk/oasys/wsdl" elementFormDefault="qualified">
+			<xs:import namespace="http://www.bconline.co.uk/oasys/messages" schemaLocation="../GetOffenderDetails/get_offender_details_request.xsd"/>
+			<xs:import namespace="http://www.bconline.co.uk/oasys/messages" schemaLocation="../GetOffenderDetails/get_offender_details_response.xsd"/>
+			<xs:import namespace="http://www.bconline.co.uk/oasys/messages" schemaLocation="../GetSubSetOffenderDetails/get_subset_offender_event_request.xsd"/>
+			<xs:import namespace="http://www.bconline.co.uk/oasys/messages" schemaLocation="../GetSubSetOffenderDetails/get_subset_offender_event_details_response.xsd"/>
+			<xs:import namespace="http://www.bconline.co.uk/oasys/messages" schemaLocation="../SubmitRiskData/submit_risk_data_request.xsd"/>
+			<xs:import namespace="http://www.bconline.co.uk/oasys/messages" schemaLocation="../SubmitRiskData/submit_risk_data_response.xsd"/>
+			<xs:import namespace="http://www.bconline.co.uk/oasys/messages" schemaLocation="../SubmitAssessmentSummary/submit_assessment_summary_request.xsd"/>
+			<xs:import namespace="http://www.bconline.co.uk/oasys/messages" schemaLocation="../SubmitAssessmentSummary/submit_assessment_summary_response.xsd"/>
+			<xs:import namespace="http://www.bconline.co.uk/oasys/common" schemaLocation="../common_types.xsd"/>
+			<xs:import namespace="http://www.bconline.co.uk/oasys/fault" schemaLocation="../fault.xsd"/>
+		</xs:schema>
+	</wsdl:types>
+	<wsdl:message name="RequestHeader">
+		<wsdl:part name="header" element="ns:Header"/>
+	</wsdl:message>
+	<wsdl:message name="ResponseHeader">
+		<wsdl:part name="header" element="ns:MessageID"/>
+	</wsdl:message>
+	<wsdl:message name="GetOffenderDetailsRequest">
+		<wsdl:part name="request" element="mes:GetOffenderDetailsRequest"/>
+	</wsdl:message>
+	<wsdl:message name="GetOffenderDetailsResponse">
+		<wsdl:part name="response" element="mes:GetOffenderDetailsResponse"/>
+	</wsdl:message>
+	<wsdl:message name="GetSubSetOffenderDetailsRequest">
+		<wsdl:part name="request" element="mes:GetSubSetOffenderEventRequest"/>
+	</wsdl:message>
+	<wsdl:message name="GetSubSetOffenderDetailsResponse">
+		<wsdl:part name="response" element="mes:GetSubSetOffenderDetailsResponse"/>
+	</wsdl:message>
+	<wsdl:message name="SubmitRiskDataRequest">
+		<wsdl:part name="request" element="mes:SubmitRiskDataRequest"/>
+	</wsdl:message>
+	<wsdl:message name="SubmitRiskDataResponse">
+		<wsdl:part name="response" element="mes:SubmitRiskDataResponse"/>
+	</wsdl:message>
+	<wsdl:message name="SubmitAssessmentSummaryRequest">
+		<wsdl:part name="request" element="mes:SubmitAssessmentSummaryRequest"/>
+	</wsdl:message>
+	<wsdl:message name="SubmitAssessmentSummaryResponse">
+		<wsdl:part name="response" element="mes:SubmitAssessmentSummaryResponse"/>
+	</wsdl:message>
+	<wsdl:message name="ValidationFailureException">
+		<wsdl:part name="fault" element="f:ValidationFailureException"/>
+	</wsdl:message>
+	<wsdl:message name="AuthorisationFailureException">
+		<wsdl:part name="fault" element="f:AuthorisationFailureException"/>
+	</wsdl:message>
+	<wsdl:message name="ServerRuntimeException">
+		<wsdl:part name="fault" element="f:ServerRuntimeException"/>
+	</wsdl:message>
+	<wsdl:message name="BusinessException">
+		<wsdl:part name="fault" element="f:BusinessException"/>
+	</wsdl:message>
+	<wsdl:portType name="GetOffenderDetailsPortType">
+		<wsdl:operation name="getOffenderDetails">
+			<wsdl:input message="tns:GetOffenderDetailsRequest"/>
+			<wsdl:output message="tns:GetOffenderDetailsResponse"/>
+			<wsdl:fault name="ValidationFailure" message="tns:ValidationFailureException"/>
+			<wsdl:fault name="AuthorisationFailure" message="tns:AuthorisationFailureException"/>
+			<wsdl:fault name="ServerRuntimeException" message="tns:ServerRuntimeException"/>
+			<wsdl:fault name="BusinessError" message="tns:BusinessException"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:portType name="GetSubSetOffenderDetailsPortType">
+		<wsdl:operation name="getSubSetOffenderDetails">
+			<wsdl:input message="tns:GetSubSetOffenderDetailsRequest"/>
+			<wsdl:output message="tns:GetSubSetOffenderDetailsResponse"/>
+			<wsdl:fault name="ValidationFailure" message="tns:ValidationFailureException"/>
+			<wsdl:fault name="AuthorisationFailure" message="tns:AuthorisationFailureException"/>
+			<wsdl:fault name="ServerRuntimeException" message="tns:ServerRuntimeException"/>
+			<wsdl:fault name="BusinessError" message="tns:BusinessException"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:portType name="SubmitRiskDataPortType">
+		<wsdl:operation name="submitRiskData">
+			<wsdl:input message="tns:SubmitRiskDataRequest"/>
+			<wsdl:output message="tns:SubmitRiskDataResponse"/>
+			<wsdl:fault name="ValidationFailure" message="tns:ValidationFailureException"/>
+			<wsdl:fault name="AuthorisationFailure" message="tns:AuthorisationFailureException"/>
+			<wsdl:fault name="ServerRuntimeException" message="tns:ServerRuntimeException"/>
+			<wsdl:fault name="BusinessError" message="tns:BusinessException"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:portType name="SubmitAssessmentSummaryPortType">
+		<wsdl:operation name="submitAssessmentSummary">
+			<wsdl:input message="tns:SubmitAssessmentSummaryRequest"/>
+			<wsdl:output message="tns:SubmitAssessmentSummaryResponse"/>
+			<wsdl:fault name="ValidationFailure" message="tns:ValidationFailureException"/>
+			<wsdl:fault name="AuthorisationFailure" message="tns:AuthorisationFailureException"/>
+			<wsdl:fault name="ServerRuntimeException" message="tns:ServerRuntimeException"/>
+			<wsdl:fault name="BusinessError" message="tns:BusinessException"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="GetOffenderDetailsBinding" type="tns:GetOffenderDetailsPortType">
+		<soap12:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsdl:operation name="getOffenderDetails">
+			<soap12:operation soapAction="getOffenderDetails" soapActionRequired="true"/>
+			<wsdl:input>
+				<soap12:header message="tns:RequestHeader" part="header" use="literal"/>
+				<soap12:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:header message="tns:RequestHeader" part="header" use="literal"/>
+				<soap12:body use="literal"/>
+			</wsdl:output>
+			<wsdl:fault name="ValidationFailure">
+				<soap12:fault name="ValidationFailureException" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="AuthorisationFailure">
+				<soap12:fault name="AuthorisationFailureException" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="ServerRuntimeException">
+				<soap12:fault name="ServerRuntimeException" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="BusinessError">
+				<soap12:fault name="BusinessError" use="literal"/>
+			</wsdl:fault>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:binding name="GetSubSetOffenderDetailsBinding" type="tns:GetSubSetOffenderDetailsPortType">
+		<soap12:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsdl:operation name="getSubSetOffenderDetails">
+			<soap12:operation soapAction="getSubSetOffenderDetails" soapActionRequired="true"/>
+			<wsdl:input>
+				<soap12:header message="tns:RequestHeader" part="header" use="literal"/>
+				<soap12:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:header message="tns:RequestHeader" part="header" use="literal"/>
+				<soap12:body use="literal"/>
+			</wsdl:output>
+			<wsdl:fault name="ValidationFailure">
+				<soap12:fault name="ValidationFailureException" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="AuthorisationFailure">
+				<soap12:fault name="AuthorisationFailureException" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="ServerRuntimeException">
+				<soap12:fault name="ServerRuntimeException" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="BusinessError">
+				<soap12:fault name="BusinessError" use="literal"/>
+			</wsdl:fault>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:binding name="SubmitRiskDataBinding" type="tns:SubmitRiskDataPortType">
+		<soap12:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsdl:operation name="submitRiskData">
+			<soap12:operation soapAction="submitRiskData" soapActionRequired="true"/>
+			<wsdl:input>
+				<soap12:header message="tns:RequestHeader" part="header" use="literal"/>
+				<soap12:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:header message="tns:RequestHeader" part="header" use="literal"/>
+				<soap12:body use="literal"/>
+			</wsdl:output>
+			<wsdl:fault name="ValidationFailure">
+				<soap12:fault name="ValidationFailureException" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="AuthorisationFailure">
+				<soap12:fault name="AuthorisationFailureException" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="ServerRuntimeException">
+				<soap12:fault name="ServerRuntimeException" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="BusinessError">
+				<soap12:fault name="BusinessError" use="literal"/>
+			</wsdl:fault>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:binding name="SubmitAssessmentSummaryBinding" type="tns:SubmitAssessmentSummaryPortType">
+		<soap12:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsdl:operation name="submitAssessmentSummary">
+			<soap12:operation soapAction="submitAssessmentSummary" soapActionRequired="true"/>
+			<wsdl:input>
+				<soap12:header message="tns:RequestHeader" part="header" use="literal"/>
+				<soap12:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:header message="tns:RequestHeader" part="header" use="literal"/>
+				<soap12:body use="literal"/>
+			</wsdl:output>
+			<wsdl:fault name="ValidationFailure">
+				<soap12:fault name="ValidationFailureException" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="AuthorisationFailure">
+				<soap12:fault name="AuthorisationFailureException" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="ServerRuntimeException">
+				<soap12:fault name="ServerRuntimeException" use="literal"/>
+			</wsdl:fault>
+			<wsdl:fault name="BusinessError">
+				<soap12:fault name="BusinessError" use="literal"/>
+			</wsdl:fault>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="GetOffenderDetails">
+		<wsdl:port name="GetOffenderDetailsInterface" binding="tns:GetOffenderDetailsBinding">
+			<soap12:address location="http://xyz.xyz.xyz/oasys/getOffenderDetails"/>
+		</wsdl:port>
+	</wsdl:service>
+	<wsdl:service name="GetSubSetOffenderDetails">
+		<wsdl:port name="GetSubSetOffenderDetailsInterface" binding="tns:GetSubSetOffenderDetailsBinding">
+			<soap12:address location="http://xyz.xyz.xyz/oasys/getSubSetOffenderDetails"/>
+		</wsdl:port>
+	</wsdl:service>
+	<wsdl:service name="SubmitRiskData">
+		<wsdl:port name="SubmitRiskDataInterface" binding="tns:SubmitRiskDataBinding">
+			<soap12:address location="http://xyz.xyz.xyz/oasys/submitRiskData"/>
+		</wsdl:port>
+	</wsdl:service>
+	<wsdl:service name="SubmitAssessmentSummary">
+		<wsdl:port name="SubmitAssessmentSummaryInterface" binding="tns:SubmitAssessmentSummaryBinding">
+			<soap12:address location="http://xyz.xyz.xyz/oasys/submitAssessmentSummary"/>
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>
