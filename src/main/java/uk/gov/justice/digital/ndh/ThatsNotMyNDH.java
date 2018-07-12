@@ -8,10 +8,10 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jms.DefaultJmsListenerContainerFactoryConfigurer;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.context.ApplicationListener;
@@ -19,9 +19,17 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
+import org.springframework.jms.annotation.EnableJms;
+import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
+import org.springframework.jms.config.JmsListenerContainerFactory;
+
+import javax.jms.ConnectionFactory;
+
+//import org.apache.tomcat.
 
 @SpringBootApplication
 @Slf4j
+@EnableJms
 public class ThatsNotMyNDH {
 
     public static void main(String[] args) {
@@ -68,6 +76,16 @@ public class ThatsNotMyNDH {
                 log.warn("No build info found! Is this a local build?");
             }
         };
+    }
+
+    @Bean
+    public JmsListenerContainerFactory<?> myFactory(ConnectionFactory connectionFactory,
+                                                    DefaultJmsListenerContainerFactoryConfigurer configurer) {
+        DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
+        // This provides all boot's default to this factory, including the message converter
+        configurer.configure(factory, connectionFactory);
+        // You could still override some of Boot's default if necessary.
+        return factory;
     }
 
 }
