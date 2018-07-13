@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2011 sp1 (http://www.altova.com) by Chris Dundon (Steria Ltd) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:of="http://www.bconline.co.uk/oasys/offender" xmlns:ev="http://www.bconline.co.uk/oasys/event" xmlns="http://www.bconline.co.uk/oasys/messages" targetNamespace="http://www.bconline.co.uk/oasys/messages" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://www.bconline.co.uk/oasys/offender" schemaLocation="../offender.xsd"/>
+	<xs:import namespace="http://www.bconline.co.uk/oasys/event" schemaLocation="../event.xsd"/>
+	<xs:element name="GetOffenderDetailsResponse">
+		<xs:annotation>
+			<xs:documentation>This is the root element of a nDelius response message to be sent to oasys as the result of a Get Offender Details invocation.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence minOccurs="0" >
+				<xs:element name="Offender" type="of:OffenderType"/>
+				<xs:element name="Event" type="ev:EventType"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

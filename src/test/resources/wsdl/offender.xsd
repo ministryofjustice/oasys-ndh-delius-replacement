@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2011 sp1 (http://www.altova.com) by Chris Dundon (Steria Ltd) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:cmn="http://www.bconline.co.uk/oasys/common" xmlns="http://www.bconline.co.uk/oasys/offender" targetNamespace="http://www.bconline.co.uk/oasys/offender" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://www.bconline.co.uk/oasys/common" schemaLocation="common_types.xsd"/>
+	<xs:simpleType name="GenderType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="M"/>
+			<xs:enumeration value="F"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:element name="AddressFirstLine">
+		<xs:complexType>
+			<xs:all minOccurs="0">
+				<xs:element name="BuildingName" minOccurs="0">
+					<xs:annotation>
+						<xs:appinfo>Offender.Address.BuildingName</xs:appinfo>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="35"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="HouseNumber" minOccurs="0">
+					<xs:annotation>
+						<xs:appinfo>Offender.Address.HouseNumber</xs:appinfo>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="35"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="AddressType">
+		<xs:sequence>
+			<xs:element ref="AddressFirstLine" minOccurs="0"/>
+			<xs:element name="StreetName" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>Offender.Address.StreetName</xs:appinfo>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="35"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="District" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>Offender.Address.District</xs:appinfo>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="35"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="TownOrCity" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>Offender.Address.TownOrCity</xs:appinfo>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="35"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="County" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>Offender.Address.County</xs:appinfo>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="35"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="TelephoneNumber" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>Offender.Address.TelephoneNumber</xs:appinfo>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="35"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="OffenderType">
+		<xs:sequence>
+			<xs:element name="LAOIndicator" type="cmn:LAOIndicator"/>
+			<xs:element name="CaseReferenceNumber" type="cmn:CaseReferenceNumberType">
+				<xs:annotation>
+					<xs:appinfo>Offender.CRN</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PoliceNationalComputerIdentifier" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>Offender.PNCNumber</xs:appinfo>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="17"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="LastName" type="cmn:SurnameType" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>Offender.Surname</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Forename1" type="cmn:ForenameType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Offender.FirstName</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Forename2" type="cmn:ForenameType" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>Offender.SecondName</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Forename3" type="cmn:ForenameType" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>Offender.ThirdName</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Alias" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>Offender.Alias.FirstName + Offender.Alias.SecondName + Offender.Alias.ThirdName + Offender.Alias.Surname</xs:appinfo>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="143"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="Gender" type="GenderType" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>Offender.Gender.Code</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="DateOfBirth" type="xs:date" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>Offender.DateOfBirth</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Language" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>Offender.Language</xs:appinfo>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="10"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="Religion" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>Offender.Religion</xs:appinfo>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="10"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="CRO" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>Offender.CRONumber</xs:appinfo>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="12"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="Ethnicity" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>Offender.Ethnicity.Description</xs:appinfo>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="10"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="MainAddress" type="AddressType" minOccurs="0"/>
+			<xs:element name="PrisonNumber" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="0"/>
+						<xs:maxLength value="10"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="Postcode" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>Offender.Address.Postcode</xs:appinfo>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="8"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="Telephone">
+				<xs:annotation>
+					<xs:appinfo>Offender.TelephoneNumber</xs:appinfo>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="20"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2010 rel. 2 (http://www.altova.com) by XMLSpy 2010 Enterprise Ed. Release 2, Installed for 6 users (Electronic Data Systems Ltd.) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:as="http://www.bconline.co.uk/oasys/assessment" xmlns="http://www.bconline.co.uk/oasys/messages" xmlns:ri="http://www.bconline.co.uk/oasys/risk" targetNamespace="http://www.bconline.co.uk/oasys/messages" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://www.bconline.co.uk/oasys/assessment" schemaLocation="../assessment_summary.xsd"/>
+	<xs:import namespace="http://www.bconline.co.uk/oasys/risk" schemaLocation="../Risk.xsd"/>
+	<xs:element name="SubmitAssessmentSummaryRequest">
+		<xs:annotation>
+			<xs:documentation>This is the root element of an oasys request message to be sent to the Submit Assessment Summary interface</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="as:OASYSAssessmentSummary"/>
+				<xs:element ref="as:OASYSSupervisionPlan" minOccurs="0" maxOccurs="15"/>
+				<xs:element ref="ri:RiskType"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2010 (http://www.altova.com) by Oliver Connolly (Beaumont Colson Ltd) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:cmn="http://www.bconline.co.uk/oasys/common" xmlns="http://www.bconline.co.uk/oasys/messages" targetNamespace="http://www.bconline.co.uk/oasys/messages" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://www.bconline.co.uk/oasys/common" schemaLocation="../common_types.xsd"/>
+	<xs:element name="GetSubSetOffenderEventRequest">
+		<xs:annotation>
+			<xs:documentation>This is the root element of an oasys request message to be sent to the Get Sub Set Offender Event Details interface</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="CaseReferenceNumber" type="cmn:CaseReferenceNumberType">
+					<xs:annotation>
+						<xs:appinfo>Offender.CRN</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="Surname" type="cmn:SurnameType" minOccurs="0"/>
+				<xs:element name="Forename1" type="cmn:ForenameType" minOccurs="0"/>
+				<xs:element name="NoteID" type="cmn:NotesID" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

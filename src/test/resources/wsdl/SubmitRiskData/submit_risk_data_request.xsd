@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2010 (http://www.altova.com) by Ben Nisbet (Beaumont Colson) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:cmn="http://www.bconline.co.uk/oasys/common" xmlns="http://www.bconline.co.uk/oasys/messages" xmlns:ri="http://www.bconline.co.uk/oasys/risk" targetNamespace="http://www.bconline.co.uk/oasys/messages" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://www.bconline.co.uk/oasys/common" schemaLocation="../common_types.xsd"/>
+	<xs:import namespace="http://www.bconline.co.uk/oasys/risk" schemaLocation="../Risk.xsd"/>
+	<xs:element name="SubmitRiskDataRequest">
+		<xs:annotation>
+			<xs:documentation>This is the root element of an OASys-R request message to be sent to the Submit Risk Data interface</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="ri:RiskType"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>
