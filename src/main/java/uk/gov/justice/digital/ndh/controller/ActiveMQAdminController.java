@@ -1,0 +1,45 @@
+package uk.gov.justice.digital.ndh.controller;
+
+import com.google.common.collect.ImmutableMap;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.management.AttributeNotFoundException;
+import javax.management.InstanceNotFoundException;
+import javax.management.IntrospectionException;
+import javax.management.MBeanException;
+import javax.management.MBeanServer;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
+import javax.management.ReflectionException;
+
+@RestController
+public class ActiveMQAdminController {
+
+    public static final String MBEAN_PATH = "org.apache.activemq:type=Broker,brokerName=localhost,destinationType=Queue,destinationName=%s";
+
+    @Autowired
+    private MBeanServer mBeanServer;
+
+    @RequestMapping(path = "/activemq/queues/{queueName}", method = RequestMethod.GET)
+    public ResponseEntity<Object> getStatus(@PathVariable("queueName") String queueName) throws MalformedObjectNameException, ReflectionException, IntrospectionException, AttributeNotFoundException, MBeanException {
+
+        final ImmutableMap<String, Object> infos;
+        try {
+            infos = ImmutableMap.<String, Object>builder()
+                    .put("QueueSize", mBeanServer.getAttribute(ObjectName.getInstance(String.format(MBEAN_PATH, queueName)), "QueueSize"))
+                    .put("ConsumerCount", mBeanServer.getAttribute(ObjectName.getInstance(String.format(MBEAN_PATH, queueName)), "ConsumerCount"))
+                    .put("ProducerCount", mBeanServer.getAttribute(ObjectName.getInstance(String.format(MBEAN_PATH, queueName)), "ProducerCount"))
+                    .build();
+        } catch (InstanceNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(infos, HttpStatus.OK);
+    }
+}
