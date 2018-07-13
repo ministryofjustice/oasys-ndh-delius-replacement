@@ -70,14 +70,6 @@ public class ThatsNotMyNDH {
     @Bean
     public MappingJackson2XmlHttpMessageConverter xmlConverter() {
         final MappingJackson2XmlHttpMessageConverter mappingJackson2XmlHttpMessageConverter = new MappingJackson2XmlHttpMessageConverter();
-
-//        JacksonXmlModule module = new JacksonXmlModule();
-//// and then configure, for example:
-//        module.setDefaultUseWrapper(false);
-//        module.setupModule();
-//        XmlMapper xmlMapper = new XmlMapper(module);
-
-
         final XmlMapper xmlMapper = (XmlMapper) mappingJackson2XmlHttpMessageConverter.getObjectMapper();
 
         xmlMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
