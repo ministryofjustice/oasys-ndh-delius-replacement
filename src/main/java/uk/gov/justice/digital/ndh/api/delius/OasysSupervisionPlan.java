@@ -1,40 +1,40 @@
 package uk.gov.justice.digital.ndh.api.delius;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
 public class OasysSupervisionPlan {
-    @JsonProperty("CaseReferenceNumber")
+    @JacksonXmlProperty(localName = "CaseReferenceNumber", namespace = "http://www.bconline.co.uk/oasys/assessment")
     private String caseReferenceNumber;
-    @JsonProperty("OASYS_ID")
+    @JacksonXmlProperty(localName = "OASYS_ID", namespace = "http://www.bconline.co.uk/oasys/assessment")
     private String oasysId;
-    @JsonProperty("ObjectiveNumber")
+    @JacksonXmlProperty(localName = "ObjectiveNumber", namespace = "http://www.bconline.co.uk/oasys/assessment")
     private String objectiveNumber;
-    @JsonProperty("Need1")
+    @JacksonXmlProperty(localName = "Need1", namespace = "http://www.bconline.co.uk/oasys/assessment")
     private String need1;
-    @JsonProperty("Need2")
+    @JacksonXmlProperty(localName = "Need2", namespace = "http://www.bconline.co.uk/oasys/assessment")
     private String need2;
-    @JsonProperty("Need3")
+    @JacksonXmlProperty(localName = "Need3", namespace = "http://www.bconline.co.uk/oasys/assessment")
     private String need3;
-    @JsonProperty("Need4")
+    @JacksonXmlProperty(localName = "Need4", namespace = "http://www.bconline.co.uk/oasys/assessment")
     private String need4;
-    @JsonProperty("Objective")
+    @JacksonXmlProperty(localName = "Objective", namespace = "http://www.bconline.co.uk/oasys/assessment")
     private String objective;
-    @JsonProperty("ObjectiveStatus")
+    @JacksonXmlProperty(localName = "ObjectiveStatus", namespace = "http://www.bconline.co.uk/oasys/assessment")
     private String objectiveStatus;
-    @JsonProperty("WorkSummary1")
+    @JacksonXmlProperty(localName = "WorkSummary1", namespace = "http://www.bconline.co.uk/oasys/assessment")
     private String workSummary1;
-    @JsonProperty("WorkSummary2")
+    @JacksonXmlProperty(localName = "WorkSummary2", namespace = "http://www.bconline.co.uk/oasys/assessment")
     private String workSummary2;
-    @JsonProperty("WorkSummary3")
+    @JacksonXmlProperty(localName = "WorkSummary3", namespace = "http://www.bconline.co.uk/oasys/assessment")
     private String workSummary3;
-    @JsonProperty("Text1")
+    @JacksonXmlProperty(localName = "Text1", namespace = "http://www.bconline.co.uk/oasys/assessment")
     private String text1;
-    @JsonProperty("Text2")
+    @JacksonXmlProperty(localName = "Text2", namespace = "http://www.bconline.co.uk/oasys/assessment")
     private String text2;
-    @JsonProperty("Text3")
+    @JacksonXmlProperty(localName = "Text3", namespace = "http://www.bconline.co.uk/oasys/assessment")
     private String text3;
 }
