@@ -2,7 +2,6 @@ package uk.gov.justice.digital.ndh.api.delius;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.junit.Test;
-import org.xml.sax.SAXException;
 import org.xmlunit.builder.Input;
 import org.xmlunit.validation.Languages;
 import org.xmlunit.validation.ValidationResult;
@@ -15,7 +14,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 public class SoapEnvelopeTest {
 
     @Test
-    public void builtMessageSerializesToValidSoapMessage() throws IOException, SAXException {
+    public void builtMessageSerializesToValidSoapMessage() throws IOException {
 
         final SoapEnvelope builtMessage = SoapEnvelope.builder()
                 .header(SoapHeader
@@ -113,12 +112,6 @@ public class SoapEnvelopeTest {
         final XmlMapper xmlMapper = new XmlMapper();
         String serialized = xmlMapper.writeValueAsString(builtMessage);
 
-//        final Diff diff = XMLUnit.compareXML(referenceMessage, serialized);
-//
-//        XMLAssert.assertXMLEqual(referenceMessage, serialized);
-
-//        assertThat(serialized).isXmlEqualTo(referenceMessage);
-
         Validator v = Validator.forLanguage(Languages.W3C_XML_SCHEMA_NS_URI);
         v.setSchemaSources(
                 Input.fromStream(ClassLoader.getSystemResourceAsStream("wsdl/common_types.xsd")).build(),
@@ -129,7 +122,7 @@ public class SoapEnvelopeTest {
 
         ValidationResult result = v.validateInstance(Input.fromString(serialized).build());
 
-         assertThat(result.isValid()).isTrue();
+        assertThat(result.isValid()).isTrue();
 
     }
 }
