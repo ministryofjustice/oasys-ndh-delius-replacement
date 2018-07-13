@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
@@ -20,9 +23,14 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 
+import javax.xml.stream.XMLOutputFactory;
+
 @SpringBootApplication
 @Slf4j
 public class ThatsNotMyNDH {
+
+//    @Autowired
+//    private XMLOutputFactory xmlOutputFactory;
 
     public static void main(String[] args) {
         SpringApplication.run(ThatsNotMyNDH.class, args);
@@ -47,12 +55,25 @@ public class ThatsNotMyNDH {
         return jsonConverter;
     }
 
+    @Bean XmlMapper xmlMapper(MappingJackson2XmlHttpMessageConverter xmlConverter) {
+        return (XmlMapper) xmlConverter.getObjectMapper();
+    }
+
     @Bean
     public MappingJackson2XmlHttpMessageConverter xmlConverter() {
         final MappingJackson2XmlHttpMessageConverter mappingJackson2XmlHttpMessageConverter = new MappingJackson2XmlHttpMessageConverter();
 
-        mappingJackson2XmlHttpMessageConverter.getObjectMapper()
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+//        JacksonXmlModule module = new JacksonXmlModule();
+//// and then configure, for example:
+//        module.setDefaultUseWrapper(false);
+//        module.setupModule();
+//        XmlMapper xmlMapper = new XmlMapper(module);
+
+
+        final XmlMapper xmlMapper = (XmlMapper) mappingJackson2XmlHttpMessageConverter.getObjectMapper();
+
+        xmlMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        xmlMapper.configure(ToXmlGenerator.Feature.WRITE_XML_DECLARATION, true);
         return mappingJackson2XmlHttpMessageConverter;
     }
 
