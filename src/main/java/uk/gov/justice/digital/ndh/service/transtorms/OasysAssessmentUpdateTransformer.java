@@ -1,7 +1,8 @@
 package uk.gov.justice.digital.ndh.service.transtorms;
 
 import org.springframework.stereotype.Component;
-import uk.gov.justice.digital.ndh.api.delius.*;
+import uk.gov.justice.digital.ndh.api.delius.OasysAssessmentSummary;
+import uk.gov.justice.digital.ndh.api.delius.OasysSupervisionPlan;
 import uk.gov.justice.digital.ndh.api.oasys.CmsUpdate;
 
 @Component

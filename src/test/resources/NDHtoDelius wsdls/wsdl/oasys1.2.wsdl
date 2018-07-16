@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tns="http://www.bconline.co.uk/oasys/wsdl" xmlns:mes="http://www.bconline.co.uk/oasys/messages" xmlns:f="http://www.bconline.co.uk/oasys/fault" xmlns:ns="http://www.bconline.co.uk/oasys/common" xmlns:ns1="http://www.bconline.co.uk/oasys/event" xmlns:ns2="http://www.bconline.co.uk/oasys/offender" xmlns:ns3="http://www.bconline.co.uk/oasys/assessment" xmlns:ns4="http://www.bconline.co.uk/oasys/risk" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://www.bconline.co.uk/oasys/wsdl">
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
+                  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                  xmlns:tns="http://www.bconline.co.uk/oasys/wsdl" xmlns:mes="http://www.bconline.co.uk/oasys/messages"
+                  xmlns:f="http://www.bconline.co.uk/oasys/fault" xmlns:ns="http://www.bconline.co.uk/oasys/common"
+                  xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/"
+                  targetNamespace="http://www.bconline.co.uk/oasys/wsdl">
 	<wsdl:types>
 		<xs:schema targetNamespace="http://www.bconline.co.uk/oasys/wsdl" elementFormDefault="qualified">
 			<xs:import namespace="http://www.bconline.co.uk/oasys/messages" schemaLocation="../GetOffenderDetails/get_offender_details_request.xsd"/>
