@@ -65,23 +65,23 @@ public class Assessment {
     @JsonProperty("OffenderGUID")
     private String offenderGuid;
     @JsonProperty("DateAssessmentCompleted")
-    private Date dateAssessmentCompleted;
+    private String dateAssessmentCompleted;
     @JsonProperty("DeletedIndicator")
-    private Long deletedIndicator;
+    private String deletedIndicator;
     @JsonProperty("AssessmentGUID")
-    private Long assessmentGUID;
+    private String assessmentGUID;
     @JsonProperty("RiskFlags")
     private String riskFlags;
     @JsonProperty("ConcernFlags")
     private String concernFlags;
     @JsonProperty("TotalScore")
-    private Long totalScore;
+    private String totalScore;
     @JsonProperty("PurposeOfAssessmentCode")
-    private Long purposeOfAssessmentCode;
+    private String purposeOfAssessmentCode;
     @JsonProperty("PurposeOfAssessmentDescription")
     private String purposeOfAssessmentDescription;
     @JsonProperty("DateCreated")
-    private Date dateCreated;
+    private String dateCreated;
     @JsonProperty("AssessedBy")
     private String assessedBy;
     @JsonProperty("CourtCode")
@@ -93,25 +93,27 @@ public class Assessment {
     @JsonProperty("Offence")
     private Offence offence;
     @JsonProperty("OGRSScore1")
-    private Long ogrsScore1;
+    private String ogrsScore1;
     @JsonProperty("OGRSScore2")
-    private Long ogrsScore2;
+    private String ogrsScore2;
     @JsonProperty("SentencePlanInitialDate")
-    private Date sentencePlanInitialDate;
+    private String sentencePlanInitialDate;
+    @JsonProperty("SentencePlanReviewDate")
+    private String sentencePlanReviewDate;
     @JsonProperty("ReviewTerminated")
     private String reviewTerminated;
     @JsonProperty("OGPNotCalculated")
-    private Long ogpNotCalculated;
+    private String ogpNotCalculated;
     @JsonProperty("OVPNotCalculated")
-    private Long ovpNotCalculated;
+    private String ovpNotCalculated;
     @JsonProperty("OGPScore1")
-    private Long ogpScore1;
+    private String ogpScore1;
     @JsonProperty("OGPScore2")
-    private Long ogpScore2;
+    private String ogpScore2;
     @JsonProperty("OVPScore1")
-    private Long ovpScore1;
+    private String ovpScore1;
     @JsonProperty("OVPScore2")
-    private Long ovpScore2;
+    private String ovpScore2;
     @JsonProperty("OGRSRiskRecon")
     private String ogrsRiskRecon;
     @JsonProperty("OGPRiskRecon")
@@ -121,22 +123,24 @@ public class Assessment {
     @JsonProperty("LayerType")
     private String layerType;
     @JsonProperty("Section3CrimScore")
-    private Long section3CrimScore;
+    private String section3CrimScore;
     @JsonProperty("Section4CrimScore")
-    private Long section4CrimScore;
+    private String section4CrimScore;
     @JsonProperty("Section6CrimScore")
-    private Long section6CrimScore;
+    private String section6CrimScore;
     @JsonProperty("Section7CrimScore")
-    private Long section7CrimScore;
+    private String section7CrimScore;
     @JsonProperty("Section8CrimScore")
-    private Long section8CrimScore;
+    private String section8CrimScore;
     @JsonProperty("Section9CrimScore")
-    private Long section9CrimScore;
+    private String section9CrimScore;
     @JsonProperty("Section11CrimScore")
-    private Long section11CrimScore;
+    private String section11CrimScore;
     @JsonProperty("Section12CrimScore")
-    private Long section12CrimScore;
+    private String section12CrimScore;
     @JsonProperty("LAOIndicator")
     private String laoIndicator;
+    @JsonProperty("reviewNumber")
+    private String reviewNumber;
 
 }

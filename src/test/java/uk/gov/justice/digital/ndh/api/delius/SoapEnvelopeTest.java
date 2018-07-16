@@ -114,11 +114,11 @@ public class SoapEnvelopeTest {
 
         Validator v = Validator.forLanguage(Languages.W3C_XML_SCHEMA_NS_URI);
         v.setSchemaSources(
-                Input.fromStream(ClassLoader.getSystemResourceAsStream("wsdl/common_types.xsd")).build(),
-                Input.fromStream(ClassLoader.getSystemResourceAsStream("wsdl/assessment_summary.xsd")).build(),
-                Input.fromStream(ClassLoader.getSystemResourceAsStream("wsdl/Risk.xsd")).build(),
-                Input.fromStream(ClassLoader.getSystemResourceAsStream("wsdl/SubmitAssessmentSummary/submit_assessment_summary_request.xsd")).build(),
-                Input.fromStream(ClassLoader.getSystemResourceAsStream("wsdl/soap.xsd")).build());
+                Input.fromStream(ClassLoader.getSystemResourceAsStream("NDHtoDelius wsdls/common_types.xsd")).build(),
+                Input.fromStream(ClassLoader.getSystemResourceAsStream("NDHtoDelius wsdls/assessment_summary.xsd")).build(),
+                Input.fromStream(ClassLoader.getSystemResourceAsStream("NDHtoDelius wsdls/Risk.xsd")).build(),
+                Input.fromStream(ClassLoader.getSystemResourceAsStream("NDHtoDelius wsdls/SubmitAssessmentSummary/submit_assessment_summary_request.xsd")).build(),
+                Input.fromStream(ClassLoader.getSystemResourceAsStream("NDHtoDelius wsdls/soap.xsd")).build());
 
         ValidationResult result = v.validateInstance(Input.fromString(serialized).build());
 
