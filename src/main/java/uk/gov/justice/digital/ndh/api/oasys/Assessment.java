@@ -95,6 +95,8 @@ public class Assessment {
     private String ogrsScore2;
     @JsonProperty("SentencePlanInitialDate")
     private String sentencePlanInitialDate;
+    @JsonProperty("SentencePlanReviewDate")
+    private String sentencePlanReviewDate;
     @JsonProperty("ReviewTerminated")
     private String reviewTerminated;
     @JsonProperty("OGPNotCalculated")
@@ -135,5 +137,7 @@ public class Assessment {
     private String section12CrimScore;
     @JsonProperty("LAOIndicator")
     private String laoIndicator;
+    @JsonProperty("reviewNumber")
+    private String reviewNumber;
 
 }
