@@ -11,13 +11,13 @@ import java.io.IOException;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
-public class SoapEnvelopeTest {
+public class DeliusAssessmentUpdateSoapEnvelopeTest {
 
     @Test
     public void builtMessageSerializesToValidSoapMessage() throws IOException {
 
-        final SoapEnvelope builtMessage = SoapEnvelope.builder()
-                .header(SoapHeader
+        final DeliusAssessmentUpdateSoapEnvelope builtMessage = DeliusAssessmentUpdateSoapEnvelope.builder()
+                .header(DeliusAssessmentUpdateSoapHeader
                         .builder()
                         .commonHeader(OasysCommonHeader
                                 .builder()
@@ -25,7 +25,7 @@ public class SoapEnvelopeTest {
                                 .version("?")
                                 .build())
                         .build())
-                .body(SoapBody
+                .body(DeliusAssessmentUpdateSoapBody
                         .builder()
                         .request(SubmitAssessmentSummaryRequest
                                 .builder()

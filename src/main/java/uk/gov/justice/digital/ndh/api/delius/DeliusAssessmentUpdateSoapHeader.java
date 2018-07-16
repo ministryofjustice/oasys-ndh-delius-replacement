@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class SoapHeader {
+public class DeliusAssessmentUpdateSoapHeader {
     @JacksonXmlProperty(localName = "Header", namespace = "http://www.bconline.co.uk/oasys/common")
     private OasysCommonHeader commonHeader;
 }
