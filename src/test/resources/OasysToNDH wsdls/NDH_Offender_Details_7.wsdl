@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 {\rtf1\ansi\ansicpg1252\deff0\deflang2057{\fonttbl{\f0\fswiss\fcharset0 Arial;}}
 {\*\generator Msftedit 5.41.21.2500;}\viewkind4\uc1\pard\f0\fs20 <?xml version="1.0" encoding="UTF-8"?>\par
 <!--Created by TIBCO WSDL-->\par
@@ -498,3 +499,494 @@
 </wsdl:definitions>\par
 }
  
+=======
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Created by TIBCO WSDL-->
+<wsdl:definitions xmlns:tns="http://xmlns.example.com/1285145348265/Offender_DetailsImpl/Business/Processes/NDH__Web__Service" xmlns:ns4="http://www.hp.com/NDH_Web_Service/offender" xmlns:ns0="http://www.hp.com/NDH_Web_Service/OffenderDetailsRequest" xmlns:ns1="http://www.hp.com/NDH_Web_Service/Offender_Details_Response" xmlns:ns3="http://www.hp.com/NDH_Web_Service/DomainTypes" xmlns:ns5="http://www.hp.com/NDH_Web_Service/event" xmlns:ns2="http://www.hp.com/NDH_Web_Service/Fault" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" name="Untitled" targetNamespace="http://xmlns.example.com/1285145348265/Offender_DetailsImpl/Business/Processes/NDH__Web__Service">
+    <wsdl:types>
+        <xs:schema xmlns:dt="http://www.hp.com/NDH_Web_Service/DomainTypes" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.hp.com/NDH_Web_Service/DomainTypes" elementFormDefault="qualified" attributeFormDefault="unqualified">
+            <xs:simpleType name="AddressLine">
+                <xs:annotation>
+                    <xs:documentation>Used for all lines of the address other than the postcode</xs:documentation>
+                </xs:annotation>
+                <xs:restriction base="xs:string">
+                    <xs:maxLength value="256"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType name="CMSNumber">
+                <xs:restriction base="xs:string">
+                    <xs:maxLength value="20"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType name="CRONumber">
+                <xs:restriction base="xs:string">
+                    <xs:maxLength value="12"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType name="CourtType">
+                <xs:restriction base="xs:string">
+                    <xs:maxLength value="6"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType name="ElementCode">
+                <xs:annotation>
+                    <xs:documentation>Generic code used for all category and element type fields</xs:documentation>
+                </xs:annotation>
+                <xs:restriction base="xs:string">
+                    <xs:maxLength value="50"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:complexType name="Header">
+                <xs:sequence>
+                    <xs:element name="ApplicationMode" type="xs:string"/>
+                    <xs:element name="CorrelationID" type="xs:string"/>
+                    <xs:element name="OASysRUsername" type="xs:string"/>
+                    <xs:element name="MessageTimestamp" type="xs:dateTime"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:simpleType name="ICMSRef">
+                <xs:restriction base="xs:string">
+                    <xs:maxLength value="32"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:complexType name="ICMSReference">
+                <xs:annotation>
+                    <xs:documentation>ICMS Elements used to uniquely identify an offender and event</xs:documentation>
+                </xs:annotation>
+                <xs:sequence>
+                    <xs:element name="RefClient" type="dt:ICMSRef">
+                        <xs:annotation>
+                            <xs:documentation>Only used for the ICMS to identify a unique offender/Event combination</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="RefLink" type="xs:anyType">
+                        <xs:annotation>
+                            <xs:documentation>Only used for the ICMS to identify a unique offender/Event combination</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="RefSupervision" type="xs:anyType">
+                        <xs:annotation>
+                            <xs:documentation>Only used for the ICMS to identify a unique offender/Event combination</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:simpleType name="Numeric10">
+                <xs:restriction base="xs:integer">
+                    <xs:maxInclusive value="10"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:complexType name="OffenceDetail">
+                <xs:sequence>
+                    <xs:element name="OffenceGroupCode" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>3 digita Home Office Code i.e. "002"</xs:documentation>
+                        </xs:annotation>
+                        <xs:simpleType>
+                            <xs:restriction base="xs:string">
+                                <xs:maxLength value="3"/>
+                            </xs:restriction>
+                        </xs:simpleType>
+                    </xs:element>
+                    <xs:element name="OffenceSubCode" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>2 Digit Home Office sub code i.e. "01"</xs:documentation>
+                        </xs:annotation>
+                        <xs:simpleType>
+                            <xs:restriction base="xs:string">
+                                <xs:maxLength value="2"/>
+                            </xs:restriction>
+                        </xs:simpleType>
+                    </xs:element>
+                    <xs:element name="AdditionalIndicator" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>Only one offence will be maked as N, all others will be set to Y</xs:documentation>
+                        </xs:annotation>
+                        <xs:simpleType>
+                            <xs:restriction base="xs:string">
+                                <xs:maxLength value="1"/>
+                            </xs:restriction>
+                        </xs:simpleType>
+                    </xs:element>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:simpleType name="PNCNumber">
+                <xs:restriction base="xs:string">
+                    <xs:maxLength value="20"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType name="PersonName">
+                <xs:annotation>
+                    <xs:documentation>Standard offender name type</xs:documentation>
+                </xs:annotation>
+                <xs:restriction base="xs:string">
+                    <xs:maxLength value="100"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType name="PhoneNumber">
+                <xs:annotation>
+                    <xs:documentation>Standard telephone number type</xs:documentation>
+                </xs:annotation>
+                <xs:restriction base="xs:string">
+                    <xs:maxLength value="20"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType name="PostCode">
+                <xs:restriction base="xs:string">
+                    <xs:maxLength value="32"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType name="PrisonNumber">
+                <xs:restriction base="xs:string">
+                    <xs:maxLength value="6"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:complexType name="Risk">
+                <xs:sequence>
+                    <xs:element name="RiskofHarm" type="dt:ElementCode"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:simpleType name="SharedKeyCode">
+                <xs:restriction base="xs:string">
+                    <xs:maxLength value="100"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType name="Text100">
+                <xs:restriction base="xs:string">
+                    <xs:maxLength value="100"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType name="Text2">
+                <xs:restriction base="xs:string">
+                    <xs:maxLength value="2"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType name="VeryLargeText">
+                <xs:annotation>
+                    <xs:documentation>Maps to an Oracle CLOB item</xs:documentation>
+                </xs:annotation>
+                <xs:restriction base="xs:string"/>
+            </xs:simpleType>
+            <xs:element name="MessageID">
+                <xs:annotation>
+                    <xs:documentation>Unique message ID to be used for associating a request sent to National Delius with a response received.</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:maxLength value="30"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+        </xs:schema>
+        <xs:schema xmlns:dt="http://www.hp.com/NDH_Web_Service/DomainTypes" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.hp.com/NDH_Web_Service/OffenderDetailsRequest" targetNamespace="http://www.hp.com/NDH_Web_Service/OffenderDetailsRequest" elementFormDefault="qualified" attributeFormDefault="unqualified">
+            <xs:import namespace="http://www.hp.com/NDH_Web_Service/DomainTypes"/>
+            <xs:element name="OffenderDetailsRequest">
+                <xs:annotation>
+                    <xs:documentation>Comment describing your root element</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="header" type="dt:Header"/>
+                        <xs:element name="CMSProbNumber" type="xs:anyType" minOccurs="0"/>
+                        <xs:choice>
+                            <xs:element name="EventNumber" type="xs:integer" minOccurs="0"/>
+                            <xs:element name="ICMSReference" type="dt:ICMSReference" minOccurs="0"/>
+                            <xs:element name="NomisID" type="dt:CMSNumber" minOccurs="0"/>
+                            <xs:element name="PrisonNumber" type="dt:CMSNumber" minOccurs="0"/>
+                        </xs:choice>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+        <xs:schema xmlns:dt="http://www.hp.com/NDH_Web_Service/DomainTypes" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ev="http://www.hp.com/NDH_Web_Service/event" xmlns:off="http://www.hp.com/NDH_Web_Service/offender" xmlns="http://www.hp.com/NDH_Web_Service/Offender_Details_Response" targetNamespace="http://www.hp.com/NDH_Web_Service/Offender_Details_Response" elementFormDefault="qualified" attributeFormDefault="unqualified">
+            <xs:import namespace="http://www.hp.com/NDH_Web_Service/event"/>
+            <xs:import namespace="http://www.hp.com/NDH_Web_Service/offender"/>
+            <xs:import namespace="http://www.hp.com/NDH_Web_Service/DomainTypes"/>
+            <xs:element name="OffenderDetailsResponse">
+                <xs:annotation>
+                    <xs:documentation>Comment describing your root element</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="Header" type="dt:Header"/>
+                        <xs:element ref="off:OffenderDetail"/>
+                        <xs:element ref="ev:EventDetail" minOccurs="0"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+        <xs:schema xmlns:dt="http://www.hp.com/NDH_Web_Service/DomainTypes" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.hp.com/NDH_Web_Service/offender" targetNamespace="http://www.hp.com/NDH_Web_Service/offender" elementFormDefault="qualified" attributeFormDefault="unqualified">
+            <xs:import namespace="http://www.hp.com/NDH_Web_Service/DomainTypes"/>
+            <xs:element name="Alias">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="AliasFamilyName" type="dt:PersonName" minOccurs="0"/>
+                        <xs:element name="AliasForename1" type="dt:PersonName" minOccurs="0"/>
+                        <xs:element name="AliasForename2" type="dt:PersonName" minOccurs="0"/>
+                        <xs:element name="AliasForename3" type="dt:PersonName" minOccurs="0"/>
+                        <xs:element name="AliasDateOfBirth" type="xs:date" minOccurs="0"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="OffenderDetail">
+                <xs:complexType>
+                    <xs:annotation>
+                        <xs:documentation>Offender Details</xs:documentation>
+                    </xs:annotation>
+                    <xs:sequence>
+                        <xs:element name="CMSProbNumber" type="dt:CMSNumber" minOccurs="0"/>
+                        <xs:element name="PrisonNumber" type="dt:PrisonNumber" minOccurs="0"/>
+                        <xs:element name="NomisID" type="dt:CMSNumber" minOccurs="0"/>
+                        <xs:element name="FamilyName" type="dt:PersonName" minOccurs="0"/>
+                        <xs:element name="Forename1" type="dt:PersonName" minOccurs="0"/>
+                        <xs:element name="Forename2" type="dt:PersonName" minOccurs="0"/>
+                        <xs:element name="Forename3" type="dt:PersonName" minOccurs="0"/>
+                        <xs:element name="Gender" type="dt:ElementCode" minOccurs="0"/>
+                        <xs:element name="DateOfBirth" type="xs:date" minOccurs="0"/>
+                        <xs:element ref="ns4:Alias" minOccurs="0" maxOccurs="unbounded"/>
+                        <xs:element name="EthnicCategory" type="dt:ElementCode" minOccurs="0"/>
+                        <xs:element name="AddressLine1" type="dt:AddressLine" minOccurs="0"/>
+                        <xs:element name="AddressLine2" type="dt:AddressLine" minOccurs="0"/>
+                        <xs:element name="AddressLine3" type="dt:AddressLine" minOccurs="0"/>
+                        <xs:element name="AddressLine4" type="dt:AddressLine" minOccurs="0"/>
+                        <xs:element name="AddressLine5" type="dt:AddressLine" minOccurs="0"/>
+                        <xs:element name="AddressLine6" type="dt:AddressLine" minOccurs="0"/>
+                        <xs:element name="PostCode" type="dt:PostCode" minOccurs="0"/>
+                        <xs:element name="TelephoneNumber" type="dt:PhoneNumber" minOccurs="0"/>
+                        <xs:element name="PNC" type="dt:PNCNumber" minOccurs="0"/>
+                        <xs:element name="CRONumber" type="dt:CRONumber" minOccurs="0"/>
+                        <xs:element name="Language" type="dt:ElementCode" minOccurs="0"/>
+                        <xs:element name="Religion" type="dt:ElementCode" minOccurs="0"/>
+                        <xs:element name="ReleaseDate" type="xs:date" minOccurs="0"/>
+                        <xs:element name="ReleaseType" minOccurs="0">
+                            <xs:simpleType>
+                                <xs:restriction base="xs:string">
+                                    <xs:maxLength value="10"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:element>
+                        <xs:element name="License" type="xs:string" minOccurs="0"/>
+                        <xs:element name="LAOIndicator" type="xs:string" minOccurs="0">
+                            <xs:annotation>
+                                <xs:appinfo>Offender.LAO</xs:appinfo>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="CellLocation" type="xs:string" minOccurs="0"/>
+                        <xs:element name="SecurityCategory" type="xs:string" minOccurs="0"/>
+                        <xs:element name="DischargeAddressLine1" type="dt:AddressLine" minOccurs="0"/>
+                        <xs:element name="DischargeAddressLine2" type="dt:AddressLine" minOccurs="0"/>
+                        <xs:element name="DischargeAddressLine3" type="dt:AddressLine" minOccurs="0"/>
+                        <xs:element name="DischargeAddressLine4" type="dt:AddressLine" minOccurs="0"/>
+                        <xs:element name="DischargeAddressLine5" type="dt:AddressLine" minOccurs="0"/>
+                        <xs:element name="DischargeAddressLine6" type="dt:AddressLine" minOccurs="0"/>
+                        <xs:element name="DischargePostcode" type="dt:PostCode" minOccurs="0"/>
+                        <xs:element name="DischargeTelphoneNumber" type="dt:PhoneNumber" minOccurs="0"/>
+                        <xs:element name="AppealPendingIndicator" type="xs:string" minOccurs="0"/>
+                        <xs:element name="CurfewDate" type="xs:date" minOccurs="0"/>
+                        <xs:element name="ParoleEligibilityDate" type="xs:date" minOccurs="0"/>
+                        <xs:element name="LicenceExpiryDate" type="xs:date" minOccurs="0"/>
+                        <xs:element name="SentenceExpiryDate" type="xs:date" minOccurs="0"/>
+                        <xs:element name="NonParoleDate" type="xs:date" minOccurs="0"/>
+                        <xs:element name="AutomaticReleaseDate" type="xs:date" minOccurs="0"/>
+                        <xs:element name="ConditionalReleaseDate" type="xs:date" minOccurs="0"/>
+                        <xs:element name="RiskOfSelfHarm" type="xs:string" minOccurs="0"/>
+                        <xs:element name="NumberOfOffences" type="xs:integer" minOccurs="0"/>
+                        <xs:element name="FirstConvictionAge" type="xs:string" minOccurs="0"/>
+                        <xs:element name="NOMCondition" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+        <xs:schema xmlns:dt="http://www.hp.com/NDH_Web_Service/DomainTypes" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.hp.com/NDH_Web_Service/event" targetNamespace="http://www.hp.com/NDH_Web_Service/event" elementFormDefault="qualified" attributeFormDefault="unqualified">
+            <xs:import namespace="http://www.hp.com/NDH_Web_Service/DomainTypes"/>
+            <xs:complexType name="SentenceDetail">
+                <xs:annotation>
+                    <xs:documentation>Relates to Requirements, Additional Requirements and Interventions</xs:documentation>
+                </xs:annotation>
+                <xs:sequence>
+                    <xs:element name="AttributeCategory" type="xs:string" minOccurs="0">
+                        <xs:annotation>
+                            <xs:appinfo>Offender.Event.Disposal.Requirement.RequirementType.Code</xs:appinfo>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="AttributeElement" type="xs:string" minOccurs="0">
+                        <xs:annotation>
+                            <xs:appinfo>Offender.Event.Disposal.Requirement.RequirementType.MainCategory</xs:appinfo>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:choice minOccurs="0">
+                        <xs:element name="Description" type="xs:string" minOccurs="0">
+                            <xs:annotation>
+                                <xs:documentation>Free text field, as an example used for Prohibted Activity Requirements</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="LengthInHours" type="xs:integer" minOccurs="0"/>
+                        <xs:element name="LengthInMonths" type="xs:integer" minOccurs="0"/>
+                    </xs:choice>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="EventDetail">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:choice minOccurs="0">
+                            <xs:annotation>
+                                <xs:documentation>The message will either contain an Event/Seq number, or the ICMS specific elements</xs:documentation>
+                            </xs:annotation>
+                            <xs:element name="EventNumber" type="xs:integer">
+                                <xs:annotation>
+                                    <xs:documentation>Relates to Event Number from PCMS or Seq Numbe from Legacy</xs:documentation>
+                                    <xs:appinfo>Offender.Event.EventNumber</xs:appinfo>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="ICMSReference" type="dt:ICMSReference"/>
+                        </xs:choice>
+                        <xs:element name="Offences" type="dt:OffenceDetail" minOccurs="0" maxOccurs="unbounded">
+                            <xs:annotation>
+                                <xs:appinfo>Offender.Event.MainOffence.Offence.Code</xs:appinfo>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="ReleaseDate" type="xs:date" minOccurs="0"/>
+                        <xs:element name="SentenceCode" type="dt:SharedKeyCode" minOccurs="0"/>
+                        <xs:element name="SentenceDate" type="xs:date" minOccurs="0">
+                            <xs:annotation>
+                                <xs:appinfo>Offender.Event.Disposal.DisposalDate</xs:appinfo>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="OffenceDate" type="xs:date" minOccurs="0">
+                            <xs:annotation>
+                                <xs:appinfo>Offender.Event.MainOffence.OffenceDate</xs:appinfo>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="SentenceLength" type="xs:integer" minOccurs="0">
+                            <xs:annotation>
+                                <xs:appinfo>Offender.Event.Disposal.Length</xs:appinfo>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="ConbinedLength" type="xs:integer" minOccurs="0"/>
+                        <xs:element name="CourtCode" type="dt:SharedKeyCode" minOccurs="0">
+                            <xs:annotation>
+                                <xs:appinfo>Offender.Event.CourtAppearance.Court.CourtName</xs:appinfo>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="CourtName" type="dt:Text100" minOccurs="0">
+                            <xs:annotation>
+                                <xs:documentation>Provided by CRAMS only</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="CourtType" type="dt:ElementCode" minOccurs="0">
+                            <xs:annotation>
+                                <xs:appinfo>Offender.Event.CourtAppearance.Court.CourtType.Code</xs:appinfo>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="SentenceDetail" type="ns5:SentenceDetail" minOccurs="0" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+        <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.hp.com/NDH_Web_Service/Fault" targetNamespace="http://www.hp.com/NDH_Web_Service/Fault" elementFormDefault="qualified" attributeFormDefault="unqualified">
+            <xs:complexType name="ErrorType">
+                <xs:sequence>
+                    <xs:element name="Code" type="xs:string">
+                        <xs:annotation>
+                            <xs:documentation>A unique code identifying the type of this fault.</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="Description" type="xs:string">
+                        <xs:annotation>
+                            <xs:documentation>Containing specific details for an error, e.g. - 'Offender with CRN 1234567' could not be found'.</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="Timestamp" type="xs:dateTime"/>
+                    <xs:element name="RequestMessage" type="xs:string">
+                        <xs:annotation>
+                            <xs:documentation>The contents of the SOAP request body that caused this fault</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="AuthorisationFailureException" type="ns2:ErrorType">
+                <xs:annotation>
+                    <xs:documentation>Used to indicate that the client is not authorised to access the requested service.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="BusinessException" type="ns2:ErrorType">
+                <xs:annotation>
+                    <xs:documentation>Used to indicate that a business error occured that prevented the request from being fulfilled, e.g. -' Offender with CRN 1234567' could not be found'.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Fault">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element ref="ns2:AuthorisationFailureException" minOccurs="0">
+                            <xs:annotation>
+                                <xs:documentation>Used to indicate that the client is not authorised to access the requested service.</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element ref="ns2:BusinessException" minOccurs="0">
+                            <xs:annotation>
+                                <xs:documentation>Used to indicate that a business error occured that prevented the request from being fulfilled, e.g. -' Offender with CRN 1234567' could not be found'.</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element ref="ns2:ServerRuntimeException" minOccurs="0">
+                            <xs:annotation>
+                                <xs:documentation>Used to indicate that an unexpected problem occurred during server side processing that has prevented the request from being fulfilled, e.g.-  database constraint violation when attemping to persist new data from IAPS or eOASys.</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element ref="ns2:ValidationFailureException" minOccurs="0">
+                            <xs:annotation>
+                                <xs:documentation>Used to indicate that the incoming request is not valid according to the schema.</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="ServerRuntimeException" type="ns2:ErrorType">
+                <xs:annotation>
+                    <xs:documentation>Used to indicate that an unexpected problem occurred during server side processing that has prevented the request from being fulfilled, e.g.-  database constraint violation when attemping to persist new data from IAPS or eOASys.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ValidationFailureException" type="ns2:ErrorType">
+                <xs:annotation>
+                    <xs:documentation>Used to indicate that the incoming request is not valid according to the schema.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:service name="NDH__Web__Service__Details">
+        <wsdl:port name="SOAPEventSource" binding="tns:SOAPEventSourceBinding">
+            <soap:address location="http://localhost:8555/Business/Processes/NDH_Web_Service/NDH_Web_Service_Details"/>
+        </wsdl:port>
+    </wsdl:service>
+    <wsdl:portType name="NDH_PortType">
+        <wsdl:operation name="Offender_Details">
+            <wsdl:input message="tns:Offender_Details_Request"/>
+            <wsdl:output message="tns:Offender_Details_Response"/>
+            <wsdl:fault name="fault1" message="tns:Fault_Report"/>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="SOAPEventSourceBinding" type="tns:NDH_PortType">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="Offender_Details">
+            <soap:operation style="document" soapAction="/Business/Processes/NDH_Web_Service/NDH_Web_Service_Details" soapActionRequired="true"/>
+            <wsdl:input>
+                <soap:body use="literal" parts="request"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" parts="response"/>
+            </wsdl:output>
+            <wsdl:fault name="fault1">
+                <soap:fault use="literal" name="fault1"/>
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:message name="Offender_Details_Request">
+        <wsdl:part name="request" element="ns0:OffenderDetailsRequest"/>
+    </wsdl:message>
+    <wsdl:message name="Offender_Details_Response">
+        <wsdl:part name="response" element="ns1:OffenderDetailsResponse"/>
+    </wsdl:message>
+    <wsdl:message name="Fault_Report">
+        <wsdl:part name="fault" element="ns2:Fault"/>
+    </wsdl:message>
+</wsdl:definitions>
+>>>>>>> Stashed changes

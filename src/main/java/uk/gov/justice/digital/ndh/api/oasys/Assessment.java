@@ -8,136 +8,142 @@ import lombok.Data;
 @Builder
 public class Assessment {
 
-    /*
-            <ass:CMSProbNumber>H923505</ass:CMSProbNumber>
-        <ass:EventNumber>1</ass:EventNumber>
-        <ass:OffenderGUID>7294806</ass:OffenderGUID>
-        <ass:DateAssessmentCompleted>2018-06-19</ass:DateAssessmentCompleted>
-        <ass:DeletedIndicator>0</ass:DeletedIndicator>
-        <ass:AssessmentGUID>9485345</ass:AssessmentGUID>
-        <ass:RiskFlags>,,,,,,,,</ass:RiskFlags>
-        <ass:ConcernFlags>,,,,,,,</ass:ConcernFlags>
-        <ass:TotalScore>90</ass:TotalScore>
-        <ass:PurposeOfAssessmentCode>430</ass:PurposeOfAssessmentCode>
-        <ass:PurposeOfAssessmentDescription>CJA2003 - Start of Community Order</ass:PurposeOfAssessmentDescription>
-        <ass:DateCreated>2018-06-19</ass:DateCreated>
-        <ass:AssessedBy>Testing Admin Testing National</ass:AssessedBy>
-        <ass:CourtCode>STAFCC</ass:CourtCode>
-        <ass:CourtType>CC</ass:CourtType>
-        <ass:CourtName>Stafford Crown Court</ass:CourtName>
-        <ass:Offence>
-            <dom:OffenceGroupCode>104</dom:OffenceGroupCode>
-            <dom:OffenceSubCode>23</dom:OffenceSubCode>
-            <dom:AdditionalIndicator>N</dom:AdditionalIndicator>
-        </ass:Offence>
-        <ass:OGRSScore1>65</ass:OGRSScore1>
-        <ass:OGRSScore2>80</ass:OGRSScore2>
-        <ass:SentencePlanInitialDate>2018-06-19</ass:SentencePlanInitialDate>
-        <ass:ReviewTerminated>N</ass:ReviewTerminated>
-        <ass:OGPNotCalculated>0</ass:OGPNotCalculated>
-        <ass:OVPNotCalculated>0</ass:OVPNotCalculated>
-        <ass:OGPScore1>50</ass:OGPScore1>
-        <ass:OGPScore2>65</ass:OGPScore2>
-        <ass:OVPScore1>9</ass:OVPScore1>
-        <ass:OVPScore2>15</ass:OVPScore2>
-        <ass:OGRSRiskRecon>H</ass:OGRSRiskRecon>
-        <ass:OGPRiskRecon>M</ass:OGPRiskRecon>
-        <ass:OVPRiskRecon>L</ass:OVPRiskRecon>
-        <ass:LayerType>LAYER_3</ass:LayerType>
-        <ass:Section3CrimScore>3</ass:Section3CrimScore>
-        <ass:Section4CrimScore>2</ass:Section4CrimScore>
-        <ass:Section6CrimScore>1</ass:Section6CrimScore>
-        <ass:Section7CrimScore>1</ass:Section7CrimScore>
-        <ass:Section8CrimScore>3</ass:Section8CrimScore>
-        <ass:Section9CrimScore>4</ass:Section9CrimScore>
-        <ass:Section11CrimScore>1</ass:Section11CrimScore>
-        <ass:Section12CrimScore>0</ass:Section12CrimScore>
-        <ass:LAOIndicator>N</ass:LAOIndicator>
-
-     */
+//            <xs:element name="CMSProbNumber" type="dt:CMSNumber"/>
     @JsonProperty("CMSProbNumber")
     private String cmsProbNumber;
+//            <xs:element name="EventNumber" type="xs:integer">
     @JsonProperty("EventNumber")
     private String eventNumber;
+//            <xs:element name="ICMSReference" type="dt:ICMSReference"/>
+    @JsonProperty("ICMSReference")
+    private String icmsReference;
+//            <xs:element name="OffenderGUID" type="xs:integer">
     @JsonProperty("OffenderGUID")
     private String offenderGuid;
+//            <xs:element name="DateAssessmentCompleted" type="xs:date" minOccurs="0"/>
     @JsonProperty("DateAssessmentCompleted")
     private String dateAssessmentCompleted;
+//            <xs:element name="DeletedIndicator" type="xs:integer" minOccurs="0">
     @JsonProperty("DeletedIndicator")
     private String deletedIndicator;
+//            <xs:element name="AssessmentGUID" type="xs:integer">
     @JsonProperty("AssessmentGUID")
     private String assessmentGUID;
+//            <xs:element name="RiskFlags" minOccurs="0">
     @JsonProperty("RiskFlags")
     private String riskFlags;
+//            <xs:element name="ConcernFlags" minOccurs="0">
     @JsonProperty("ConcernFlags")
     private String concernFlags;
+//            <xs:element name="TotalScore" minOccurs="0">
     @JsonProperty("TotalScore")
     private String totalScore;
+//            <xs:element name="PurposeOfAssessmentCode" type="dt:ElementCode" minOccurs="0"/>
     @JsonProperty("PurposeOfAssessmentCode")
     private String purposeOfAssessmentCode;
+//            <xs:element name="PurposeOfAssessmentDescription" minOccurs="0">
     @JsonProperty("PurposeOfAssessmentDescription")
     private String purposeOfAssessmentDescription;
+//            <xs:element name="DateCreated" type="xs:date"/>
     @JsonProperty("DateCreated")
     private String dateCreated;
+//            <xs:element name="AssessedBy" type="dt:PersonName" minOccurs="0"/>
     @JsonProperty("AssessedBy")
     private String assessedBy;
+//            <xs:element name="CourtCode" type="dt:SharedKeyCode" minOccurs="0"/>
     @JsonProperty("CourtCode")
     private String courtCode;
+//            <xs:element name="CourtType" type="dt:CourtType" minOccurs="0"/>
     @JsonProperty("CourtType")
     private String courtType;
+//            <xs:element name="CourtName" type="dt:Text100" minOccurs="0"/>
     @JsonProperty("CourtName")
     private String courtName;
+//            <xs:element name="Offence" type="dt:OffenceDetail" minOccurs="0"/>
     @JsonProperty("Offence")
     private Offence offence;
+//            <xs:element name="OGRSScore1" type="xs:decimal" minOccurs="0"/>
     @JsonProperty("OGRSScore1")
     private String ogrsScore1;
+//            <xs:element name="OGRSScore2" type="xs:decimal" minOccurs="0"/>
     @JsonProperty("OGRSScore2")
     private String ogrsScore2;
+//            <xs:element name="SentencePlanInitialDate" type="xs:date" minOccurs="0"/>
     @JsonProperty("SentencePlanInitialDate")
     private String sentencePlanInitialDate;
+//            <xs:element name="SentencePlanReviewDate" type="xs:date" minOccurs="0"/>
     @JsonProperty("SentencePlanReviewDate")
     private String sentencePlanReviewDate;
+//            <xs:element name="ReviewTerminated" minOccurs="0">
     @JsonProperty("ReviewTerminated")
     private String reviewTerminated;
+//            <xs:element name="ReviewNumber" minOccurs="0">
+    @JsonProperty("ReviewNumber")
+    private String reviewNumber;
+//            <xs:element name="OGPNotCalculated" type="xs:integer" minOccurs="0"/>
     @JsonProperty("OGPNotCalculated")
     private String ogpNotCalculated;
+//            <xs:element name="OVPNotCalculated" type="xs:integer" minOccurs="0"/>
     @JsonProperty("OVPNotCalculated")
     private String ovpNotCalculated;
+//            <xs:element name="OGPScore1" type="xs:integer" minOccurs="0"/>
     @JsonProperty("OGPScore1")
     private String ogpScore1;
+//            <xs:element name="OGPScore2" type="xs:integer" minOccurs="0"/>
     @JsonProperty("OGPScore2")
     private String ogpScore2;
+//            <xs:element name="OVPScore1" type="xs:integer" minOccurs="0"/>
     @JsonProperty("OVPScore1")
     private String ovpScore1;
+//            <xs:element name="OVPScore2" type="xs:integer" minOccurs="0"/>
     @JsonProperty("OVPScore2")
     private String ovpScore2;
+//            <xs:element name="OGRSRiskRecon" type="dt:ElementCode" minOccurs="0">
     @JsonProperty("OGRSRiskRecon")
     private String ogrsRiskRecon;
+//            <xs:element name="OGPRiskRecon" type="dt:ElementCode" minOccurs="0"/>
     @JsonProperty("OGPRiskRecon")
     private String ogpRiskRecon;
+//            <xs:element name="OVPRiskRecon" type="dt:ElementCode" minOccurs="0"/>
     @JsonProperty("OVPRiskRecon")
     private String ovpRiskRecon;
+//            <xs:element name="LayerType" type="dt:ElementCode"/>
     @JsonProperty("LayerType")
     private String layerType;
+//            <xs:element name="Section3CrimScore" minOccurs="0">
     @JsonProperty("Section3CrimScore")
     private String section3CrimScore;
+//            <xs:element name="Section4CrimScore" minOccurs="0">
     @JsonProperty("Section4CrimScore")
     private String section4CrimScore;
+//            <xs:element name="Section6CrimScore" minOccurs="0">
     @JsonProperty("Section6CrimScore")
     private String section6CrimScore;
+//            <xs:element name="Section7CrimScore" type="xs:string" minOccurs="0">
     @JsonProperty("Section7CrimScore")
     private String section7CrimScore;
+//            <xs:element name="Section8CrimScore" minOccurs="0">
     @JsonProperty("Section8CrimScore")
     private String section8CrimScore;
+//            <xs:element name="Section9CrimScore" minOccurs="0">
     @JsonProperty("Section9CrimScore")
     private String section9CrimScore;
+//            <xs:element name="Section11CrimScore" minOccurs="0">
     @JsonProperty("Section11CrimScore")
     private String section11CrimScore;
+//            <xs:element name="Section12CrimScore" minOccurs="0">
     @JsonProperty("Section12CrimScore")
     private String section12CrimScore;
+//            <xs:element name="LAOIndicator" type="xs:string" minOccurs="0">
     @JsonProperty("LAOIndicator")
     private String laoIndicator;
-    @JsonProperty("reviewNumber")
-    private String reviewNumber;
-
+//            <xs:element name="TierCode" minOccurs="0">
+    @JsonProperty("TierCode")
+    private String tierCode;
+//            <xs:element name="Layer1Obj" type="xs:string" minOccurs="0">
+    @JsonProperty("Layer1Obj")
+    private String layer1Obj;
+//            <xs:element name="Risk" type="dt:Risk" minOccurs="0"/>
+    @JsonProperty("Risk")
+    private Risk risk;
 }

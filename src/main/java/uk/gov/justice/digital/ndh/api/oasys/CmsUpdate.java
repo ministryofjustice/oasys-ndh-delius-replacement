@@ -17,4 +17,5 @@ public class CmsUpdate {
     @JacksonXmlElementWrapper(useWrapping = false)
     @JsonProperty("Objective")
     private List<Objective> objectives;
+
 }

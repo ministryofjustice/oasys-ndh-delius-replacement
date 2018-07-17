@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.ndh.service.transtorms;
 
 import org.springframework.stereotype.Component;
+import uk.gov.justice.digital.ndh.api.delius.DeliusAssessmentUpdateSoapEnvelope;
 import uk.gov.justice.digital.ndh.api.delius.OasysAssessmentSummary;
 import uk.gov.justice.digital.ndh.api.delius.OasysSupervisionPlan;
 import uk.gov.justice.digital.ndh.api.oasys.CmsUpdate;
@@ -8,7 +9,7 @@ import uk.gov.justice.digital.ndh.api.oasys.CmsUpdate;
 @Component
 public class OasysAssessmentUpdateTransformer {
 
-    public SoapEnvelope deliusAssessmentUpdateOF (CmsUpdate cmsUpdate){
+    public DeliusAssessmentUpdateSoapEnvelope deliusAssessmentUpdateOF (CmsUpdate cmsUpdate){
         OasysAssessmentSummary.builder()
                 .caseReferenceNumber(cmsUpdate.getAssessment().getCmsProbNumber())
                 .eventNumber(cmsUpdate.getAssessment().getEventNumber())
@@ -46,7 +47,7 @@ public class OasysAssessmentUpdateTransformer {
                 .sentencePlanReviewDate(cmsUpdate.getAssessment().getSentencePlanReviewDate())
                 .sentencePlanInitialDate(cmsUpdate.getAssessment().getSentencePlanInitialDate())
                 .reviewTerminated(cmsUpdate.getAssessment().getReviewTerminated())
-                //.reviewNumber(cmsUpdate.getAssessment()
+                .reviewNumber(cmsUpdate.getAssessment().getReviewNumber())
                 .layerType(cmsUpdate.getAssessment().getLayerType())
                 .build();
 
