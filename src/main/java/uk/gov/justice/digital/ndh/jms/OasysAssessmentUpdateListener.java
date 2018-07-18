@@ -3,7 +3,6 @@ package uk.gov.justice.digital.ndh.jms;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
@@ -16,7 +15,9 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.TextMessage;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static uk.gov.justice.digital.ndh.config.JmsConfig.OASYS_MESSAGES;
 
@@ -24,15 +25,16 @@ import static uk.gov.justice.digital.ndh.config.JmsConfig.OASYS_MESSAGES;
 @Slf4j
 public class OasysAssessmentUpdateListener {
 
-    private final XmlMapper xmlMapper;
-    private final Function<Optional<DeliusResponse>, Boolean> shouldAcknowledge = Optional::isPresent;
-    private final OasysAssessmentService oasysAssessmentService;
+    private static final BiFunction<Optional<DeliusResponse>, Message, Optional<Message>> MESSAGE_ACKNOWLEDGER = (maybeDeliusResponse, msg) -> maybeDeliusResponse.map(deliusResponse -> msg);
     private final Function<Optional<DeliusResponse>, Optional<DeliusResponse>> faultHandler;
+    private final Function<Message, Optional<NdhAssessmentUpdateSoapEnvelope>> readMessage;
+    private final Function<Optional<NdhAssessmentUpdateSoapEnvelope>, Optional<DeliusAssessmentUpdateSoapEnvelope>> transformMessage = maybeNdhSoapEnvelope ->
+            //TODO: Call the transformer, but in the meantime just hard wire
+            maybeNdhSoapEnvelope.map(update -> DeliusAssessmentUpdateSoapEnvelope.builder().build());
+    private final Function<Optional<DeliusAssessmentUpdateSoapEnvelope>, Optional<DeliusResponse>> sendMessage;
 
     @Autowired
     public OasysAssessmentUpdateListener(XmlMapper xmlMapper, OasysAssessmentService oasysAssessmentService) {
-        this.xmlMapper = xmlMapper;
-        this.oasysAssessmentService = oasysAssessmentService;
 
         faultHandler = maybeDeliusResponse -> {
             maybeDeliusResponse.ifPresent(deliusResponse -> {
@@ -47,36 +49,46 @@ public class OasysAssessmentUpdateListener {
 
             return maybeDeliusResponse;
         };
+
+        readMessage = message -> {
+            try {
+                return Optional.ofNullable(xmlMapper.readValue(((TextMessage) message).getText(), NdhAssessmentUpdateSoapEnvelope.class));
+            } catch (Exception e) {
+                log.error("Can't turn message {0} into NdhAssessmentUpdateSoapEnvelope.", message);
+            }
+            return Optional.empty();
+        };
+
+        sendMessage = maybeDeliusSoapEnvelope -> maybeDeliusSoapEnvelope.flatMap(oasysAssessmentService::deliusWebServiceResponseOf);
     }
 
     @JmsListener(destination = OASYS_MESSAGES, concurrency = "1")
     public void onMessage(Message message) {
 
-        final val maybeResult = readMessage(message)
-                //TODO: Call the transformer, but in the meantime just hard wire
-                .map(update -> DeliusAssessmentUpdateSoapEnvelope.builder().build())
-                .flatMap(oasysAssessmentService::deliusWebServiceResponseOf);
+        final Optional<Message> maybeMessage = MESSAGE_ACKNOWLEDGER.apply(readMessage
+                .andThen(transformMessage)
+                .andThen(sendMessage)
+                .andThen(faultHandler)
+                .apply(message), message);
 
-        if (faultHandler.andThen(shouldAcknowledge).apply(maybeResult)) {
-            log.info("Acknowledging message {} : {}", message);
+        final Supplier<Message> reject = () -> {
+            log.error("Rejecting message {} : {}", message);
+            return null;
+        };
 
+        maybeMessage.map(accept(message)).orElseGet(reject);
+
+    }
+
+    private Function<Message, Object> accept(Message message) {
+        return message1 -> {
+            log.info("Acknowledging message {} : {}", message1);
             try {
                 message.acknowledge();
             } catch (JMSException e) {
                 log.error(e.getMessage());
             }
-        }
-        else {
-            log.info("Rejecting message {} : {}", message);
-        }
-    }
-
-    private Optional<NdhAssessmentUpdateSoapEnvelope> readMessage(Message message) {
-        try {
-            return Optional.ofNullable(xmlMapper.readValue(((TextMessage) message).getText(), NdhAssessmentUpdateSoapEnvelope.class));
-        } catch (Exception e) {
-            log.error("Can't turn message {0} into NdhAssessmentUpdateSoapEnvelope.", message);
-        }
-        return Optional.empty();
+            return null;
+        };
     }
 }
