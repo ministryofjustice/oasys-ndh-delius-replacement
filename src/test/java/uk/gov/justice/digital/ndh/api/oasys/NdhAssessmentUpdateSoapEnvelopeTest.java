@@ -3,6 +3,8 @@ package uk.gov.justice.digital.ndh.api.oasys;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.junit.Test;
+import uk.gov.justice.digital.ndh.api.oasys.request.NdhAssessmentUpdateSoapEnvelope;
+import uk.gov.justice.digital.ndh.api.oasys.request.Objective;
 
 import java.io.IOException;
 import java.util.List;

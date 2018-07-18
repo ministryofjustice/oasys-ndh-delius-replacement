@@ -1,11 +1,20 @@
 package uk.gov.justice.digital.ndh.api.delius;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import org.xmlunit.builder.Input;
 import org.xmlunit.validation.Languages;
 import org.xmlunit.validation.ValidationResult;
 import org.xmlunit.validation.Validator;
+import uk.gov.justice.digital.ndh.api.delius.request.DeliusAssessmentUpdateSoapBody;
+import uk.gov.justice.digital.ndh.api.delius.request.DeliusAssessmentUpdateSoapEnvelope;
+import uk.gov.justice.digital.ndh.api.delius.request.DeliusAssessmentUpdateSoapHeader;
+import uk.gov.justice.digital.ndh.api.delius.request.OasysAssessmentSummary;
+import uk.gov.justice.digital.ndh.api.delius.request.OasysCommonHeader;
+import uk.gov.justice.digital.ndh.api.delius.request.OasysSupervisionPlan;
+import uk.gov.justice.digital.ndh.api.delius.request.RiskType;
+import uk.gov.justice.digital.ndh.api.delius.request.SubmitAssessmentSummaryRequest;
 
 import java.io.IOException;
 
@@ -29,7 +38,7 @@ public class DeliusAssessmentUpdateSoapEnvelopeTest {
                         .builder()
                         .request(SubmitAssessmentSummaryRequest
                                 .builder()
-                                .oasysSupervisionPlan(OasysSupervisionPlan
+                                .oasysSupervisionPlans(ImmutableList.of(OasysSupervisionPlan
                                         .builder()
                                         .oasysId("?")
                                         .caseReferenceNumber("?")
@@ -46,7 +55,7 @@ public class DeliusAssessmentUpdateSoapEnvelopeTest {
                                         .workSummary1("?")
                                         .workSummary2("?")
                                         .workSummary3("?")
-                                        .build())
+                                        .build()))
                                 .riskType(RiskType
                                         .builder()
                                         .caseReferenceNumber("?")

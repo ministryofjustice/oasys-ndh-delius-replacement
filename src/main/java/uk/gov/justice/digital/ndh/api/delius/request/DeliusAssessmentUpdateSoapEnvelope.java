@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.ndh.api.delius;
+package uk.gov.justice.digital.ndh.api.delius.request;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;

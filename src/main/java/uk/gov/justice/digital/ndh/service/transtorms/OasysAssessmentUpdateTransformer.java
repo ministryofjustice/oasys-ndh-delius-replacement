@@ -1,19 +1,19 @@
 package uk.gov.justice.digital.ndh.service.transtorms;
 
 import org.springframework.stereotype.Component;
-import uk.gov.justice.digital.ndh.api.delius.DeliusAssessmentUpdateSoapBody;
-import uk.gov.justice.digital.ndh.api.delius.DeliusAssessmentUpdateSoapEnvelope;
-import uk.gov.justice.digital.ndh.api.delius.DeliusAssessmentUpdateSoapHeader;
-import uk.gov.justice.digital.ndh.api.delius.OasysAssessmentSummary;
-import uk.gov.justice.digital.ndh.api.delius.OasysCommonHeader;
-import uk.gov.justice.digital.ndh.api.delius.OasysSupervisionPlan;
-import uk.gov.justice.digital.ndh.api.delius.RiskType;
-import uk.gov.justice.digital.ndh.api.delius.SubmitAssessmentSummaryRequest;
-import uk.gov.justice.digital.ndh.api.oasys.Assessment;
-import uk.gov.justice.digital.ndh.api.oasys.Header;
-import uk.gov.justice.digital.ndh.api.oasys.NdhAssessmentUpdateSoapEnvelope;
-import uk.gov.justice.digital.ndh.api.oasys.Objective;
-import uk.gov.justice.digital.ndh.api.oasys.Risk;
+import uk.gov.justice.digital.ndh.api.delius.request.DeliusAssessmentUpdateSoapBody;
+import uk.gov.justice.digital.ndh.api.delius.request.DeliusAssessmentUpdateSoapEnvelope;
+import uk.gov.justice.digital.ndh.api.delius.request.DeliusAssessmentUpdateSoapHeader;
+import uk.gov.justice.digital.ndh.api.delius.request.OasysAssessmentSummary;
+import uk.gov.justice.digital.ndh.api.delius.request.OasysCommonHeader;
+import uk.gov.justice.digital.ndh.api.delius.request.OasysSupervisionPlan;
+import uk.gov.justice.digital.ndh.api.delius.request.RiskType;
+import uk.gov.justice.digital.ndh.api.delius.request.SubmitAssessmentSummaryRequest;
+import uk.gov.justice.digital.ndh.api.oasys.request.Assessment;
+import uk.gov.justice.digital.ndh.api.oasys.request.Header;
+import uk.gov.justice.digital.ndh.api.oasys.request.NdhAssessmentUpdateSoapEnvelope;
+import uk.gov.justice.digital.ndh.api.oasys.request.Objective;
+import uk.gov.justice.digital.ndh.api.oasys.request.Risk;
 
 import java.util.List;
 import java.util.Optional;
