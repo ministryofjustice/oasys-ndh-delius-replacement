@@ -52,23 +52,22 @@ public class OasysAssessmentUpdateListener {
     @JmsListener(destination = OASYS_MESSAGES, concurrency = "1")
     public void onMessage(Message message) {
 
-        val maybeUpdate = readMessage(message);
+        final val maybeResult = readMessage(message)
+                //TODO: Call the transformer, but in the meantime just hard wire
+                .map(update -> DeliusAssessmentUpdateSoapEnvelope.builder().build())
+                .flatMap(oasysAssessmentService::deliusWebServiceResponseOf);
 
-        //TODO: Call the transformer, but in the meantime just hard wire
-        val maybeTransformed = maybeUpdate.map(update -> DeliusAssessmentUpdateSoapEnvelope.builder().build());
+        if (faultHandler.andThen(shouldAcknowledge).apply(maybeResult)) {
+            log.info("Acknowledging message {} : {}", message);
 
-        final val maybeResult = maybeTransformed.flatMap(oasysAssessmentService::deliusWebServiceResponseOf);
-
-        boolean doJmsAck = faultHandler.andThen(shouldAcknowledge).apply(maybeResult);
-
-        log.info("Acknowledging message {} : {}", message, doJmsAck);
-
-        if (doJmsAck) {
             try {
                 message.acknowledge();
             } catch (JMSException e) {
                 log.error(e.getMessage());
             }
+        }
+        else {
+            log.info("Rejecting message {} : {}", message);
         }
     }
 
