@@ -212,7 +212,6 @@ public class OasysAssessmentUpdateTransformer {
             default:
                 mapped = "DK";
         }
-
         return mapped;
     };
 
