@@ -115,14 +115,14 @@ public class OasysAssessmentUpdateTransformer {
                 .need2(Optional.ofNullable(descriptionOf(objective.getNeed2(), OASYS_CRMS_CRIM_NEED)).map(result -> result.substring(1, 50)).orElse(null))
                 .need3(Optional.ofNullable(descriptionOf(objective.getNeed3(), OASYS_CRMS_CRIM_NEED)).map(result -> result.substring(1, 50)).orElse(null))
                 .need4(Optional.ofNullable(descriptionOf(objective.getNeed4(), OASYS_CRMS_CRIM_NEED)).map(result -> result.substring(1, 50)).orElse(null))
-                .objective(objective.getObjectiveDescription().substring(1, 50)) //is substring right?
+                .objective(Optional.ofNullable(objective.getObjectiveDescription()).map(o -> o.substring(0, 50)).orElse(null))
                 .objectiveStatus(Optional.ofNullable(descriptionOf(objective.getObjectiveStatus(), OASYSRCMS_OBJ_STATUS_CODE)).map(result -> result.substring(1, 50)).orElse(UNMAPPED))
                 .workSummary1(Optional.ofNullable(descriptionOf(objective.getActionCode1(), OASYSRCMS_INTERVENTION)).map(result -> result.substring(1, 50)).orElse(null))
                 .workSummary2(Optional.ofNullable(descriptionOf(objective.getActionCode2(), OASYSRCMS_INTERVENTION)).map(result -> result.substring(1, 50)).orElse(null))
                 .workSummary3(Optional.ofNullable(descriptionOf(objective.getActionCode3(), OASYSRCMS_INTERVENTION)).map(result -> result.substring(1, 50)).orElse(null))
-                .text1(objective.getActionText1().substring(1, 100))
-                .text2(objective.getActionText2().substring(1, 250))
-                .text3(objective.getActionText3().substring(1, 250))
+                .text1(Optional.ofNullable(objective.getActionText1()).map(a -> a.substring(0, 100)).orElse(null))
+                .text2(Optional.ofNullable(objective.getActionText2()).map(a -> a.substring(0, 250)).orElse(null))
+                .text3(Optional.ofNullable(objective.getActionText3()).map(a -> a.substring(0, 250)).orElse(null))
                 .build();
     }
 
