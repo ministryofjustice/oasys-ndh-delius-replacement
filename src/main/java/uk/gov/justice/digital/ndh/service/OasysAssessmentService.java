@@ -3,7 +3,6 @@ package uk.gov.justice.digital.ndh.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import lombok.extern.slf4j.Slf4j;
@@ -12,12 +11,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
-import uk.gov.justice.digital.ndh.api.delius.request.DeliusAssessmentUpdateSoapEnvelope;
-import uk.gov.justice.digital.ndh.api.delius.response.DeliusResponse;
+import uk.gov.justice.digital.ndh.api.delius.request.DeliusRequest;
 
 import javax.jms.Queue;
-import java.io.IOException;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -41,26 +37,18 @@ public class OasysAssessmentService {
         this.objectMapper = objectMapper;
     }
 
-    public void publishFault(DeliusResponse deliusResponse) throws JsonProcessingException {
+    public void publishFault(String request, String response) {
         //TODO: Something more useful.
-        log.error("Got SOAP Fault back from Delius: {}", objectMapper.writeValueAsString(deliusResponse));
+        log.error("Got a bad thing back from Delius. \nRequest: {} \nResponse: {}", request, response);
     }
 
     public void publishUpdate(String updateXml) {
         jmsTemplate.convertAndSend(oasysMessagesQueue, updateXml);
     }
 
-    public Optional<DeliusResponse> deliusWebServiceResponseOf(DeliusAssessmentUpdateSoapEnvelope transformed) {
-        try {
-            final HttpResponse<String> stringHttpResponse = Unirest.post(ndeliusUrl)
-                    .body(xmlMapper.writeValueAsString(transformed))
-                    .asString();
-
-            return Optional.of(xmlMapper.readValue(stringHttpResponse.getBody(), DeliusResponse.class));
-        } catch (UnirestException | IOException e) {
-            log.error(e.getMessage());
-            return Optional.empty();
-        }
+    public String deliusWebServiceResponseOf(DeliusRequest transformed) throws JsonProcessingException, UnirestException {
+        return Unirest.post(ndeliusUrl)
+                .body(xmlMapper.writeValueAsString(transformed))
+                .asString().getBody();
     }
-
 }

@@ -11,7 +11,14 @@ public class DeliusResponse {
     @JsonProperty("Body")
     private JsonNode body;
 
-    public boolean isFault() {
+    public boolean isBadResponse() {
+        return isBad() || isSoapFault();
+    }
+
+    public boolean isSoapFault() {
         return body.hasNonNull("Fault");
+    }
+    public boolean isBad() {
+        return body == null;
     }
 }

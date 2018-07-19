@@ -2,8 +2,20 @@ package uk.gov.justice.digital.ndh.service.transtorms;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.justice.digital.ndh.api.delius.request.*;
-import uk.gov.justice.digital.ndh.api.oasys.request.*;
+import uk.gov.justice.digital.ndh.api.delius.request.DeliusAssessmentUpdateSoapBody;
+import uk.gov.justice.digital.ndh.api.delius.request.DeliusAssessmentUpdateSoapHeader;
+import uk.gov.justice.digital.ndh.api.delius.request.DeliusRequest;
+import uk.gov.justice.digital.ndh.api.delius.request.OasysAssessmentSummary;
+import uk.gov.justice.digital.ndh.api.delius.request.OasysCommonHeader;
+import uk.gov.justice.digital.ndh.api.delius.request.OasysSupervisionPlan;
+import uk.gov.justice.digital.ndh.api.delius.request.RiskType;
+import uk.gov.justice.digital.ndh.api.delius.request.SubmitAssessmentSummaryRequest;
+import uk.gov.justice.digital.ndh.api.oasys.request.Assessment;
+import uk.gov.justice.digital.ndh.api.oasys.request.CmsUpdate;
+import uk.gov.justice.digital.ndh.api.oasys.request.Header;
+import uk.gov.justice.digital.ndh.api.oasys.request.NdhAssessmentUpdateSoapEnvelope;
+import uk.gov.justice.digital.ndh.api.oasys.request.Objective;
+import uk.gov.justice.digital.ndh.api.oasys.request.Risk;
 import uk.gov.justice.digital.ndh.jpa.entity.MappingCodeData;
 import uk.gov.justice.digital.ndh.jpa.entity.MappingCodeDataPK;
 import uk.gov.justice.digital.ndh.jpa.repository.MappingRepository;
@@ -25,16 +37,31 @@ public class OasysAssessmentUpdateTransformer {
     private static final long OASYSRPCMS_LAYER1OBJ = 5504L;
 
     private final MappingRepository mappingRepository;
+    private Function<String, String> deliusLayerOf = part -> "".equals(part) ? "" : targetValueOf(part, OASYSRPCMS_LAYER1OBJ);
+    private Function<String, String> deliusRiskFlagOf = part -> "".equals(part) ? "L" : part;
+    private Function<String, String> deliusConcernFlagOf = part -> {
+        String mapped;
+        switch (part) {
+            case "YES":
+                mapped = "YES";
+                break;
+            case "NO":
+                mapped = "NO";
+                break;
+            default:
+                mapped = "DK";
+        }
+        return mapped;
+    };
 
     @Autowired
     public OasysAssessmentUpdateTransformer(MappingRepository mappingRepository) {
         this.mappingRepository = mappingRepository;
     }
 
+    public DeliusRequest deliusAssessmentUpdateOf(NdhAssessmentUpdateSoapEnvelope ndhSoapEnvelope) {
 
-    public DeliusAssessmentUpdateSoapEnvelope deliusAssessmentUpdateOf(NdhAssessmentUpdateSoapEnvelope ndhSoapEnvelope) {
-
-        return DeliusAssessmentUpdateSoapEnvelope.builder()
+        return DeliusRequest.builder()
                 .header(DeliusAssessmentUpdateSoapHeader
                         .builder()
                         .commonHeader(deliusHeaderOf(ndhSoapEnvelope.getBody().getCmsUpdate().getHeader()))
@@ -46,7 +73,7 @@ public class OasysAssessmentUpdateTransformer {
                                 //TODO: May have to guard against NPEs for the following. Will every update have an Assessment??
                                 .oasysAssessmentSummary(deliusOasysAssessmentSummaryOf(ndhSoapEnvelope.getBody().getCmsUpdate().getAssessment()))
                                 .oasysSupervisionPlans(deliusSupervisionPlansOf(ndhSoapEnvelope.getBody().getCmsUpdate()))
-                                .riskType(deliusRiskOf(ndhSoapEnvelope.getBody().getCmsUpdate().getAssessment().getRisk(),ndhSoapEnvelope.getBody().getCmsUpdate().getAssessment()))
+                                .riskType(deliusRiskOf(ndhSoapEnvelope.getBody().getCmsUpdate().getAssessment().getRisk(), ndhSoapEnvelope.getBody().getCmsUpdate().getAssessment()))
                                 .build())
                         .build())
                 .build();
@@ -123,7 +150,6 @@ public class OasysAssessmentUpdateTransformer {
 
     }
 
-
     private OasysAssessmentSummary deliusOasysAssessmentSummaryOf(Assessment ndhAssessment) {
 
         return OasysAssessmentSummary.builder()
@@ -177,8 +203,6 @@ public class OasysAssessmentUpdateTransformer {
                 .orElse(null);
     }
 
-    private Function<String, String> deliusLayerOf = part -> "".equals(part) ? "" : targetValueOf(part, OASYSRPCMS_LAYER1OBJ);
-
     private String deliusRiskFlagsOf(String riskFlags) {
         return Optional.ofNullable(riskFlags)
                 .map(flags -> Arrays
@@ -188,9 +212,6 @@ public class OasysAssessmentUpdateTransformer {
                 .orElse(null);
     }
 
-    private Function<String, String> deliusRiskFlagOf = part -> "".equals(part) ? "L" : part;
-
-
     private String deliusConcernFlagsOf(String concernFlags) {
         return Optional.ofNullable(concernFlags)
                 .map(flags -> Arrays
@@ -199,22 +220,6 @@ public class OasysAssessmentUpdateTransformer {
                         .collect(Collectors.joining(",")))
                 .orElse(null);
     }
-
-    private Function<String, String> deliusConcernFlagOf = part -> {
-        String mapped;
-        switch (part) {
-            case "YES":
-                mapped = "YES";
-                break;
-            case "NO":
-                mapped = "NO";
-                break;
-            default:
-                mapped = "DK";
-        }
-        return mapped;
-    };
-
 
     public MappingRepository getMappingRepository() {
         return mappingRepository;
