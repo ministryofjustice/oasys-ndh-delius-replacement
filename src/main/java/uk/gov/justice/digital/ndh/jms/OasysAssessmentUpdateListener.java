@@ -11,6 +11,7 @@ import uk.gov.justice.digital.ndh.api.delius.request.DeliusRequest;
 import uk.gov.justice.digital.ndh.api.delius.response.DeliusResponse;
 import uk.gov.justice.digital.ndh.api.oasys.request.NdhAssessmentUpdateSoapEnvelope;
 import uk.gov.justice.digital.ndh.service.OasysAssessmentService;
+import uk.gov.justice.digital.ndh.service.transtorms.OasysAssessmentUpdateTransformer;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -23,11 +24,13 @@ import static uk.gov.justice.digital.ndh.config.JmsConfig.OASYS_MESSAGES;
 @Slf4j
 public class OasysAssessmentUpdateListener {
 
+    private final OasysAssessmentUpdateTransformer oasysAssessmentUpdateTransformer;
     private final XmlMapper xmlMapper;
     private final OasysAssessmentService oasysAssessmentService;
 
     @Autowired
-    public OasysAssessmentUpdateListener(XmlMapper xmlMapper, OasysAssessmentService oasysAssessmentService) {
+    public OasysAssessmentUpdateListener(OasysAssessmentUpdateTransformer oasysAssessmentUpdateTransformer, XmlMapper xmlMapper, OasysAssessmentService oasysAssessmentService) {
+        this.oasysAssessmentUpdateTransformer = oasysAssessmentUpdateTransformer;
         this.xmlMapper = xmlMapper;
         this.oasysAssessmentService = oasysAssessmentService;
     }
@@ -37,8 +40,7 @@ public class OasysAssessmentUpdateListener {
     }
 
     private DeliusRequest deliusSoapMessageOf(NdhAssessmentUpdateSoapEnvelope ndhSoapMessage) {
-        //TODO: Insert proper transform here
-        return DeliusRequest.builder().build();
+        return oasysAssessmentUpdateTransformer.deliusAssessmentUpdateOf(ndhSoapMessage);
 
     }
 
