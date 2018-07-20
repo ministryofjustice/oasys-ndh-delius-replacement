@@ -11,7 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 import static io.restassured.RestAssured.given;
@@ -34,9 +33,9 @@ public class OasysAssessmentControllerTest {
     }
 
     @Test
-    public void postedXmlMessageIsHandledAppropriately() throws IOException {
+    public void postedXmlMessageIsHandledAppropriately() {
 
-        final InputStream sampleXmlStream = ClassLoader.getSystemResourceAsStream("xmls/OasysToNDH.xml");
+        final InputStream sampleXmlStream = ClassLoader.getSystemResourceAsStream("xmls/OasysToNDHSoapEnvelope.xml");
 
         given()
                 .when()

@@ -58,17 +58,24 @@ public class OasysAssessmentUpdateListener {
             inputSoapMessage = xmlMapper.readValue(soapXmlFromOasys, NdhAssessmentUpdateSoapEnvelope.class);
         } catch (IOException e) {
             log.error("Can't parse input message. Ignore and continue: {}", e.getMessage());
+            oasysAssessmentService.publishFault(soapXmlFromOasys, null, null);
             return;
         }
 
         DeliusRequest deliusRequest = deliusSoapMessageOf(inputSoapMessage);
 
-        String rawDeliusResponse;
+        String rawDeliusRequest;
         try {
-            rawDeliusResponse = oasysAssessmentService.deliusWebServiceResponseOf(deliusRequest);
+            rawDeliusRequest = xmlMapper.writeValueAsString(deliusRequest);
         } catch (JsonProcessingException e) {
             log.error("Can't serialize request to Delius. Ignore and continue: {}", e.getMessage());
+            oasysAssessmentService.publishFault(soapXmlFromOasys, deliusRequest.toString(), null);
             return;
+        }
+
+        String rawDeliusResponse;
+        try {
+            rawDeliusResponse = oasysAssessmentService.deliusWebServiceResponseOf(rawDeliusRequest);
         } catch (UnirestException e) {
             log.error("No response from Delius: {} Rejecting message {}", e.getMessage(), message);
             throw e;
@@ -78,11 +85,11 @@ public class OasysAssessmentUpdateListener {
         try {
             deliusResponse = xmlMapper.readValue(rawDeliusResponse, DeliusResponse.class);
             if (deliusResponse.isBadResponse()) {
-                oasysAssessmentService.publishFault(soapXmlFromOasys, rawDeliusResponse);
+                oasysAssessmentService.publishFault(soapXmlFromOasys, rawDeliusRequest, rawDeliusResponse);
             }
         } catch (IOException e) {
             log.error("Garbage response from Delius: {}", e.getMessage());
-            oasysAssessmentService.publishFault(soapXmlFromOasys, rawDeliusResponse);
+            oasysAssessmentService.publishFault(soapXmlFromOasys, rawDeliusRequest, rawDeliusResponse);
         }
     }
 }
