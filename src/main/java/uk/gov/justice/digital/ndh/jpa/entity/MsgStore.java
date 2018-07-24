@@ -1,6 +1,9 @@
 package uk.gov.justice.digital.ndh.jpa.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,6 +16,9 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "MSG_STORE")
 @IdClass(MsgStorePK.class)
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class MsgStore {
     @Id
     @Column(name = "MSG_STORE_SEQ")
@@ -40,7 +46,7 @@ public class MsgStore {
     private String payloadZipFlag;
     @Column(name = "PAYLOAD_CONTENT_TYPE")
     private String payloadContentType;
-    @Column(name = "PAYLOAD")
+    @Column(name = "PAYLOAD", length = 10000)
     private String payload;
 
 }

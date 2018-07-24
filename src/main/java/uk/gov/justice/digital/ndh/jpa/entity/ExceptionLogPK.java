@@ -1,47 +1,24 @@
 package uk.gov.justice.digital.ndh.jpa.entity;
 
+import lombok.Data;
+
 import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import java.io.Serializable;
 import java.sql.Timestamp;
-import java.util.Objects;
 
+@Data
 public class ExceptionLogPK implements Serializable {
-    private Integer excSeq;
-    private Timestamp excDatetime;
-
     @Column(name = "EXC_SEQ")
+    @SequenceGenerator(name = "EXC_SEQ", sequenceName = "EXC_SEQ")
+    @GeneratedValue(generator = "EXC_SEQ", strategy = GenerationType.SEQUENCE)
     @Id
-    public Integer getExcSeq() {
-        return excSeq;
-    }
-
-    public void setExcSeq(Integer excSeq) {
-        this.excSeq = excSeq;
-    }
-
+    private Integer excSeq;
     @Column(name = "EXC_DATETIME")
     @Id
-    public Timestamp getExcDatetime() {
-        return excDatetime;
-    }
+    private Timestamp excDatetime;
 
-    public void setExcDatetime(Timestamp excDatetime) {
-        this.excDatetime = excDatetime;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ExceptionLogPK that = (ExceptionLogPK) o;
-        return Objects.equals(excSeq, that.excSeq) &&
-                Objects.equals(excDatetime, that.excDatetime);
-    }
-
-    @Override
-    public int hashCode() {
-
-        return Objects.hash(excSeq, excDatetime);
-    }
 }

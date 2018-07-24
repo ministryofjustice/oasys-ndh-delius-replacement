@@ -27,12 +27,6 @@ public class OasysAssessmentService {
         this.ndeliusUrl = ndeliusUrl;
     }
 
-    public void publishFault(String rawRequestFromOasys, String rawRequestToDelius, String rawResponseFromOasys) {
-        //TODO: Something more useful.
-        log.error("Got a bad thing back from Delius. \nInput from OASys: {} \nMessage to Delius: {}\nResponse from Delius: {}"
-                , rawRequestFromOasys, rawRequestToDelius, rawResponseFromOasys);
-    }
-
     public void publishUpdate(String updateXml) {
         jmsTemplate.convertAndSend(oasysMessagesQueue, updateXml);
     }

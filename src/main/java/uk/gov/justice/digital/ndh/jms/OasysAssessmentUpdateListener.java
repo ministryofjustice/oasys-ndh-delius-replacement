@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.ndh.api.delius.request.DeliusRequest;
 import uk.gov.justice.digital.ndh.api.delius.response.DeliusResponse;
 import uk.gov.justice.digital.ndh.api.oasys.request.NdhAssessmentUpdateSoapEnvelope;
+import uk.gov.justice.digital.ndh.service.ExceptionLogService;
+import uk.gov.justice.digital.ndh.service.MessageStoreService;
 import uk.gov.justice.digital.ndh.service.OasysAssessmentService;
 import uk.gov.justice.digital.ndh.service.transtorms.OasysAssessmentUpdateTransformer;
 
@@ -27,12 +29,16 @@ public class OasysAssessmentUpdateListener {
     private final OasysAssessmentUpdateTransformer oasysAssessmentUpdateTransformer;
     private final XmlMapper xmlMapper;
     private final OasysAssessmentService oasysAssessmentService;
+    private final MessageStoreService messageStoreService;
+    private final ExceptionLogService exceptionLogService;
 
     @Autowired
-    public OasysAssessmentUpdateListener(OasysAssessmentUpdateTransformer oasysAssessmentUpdateTransformer, XmlMapper xmlMapper, OasysAssessmentService oasysAssessmentService) {
+    public OasysAssessmentUpdateListener(OasysAssessmentUpdateTransformer oasysAssessmentUpdateTransformer, XmlMapper xmlMapper, OasysAssessmentService oasysAssessmentService, MessageStoreService messageStoreService, ExceptionLogService exceptionLogService) {
         this.oasysAssessmentUpdateTransformer = oasysAssessmentUpdateTransformer;
         this.xmlMapper = xmlMapper;
         this.oasysAssessmentService = oasysAssessmentService;
+        this.messageStoreService = messageStoreService;
+        this.exceptionLogService = exceptionLogService;
     }
 
     private String readMessage(Message message) throws JMSException {
@@ -55,12 +61,14 @@ public class OasysAssessmentUpdateListener {
             return;
         }
 
+        messageStoreService.writeMessage(soapXmlFromOasys, null, MessageStoreService.ProcStates.GLB_ProcState_InboundBeforeTransformation);
+
         NdhAssessmentUpdateSoapEnvelope inputSoapMessage;
         try {
             inputSoapMessage = xmlMapper.readValue(soapXmlFromOasys, NdhAssessmentUpdateSoapEnvelope.class);
         } catch (IOException e) {
             log.error("Can't parse input message. Ignore and continue: {}", e.getMessage());
-            oasysAssessmentService.publishFault(soapXmlFromOasys, null, null);
+            exceptionLogService.logFault(soapXmlFromOasys, null, "Can't parse input message");
             return;
         }
 
@@ -71,15 +79,18 @@ public class OasysAssessmentUpdateListener {
             rawDeliusRequest = xmlMapper.writeValueAsString(deliusRequest);
         } catch (JsonProcessingException e) {
             log.error("Can't serialize request to Delius. Ignore and continue: {}", e.getMessage());
-            oasysAssessmentService.publishFault(soapXmlFromOasys, deliusRequest.toString(), null);
+            exceptionLogService.logFault(deliusRequest.toString(), deliusRequest.getHeader().getCommonHeader().getMessageId(), "Can't serialize request to Delius");
             return;
         }
+
+        messageStoreService.writeMessage(rawDeliusRequest, deliusRequest.getHeader().getCommonHeader().getMessageId(), MessageStoreService.ProcStates.GLB_ProcState_InboundAfterTransformation);
 
         String rawDeliusResponse;
         try {
             rawDeliusResponse = oasysAssessmentService.deliusWebServiceResponseOf(rawDeliusRequest);
         } catch (UnirestException e) {
             log.error("No response from Delius: {} Rejecting message {}", e.getMessage(), message);
+            exceptionLogService.logFault(soapXmlFromOasys, deliusRequest.getHeader().getCommonHeader().getMessageId(), "No response from Delius");
             throw e;
         }
 
@@ -87,11 +98,12 @@ public class OasysAssessmentUpdateListener {
         try {
             deliusResponse = xmlMapper.readValue(rawDeliusResponse, DeliusResponse.class);
             if (deliusResponse.isBadResponse()) {
-                oasysAssessmentService.publishFault(soapXmlFromOasys, rawDeliusRequest, rawDeliusResponse);
+                log.error("Bad response from Delius: {}", rawDeliusResponse);
+                exceptionLogService.logFault(rawDeliusResponse, deliusRequest.getHeader().getCommonHeader().getMessageId(), "Bad response from Delius");
             }
         } catch (IOException e) {
             log.error("Garbage response from Delius: {}", e.getMessage());
-            oasysAssessmentService.publishFault(soapXmlFromOasys, rawDeliusRequest, rawDeliusResponse);
+            exceptionLogService.logFault(rawDeliusResponse, deliusRequest.getHeader().getCommonHeader().getMessageId(), "Garbage response from Delius");
         }
     }
 }

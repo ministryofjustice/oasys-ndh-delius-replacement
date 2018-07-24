@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
@@ -14,7 +13,6 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.jms.DefaultJmsListenerContainerFactoryConfigurer;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.context.ApplicationListener;
@@ -23,22 +21,13 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 import org.springframework.jms.annotation.EnableJms;
-import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
-import org.springframework.jms.config.JmsListenerContainerFactory;
-
-import javax.jms.ConnectionFactory;
-
-//import org.apache.tomcat.
-
-import javax.xml.stream.XMLOutputFactory;
 
 @SpringBootApplication
 @Slf4j
 @EnableJms
 public class ThatsNotMyNDH {
 
-//    @Autowired
-//    private XMLOutputFactory xmlOutputFactory;
+    public static final String NDH_PROCESS_NAME = "NDH_CMS_Web_Client";
 
     public static void main(String[] args) {
         SpringApplication.run(ThatsNotMyNDH.class, args);
@@ -63,7 +52,8 @@ public class ThatsNotMyNDH {
         return jsonConverter;
     }
 
-    @Bean XmlMapper xmlMapper(MappingJackson2XmlHttpMessageConverter xmlConverter) {
+    @Bean
+    XmlMapper xmlMapper(MappingJackson2XmlHttpMessageConverter xmlConverter) {
         return (XmlMapper) xmlConverter.getObjectMapper();
     }
 
@@ -91,14 +81,14 @@ public class ThatsNotMyNDH {
         };
     }
 
-    @Bean
-    public JmsListenerContainerFactory<?> myFactory(ConnectionFactory connectionFactory,
-                                                    DefaultJmsListenerContainerFactoryConfigurer configurer) {
-        DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
-        // This provides all boot's default to this factory, including the message converter
-        configurer.configure(factory, connectionFactory);
-        // You could still override some of Boot's default if necessary.
-        return factory;
-    }
+//    @Bean
+//    public JmsListenerContainerFactory<?> myFactory(ConnectionFactory connectionFactory,
+//                                                    DefaultJmsListenerContainerFactoryConfigurer configurer) {
+//        DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
+//        // This provides all boot's default to this factory, including the message converter
+//        configurer.configure(factory, connectionFactory);
+//        // You could still override some of Boot's default if necessary.
+//        return factory;
+//    }
 
 }
