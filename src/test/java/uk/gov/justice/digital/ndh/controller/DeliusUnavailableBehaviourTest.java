@@ -38,8 +38,6 @@ public class DeliusUnavailableBehaviourTest {
 
     @LocalServerPort
     int port;
-    public static final String GOOD_RESPONSE_XML = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("__files/GoodDeliusResponse.xml")))
-            .lines().collect(Collectors.joining("\n"));
 
     @Autowired
     private MessageStoreRepository messageStoreRepository;
@@ -78,7 +76,7 @@ public class DeliusUnavailableBehaviourTest {
                 .statusCode(200);
 
         try {
-            Mockito.verify(deliusClient, timeout(10000).atLeast(5)).deliusWebServiceResponseOf(anyString());
+            Mockito.verify(deliusClient, timeout(20000).atLeast(5)).deliusWebServiceResponseOf(anyString());
         } catch (UnirestException e) {
             e.printStackTrace();
         }
