@@ -9,3 +9,5 @@ spring:
     properties:
       hibernate:
         show_sql: true
+
+oasys.assessment.updates.path: Business/Processes/NDH_Web_Service/NDH_Web_Service_CMS_Update

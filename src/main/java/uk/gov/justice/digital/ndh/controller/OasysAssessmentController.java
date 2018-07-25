@@ -21,7 +21,7 @@ public class OasysAssessmentController {
         this.oasysAssessmentService = oasysAssessmentService;
     }
 
-    @RequestMapping(path = "/oasysAssessments", method = RequestMethod.POST, consumes = {"application/xml", "text/xml", "text/plain"})
+    @RequestMapping(path = "/${oasys.assessment.updates.path:oasysAssessments}", method = RequestMethod.POST, consumes = {"application/xml", "text/xml", "text/plain"})
     public ResponseEntity<Void> handleOasysAssessment(@RequestBody String updateXml) {
 
         oasysAssessmentService.publishUpdate(updateXml);
