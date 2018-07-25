@@ -1,7 +1,9 @@
 package uk.gov.justice.digital.ndh.jpa.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,6 +16,8 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "MAPPING_CODE_DATA")
 @IdClass(MappingCodeDataPK.class)
+@AllArgsConstructor
+@NoArgsConstructor
 public class MappingCodeData {
     @Id
     @Column(name = "CODETYPE")

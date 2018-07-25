@@ -35,6 +35,7 @@ public class OasysAssessmentUpdateTransformer {
     private static final long OASYSRCMS_INTERVENTION = 5506L;
     private static final long OASYSRPCMS_COURTTYPE = 5507L;
     private static final long OASYSRPCMS_LAYER1OBJ = 5504L;
+    public static final String VERSION = "1.0";
 
     private final MappingRepository mappingRepository;
     private Function<String, String> deliusLayerOf = part -> "".equals(part) ? "" : targetValueOf(part, OASYSRPCMS_LAYER1OBJ);
@@ -82,9 +83,8 @@ public class OasysAssessmentUpdateTransformer {
     private OasysCommonHeader deliusHeaderOf(Header ndhOasysHeader) {
         return Optional.ofNullable(ndhOasysHeader).map(
                 header -> OasysCommonHeader.builder()
-                        //TODO:
-                        //.messageId(ndhOasysHeader.getXYZ())
-                        // etc
+                        .messageId(ndhOasysHeader.getCorrelationID())
+                        .version(VERSION)
                         .build()
         ).orElse(null);
     }
