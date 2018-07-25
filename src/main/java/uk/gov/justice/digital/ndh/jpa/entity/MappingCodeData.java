@@ -7,6 +7,8 @@ import java.util.Objects;
 
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "MAPPING_CODE_DATA")
 @IdClass(MappingCodeDataPK.class)

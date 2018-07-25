@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 public class OasysAssessmentUpdateTransformer {
 
     private static final String UNMAPPED = "XXXX";
+    private static final String VERSION = "1.0";
     private static final long OASYS_CRMS_CRIM_NEED = 5500L;
     private static final long OASYSRCMS_OBJ_STATUS_CODE = 5501L;
     private static final long OASYSRCMS_INTERVENTION = 5506L;
@@ -82,9 +83,8 @@ public class OasysAssessmentUpdateTransformer {
     private OasysCommonHeader deliusHeaderOf(Header ndhOasysHeader) {
         return Optional.ofNullable(ndhOasysHeader).map(
                 header -> OasysCommonHeader.builder()
-                        //TODO:
-                        //.messageId(ndhOasysHeader.getXYZ())
-                        // etc
+                        .messageId(ndhOasysHeader.getCorrelationID())
+                        .version(VERSION)
                         .build()
         ).orElse(null);
     }
