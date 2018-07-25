@@ -3,6 +3,7 @@ package uk.gov.justice.digital.ndh.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import uk.gov.justice.digital.ndh.jpa.entity.MsgStore;
 import uk.gov.justice.digital.ndh.jpa.repository.MessageStoreRepository;
 
@@ -23,6 +24,7 @@ public class MessageStoreService {
         this.messageStoreRepository = messageStoreRepository;
     }
 
+    @Transactional
     public void writeMessage(String body, String correlationId, ProcStates procState) {
         messageStoreRepository.save(MsgStore
                 .builder()

@@ -1,10 +1,8 @@
 package uk.gov.justice.digital.ndh.service;
 
-import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 
@@ -16,15 +14,15 @@ public class OasysAssessmentService {
 
     private final JmsTemplate jmsTemplate;
     private final Queue oasysMessagesQueue;
-    private final String ndeliusUrl;
+    private final DeliusClient deliusClient;
 
     @Autowired
     public OasysAssessmentService(JmsTemplate jmsTemplate,
                                   Queue oasysMessagesQueue,
-                                  @Value("${ndelius.assessment.update.url}") String ndeliusUrl) {
+                                  DeliusClient deliusClient) {
         this.jmsTemplate = jmsTemplate;
         this.oasysMessagesQueue = oasysMessagesQueue;
-        this.ndeliusUrl = ndeliusUrl;
+        this.deliusClient = deliusClient;
     }
 
     public void publishUpdate(String updateXml) {
@@ -32,8 +30,6 @@ public class OasysAssessmentService {
     }
 
     public String deliusWebServiceResponseOf(String deliusSoapXml) throws UnirestException {
-        return Unirest.post(ndeliusUrl)
-                .body(deliusSoapXml)
-                .asString().getBody();
+        return deliusClient.deliusWebServiceResponseOf(deliusSoapXml);
     }
 }

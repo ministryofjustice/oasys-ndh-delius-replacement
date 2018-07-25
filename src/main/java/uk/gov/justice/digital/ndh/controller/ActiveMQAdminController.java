@@ -26,7 +26,7 @@ public class ActiveMQAdminController {
     @Autowired
     private MBeanServer mBeanServer;
 
-    @RequestMapping(path = "/activemq/queues/{queueName}", method = RequestMethod.GET)
+    @RequestMapping(path = "/activemq/queues/{queueName}", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity<Object> getStatus(@PathVariable("queueName") String queueName) throws MalformedObjectNameException, ReflectionException, IntrospectionException, AttributeNotFoundException, MBeanException {
 
         final ImmutableMap<String, Object> infos;

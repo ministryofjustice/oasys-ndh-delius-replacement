@@ -51,7 +51,10 @@ public class OasysAssessmentUpdateListener {
     }
 
     @JmsListener(destination = OASYS_MESSAGES, concurrency = "1")
-    public void onMessage(Message message) throws UnirestException {
+    public void onMessage(Message message) throws UnirestException, JMSException {
+        log.info("HANDLING MESSAGE {}", message.toString());
+
+        boolean redelivered =  message.getJMSRedelivered();
 
         String soapXmlFromOasys;
         try {
@@ -61,7 +64,9 @@ public class OasysAssessmentUpdateListener {
             return;
         }
 
-        messageStoreService.writeMessage(soapXmlFromOasys, null, MessageStoreService.ProcStates.GLB_ProcState_InboundBeforeTransformation);
+        if (!redelivered) {
+            messageStoreService.writeMessage(soapXmlFromOasys, null, MessageStoreService.ProcStates.GLB_ProcState_InboundBeforeTransformation);
+        }
 
         NdhAssessmentUpdateSoapEnvelope inputSoapMessage;
         try {
@@ -83,14 +88,18 @@ public class OasysAssessmentUpdateListener {
             return;
         }
 
-        messageStoreService.writeMessage(rawDeliusRequest, deliusRequest.getHeader().getCommonHeader().getMessageId(), MessageStoreService.ProcStates.GLB_ProcState_InboundAfterTransformation);
+        if (!redelivered) {
+            messageStoreService.writeMessage(rawDeliusRequest, deliusRequest.getHeader().getCommonHeader().getMessageId(), MessageStoreService.ProcStates.GLB_ProcState_InboundAfterTransformation);
+        }
 
         String rawDeliusResponse;
         try {
             rawDeliusResponse = oasysAssessmentService.deliusWebServiceResponseOf(rawDeliusRequest);
         } catch (UnirestException e) {
             log.error("No response from Delius: {} Rejecting message {}", e.getMessage(), message);
-            exceptionLogService.logFault(soapXmlFromOasys, deliusRequest.getHeader().getCommonHeader().getMessageId(), "No response from Delius");
+            if (!redelivered) {
+                exceptionLogService.logFault(soapXmlFromOasys, deliusRequest.getHeader().getCommonHeader().getMessageId(), "No response from Delius");
+            }
             throw e;
         }
 

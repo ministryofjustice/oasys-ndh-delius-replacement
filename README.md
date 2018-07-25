@@ -51,6 +51,12 @@ http://localhost:8080/api/swagger-ui.html
 curl -X POST http://localhost:8080/oasysExtract
 ```
 
+### Check queue status
+```
+curl http://localhost:8080/activemq/queues/OASYS_MESSAGES
+
+```
+
 ### Application info
 ```
 curl -X GET http://localhost:8080/info

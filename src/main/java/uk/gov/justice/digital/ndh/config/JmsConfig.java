@@ -5,17 +5,24 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.RedeliveryPolicy;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jms.core.JmsTemplate;
 
 import javax.jms.Queue;
+
+import static javax.jms.DeliveryMode.NON_PERSISTENT;
 
 @Configuration
 @Slf4j
 public class JmsConfig implements BeanPostProcessor {
 
     public static final String OASYS_MESSAGES = "OASYS_MESSAGES";
+
+    @Value("${activemq.delivery.mode:2}")
+    private int amqDeliveryMode;
 
     @Bean
     public Queue oasysMessageQueue() {
@@ -35,6 +42,14 @@ public class JmsConfig implements BeanPostProcessor {
             redeliveryPolicy.setMaximumRedeliveries(RedeliveryPolicy.NO_MAXIMUM_REDELIVERIES);
             activeMQConnectionFactory.setRedeliveryPolicy(redeliveryPolicy);
         }
+
+        if (bean instanceof JmsTemplate) {
+            if (amqDeliveryMode == NON_PERSISTENT) {
+                ((JmsTemplate) bean).setExplicitQosEnabled(true);
+                ((JmsTemplate) bean).setDeliveryMode(amqDeliveryMode);
+            }
+        }
+
         return bean;
     }
 }
