@@ -62,10 +62,10 @@ public class DeliusUnavailableBehaviourTest {
     public void messagesAreReplayedWhenDeliusIsUnavailableButOnlyLoggedOnce() {
 
 
-        final String requestXml = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/OasysToNDHSoapEnvelope.xml")))
+        final String requestXml = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/AssessmentUpdates/OasysToNDHSoapEnvelope.xml")))
                 .lines().collect(Collectors.joining("\n"));
 
-        ClassLoader.getSystemResourceAsStream("xmls/OasysToNDHSoapEnvelope.xml");
+        ClassLoader.getSystemResourceAsStream("xmls/AssessmentUpdates/OasysToNDHSoapEnvelope.xml");
 
         given()
                 .when()

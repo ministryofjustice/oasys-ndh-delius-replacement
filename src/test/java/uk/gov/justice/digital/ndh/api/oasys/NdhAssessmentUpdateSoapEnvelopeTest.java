@@ -20,7 +20,7 @@ public class NdhAssessmentUpdateSoapEnvelopeTest {
         xmlMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         final NdhAssessmentUpdateSoapEnvelope ndhAssessmentUpdateSoapEnvelope =
-                xmlMapper.readValue(ClassLoader.getSystemResourceAsStream("xmls/GeneratedSampleFromOasys.xml"), NdhAssessmentUpdateSoapEnvelope.class);
+                xmlMapper.readValue(ClassLoader.getSystemResourceAsStream("xmls/AssessmentUpdates/GeneratedSampleFromOasys.xml"), NdhAssessmentUpdateSoapEnvelope.class);
 
         final List<Objective> objectives = ndhAssessmentUpdateSoapEnvelope.getBody().getCmsUpdate().getObjectives();
         assertThat(objectives).extracting("objectiveDescription").containsExactly("objective1", "objective2");

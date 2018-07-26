@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ris:RiskUpdateRequest xmlns:dom="http://www.hp.com/NDH_Web_Service/DomainTypes"
+                       xmlns:ris="http://www.hp.com/NDH_Web_Service/riskupdaterequest"
+>
+    <ris:header>
+        <dom:ApplicationMode>L</dom:ApplicationMode>
+        <dom:CorrelationID>OASYSRPCN0220180726150731234567</dom:CorrelationID>
+        <dom:OASysRUsername>CN=Tony Gowland/OU=Northumbria/O=NPS</dom:OASysRUsername>
+        <dom:MessageTimestamp>2018-07-26T15:00:31+01:00</dom:MessageTimestamp>
+    </ris:header>
+    <ris:CMSProbNumber>T123456</ris:CMSProbNumber>
+    <ris:Risk>
+        <dom:RiskofHarm>H</dom:RiskofHarm>
+    </ris:Risk>
+    <ris:RiskFlags>L,L,M,L,H,L,M,M,L</ris:RiskFlags>
+</ris:RiskUpdateRequest>
