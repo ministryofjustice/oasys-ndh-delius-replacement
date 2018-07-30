@@ -9,22 +9,33 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.digital.ndh.service.OasysAssessmentService;
+import uk.gov.justice.digital.ndh.service.OasysRiskService;
 
 @RestController
 @Slf4j
 public class OasysAssessmentController {
 
     private final OasysAssessmentService oasysAssessmentService;
+    private final OasysRiskService oasysRiskService;
 
     @Autowired
-    public OasysAssessmentController(OasysAssessmentService oasysAssessmentService) {
+    public OasysAssessmentController(OasysAssessmentService oasysAssessmentService, OasysRiskService oasysRiskService) {
         this.oasysAssessmentService = oasysAssessmentService;
+        this.oasysRiskService = oasysRiskService;
     }
 
     @RequestMapping(path = "/${oasys.assessment.updates.path:oasysAssessments}", method = RequestMethod.POST, consumes = {"application/xml", "text/xml", "text/plain"})
     public ResponseEntity<Void> handleOasysAssessment(@RequestBody String updateXml) {
 
-        oasysAssessmentService.publishUpdate(updateXml);
+        oasysAssessmentService.publishAssessmentUpdate(updateXml);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @RequestMapping(path = "/${oasys.assessment.updates.path:oasysAssessments}", method = RequestMethod.POST, consumes = {"application/xml", "text/xml", "text/plain"})
+    public ResponseEntity<Void> handleOasysRiskUpdate(@RequestBody String updateXml) {
+
+        oasysRiskService.processRiskUpdate(updateXml);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

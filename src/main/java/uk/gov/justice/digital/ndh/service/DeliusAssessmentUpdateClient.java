@@ -7,12 +7,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DeliusClient {
+public class DeliusAssessmentUpdateClient {
 
     private final String ndeliusUrl;
 
     @Autowired
-    public DeliusClient(@Value("${ndelius.assessment.update.url}") String ndeliusUrl) {
+    public DeliusAssessmentUpdateClient(@Value("${ndelius.assessment.update.url}") String ndeliusUrl) {
         this.ndeliusUrl = ndeliusUrl;
     }
 
