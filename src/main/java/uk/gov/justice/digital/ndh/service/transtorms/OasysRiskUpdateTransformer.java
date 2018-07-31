@@ -24,7 +24,7 @@ public class OasysRiskUpdateTransformer {
                         .builder()
                         .header(uk.gov.justice.digital.ndh.api.delius.request.Header
                                 .builder()
-                                .messageId(oasysRiskUpdate.getHeader().getCorrelationId())
+                                .messageId(oasysRiskUpdate.getBody().getRiskUpdateRequest().getHeader().getCorrelationID())
                                 .version(VERSION)
                                 .build())
                         .build())
