@@ -11,7 +11,7 @@ import uk.gov.justice.digital.ndh.api.delius.request.DeliusRiskUpdateSoapEnvelop
 import uk.gov.justice.digital.ndh.api.delius.response.DeliusRiskUpdateResponse;
 import uk.gov.justice.digital.ndh.api.oasys.response.SubmitRiskDataResponseSoapEnvelope;
 import uk.gov.justice.digital.ndh.api.soap.SoapEnvelope;
-import uk.gov.justice.digital.ndh.service.transtorms.OasysRiskUpdateTransformer;
+import uk.gov.justice.digital.ndh.service.transforms.OasysRiskUpdateTransformer;
 
 import java.io.IOException;
 import java.util.Optional;

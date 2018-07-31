@@ -13,7 +13,7 @@ import uk.gov.justice.digital.ndh.api.soap.SoapEnvelope;
 import uk.gov.justice.digital.ndh.service.ExceptionLogService;
 import uk.gov.justice.digital.ndh.service.MessageStoreService;
 import uk.gov.justice.digital.ndh.service.OasysAssessmentService;
-import uk.gov.justice.digital.ndh.service.transtorms.OasysAssessmentUpdateTransformer;
+import uk.gov.justice.digital.ndh.service.transforms.OasysAssessmentUpdateTransformer;
 
 import javax.jms.JMSException;
 import javax.jms.Message;

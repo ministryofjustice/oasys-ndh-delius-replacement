@@ -10,5 +10,5 @@ import lombok.Data;
 @JacksonXmlRootElement(localName = "Envelope", namespace = "http://www.w3.org/2003/05/soap-envelope")
 public class SubmitRiskDataResponseSoapEnvelope {
     @JacksonXmlProperty(localName = "Body", namespace = "http://www.w3.org/2003/05/soap-envelope")
-    private SubmitRiskDataResponse body;
+    private SubmitRiskDataResponseSoapBody body;
 }
