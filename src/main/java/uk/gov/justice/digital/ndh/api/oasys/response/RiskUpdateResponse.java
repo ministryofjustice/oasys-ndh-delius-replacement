@@ -7,8 +7,8 @@ import uk.gov.justice.digital.ndh.api.oasys.request.Header;
 
 @Data
 @Builder
-public class SubmitRiskDataResponse {
-    @JacksonXmlProperty(namespace = "http://www.hp.com/NDH_Web_Service/DomainTypes")
+public class RiskUpdateResponse {
+    @JacksonXmlProperty(namespace = "http://www.hp.com/NDH_Web_Service/riskupdateresponse")
     private Header header;
     @JacksonXmlProperty(localName = "CaseReferenceNumber", namespace = "http://www.hp.com/NDH_Web_Service/riskupdateresponse")
     private String caseReferenceNumber;

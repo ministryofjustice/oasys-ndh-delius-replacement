@@ -7,6 +7,6 @@ import lombok.Data;
 @Data
 @Builder
 public class SubmitRiskDataResponseSoapBody {
-    @JacksonXmlProperty(localName = "SubmitRiskDataResponse", namespace = "http://www.bconline.co.uk/oasys/messages")
-    private SubmitRiskDataResponse response;
+    @JacksonXmlProperty(localName = "RiskUpdateResponse", namespace = "http://www.hp.com/NDH_Web_Service/riskupdateresponse")
+    private RiskUpdateResponse response;
 }

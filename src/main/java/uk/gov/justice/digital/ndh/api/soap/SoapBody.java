@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import uk.gov.justice.digital.ndh.api.oasys.request.CmsUpdate;
 import uk.gov.justice.digital.ndh.api.oasys.request.SubmitRiskDataRequest;
-import uk.gov.justice.digital.ndh.api.oasys.response.SubmitRiskDataResponse;
+import uk.gov.justice.digital.ndh.api.oasys.response.RiskUpdateResponse;
 
 @Data
 @Builder
@@ -14,7 +14,7 @@ public class SoapBody {
     private SubmitRiskDataRequest riskUpdateRequest;
 
     @JsonProperty("RiskUpdateResponse")
-    private SubmitRiskDataResponse riskUpdateResponse;
+    private RiskUpdateResponse riskUpdateResponse;
 
     @JsonProperty("CMSUpdate")
     private CmsUpdate cmsUpdate;

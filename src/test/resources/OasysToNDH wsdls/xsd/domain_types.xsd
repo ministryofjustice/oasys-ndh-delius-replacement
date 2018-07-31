@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.hp.com/NDH_Web_Service/DomainTypes"
+           targetNamespace="http://www.hp.com/NDH_Web_Service/DomainTypes" elementFormDefault="qualified"
+           attributeFormDefault="unqualified">
+
+    <xs:complexType name="Header">
+        <xs:sequence>
+            <xs:element name="ApplicationMode" type="xs:string"/>
+            <xs:element name="CorrelationID" type="xs:string"/>
+            <xs:element name="OASysRUsername" type="xs:string"/>
+            <xs:element name="MessageTimestamp" type="xs:dateTime"/>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>

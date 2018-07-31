@@ -4,10 +4,10 @@ import org.springframework.stereotype.Service;
 import uk.gov.justice.digital.ndh.api.delius.request.DeliusRiskUpdateSoapBody;
 import uk.gov.justice.digital.ndh.api.delius.request.DeliusRiskUpdateSoapEnvelope;
 import uk.gov.justice.digital.ndh.api.delius.request.DeliusRiskUpdateSoapHeader;
-import uk.gov.justice.digital.ndh.api.delius.request.Risk;
+import uk.gov.justice.digital.ndh.api.delius.request.RiskType;
 import uk.gov.justice.digital.ndh.api.delius.request.SubmitRiskDataRequest;
 import uk.gov.justice.digital.ndh.api.delius.response.DeliusRiskUpdateResponse;
-import uk.gov.justice.digital.ndh.api.oasys.response.SubmitRiskDataResponse;
+import uk.gov.justice.digital.ndh.api.oasys.response.RiskUpdateResponse;
 import uk.gov.justice.digital.ndh.api.oasys.response.SubmitRiskDataResponseSoapBody;
 import uk.gov.justice.digital.ndh.api.oasys.response.SubmitRiskDataResponseSoapEnvelope;
 import uk.gov.justice.digital.ndh.api.soap.SoapEnvelope;
@@ -33,7 +33,7 @@ public class OasysRiskUpdateTransformer {
                         .builder()
                         .submitRiskDataRequest(SubmitRiskDataRequest
                                 .builder()
-                                .risk(Risk
+                                .risk(RiskType
                                         .builder()
                                         .riskOfHarm(oasysRiskUpdate.getBody().getRiskUpdateRequest().getRisk().getRiskofHarm())
                                         .caseReferenceNumber(oasysRiskUpdate.getBody().getRiskUpdateRequest().getCmsProbNumber())
@@ -48,7 +48,7 @@ public class OasysRiskUpdateTransformer {
                 .builder()
                 .body(SubmitRiskDataResponseSoapBody
                         .builder()
-                        .response(SubmitRiskDataResponse
+                        .response(RiskUpdateResponse
                                 .builder()
                                 .caseReferenceNumber(deliusRiskUpdateResponse.getCaseReferenceNumber().orElse(null))
                                 .header(maybeOasysRiskUpdate.map(soapEnvelope -> soapEnvelope.getBody().getRiskUpdateRequest().getHeader()).orElse(null))
