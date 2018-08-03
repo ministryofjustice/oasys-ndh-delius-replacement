@@ -66,8 +66,6 @@ public class DeliusUnavailableBehaviourTest {
         final String requestXml = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/AssessmentUpdates/OasysToNDHSoapEnvelope.xml")))
                 .lines().collect(Collectors.joining("\n"));
 
-        ClassLoader.getSystemResourceAsStream("xmls/AssessmentUpdates/OasysToNDHSoapEnvelope.xml");
-
         given()
                 .when()
                 .contentType(ContentType.XML)

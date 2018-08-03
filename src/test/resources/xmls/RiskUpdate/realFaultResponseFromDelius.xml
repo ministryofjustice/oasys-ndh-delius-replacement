@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<S:Envelope xmlns:S="http://www.w3.org/2003/05/soap-envelope">
+    <S:Body>
+        <S:Fault>
+            <S:Code>
+                <S:Value>S:Receiver</S:Value>
+            </S:Code>
+            <S:Reason>
+                <S:Text xml:lang="en">Input Data Failed XML Schema Validation</S:Text>
+            </S:Reason>
+            <S:Detail>
+                <ns3:ValidationFailureException
+                        xmlns:ns3="http://www.bconline.co.uk/oasys/fault">
+                    <ns3:Code>OASYSERR003</ns3:Code>
+                    <ns3:Description>Input Data Failed XML Schema Validation</ns3:Description>
+                    <ns3:Timestamp>2018-08-01T12:06:26.075+01:00</ns3:Timestamp>
+                    <ns3:RequestMessage>&lt;soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope"
+                        xmlns:com="http://www.bconline.co.uk/oasys/common"
+                        xmlns:mes="http://www.bconline.co.uk/oasys/messages"
+                        xmlns:risk="http://www.bconline.co.uk/oasys/risk">&lt;soap:Header>&lt;com:Header> &lt;com:Version>?&lt;/com:Version>
+                        &lt;com:MessageID>?&lt;/com:MessageID> &lt;/com:Header>&lt;/soap:Header>&lt;soap:Body> &lt;mes:SubmitRiskDataRequest>
+                        &lt;risk:RiskType> &lt;risk:CaseReferenceNumber>?&lt;/risk:CaseReferenceNumber> &lt;risk:RiskOfHarm>?&lt;/risk:RiskOfHarm>
+                        &lt;/risk:RiskType> &lt;/mes:SubmitRiskDataRequest> &lt;/soap:Body>&lt;/soap:Envelope>
+                    </ns3:RequestMessage>
+                </ns3:ValidationFailureException>
+            </S:Detail>
+        </S:Fault>
+    </S:Body>
+</S:Envelope>

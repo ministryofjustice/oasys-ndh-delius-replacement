@@ -4,9 +4,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import org.assertj.core.api.Java6Assertions;
+import org.dom4j.DocumentException;
 import org.junit.Test;
+import org.xml.sax.SAXException;
+import org.xmlunit.builder.DiffBuilder;
 import org.xmlunit.builder.Input;
+import org.xmlunit.diff.Diff;
 import org.xmlunit.validation.Languages;
 import org.xmlunit.validation.ValidationResult;
 import org.xmlunit.validation.Validator;
@@ -24,8 +27,14 @@ import uk.gov.justice.digital.ndh.api.soap.SoapBody;
 import uk.gov.justice.digital.ndh.api.soap.SoapEnvelope;
 import uk.gov.justice.digital.ndh.api.soap.SoapHeader;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathExpressionException;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,7 +47,7 @@ public class OasysRiskUpdateTransformerTest {
 
         final SoapEnvelope oasysRequest = anOasysRiskUpdate();
 
-        OasysRiskUpdateTransformer transformer = new OasysRiskUpdateTransformer();
+        OasysRiskUpdateTransformer transformer = new OasysRiskUpdateTransformer(new XmlMapper());
 
         DeliusRiskUpdateSoapEnvelope expected = DeliusRiskUpdateSoapEnvelope
                 .builder()
@@ -113,7 +122,7 @@ public class OasysRiskUpdateTransformerTest {
                 .body(root)
                 .build();
 
-        OasysRiskUpdateTransformer transformer = new OasysRiskUpdateTransformer();
+        OasysRiskUpdateTransformer transformer = new OasysRiskUpdateTransformer(new XmlMapper());
 
         SubmitRiskDataResponseSoapEnvelope expected = anOasysRiskUpdateResponse();
 
@@ -147,7 +156,7 @@ public class OasysRiskUpdateTransformerTest {
 
         final XmlMapper xmlMapper = new XmlMapper();
 
-        OasysRiskUpdateTransformer transformer = new OasysRiskUpdateTransformer();
+        OasysRiskUpdateTransformer transformer = new OasysRiskUpdateTransformer(xmlMapper);
 
         final DeliusRiskUpdateSoapEnvelope builtMessage = transformer.deliusRiskUpdateRequestOf(anOasysRiskUpdate());
 
@@ -162,7 +171,7 @@ public class OasysRiskUpdateTransformerTest {
 
         ValidationResult result = v.validateInstance(Input.fromString(serialized).build());
 
-        Java6Assertions.assertThat(result.isValid()).isTrue();
+        assertThat(result.isValid()).isTrue();
 
     }
 
@@ -182,8 +191,53 @@ public class OasysRiskUpdateTransformerTest {
 
         ValidationResult result = v.validateInstance(Input.fromString(serialized).build());
 
-        Java6Assertions.assertThat(result.isValid()).isTrue();
-
+        assertThat(result.isValid()).isTrue();
     }
+
+
+    @Test
+    public void faultResponseIsTransformedCorrectly() throws ParserConfigurationException, SAXException, XPathExpressionException, IOException, DocumentException {
+        final SoapEnvelope oasysRequest = anOasysRiskUpdate();
+
+        final String deliusFaultResponseXml = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/RiskUpdate/realFaultResponseFromDelius.xml")))
+                .lines().collect(Collectors.joining("\n"));
+
+        OasysRiskUpdateTransformer transformer = new OasysRiskUpdateTransformer(new XmlMapper());
+
+        final String actual = transformer.oasysFaultResponseOf(deliusFaultResponseXml, aCorrelationId());
+
+        final String expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<S:Envelope\n" +
+                "\txmlns:S=\"http://www.w3.org/2003/05/soap-envelope\">\n" +
+                "\t<S:Body>\n" +
+                "\t\t<S:Fault>\n" +
+                "\t\t\t<S:Code>\n" +
+                "\t\t\t\t<S:Value>S:NDH</S:Value>\n" +
+                "\t\t\t</S:Code>\n" +
+                "\t\t\t<S:Reason>\n" +
+                "\t\t\t\t<S:Text xml:lang=\"en\">S:PCMS Web Service has returned an error</S:Text>\n" +
+                "\t\t\t</S:Reason>\n" +
+                "\t\t\t<S:Detail>\n" +
+                "\t\t\t\t<ndh:ValidationFailureException\n" +
+                "\t\t\t\t\txmlns:ndh=\"http://www.hp.com/NDH_Web_Service/Fault\">\n" +
+                "\t\t\t\t\t<ndh:Code>OASYSERR003</ndh:Code>\n" +
+                "\t\t\t\t\t<ndh:Description>Input Data Failed XML Schema Validation</ndh:Description>\n" +
+                "\t\t\t\t\t<ndh:Timestamp>2018-08-01T12:06:26.075+01:00</ndh:Timestamp>\n" +
+                "\t\t\t\t\t<ndh:RequestMessage>1234567890123456789012345678901</ndh:RequestMessage>\n" +
+                "\t\t\t\t</ndh:ValidationFailureException>\n" +
+                "\t\t\t</S:Detail>\n" +
+                "\t\t</S:Fault>\n" +
+                "\t</S:Body>\n" +
+                "</S:Envelope>";
+
+
+        Diff myDiff = DiffBuilder.compare(Input.fromString(expected)).withTest(Input.fromString(actual))
+                .checkForIdentical()
+                .ignoreWhitespace()
+                .build();
+
+        assertThat(myDiff.hasDifferences()).isFalse();
+    }
+
 
 }

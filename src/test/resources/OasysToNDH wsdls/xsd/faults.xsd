@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns2="http://www.hp.com/NDH_Web_Service/Fault" xmlns="http://www.hp.com/NDH_Web_Service/Fault" targetNamespace="http://www.hp.com/NDH_Web_Service/Fault" elementFormDefault="qualified" attributeFormDefault="unqualified">
+    <xs:complexType name="ErrorType">
+        <xs:sequence>
+            <xs:element name="Code" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>A unique code identifying the type of this fault.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Description" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>Containing specific details for an error, e.g. - 'Offender with CRN 1234567' could not be found'.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Timestamp" type="xs:dateTime"/>
+            <xs:element name="RequestMessage" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>The contents of the SOAP request body that caused this fault</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:element name="AuthorisationFailureException" type="ns2:ErrorType">
+        <xs:annotation>
+            <xs:documentation>Used to indicate that the client is not authorised to access the requested service.</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="BusinessException" type="ns2:ErrorType">
+        <xs:annotation>
+            <xs:documentation>Used to indicate that a business error occured that prevented the request from being fulfilled, e.g. -' Offender with CRN 1234567' could not be found'.</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="Fault">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="ns2:AuthorisationFailureException" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation>Used to indicate that the client is not authorised to access the requested service.</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element ref="ns2:BusinessException" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation>Used to indicate that a business error occured that prevented the request from being fulfilled, e.g. -' Offender with CRN 1234567' could not be found'.</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element ref="ns2:ServerRuntimeException" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation>Used to indicate that an unexpected problem occurred during server side processing that has prevented the request from being fulfilled, e.g.-  database constraint violation when attemping to persist new data from IAPS or eOASys.</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element ref="ns2:ValidationFailureException" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation>Used to indicate that the incoming request is not valid according to the schema.</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="ServerRuntimeException" type="ns2:ErrorType">
+        <xs:annotation>
+            <xs:documentation>Used to indicate that an unexpected problem occurred during server side processing that has prevented the request from being fulfilled, e.g.-  database constraint violation when attemping to persist new data from IAPS or eOASys.</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="ValidationFailureException" type="ns2:ErrorType">
+        <xs:annotation>
+            <xs:documentation>Used to indicate that the incoming request is not valid according to the schema.</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+</xs:schema>

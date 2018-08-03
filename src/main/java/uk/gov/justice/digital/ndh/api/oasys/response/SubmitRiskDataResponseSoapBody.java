@@ -9,4 +9,5 @@ import lombok.Data;
 public class SubmitRiskDataResponseSoapBody {
     @JacksonXmlProperty(localName = "RiskUpdateResponse", namespace = "http://www.hp.com/NDH_Web_Service/riskupdateresponse")
     private RiskUpdateResponse response;
+
 }

@@ -5,11 +5,11 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.dom4j.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.digital.ndh.api.delius.request.DeliusRiskUpdateSoapEnvelope;
 import uk.gov.justice.digital.ndh.api.delius.response.DeliusRiskUpdateResponse;
-import uk.gov.justice.digital.ndh.api.oasys.response.SubmitRiskDataResponseSoapEnvelope;
 import uk.gov.justice.digital.ndh.api.soap.SoapEnvelope;
 import uk.gov.justice.digital.ndh.service.transforms.OasysRiskUpdateTransformer;
 
@@ -50,20 +50,17 @@ public class OasysRiskService {
 
         val maybeResponse = deliusRiskUpdateResponseOf(maybeRawResponse, correlationId);
 
-        val maybeTransformedResponse = maybeResponse.map(response -> oasysRiskUpdateTransformer.oasysRiskUpdateResponseOf(response, maybeOasysRiskUpdate));
-
-        return transformedReponseXmlOf(maybeTransformedResponse, correlationId);
-
-    }
-
-    private Optional<String> transformedReponseXmlOf(Optional<SubmitRiskDataResponseSoapEnvelope> maybeTransformedResponse, String correlationId) {
-        return maybeTransformedResponse.flatMap(transformedResponse -> {
+        return maybeResponse.flatMap(response -> {
             try {
-                return Optional.of(xmlMapper.writeValueAsString(transformedResponse));
+                return Optional.of(oasysRiskUpdateTransformer.stringResponseOf(response, maybeOasysRiskUpdate, maybeRawResponse));
+            } catch (DocumentException e) {
+                log.error(e.getMessage());
+                exceptionLogService.logFault(response.toString(), correlationId, "Can't transform fault response: " + e.getMessage());
+                throw new RuntimeException(e);
             } catch (JsonProcessingException e) {
                 log.error(e.getMessage());
-                exceptionLogService.logFault(transformedResponse.toString(), correlationId, "Can't serialize transformed risk update response: " + e.getMessage());
-                return Optional.empty();
+                exceptionLogService.logFault(response.toString(), correlationId, "Can't serialize transformed risk update response: " + e.getMessage());
+                throw new RuntimeException(e);
             }
         });
     }
