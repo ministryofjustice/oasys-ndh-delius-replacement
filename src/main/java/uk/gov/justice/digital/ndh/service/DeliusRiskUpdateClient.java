@@ -10,14 +10,21 @@ import org.springframework.stereotype.Component;
 public class DeliusRiskUpdateClient {
 
     private final String ndeliusUrl;
+    private final String ndeliusUser;
+    private final String ndeliusPassword;
 
     @Autowired
-    public DeliusRiskUpdateClient(@Value("${ndelius.risk.update.url}") String ndeliusUrl) {
+    public DeliusRiskUpdateClient(@Value("${ndelius.risk.update.url}") String ndeliusUrl,
+                                  @Value("${ndelius.webservice.user:nouser}") String ndeliusUser,
+                                  @Value("${ndelius.webservice.password:nopassword}") String ndeliusPassword) {
         this.ndeliusUrl = ndeliusUrl;
+        this.ndeliusUser = ndeliusUser;
+        this.ndeliusPassword = ndeliusPassword;
     }
 
     public String deliusWebServiceResponseOf(String deliusSoapXml) throws UnirestException {
         return Unirest.post(ndeliusUrl)
+                .basicAuth(ndeliusUser, ndeliusPassword)
                 .body(deliusSoapXml)
                 .asString().getBody();
     }
