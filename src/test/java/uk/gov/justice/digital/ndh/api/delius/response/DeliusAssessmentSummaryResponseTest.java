@@ -9,7 +9,7 @@ import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class DeliusResponseTest {
+public class DeliusAssessmentSummaryResponseTest {
 
     @Test
     public void canCorrectlyIdentifyASoapFault() throws IOException {
@@ -29,7 +29,7 @@ public class DeliusResponseTest {
         XmlMapper xmlMapper = new XmlMapper();
         xmlMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-        final DeliusResponse deliusResponse = xmlMapper.readValue(faulty, DeliusResponse.class);
+        final DeliusAssessmentSummaryResponse deliusResponse = xmlMapper.readValue(faulty, DeliusAssessmentSummaryResponse.class);
 
         final JsonNode fault = deliusResponse.getBody().path("Fault");
 
@@ -46,7 +46,7 @@ public class DeliusResponseTest {
         XmlMapper xmlMapper = new XmlMapper();
         xmlMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-        final DeliusResponse deliusResponse = xmlMapper.readValue(faulty, DeliusResponse.class);
+        final DeliusAssessmentSummaryResponse deliusResponse = xmlMapper.readValue(faulty, DeliusAssessmentSummaryResponse.class);
 
         final JsonNode isItFine = deliusResponse.getBody().path("IsItFine");
 

@@ -16,7 +16,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.justice.digital.ndh.jpa.repository.ExceptionLogRepository;
 import uk.gov.justice.digital.ndh.jpa.repository.MessageStoreRepository;
-import uk.gov.justice.digital.ndh.service.DeliusClient;
+import uk.gov.justice.digital.ndh.service.DeliusAssessmentUpdateClient;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -31,7 +31,8 @@ import static org.mockito.Mockito.timeout;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
         "spring.jmx.enabled=true",
-        "ndelius.assessment.update.url=http://localhost:8090/delius/assessmentUpdates"})
+        "ndelius.assessment.update.url=http://localhost:8090/delius/assessmentUpdates",
+        "ndelius.risk.update.url=http://localhost:8090/delius/riskUpdates"})
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext
 public class DeliusUnavailableBehaviourTest {
@@ -45,12 +46,12 @@ public class DeliusUnavailableBehaviourTest {
     private ExceptionLogRepository exceptionLogRepository;
 
     @MockBean
-    private DeliusClient deliusClient;
+    private DeliusAssessmentUpdateClient deliusAssessmentUpdateClient;
 
     @Before
     public void setup() throws UnirestException {
         RestAssured.port = port;
-        Mockito.when(deliusClient.deliusWebServiceResponseOf(any(String.class))).thenThrow(new UnirestException("unreachable"));
+        Mockito.when(deliusAssessmentUpdateClient.deliusWebServiceResponseOf(any(String.class))).thenThrow(new UnirestException("unreachable"));
     }
 
     @After
@@ -62,10 +63,8 @@ public class DeliusUnavailableBehaviourTest {
     public void messagesAreReplayedWhenDeliusIsUnavailableButOnlyLoggedOnce() {
 
 
-        final String requestXml = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/OasysToNDHSoapEnvelope.xml")))
+        final String requestXml = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/AssessmentUpdates/OasysToNDHSoapEnvelope.xml")))
                 .lines().collect(Collectors.joining("\n"));
-
-        ClassLoader.getSystemResourceAsStream("xmls/OasysToNDHSoapEnvelope.xml");
 
         given()
                 .when()
@@ -76,7 +75,7 @@ public class DeliusUnavailableBehaviourTest {
                 .statusCode(200);
 
         try {
-            Mockito.verify(deliusClient, timeout(20000).atLeast(5)).deliusWebServiceResponseOf(anyString());
+            Mockito.verify(deliusAssessmentUpdateClient, timeout(20000).atLeast(5)).deliusWebServiceResponseOf(anyString());
         } catch (UnirestException e) {
             e.printStackTrace();
         }

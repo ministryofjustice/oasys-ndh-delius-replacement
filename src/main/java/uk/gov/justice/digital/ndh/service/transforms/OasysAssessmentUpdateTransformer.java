@@ -1,10 +1,10 @@
-package uk.gov.justice.digital.ndh.service.transtorms;
+package uk.gov.justice.digital.ndh.service.transforms;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.ndh.api.delius.request.DeliusAssessmentUpdateSoapBody;
+import uk.gov.justice.digital.ndh.api.delius.request.DeliusAssessmentUpdateSoapEnvelope;
 import uk.gov.justice.digital.ndh.api.delius.request.DeliusAssessmentUpdateSoapHeader;
-import uk.gov.justice.digital.ndh.api.delius.request.DeliusRequest;
 import uk.gov.justice.digital.ndh.api.delius.request.OasysAssessmentSummary;
 import uk.gov.justice.digital.ndh.api.delius.request.OasysCommonHeader;
 import uk.gov.justice.digital.ndh.api.delius.request.OasysSupervisionPlan;
@@ -13,9 +13,9 @@ import uk.gov.justice.digital.ndh.api.delius.request.SubmitAssessmentSummaryRequ
 import uk.gov.justice.digital.ndh.api.oasys.request.Assessment;
 import uk.gov.justice.digital.ndh.api.oasys.request.CmsUpdate;
 import uk.gov.justice.digital.ndh.api.oasys.request.Header;
-import uk.gov.justice.digital.ndh.api.oasys.request.NdhAssessmentUpdateSoapEnvelope;
 import uk.gov.justice.digital.ndh.api.oasys.request.Objective;
 import uk.gov.justice.digital.ndh.api.oasys.request.Risk;
+import uk.gov.justice.digital.ndh.api.soap.SoapEnvelope;
 import uk.gov.justice.digital.ndh.jpa.entity.MappingCodeData;
 import uk.gov.justice.digital.ndh.jpa.entity.MappingCodeDataPK;
 import uk.gov.justice.digital.ndh.jpa.repository.MappingRepository;
@@ -29,14 +29,13 @@ import java.util.stream.Collectors;
 @Component
 public class OasysAssessmentUpdateTransformer {
 
+    public static final String VERSION = "1.0";
     private static final String UNMAPPED = "XXXX";
     private static final long OASYS_CRMS_CRIM_NEED = 5500L;
     private static final long OASYSRCMS_OBJ_STATUS_CODE = 5501L;
     private static final long OASYSRCMS_INTERVENTION = 5506L;
     private static final long OASYSRPCMS_COURTTYPE = 5507L;
     private static final long OASYSRPCMS_LAYER1OBJ = 5504L;
-    public static final String VERSION = "1.0";
-
     private final MappingRepository mappingRepository;
     private Function<String, String> deliusLayerOf = part -> "".equals(part) ? "" : targetValueOf(part, OASYSRPCMS_LAYER1OBJ);
     private Function<String, String> deliusRiskFlagOf = part -> "".equals(part) ? "L" : part;
@@ -60,9 +59,9 @@ public class OasysAssessmentUpdateTransformer {
         this.mappingRepository = mappingRepository;
     }
 
-    public DeliusRequest deliusAssessmentUpdateOf(NdhAssessmentUpdateSoapEnvelope ndhSoapEnvelope) {
+    public DeliusAssessmentUpdateSoapEnvelope deliusAssessmentUpdateOf(SoapEnvelope ndhSoapEnvelope) {
 
-        return DeliusRequest.builder()
+        return DeliusAssessmentUpdateSoapEnvelope.builder()
                 .header(DeliusAssessmentUpdateSoapHeader
                         .builder()
                         .commonHeader(deliusHeaderOf(ndhSoapEnvelope.getBody().getCmsUpdate().getHeader()))
@@ -221,7 +220,7 @@ public class OasysAssessmentUpdateTransformer {
                 .orElse(null);
     }
 
-    private String limitLength (String s, int i) {
+    private String limitLength(String s, int i) {
         return s.substring(0, Math.min(s.length(), i));
     }
 

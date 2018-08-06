@@ -28,7 +28,7 @@ SPRING_PROFILES_ACTIVE=dev java -jar build/libs/new-nomis-api.jar
 
 ### Start the application with Nomis Oracle db
 ```
-SPRING_PROFILES_ACTIVE=oracle SPRING_DATASOURCE_URL=jdbc:oracle:thin:@<VM Oracle IP address>:1521:<sid> java -jar build/libs/new-nomis-api.jar
+SPRING_PROFILES_ACTIVE=oracle SPRING_DATASOURCE_URL=jdbc:oracle:thin:@<VM Oracle IP address>:1521:<sid> SPRING_DATASOURCE_USERNAME=myuser SPRING_DATASOURCE_PASSWORD=mypassword -jar build/libs/new-nomis-api.jar
 ```
 
 ### Additional configuration

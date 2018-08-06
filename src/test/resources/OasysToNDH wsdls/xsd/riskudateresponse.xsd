@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:dt="http://www.hp.com/NDH_Web_Service/DomainTypes" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.hp.com/NDH_Web_Service/riskupdateresponse" targetNamespace="http://www.hp.com/NDH_Web_Service/riskupdateresponse" elementFormDefault="qualified" attributeFormDefault="unqualified">
+    <xs:import namespace="http://www.hp.com/NDH_Web_Service/DomainTypes"/>
+    <xs:element name="RiskUpdateResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="header" type="dt:Header"/>
+                <xs:element name="CaseReferenceNumber" type="xs:string">
+                    <xs:annotation>
+                        <xs:appinfo>Offender.CRN</xs:appinfo>
+                    </xs:annotation>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

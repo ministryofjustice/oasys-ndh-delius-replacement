@@ -14,22 +14,22 @@ public class OasysAssessmentService {
 
     private final JmsTemplate jmsTemplate;
     private final Queue oasysMessagesQueue;
-    private final DeliusClient deliusClient;
+    private final DeliusAssessmentUpdateClient deliusAssessmentUpdateClient;
 
     @Autowired
     public OasysAssessmentService(JmsTemplate jmsTemplate,
                                   Queue oasysMessagesQueue,
-                                  DeliusClient deliusClient) {
+                                  DeliusAssessmentUpdateClient deliusAssessmentUpdateClient) {
         this.jmsTemplate = jmsTemplate;
         this.oasysMessagesQueue = oasysMessagesQueue;
-        this.deliusClient = deliusClient;
+        this.deliusAssessmentUpdateClient = deliusAssessmentUpdateClient;
     }
 
-    public void publishUpdate(String updateXml) {
+    public void publishAssessmentUpdate(String updateXml) {
         jmsTemplate.convertAndSend(oasysMessagesQueue, updateXml);
     }
 
     public String deliusWebServiceResponseOf(String deliusSoapXml) throws UnirestException {
-        return deliusClient.deliusWebServiceResponseOf(deliusSoapXml);
+        return deliusAssessmentUpdateClient.deliusWebServiceResponseOf(deliusSoapXml);
     }
 }

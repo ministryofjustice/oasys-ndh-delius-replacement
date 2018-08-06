@@ -7,7 +7,6 @@ import lombok.Data;
 @Data
 @Builder
 public class Risk {
-    //           <xs:element name="RiskofHarm" type="dt:ElementCode"/>
     @JsonProperty("RiskofHarm")
     private String RiskofHarm;
 }

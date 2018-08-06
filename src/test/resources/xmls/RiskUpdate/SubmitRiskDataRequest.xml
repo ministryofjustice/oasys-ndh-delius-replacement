@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:SubmitRiskDataRequest xmlns:ns0="http://www.bconline.co.uk/oasys/messages">
+    <ns1:RiskType xmlns:ns1="http://www.bconline.co.uk/oasys/risk">
+        <ns1:CaseReferenceNumber>T123456</ns1:CaseReferenceNumber>
+        <ns1:RiskOfHarm>L,L,M,L,H,L,M,M,L</ns1:RiskOfHarm>
+    </ns1:RiskType>
+</ns0:SubmitRiskDataRequest>

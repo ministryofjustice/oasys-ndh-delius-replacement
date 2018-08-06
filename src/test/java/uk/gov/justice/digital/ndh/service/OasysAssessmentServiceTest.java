@@ -19,13 +19,13 @@ public class OasysAssessmentServiceTest {
     public void canPostMessageToJmsQueue() throws JsonProcessingException {
         final JmsTemplate mockTemplate = mock(JmsTemplate.class);
         final Queue mockQueue = mock(Queue.class);
-        final DeliusClient mockDeliusClient = mock(DeliusClient.class);
+        final DeliusAssessmentUpdateClient mockDeliusAssessmentUpdateClient = mock(DeliusAssessmentUpdateClient.class);
 
-        OasysAssessmentService service = new OasysAssessmentService(mockTemplate, mockQueue, mockDeliusClient);
+        OasysAssessmentService service = new OasysAssessmentService(mockTemplate, mockQueue, mockDeliusAssessmentUpdateClient);
         CmsUpdate update = CmsUpdate.builder().build();
 
         final String updateXml = xmlMapper.writeValueAsString(update);
-        service.publishUpdate(updateXml);
+        service.publishAssessmentUpdate(updateXml);
 
         verify(mockTemplate).convertAndSend(mockQueue, updateXml);
     }

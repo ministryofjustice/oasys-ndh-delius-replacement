@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://www.w3.org/2003/05/soap-envelope">
+    <SOAP-ENV:Body>
+        <SOAP-ENV:Fault>
+            <SOAP-ENV:Code>
+                <SOAP-ENV:Value>SOAP-ENV:NDH</SOAP-ENV:Value>
+            </SOAP-ENV:Code>
+            <SOAP-ENV:Reason>
+                <SOAP-ENV:Text xml:lang="en-US">PCMS Web Service has returned an error</SOAP-ENV:Text>
+            </SOAP-ENV:Reason>
+            <SOAP-ENV:Node/>
+            <SOAP-ENV:Role/>
+            <SOAP-ENV:Detail>
+                <ns:Fault
+                        xmlns:ns="http://www.hp.com/NDH_Web_Service/Fault">
+                    <ns:BusinessException>
+                        <ns:Code>OASYSERR005</ns:Code>
+                        <ns:Description>Business Exception thrown by SubmitRiskData business interaction. Additional
+                            Information: OIERR001 : No Offender Found - the query needs adjusting, or the offender has
+                            been deleted
+                        </ns:Description>
+                        <ns:Timestamp>2018-08-02T10:23:54.851+01:00</ns:Timestamp>
+                        <ns:RequestMessage>OASYSRPCN0220180726150731234567</ns:RequestMessage>
+                    </ns:BusinessException>
+                </ns:Fault>
+            </SOAP-ENV:Detail>
+        </SOAP-ENV:Fault>
+    </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns5:SubmitRiskDataResponse xmlns:ns5="http://www.bconline.co.uk/oasys/messages">
+    <ns5:CaseReferenceNumber>T123456</ns5:CaseReferenceNumber>
+</ns5:SubmitRiskDataResponse>

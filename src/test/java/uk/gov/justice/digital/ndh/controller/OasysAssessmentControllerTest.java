@@ -48,7 +48,8 @@ import static org.mockito.Mockito.times;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
         "spring.jmx.enabled=true",
-        "ndelius.assessment.update.url=http://localhost:8090/delius/assessmentUpdates"})
+        "ndelius.assessment.update.url=http://localhost:8090/delius/assessmentUpdates",
+        "ndelius.risk.update.url=http://localhost:8090/delius/riskUpdates"})
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext
 public class OasysAssessmentControllerTest {
@@ -100,10 +101,10 @@ public class OasysAssessmentControllerTest {
         // Annoying: Stub seems to take time to register for some reason
         Thread.sleep(5000);
 
-        final String requestXml = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/OasysToNDHSoapEnvelope.xml")))
+        final String requestXml = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/AssessmentUpdates/OasysToNDHSoapEnvelope.xml")))
                 .lines().collect(Collectors.joining("\n"));
 
-        ClassLoader.getSystemResourceAsStream("xmls/OasysToNDHSoapEnvelope.xml");
+        ClassLoader.getSystemResourceAsStream("xmls/AssessmentUpdates/OasysToNDHSoapEnvelope.xml");
 
         given()
                 .when()
@@ -139,10 +140,10 @@ public class OasysAssessmentControllerTest {
         // Annoying: Stub seems to take time to register for some reason
         Thread.sleep(5000);
 
-        final String requestXml = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/OasysToNDHSoapEnvelope.xml")))
+        final String requestXml = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/AssessmentUpdates/OasysToNDHSoapEnvelope.xml")))
                 .lines().collect(Collectors.joining("\n"));
 
-        ClassLoader.getSystemResourceAsStream("xmls/OasysToNDHSoapEnvelope.xml");
+        ClassLoader.getSystemResourceAsStream("xmls/AssessmentUpdates/OasysToNDHSoapEnvelope.xml");
 
         given()
                 .when()

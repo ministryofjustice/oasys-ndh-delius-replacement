@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://www.w3.org/2003/05/soap-envelope">
+    <SOAP-ENV:Body>
+        <ns0:RiskUpdateResponse xmlns:ns0="http://www.hp.com/NDH_Web_Service/riskupdateresponse">
+            <ns0:header>
+                <ns1:ApplicationMode xmlns:ns1="http://www.hp.com/NDH_Web_Service/DomainTypes">L</ns1:ApplicationMode>
+                <ns1:CorrelationID xmlns:ns1="http://www.hp.com/NDH_Web_Service/DomainTypes">
+                    OASYSRPCWWS20180801110832601627
+                </ns1:CorrelationID>
+                <ns1:OASysRUsername xmlns:ns1="http://www.hp.com/NDH_Web_Service/DomainTypes">CENTRALSUPPORTONE
+                </ns1:OASysRUsername>
+                <ns1:MessageTimestamp xmlns:ns1="http://www.hp.com/NDH_Web_Service/DomainTypes">
+                    2018-07-26T15:00:31+01:00
+                </ns1:MessageTimestamp>
+            </ns0:header>
+            <ns0:CaseReferenceNumber>H923527</ns0:CaseReferenceNumber>
+        </ns0:RiskUpdateResponse>
+    </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

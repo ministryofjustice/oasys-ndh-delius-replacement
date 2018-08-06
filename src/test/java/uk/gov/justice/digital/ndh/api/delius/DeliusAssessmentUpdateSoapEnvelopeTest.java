@@ -8,8 +8,8 @@ import org.xmlunit.validation.Languages;
 import org.xmlunit.validation.ValidationResult;
 import org.xmlunit.validation.Validator;
 import uk.gov.justice.digital.ndh.api.delius.request.DeliusAssessmentUpdateSoapBody;
+import uk.gov.justice.digital.ndh.api.delius.request.DeliusAssessmentUpdateSoapEnvelope;
 import uk.gov.justice.digital.ndh.api.delius.request.DeliusAssessmentUpdateSoapHeader;
-import uk.gov.justice.digital.ndh.api.delius.request.DeliusRequest;
 import uk.gov.justice.digital.ndh.api.delius.request.OasysAssessmentSummary;
 import uk.gov.justice.digital.ndh.api.delius.request.OasysCommonHeader;
 import uk.gov.justice.digital.ndh.api.delius.request.OasysSupervisionPlan;
@@ -20,12 +20,12 @@ import java.io.IOException;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
-public class DeliusRequestTest {
+public class DeliusAssessmentUpdateSoapEnvelopeTest {
 
     @Test
     public void builtMessageSerializesToValidSoapMessage() throws IOException {
 
-        final DeliusRequest builtMessage = DeliusRequest.builder()
+        final DeliusAssessmentUpdateSoapEnvelope builtMessage = DeliusAssessmentUpdateSoapEnvelope.builder()
                 .header(DeliusAssessmentUpdateSoapHeader
                         .builder()
                         .commonHeader(OasysCommonHeader
