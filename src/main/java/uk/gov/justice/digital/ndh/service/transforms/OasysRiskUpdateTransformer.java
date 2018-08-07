@@ -12,16 +12,13 @@ import org.dom4j.tree.DefaultElement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.xml.sax.InputSource;
-import uk.gov.justice.digital.ndh.api.delius.request.DeliusRiskUpdateSoapBody;
-import uk.gov.justice.digital.ndh.api.delius.request.DeliusRiskUpdateSoapEnvelope;
-import uk.gov.justice.digital.ndh.api.delius.request.DeliusRiskUpdateSoapHeader;
 import uk.gov.justice.digital.ndh.api.delius.request.RiskType;
 import uk.gov.justice.digital.ndh.api.delius.request.SubmitRiskDataRequest;
 import uk.gov.justice.digital.ndh.api.delius.response.DeliusRiskUpdateResponse;
 import uk.gov.justice.digital.ndh.api.oasys.response.RiskUpdateResponse;
-import uk.gov.justice.digital.ndh.api.oasys.response.SubmitRiskDataResponseSoapBody;
-import uk.gov.justice.digital.ndh.api.oasys.response.SubmitRiskDataResponseSoapEnvelope;
+import uk.gov.justice.digital.ndh.api.soap.SoapBody;
 import uk.gov.justice.digital.ndh.api.soap.SoapEnvelope;
+import uk.gov.justice.digital.ndh.api.soap.SoapHeader;
 
 import java.io.StringReader;
 import java.util.List;
@@ -44,9 +41,9 @@ public class OasysRiskUpdateTransformer {
         this.xmlMapper = xmlMapper;
     }
 
-    public DeliusRiskUpdateSoapEnvelope deliusRiskUpdateRequestOf(SoapEnvelope oasysRiskUpdate) {
-        return DeliusRiskUpdateSoapEnvelope.builder()
-                .header(DeliusRiskUpdateSoapHeader
+    public SoapEnvelope deliusRiskUpdateRequestOf(SoapEnvelope oasysRiskUpdate) {
+        return SoapEnvelope.builder()
+                .header(SoapHeader
                         .builder()
                         .header(uk.gov.justice.digital.ndh.api.delius.request.Header
                                 .builder()
@@ -54,7 +51,7 @@ public class OasysRiskUpdateTransformer {
                                 .version(VERSION)
                                 .build())
                         .build())
-                .body(DeliusRiskUpdateSoapBody
+                .body(SoapBody
                         .builder()
                         .submitRiskDataRequest(SubmitRiskDataRequest
                                 .builder()
@@ -68,12 +65,12 @@ public class OasysRiskUpdateTransformer {
                 .build();
     }
 
-    public SubmitRiskDataResponseSoapEnvelope oasysRiskUpdateResponseOf(DeliusRiskUpdateResponse deliusRiskUpdateResponse, Optional<SoapEnvelope> maybeOasysRiskUpdate) {
-        return SubmitRiskDataResponseSoapEnvelope
+    public SoapEnvelope oasysRiskUpdateResponseOf(DeliusRiskUpdateResponse deliusRiskUpdateResponse, Optional<SoapEnvelope> maybeOasysRiskUpdate) {
+        return SoapEnvelope
                 .builder()
-                .body(SubmitRiskDataResponseSoapBody
+                .body(SoapBody
                         .builder()
-                        .response(RiskUpdateResponse
+                        .riskUpdateResponse(RiskUpdateResponse
                                 .builder()
                                 .caseReferenceNumber(deliusRiskUpdateResponse.getCaseReferenceNumber().orElse(null))
                                 .header(maybeOasysRiskUpdate.map(soapEnvelope -> soapEnvelope.getBody().getRiskUpdateRequest().getHeader()).orElse(null))
@@ -151,13 +148,13 @@ public class OasysRiskUpdateTransformer {
         if (response.isSoapFault()) {
             return oasysFaultResponseOf(rawDeliusResponse.get(), correlationID);
         } else {
-            final SubmitRiskDataResponseSoapEnvelope transformedResponse = oasysRiskUpdateResponseOf(response, maybeOasysRiskUpdate);
-            return transformedResponseXmlOf(transformedResponse, correlationID);
+            final SoapEnvelope transformedResponse = oasysRiskUpdateResponseOf(response, maybeOasysRiskUpdate);
+            return transformedResponseXmlOf(transformedResponse);
 
         }
     }
 
-    private String transformedResponseXmlOf(SubmitRiskDataResponseSoapEnvelope transformedResponse, String correlationId) throws JsonProcessingException {
+    private String transformedResponseXmlOf(SoapEnvelope transformedResponse) throws JsonProcessingException {
         return xmlMapper.writeValueAsString(transformedResponse);
     }
 

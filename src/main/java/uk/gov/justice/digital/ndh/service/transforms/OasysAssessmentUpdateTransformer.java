@@ -2,11 +2,7 @@ package uk.gov.justice.digital.ndh.service.transforms;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.justice.digital.ndh.api.delius.request.DeliusAssessmentUpdateSoapBody;
-import uk.gov.justice.digital.ndh.api.delius.request.DeliusAssessmentUpdateSoapEnvelope;
-import uk.gov.justice.digital.ndh.api.delius.request.DeliusAssessmentUpdateSoapHeader;
 import uk.gov.justice.digital.ndh.api.delius.request.OasysAssessmentSummary;
-import uk.gov.justice.digital.ndh.api.delius.request.OasysCommonHeader;
 import uk.gov.justice.digital.ndh.api.delius.request.OasysSupervisionPlan;
 import uk.gov.justice.digital.ndh.api.delius.request.RiskType;
 import uk.gov.justice.digital.ndh.api.delius.request.SubmitAssessmentSummaryRequest;
@@ -15,7 +11,9 @@ import uk.gov.justice.digital.ndh.api.oasys.request.CmsUpdate;
 import uk.gov.justice.digital.ndh.api.oasys.request.Header;
 import uk.gov.justice.digital.ndh.api.oasys.request.Objective;
 import uk.gov.justice.digital.ndh.api.oasys.request.Risk;
+import uk.gov.justice.digital.ndh.api.soap.SoapBody;
 import uk.gov.justice.digital.ndh.api.soap.SoapEnvelope;
+import uk.gov.justice.digital.ndh.api.soap.SoapHeader;
 import uk.gov.justice.digital.ndh.jpa.entity.MappingCodeData;
 import uk.gov.justice.digital.ndh.jpa.entity.MappingCodeDataPK;
 import uk.gov.justice.digital.ndh.jpa.repository.MappingRepository;
@@ -59,16 +57,16 @@ public class OasysAssessmentUpdateTransformer {
         this.mappingRepository = mappingRepository;
     }
 
-    public DeliusAssessmentUpdateSoapEnvelope deliusAssessmentUpdateOf(SoapEnvelope ndhSoapEnvelope) {
+    public SoapEnvelope deliusAssessmentUpdateOf(SoapEnvelope ndhSoapEnvelope) {
 
-        return DeliusAssessmentUpdateSoapEnvelope.builder()
-                .header(DeliusAssessmentUpdateSoapHeader
+        return SoapEnvelope.builder()
+                .header(SoapHeader
                         .builder()
-                        .commonHeader(deliusHeaderOf(ndhSoapEnvelope.getBody().getCmsUpdate().getHeader()))
+                        .header(deliusHeaderOf(ndhSoapEnvelope.getBody().getCmsUpdate().getHeader()))
                         .build())
-                .body(DeliusAssessmentUpdateSoapBody
+                .body(SoapBody
                         .builder()
-                        .request(SubmitAssessmentSummaryRequest
+                        .submitAssessmentSummaryRequest(SubmitAssessmentSummaryRequest
                                 .builder()
                                 //TODO: May have to guard against NPEs for the following. Will every update have an Assessment??
                                 .oasysAssessmentSummary(deliusOasysAssessmentSummaryOf(ndhSoapEnvelope.getBody().getCmsUpdate().getAssessment()))
@@ -79,9 +77,9 @@ public class OasysAssessmentUpdateTransformer {
                 .build();
     }
 
-    private OasysCommonHeader deliusHeaderOf(Header ndhOasysHeader) {
+    private uk.gov.justice.digital.ndh.api.delius.request.Header deliusHeaderOf(Header ndhOasysHeader) {
         return Optional.ofNullable(ndhOasysHeader).map(
-                header -> OasysCommonHeader.builder()
+                header -> uk.gov.justice.digital.ndh.api.delius.request.Header.builder()
                         .messageId(ndhOasysHeader.getCorrelationID())
                         .version(VERSION)
                         .build()

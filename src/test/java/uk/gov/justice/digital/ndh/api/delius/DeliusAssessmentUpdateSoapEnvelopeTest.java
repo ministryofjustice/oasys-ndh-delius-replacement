@@ -7,14 +7,14 @@ import org.xmlunit.builder.Input;
 import org.xmlunit.validation.Languages;
 import org.xmlunit.validation.ValidationResult;
 import org.xmlunit.validation.Validator;
-import uk.gov.justice.digital.ndh.api.delius.request.DeliusAssessmentUpdateSoapBody;
-import uk.gov.justice.digital.ndh.api.delius.request.DeliusAssessmentUpdateSoapEnvelope;
-import uk.gov.justice.digital.ndh.api.delius.request.DeliusAssessmentUpdateSoapHeader;
+import uk.gov.justice.digital.ndh.api.delius.request.Header;
 import uk.gov.justice.digital.ndh.api.delius.request.OasysAssessmentSummary;
-import uk.gov.justice.digital.ndh.api.delius.request.OasysCommonHeader;
 import uk.gov.justice.digital.ndh.api.delius.request.OasysSupervisionPlan;
 import uk.gov.justice.digital.ndh.api.delius.request.RiskType;
 import uk.gov.justice.digital.ndh.api.delius.request.SubmitAssessmentSummaryRequest;
+import uk.gov.justice.digital.ndh.api.soap.SoapBody;
+import uk.gov.justice.digital.ndh.api.soap.SoapEnvelope;
+import uk.gov.justice.digital.ndh.api.soap.SoapHeader;
 
 import java.io.IOException;
 
@@ -25,18 +25,18 @@ public class DeliusAssessmentUpdateSoapEnvelopeTest {
     @Test
     public void builtMessageSerializesToValidSoapMessage() throws IOException {
 
-        final DeliusAssessmentUpdateSoapEnvelope builtMessage = DeliusAssessmentUpdateSoapEnvelope.builder()
-                .header(DeliusAssessmentUpdateSoapHeader
+        final SoapEnvelope builtMessage = SoapEnvelope.builder()
+                .header(SoapHeader
                         .builder()
-                        .commonHeader(OasysCommonHeader
+                        .header(Header
                                 .builder()
                                 .messageId("1234567890123456789012345678901")
                                 .version("?")
                                 .build())
                         .build())
-                .body(DeliusAssessmentUpdateSoapBody
+                .body(SoapBody
                         .builder()
-                        .request(SubmitAssessmentSummaryRequest
+                        .submitAssessmentSummaryRequest(SubmitAssessmentSummaryRequest
                                 .builder()
                                 .oasysSupervisionPlans(ImmutableList.of(OasysSupervisionPlan
                                         .builder()

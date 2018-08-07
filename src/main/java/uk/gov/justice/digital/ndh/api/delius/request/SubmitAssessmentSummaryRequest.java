@@ -3,11 +3,11 @@ package uk.gov.justice.digital.ndh.api.delius.request;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Value;
 
 import java.util.List;
 
-@Data
+@Value
 @Builder
 public class SubmitAssessmentSummaryRequest {
     @JacksonXmlProperty(localName = "OASYSAssessmentSummary", namespace = "http://www.bconline.co.uk/oasys/assessment")

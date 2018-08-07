@@ -1,11 +1,14 @@
 package uk.gov.justice.digital.ndh.jpa.entity;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Value;
 
-import javax.persistence.*;
-import java.util.Objects;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
-@Data
+@Value
 @Builder
 @Entity
 @Table(name = "MAPPING_CODE_CATALOG")

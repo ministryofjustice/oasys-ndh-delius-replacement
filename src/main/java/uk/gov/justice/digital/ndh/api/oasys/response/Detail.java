@@ -2,9 +2,9 @@ package uk.gov.justice.digital.ndh.api.oasys.response;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Value;
 
-@Data
+@Value
 @Builder
 public class Detail {
     @JacksonXmlProperty(localName = "AuthorisationFailureException", namespace = "http://www.hp.com/NDH_Web_Service/Fault")

@@ -8,7 +8,6 @@ import lombok.val;
 import org.dom4j.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.justice.digital.ndh.api.delius.request.DeliusRiskUpdateSoapEnvelope;
 import uk.gov.justice.digital.ndh.api.delius.response.DeliusRiskUpdateResponse;
 import uk.gov.justice.digital.ndh.api.soap.SoapEnvelope;
 import uk.gov.justice.digital.ndh.service.transforms.OasysRiskUpdateTransformer;
@@ -82,7 +81,7 @@ public class OasysRiskService {
         return maybeTransformedXml.flatMap((String transformedXml) -> callDeliusRiskUpdate(transformedXml, correlationId));
     }
 
-    private Optional<String> deliusRiskUpdateXmlOf(Optional<DeliusRiskUpdateSoapEnvelope> maybeTransformed, String correlationId) {
+    private Optional<String> deliusRiskUpdateXmlOf(Optional<SoapEnvelope> maybeTransformed, String correlationId) {
         return maybeTransformed.flatMap(transformed -> {
             try {
                 final String transformedXml = xmlMapper.writeValueAsString(transformed);
@@ -96,7 +95,7 @@ public class OasysRiskService {
         });
     }
 
-    private Optional<DeliusRiskUpdateSoapEnvelope> deliusRiskUpdateRequestOf(String updateXml, Optional<SoapEnvelope> maybeOasysRiskUpdate) {
+    private Optional<SoapEnvelope> deliusRiskUpdateRequestOf(String updateXml, Optional<SoapEnvelope> maybeOasysRiskUpdate) {
         return maybeOasysRiskUpdate.map(oasysRiskUpdate -> {
             messageStoreService.writeMessage(updateXml, maybeOasysRiskUpdate.get().getHeader().getCorrelationId(), MessageStoreService.ProcStates.GLB_ProcState_InboundBeforeTransformation);
             return oasysRiskUpdateTransformer.deliusRiskUpdateRequestOf(oasysRiskUpdate);

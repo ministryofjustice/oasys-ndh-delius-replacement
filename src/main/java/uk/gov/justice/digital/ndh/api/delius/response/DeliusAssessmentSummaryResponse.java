@@ -3,9 +3,9 @@ package uk.gov.justice.digital.ndh.api.delius.response;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Value;
 
-@Data
+@Value
 @Builder
 public class DeliusAssessmentSummaryResponse {
     @JsonProperty("Body")

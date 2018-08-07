@@ -1,14 +1,182 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.hp.com/NDH_Web_Service/DomainTypes"
-           targetNamespace="http://www.hp.com/NDH_Web_Service/DomainTypes" elementFormDefault="qualified"
-           attributeFormDefault="unqualified">
 
+<!-- edited with XMLSpy v2010 rel. 2 (http://www.altova.com) by chris (Electronic Data Systems Ltd.) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:oraxdb="http://xmlns.oracle.com/xdb"
+           xmlns:dt="http://www.hp.com/NDH_Web_Service/DomainTypes"
+           targetNamespace="http://www.hp.com/NDH_Web_Service/DomainTypes"
+           elementFormDefault="qualified"
+           attributeFormDefault="unqualified">
+    <xs:simpleType name="CourtType">
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="6"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="CMSNumber">
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="20"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="PersonName">
+        <xs:annotation>
+            <xs:documentation>Standard offender name type</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="100"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="ElementCode">
+        <xs:annotation>
+            <xs:documentation>Generic code used for all category and element type fields</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="50"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="PostCode">
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="32"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="AddressLine">
+        <xs:annotation>
+            <xs:documentation>Used for all lines of the address other than the postcode</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="256"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="PhoneNumber">
+        <xs:annotation>
+            <xs:documentation>Standard telephone number type</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="20"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="PNCNumber">
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="20"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="CRONumber">
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="12"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="PrisonNumber">
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="6"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="VeryLargeText">
+        <xs:annotation>
+            <xs:documentation>Maps to an Oracle CLOB item</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string"/>
+    </xs:simpleType>
+    <xs:simpleType name="SharedKeyCode">
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="100"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="Numeric10">
+        <xs:restriction base="xs:integer">
+            <xs:maxInclusive value="10"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="Text2">
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="2"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="Text100">
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="100"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="ICMSRef">
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="32"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="OffenceDetail">
+        <xs:sequence>
+            <xs:element name="OffenceGroupCode" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>3 digita Home Office Code i.e. "002"</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:maxLength value="3"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="OffenceSubCode" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>2 Digit Home Office sub code i.e. "01"</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:maxLength value="2"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="AdditionalIndicator" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Only one offence will be maked as N, all others will be set to Y</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:maxLength value="1"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="Risk">
+        <xs:sequence>
+            <xs:element name="RiskofHarm" type="dt:ElementCode"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:element name="MessageID">
+        <xs:annotation>
+            <xs:documentation>Unique message ID to be used for associating a request sent to National Delius with a response received.</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+            <xs:restriction base="xs:string">
+                <xs:maxLength value="30"/>
+            </xs:restriction>
+        </xs:simpleType>
+    </xs:element>
+    <xs:complexType name="ICMSReference">
+        <xs:annotation>
+            <xs:documentation>ICMS Elements used to uniquely identify an offender and event</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="RefClient" type="dt:ICMSRef">
+                <xs:annotation>
+                    <xs:documentation>Only used for the ICMS to identify a unique offender/Event combination</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="RefLink">
+                <xs:annotation>
+                    <xs:documentation>Only used for the ICMS to identify a unique offender/Event combination</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="RefSupervision">
+                <xs:annotation>
+                    <xs:documentation>Only used for the ICMS to identify a unique offender/Event combination</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
     <xs:complexType name="Header">
         <xs:sequence>
             <xs:element name="ApplicationMode" type="xs:string"/>
             <xs:element name="CorrelationID" type="xs:string"/>
             <xs:element name="OASysRUsername" type="xs:string"/>
-            <xs:element name="MessageTimestamp" type="xs:dateTime"/>
+            <xs:element oraxdb:SQLType="TIMESTAMP WITH TIME ZONE" name="MessageTimestamp" type="xs:dateTime"/>
         </xs:sequence>
     </xs:complexType>
 </xs:schema>

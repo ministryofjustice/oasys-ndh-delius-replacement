@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.ndh.service.transforms;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -13,16 +14,11 @@ import org.xmlunit.diff.Diff;
 import org.xmlunit.validation.Languages;
 import org.xmlunit.validation.ValidationResult;
 import org.xmlunit.validation.Validator;
-import uk.gov.justice.digital.ndh.api.delius.request.DeliusRiskUpdateSoapBody;
-import uk.gov.justice.digital.ndh.api.delius.request.DeliusRiskUpdateSoapEnvelope;
-import uk.gov.justice.digital.ndh.api.delius.request.DeliusRiskUpdateSoapHeader;
 import uk.gov.justice.digital.ndh.api.delius.response.DeliusRiskUpdateResponse;
 import uk.gov.justice.digital.ndh.api.oasys.request.Header;
 import uk.gov.justice.digital.ndh.api.oasys.request.Risk;
 import uk.gov.justice.digital.ndh.api.oasys.request.SubmitRiskDataRequest;
 import uk.gov.justice.digital.ndh.api.oasys.response.RiskUpdateResponse;
-import uk.gov.justice.digital.ndh.api.oasys.response.SubmitRiskDataResponseSoapBody;
-import uk.gov.justice.digital.ndh.api.oasys.response.SubmitRiskDataResponseSoapEnvelope;
 import uk.gov.justice.digital.ndh.api.soap.SoapBody;
 import uk.gov.justice.digital.ndh.api.soap.SoapEnvelope;
 import uk.gov.justice.digital.ndh.api.soap.SoapHeader;
@@ -47,11 +43,11 @@ public class OasysRiskUpdateTransformerTest {
 
         final SoapEnvelope oasysRequest = anOasysRiskUpdate();
 
-        OasysRiskUpdateTransformer transformer = new OasysRiskUpdateTransformer(new XmlMapper());
+        OasysRiskUpdateTransformer transformer = new OasysRiskUpdateTransformer(getXmlMapper());
 
-        DeliusRiskUpdateSoapEnvelope expected = DeliusRiskUpdateSoapEnvelope
+        SoapEnvelope expected = SoapEnvelope
                 .builder()
-                .header(DeliusRiskUpdateSoapHeader
+                .header(SoapHeader
                         .builder()
                         .header(uk.gov.justice.digital.ndh.api.delius.request.Header
                                 .builder()
@@ -59,7 +55,7 @@ public class OasysRiskUpdateTransformerTest {
                                 .version("1.0")
                                 .build())
                         .build())
-                .body(DeliusRiskUpdateSoapBody
+                .body(SoapBody
                         .builder()
                         .submitRiskDataRequest(uk.gov.justice.digital.ndh.api.delius.request.SubmitRiskDataRequest
                                 .builder()
@@ -72,7 +68,7 @@ public class OasysRiskUpdateTransformerTest {
                         .build())
                 .build();
 
-        DeliusRiskUpdateSoapEnvelope actual = transformer.deliusRiskUpdateRequestOf(oasysRequest);
+        SoapEnvelope actual = transformer.deliusRiskUpdateRequestOf(oasysRequest);
 
         assertThat(actual).isEqualTo(expected);
 
@@ -122,21 +118,21 @@ public class OasysRiskUpdateTransformerTest {
                 .body(root)
                 .build();
 
-        OasysRiskUpdateTransformer transformer = new OasysRiskUpdateTransformer(new XmlMapper());
+        OasysRiskUpdateTransformer transformer = new OasysRiskUpdateTransformer(getXmlMapper());
 
-        SubmitRiskDataResponseSoapEnvelope expected = anOasysRiskUpdateResponse();
+        SoapEnvelope expected = anOasysRiskUpdateResponse();
 
-        final SubmitRiskDataResponseSoapEnvelope actual = transformer.oasysRiskUpdateResponseOf(deliusResponse, Optional.of(anOasysRiskUpdate()));
+        final SoapEnvelope actual = transformer.oasysRiskUpdateResponseOf(deliusResponse, Optional.of(anOasysRiskUpdate()));
 
         assertThat(actual).isEqualTo(expected);
     }
 
-    private SubmitRiskDataResponseSoapEnvelope anOasysRiskUpdateResponse() {
-        return SubmitRiskDataResponseSoapEnvelope
+    private SoapEnvelope anOasysRiskUpdateResponse() {
+        return SoapEnvelope
                 .builder()
-                .body(SubmitRiskDataResponseSoapBody
+                .body(SoapBody
                         .builder()
-                        .response(RiskUpdateResponse
+                        .riskUpdateResponse(RiskUpdateResponse
                                 .builder()
                                 .caseReferenceNumber("A1234")
                                 .header(Header
@@ -154,11 +150,11 @@ public class OasysRiskUpdateTransformerTest {
     @Test
     public void serializedDeliusRequestIsSchemaCompliant() throws JsonProcessingException {
 
-        final XmlMapper xmlMapper = new XmlMapper();
+        final XmlMapper xmlMapper = getXmlMapper();
 
         OasysRiskUpdateTransformer transformer = new OasysRiskUpdateTransformer(xmlMapper);
 
-        final DeliusRiskUpdateSoapEnvelope builtMessage = transformer.deliusRiskUpdateRequestOf(anOasysRiskUpdate());
+        final SoapEnvelope builtMessage = transformer.deliusRiskUpdateRequestOf(anOasysRiskUpdate());
 
         String serialized = xmlMapper.writeValueAsString(builtMessage);
 
@@ -177,9 +173,9 @@ public class OasysRiskUpdateTransformerTest {
 
     @Test
     public void serializedOasysResponseIsSchemaCompliant() throws JsonProcessingException {
-        final XmlMapper xmlMapper = new XmlMapper();
+        final XmlMapper xmlMapper = getXmlMapper();
 
-        final SubmitRiskDataResponseSoapEnvelope builtMessage = anOasysRiskUpdateResponse();
+        final SoapEnvelope builtMessage = anOasysRiskUpdateResponse();
 
         String serialized = xmlMapper.writeValueAsString(builtMessage);
 
@@ -194,6 +190,12 @@ public class OasysRiskUpdateTransformerTest {
         assertThat(result.isValid()).isTrue();
     }
 
+    private XmlMapper getXmlMapper() {
+        final XmlMapper xmlMapper = new XmlMapper();
+        xmlMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        return xmlMapper;
+    }
+
 
     @Test
     public void faultResponseIsTransformedCorrectly() throws ParserConfigurationException, SAXException, XPathExpressionException, IOException, DocumentException {
@@ -202,7 +204,7 @@ public class OasysRiskUpdateTransformerTest {
         final String deliusFaultResponseXml = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/RiskUpdate/realFaultResponseFromDelius.xml")))
                 .lines().collect(Collectors.joining("\n"));
 
-        OasysRiskUpdateTransformer transformer = new OasysRiskUpdateTransformer(new XmlMapper());
+        OasysRiskUpdateTransformer transformer = new OasysRiskUpdateTransformer(getXmlMapper());
 
         final String actual = transformer.oasysFaultResponseOf(deliusFaultResponseXml, aCorrelationId());
 

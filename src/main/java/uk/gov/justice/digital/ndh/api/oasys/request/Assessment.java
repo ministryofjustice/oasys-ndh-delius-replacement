@@ -2,9 +2,10 @@ package uk.gov.justice.digital.ndh.api.oasys.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Value;
+import uk.gov.justice.digital.ndh.api.oasys.common.ICMSReference;
 
-@Data
+@Value
 @Builder
 public class Assessment {
 
