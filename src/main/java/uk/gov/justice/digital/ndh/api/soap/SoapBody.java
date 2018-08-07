@@ -1,9 +1,11 @@
 package uk.gov.justice.digital.ndh.api.soap;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import lombok.Builder;
 import lombok.Value;
+import uk.gov.justice.digital.ndh.api.delius.request.GetSubSetOffenderEventRequest;
 import uk.gov.justice.digital.ndh.api.delius.request.InitialSearchRequest;
 import uk.gov.justice.digital.ndh.api.delius.request.SubmitAssessmentSummaryRequest;
 import uk.gov.justice.digital.ndh.api.oasys.request.CmsUpdate;
@@ -37,5 +39,13 @@ public class SoapBody {
     @JacksonXmlProperty(localName = "SubmitRiskDataRequest", namespace = "http://www.bconline.co.uk/oasys/messages")
     private uk.gov.justice.digital.ndh.api.delius.request.SubmitRiskDataRequest submitRiskDataRequest;
 
+    @JacksonXmlProperty(localName = "GetSubSetOffenderEventRequest", namespace = "http://www.bconline.co.uk/oasys/messages")
+    private GetSubSetOffenderEventRequest getSubSetOffenderEventRequest;
 
+    @JsonProperty("Fault")
+    private JsonNode fault;
+
+    public boolean isSoapFault() {
+        return fault != null && !fault.isNull();
+    }
 }

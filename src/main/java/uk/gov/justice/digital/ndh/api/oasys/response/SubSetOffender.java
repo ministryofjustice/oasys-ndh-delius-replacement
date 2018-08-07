@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.ndh.api.oasys.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import lombok.Value;
 
@@ -9,6 +10,7 @@ import java.util.List;
 public class SubSetOffender {
 
     @JacksonXmlProperty(namespace = "http://www.hp.com/NDH_Web_Service/subsetoffender", localName = "CMSProbNumber")
+    @JsonProperty("CMSProbNumber")
     private String cmsProbNumber;
     @JacksonXmlProperty(namespace = "http://www.hp.com/NDH_Web_Service/subsetoffender", localName = "FamilyName")
     private String familyName;

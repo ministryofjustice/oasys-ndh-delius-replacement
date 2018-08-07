@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
-import uk.gov.justice.digital.ndh.api.delius.response.DeliusAssessmentSummaryResponse;
 import uk.gov.justice.digital.ndh.api.soap.SoapEnvelope;
 import uk.gov.justice.digital.ndh.service.ExceptionLogService;
 import uk.gov.justice.digital.ndh.service.MessageStoreService;
@@ -66,18 +65,18 @@ public class OasysAssessmentUpdateListener {
         handleDeliusResponse(maybeRawDeliusResponse, maybeDeliusRequest);
     }
 
-    private Optional<DeliusAssessmentSummaryResponse> handleDeliusResponse(Optional<String> maybeRawDeliusResponse, Optional<SoapEnvelope> maybeDeliusRequest) {
+    private Optional<SoapEnvelope> handleDeliusResponse(Optional<String> maybeRawDeliusResponse, Optional<SoapEnvelope> maybeDeliusRequest) {
 
         return maybeRawDeliusResponse.map(
                 rawDeliusResponse -> {
 
-                    DeliusAssessmentSummaryResponse deliusResponse = null;
+                    SoapEnvelope deliusResponse = null;
 
                     try {
-                        deliusResponse = xmlMapper.readValue(rawDeliusResponse, DeliusAssessmentSummaryResponse.class);
-                        if (deliusResponse.isBadResponse()) {
-                            log.error("Bad response from Delius: {}", rawDeliusResponse);
-                            exceptionLogService.logFault(rawDeliusResponse, maybeDeliusRequest.get().getHeader().getHeader().getMessageId(), "Bad response from Delius");
+                        deliusResponse = xmlMapper.readValue(rawDeliusResponse, SoapEnvelope.class);
+                        if (deliusResponse.getBody().isSoapFault()) {
+                            log.error("SOAP Fault from Delius: {}", rawDeliusResponse);
+                            exceptionLogService.logFault(rawDeliusResponse, maybeDeliusRequest.get().getHeader().getHeader().getMessageId(), "SOAP Fault from Delius");
                         }
                     } catch (IOException e) {
                         log.error("Garbage response from Delius: {}", e.getMessage());
