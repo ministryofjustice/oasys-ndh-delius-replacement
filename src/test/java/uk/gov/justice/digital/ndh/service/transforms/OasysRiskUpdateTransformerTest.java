@@ -43,7 +43,7 @@ public class OasysRiskUpdateTransformerTest {
 
         final SoapEnvelope oasysRequest = anOasysRiskUpdate();
 
-        OasysRiskUpdateTransformer transformer = new OasysRiskUpdateTransformer(getXmlMapper());
+        OasysRiskUpdateTransformer transformer = new OasysRiskUpdateTransformer(new FaultTransformer(), new CommonTransformer(), getXmlMapper());
 
         SoapEnvelope expected = SoapEnvelope
                 .builder()
@@ -118,7 +118,7 @@ public class OasysRiskUpdateTransformerTest {
                 .body(root)
                 .build();
 
-        OasysRiskUpdateTransformer transformer = new OasysRiskUpdateTransformer(getXmlMapper());
+        OasysRiskUpdateTransformer transformer = new OasysRiskUpdateTransformer(new FaultTransformer(), new CommonTransformer(), getXmlMapper());
 
         SoapEnvelope expected = anOasysRiskUpdateResponse();
 
@@ -152,7 +152,7 @@ public class OasysRiskUpdateTransformerTest {
 
         final XmlMapper xmlMapper = getXmlMapper();
 
-        OasysRiskUpdateTransformer transformer = new OasysRiskUpdateTransformer(xmlMapper);
+        OasysRiskUpdateTransformer transformer = new OasysRiskUpdateTransformer(new FaultTransformer(), new CommonTransformer(), xmlMapper);
 
         final SoapEnvelope builtMessage = transformer.deliusRiskUpdateRequestOf(anOasysRiskUpdate());
 
@@ -199,14 +199,12 @@ public class OasysRiskUpdateTransformerTest {
 
     @Test
     public void faultResponseIsTransformedCorrectly() throws ParserConfigurationException, SAXException, XPathExpressionException, IOException, DocumentException {
-        final SoapEnvelope oasysRequest = anOasysRiskUpdate();
 
         final String deliusFaultResponseXml = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/RiskUpdate/realFaultResponseFromDelius.xml")))
                 .lines().collect(Collectors.joining("\n"));
 
-        OasysRiskUpdateTransformer transformer = new OasysRiskUpdateTransformer(getXmlMapper());
-
-        final String actual = transformer.oasysFaultResponseOf(deliusFaultResponseXml, aCorrelationId());
+        final FaultTransformer faultTransformer = new FaultTransformer();
+        final String actual = faultTransformer.oasysFaultResponseOf(deliusFaultResponseXml, aCorrelationId());
 
         final String expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<S:Envelope\n" +
