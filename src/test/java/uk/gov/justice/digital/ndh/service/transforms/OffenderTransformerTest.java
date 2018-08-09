@@ -35,7 +35,7 @@ public class OffenderTransformerTest {
 
         SoapEnvelope expected = SoapEnvelope
                 .builder()
-                .header(commonTransformer.deliusSoapHeaderOf("correlationId"))
+                .header(commonTransformer.deliusSoapHeaderOf("1234567890123456789012345678901"))
                 .body(SoapBody
                         .builder()
                         .getSubSetOffenderEventRequest(

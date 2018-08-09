@@ -8,25 +8,24 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import uk.gov.justice.digital.ndh.jpa.repository.ExceptionLogRepository;
-import uk.gov.justice.digital.ndh.jpa.repository.MessageStoreRepository;
 import uk.gov.justice.digital.ndh.service.DeliusAssessmentUpdateClient;
+import uk.gov.justice.digital.ndh.service.ExceptionLogService;
+import uk.gov.justice.digital.ndh.service.MessageStoreService;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.stream.Collectors;
 
 import static io.restassured.RestAssured.given;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.times;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
@@ -40,10 +39,11 @@ public class DeliusUnavailableBehaviourTest {
     @LocalServerPort
     int port;
 
-    @Autowired
-    private MessageStoreRepository messageStoreRepository;
-    @Autowired
-    private ExceptionLogRepository exceptionLogRepository;
+    @MockBean
+    private ExceptionLogService exceptionLogService;
+
+    @MockBean
+    private MessageStoreService messageStoreService;
 
     @MockBean
     private DeliusAssessmentUpdateClient deliusAssessmentUpdateClient;
@@ -81,9 +81,8 @@ public class DeliusUnavailableBehaviourTest {
         }
 
         // Messages are logged before and after transformation, so check this happens only once
-        assertThat(messageStoreRepository.count()).isEqualTo(2L);
+        Mockito.verify(messageStoreService, times(2)).writeMessage(anyString(), anyString(), any(MessageStoreService.ProcStates.class));
         // Exception is logged on the initial failure to talk to Delius, ensure only the first one is logged.
-        assertThat(exceptionLogRepository.count()).isEqualTo(1L);
-
+        Mockito.verify(exceptionLogService, times(1)).logFault(anyString(), anyString(), anyString());
     }
 }

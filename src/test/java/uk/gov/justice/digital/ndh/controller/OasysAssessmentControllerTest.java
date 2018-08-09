@@ -8,7 +8,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.LocalServerPort;
@@ -16,10 +15,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import uk.gov.justice.digital.ndh.jpa.entity.ExceptionLog;
-import uk.gov.justice.digital.ndh.jpa.entity.MsgStore;
-import uk.gov.justice.digital.ndh.jpa.repository.ExceptionLogRepository;
-import uk.gov.justice.digital.ndh.jpa.repository.MessageStoreRepository;
+import uk.gov.justice.digital.ndh.service.ExceptionLogService;
+import uk.gov.justice.digital.ndh.service.MessageStoreService;
 
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanException;
@@ -41,8 +38,9 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static io.restassured.RestAssured.given;
 import static org.awaitility.Awaitility.await;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 
 
@@ -65,9 +63,9 @@ public class OasysAssessmentControllerTest {
     @LocalServerPort
     int port;
     @MockBean
-    private MessageStoreRepository messageStoreRepository;
+    private MessageStoreService messageStoreService;
     @MockBean
-    private ExceptionLogRepository exceptionLogRepository;
+    private ExceptionLogService exceptionLogService;
 
     @Autowired
     private MBeanServer mBeanServer;
@@ -76,9 +74,9 @@ public class OasysAssessmentControllerTest {
     public void setup() throws MalformedObjectNameException, MBeanException, InstanceNotFoundException, ReflectionException {
         RestAssured.port = port;
         purgeMessageQueue();
-        Mockito.when(messageStoreRepository.save(Mockito.any(MsgStore.class))).thenReturn(MsgStore.builder().build());
-        Mockito.when(exceptionLogRepository.save(Mockito.any(ExceptionLog.class))).thenReturn(ExceptionLog.builder().build());
-        reset(messageStoreRepository, exceptionLogRepository);
+//        Mockito.when(messageStoreService.writeMessage();ave(Mockito.any(MsgStore.class))).thenReturn(MsgStore.builder().build());
+//        Mockito.when(exceptionLogRepository.save(Mockito.any(ExceptionLog.class))).thenReturn(ExceptionLog.builder().build());
+//        reset(messageStoreRepository, exceptionLogRepository);
     }
 
     private Object purgeMessageQueue() throws InstanceNotFoundException, MBeanException, ReflectionException, MalformedObjectNameException {
@@ -123,9 +121,8 @@ public class OasysAssessmentControllerTest {
             }
         });
 
-        Mockito.verify(messageStoreRepository, times(2)).save(Matchers.any(MsgStore.class));
-        Mockito.verify(exceptionLogRepository, never()).save(Matchers.any(ExceptionLog.class));
-
+        Mockito.verify(messageStoreService, times(2)).writeMessage(anyString(), anyString(), any(MessageStoreService.ProcStates.class));
+        Mockito.verify(exceptionLogService, never()).logFault(anyString(), anyString(), anyString());
 
     }
 
@@ -155,8 +152,8 @@ public class OasysAssessmentControllerTest {
 
         Thread.sleep(1000);
 
-        Mockito.verify(messageStoreRepository, times(2)).save(Matchers.any(MsgStore.class));
-        Mockito.verify(exceptionLogRepository, times(1)).save(Matchers.any(ExceptionLog.class));
+        Mockito.verify(messageStoreService, times(2)).writeMessage(anyString(), anyString(), any(MessageStoreService.ProcStates.class));
+        Mockito.verify(exceptionLogService, times(1)).logFault(anyString(), anyString(), anyString());
 
     }
 }

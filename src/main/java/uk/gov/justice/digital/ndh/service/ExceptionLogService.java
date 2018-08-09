@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.ndh.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.digital.ndh.jpa.entity.ExceptionLog;
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 import static uk.gov.justice.digital.ndh.ThatsNotMyNDH.NDH_PROCESS_NAME;
 
 @Service
+@Slf4j
 public class ExceptionLogService {
 
     private final ExceptionLogRepository exceptionLogRepository;
@@ -22,6 +24,7 @@ public class ExceptionLogService {
 
 
     public void logFault(String body, String correlationId, String description) {
+        log.error("!!!!!!!!!");
         exceptionLogRepository.save(ExceptionLog
                 .builder()
                 .excDatetime(Timestamp.valueOf(LocalDateTime.now()))

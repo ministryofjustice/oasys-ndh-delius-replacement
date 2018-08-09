@@ -54,7 +54,7 @@ public class OasysAssessmentUpdateListener {
 
         Optional<String> maybeSoapXmlFromOasys = readFromQueue(message);
 
-        Optional<SoapEnvelope> maybeInputSoapMessage = buildNdhSoapEnvelope(maybeSoapXmlFromOasys, message);
+        Optional<SoapEnvelope> maybeInputSoapMessage = buildNdhSoapEnvelope(maybeSoapXmlFromOasys);
 
         Optional<SoapEnvelope> maybeDeliusRequest = buildOasysSoapEnvelope(maybeInputSoapMessage);
 
@@ -75,11 +75,9 @@ public class OasysAssessmentUpdateListener {
                     try {
                         deliusResponse = xmlMapper.readValue(rawDeliusResponse, SoapEnvelope.class);
                         if (deliusResponse.getBody().isSoapFault()) {
-                            log.error("SOAP Fault from Delius: {}", rawDeliusResponse);
                             exceptionLogService.logFault(rawDeliusResponse, maybeDeliusRequest.get().getHeader().getHeader().getMessageId(), "SOAP Fault from Delius");
                         }
                     } catch (IOException e) {
-                        log.error("Garbage response from Delius: {}", e.getMessage());
                         exceptionLogService.logFault(rawDeliusResponse, maybeDeliusRequest.get().getHeader().getHeader().getMessageId(), "Garbage response from Delius");
                     }
 
@@ -128,14 +126,14 @@ public class OasysAssessmentUpdateListener {
             return rawDeliusRequest;
         });
 
-        if (maybeDeliusRequest == null) {
+        if (maybeRawDeliusRequest == null) {
             return Optional.empty();
         }
 
         return maybeRawDeliusRequest;
     }
 
-    private Optional<SoapEnvelope> buildNdhSoapEnvelope(Optional<String> maybeSoapXmlFromOasys, Message message) {
+    private Optional<SoapEnvelope> buildNdhSoapEnvelope(Optional<String> maybeSoapXmlFromOasys) {
 
         final Optional<SoapEnvelope> maybeNdhAssessmentUpdateSoapEnvelope = maybeSoapXmlFromOasys.map(soapXmlFromOasys -> {
             try {
