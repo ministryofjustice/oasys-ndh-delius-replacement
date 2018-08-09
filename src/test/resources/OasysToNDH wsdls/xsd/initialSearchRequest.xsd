@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:dt="http://www.hp.com/NDH_Web_Service/DomainTypes" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.hp.com/NDH_Web_Service/InitialSearchRequest" targetNamespace="http://www.hp.com/NDH_Web_Service/InitialSearchRequest" elementFormDefault="qualified" attributeFormDefault="unqualified">
+    <xs:import namespace="http://www.hp.com/NDH_Web_Service/DomainTypes"/>
+    <xs:element name="InitialSearchRequest">
+        <xs:annotation>
+            <xs:documentation>Comment describing your root element</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="header" type="dt:Header"/>
+                <xs:element name="CMSProbNumber" type="dt:CMSNumber" minOccurs="0"/>
+                <xs:element name="Forename1" type="dt:PersonName" minOccurs="0"/>
+                <xs:element name="FamilyName" type="dt:PersonName" minOccurs="0"/>
+                <xs:element ref="ns0:OffenderGender" minOccurs="0"/>
+                <xs:element ref="ns0:OffenderDOB" minOccurs="0"/>
+                <xs:element ref="ns0:PoliceNationalComputerIdentifier" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="OffenderDOB" type="xs:date"/>
+    <xs:element name="OffenderGender" type="xs:string"/>
+    <xs:element name="PoliceNationalComputerIdentifier" type="xs:string"/>
+</xs:schema>

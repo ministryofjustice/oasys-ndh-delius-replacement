@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.justice.digital.ndh.jpa.entity.MappingCodeData;
 import uk.gov.justice.digital.ndh.jpa.entity.MappingCodeDataPK;
 import uk.gov.justice.digital.ndh.jpa.repository.MappingRepository;
+import uk.gov.justice.digital.ndh.service.ExceptionLogService;
 
 import java.util.Optional;
 
@@ -12,49 +13,40 @@ import java.util.Optional;
 public class MappingService {
     private final MappingRepository mappingRepository;
 
+    private final ExceptionLogService exceptionLogService;
+
     @Autowired
-    public MappingService(MappingRepository mappingRepository) {
+    public MappingService(MappingRepository mappingRepository, ExceptionLogService exceptionLogService) {
         this.mappingRepository = mappingRepository;
+        this.exceptionLogService = exceptionLogService;
     }
 
-    public Optional<String> getTargetValueOf(Long type, String value) {
+    public String descriptionOf(String sourceVal, Long codeType) {
+        //TODO record any mapping failures
+        Optional<MappingCodeData> maybeMapped = Optional.ofNullable(sourceVal).flatMap(
+                sv -> Optional.ofNullable(mappingRepository.findOne(MappingCodeDataPK.builder()
+                        .codeType(codeType)
+                        .sourceValue(sourceVal)
+                        .build())));
 
-        Optional<MappingCodeData> maybeMappingCodeData = Optional.ofNullable(mappingRepository.findOne(MappingCodeDataPK.builder()
-                .codeType(type)
-                .sourceValue(value)
-                .build()));
-        return maybeMappingCodeData.map(MappingCodeData::getTargetValue);
+        return maybeMapped.map(MappingCodeData::getDescription).orElse(fail(codeType,sourceVal));
     }
-    public Optional<String> getDescriptionOf(Long type, String value) {
 
-        Optional<MappingCodeData> maybeMappingCodeData = Optional.ofNullable(mappingRepository.findOne(MappingCodeDataPK.builder()
-                .codeType(type)
-                .sourceValue(value)
-                .build()));
-        return maybeMappingCodeData.map(MappingCodeData::getDescription);
+    private String fail(Long codeType, String sourceVal) {
+        exceptionLogService.logMappingFail(codeType, sourceVal);
+        return null;
     }
-    public Optional<Long> getNumCodeOf(Long type, String value) {
 
-        Optional<MappingCodeData> maybeMappingCodeData = Optional.ofNullable(mappingRepository.findOne(MappingCodeDataPK.builder()
-                .codeType(type)
-                .sourceValue(value)
-                .build()));
-        return maybeMappingCodeData.map(MappingCodeData::getNumcode);
-    }
-    public Optional<Long> getRankOf(Long type, String value) {
+    public String targetValueOf(String sourceVal, Long codeType) {
+        //TODO record any mapping failures
+        Optional<MappingCodeData> maybeMapped = Optional.ofNullable(sourceVal).flatMap(
+                sv -> Optional.ofNullable(mappingRepository.findOne(MappingCodeDataPK.builder()
+                        .codeType(codeType)
+                        .sourceValue(sourceVal)
+                        .build())));
 
-        Optional<MappingCodeData> maybeMappingCodeData = Optional.ofNullable(mappingRepository.findOne(MappingCodeDataPK.builder()
-                .codeType(type)
-                .sourceValue(value)
-                .build()));
-        return maybeMappingCodeData.map(MappingCodeData::getRank);
-    }
-    public Optional<Long> getNumeric1Of(Long type, String value) {
+        return maybeMapped.map(MappingCodeData::getTargetValue).orElse(fail(codeType,sourceVal));
 
-        Optional<MappingCodeData> maybeMappingCodeData = Optional.ofNullable(mappingRepository.findOne(MappingCodeDataPK.builder()
-                .codeType(type)
-                .sourceValue(value)
-                .build()));
-        return maybeMappingCodeData.map(MappingCodeData::getNumeric1);
     }
+
 }

@@ -31,4 +31,13 @@ public class ExceptionLogService {
                 .payload(body)
                 .build());
     }
+
+    public void logMappingFail(Long codeType, String sourceVal) {
+        exceptionLogRepository.save(ExceptionLog
+                .builder()
+                .excDatetime(Timestamp.valueOf(LocalDateTime.now()))
+                // TODO: FInd out where and how to write code & value
+                .build());
+
+    }
 }
