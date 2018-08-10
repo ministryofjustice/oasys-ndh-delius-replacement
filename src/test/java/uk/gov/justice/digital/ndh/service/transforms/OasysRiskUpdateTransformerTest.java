@@ -22,6 +22,7 @@ import uk.gov.justice.digital.ndh.api.oasys.response.RiskUpdateResponse;
 import uk.gov.justice.digital.ndh.api.soap.SoapBody;
 import uk.gov.justice.digital.ndh.api.soap.SoapEnvelope;
 import uk.gov.justice.digital.ndh.api.soap.SoapHeader;
+import uk.gov.justice.digital.ndh.service.ExceptionLogService;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
@@ -33,6 +34,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 public class OasysRiskUpdateTransformerTest {
 
@@ -43,7 +45,7 @@ public class OasysRiskUpdateTransformerTest {
 
         final SoapEnvelope oasysRequest = anOasysRiskUpdate();
 
-        OasysRiskUpdateTransformer transformer = new OasysRiskUpdateTransformer(new FaultTransformer(), new CommonTransformer(), getXmlMapper());
+        OasysRiskUpdateTransformer transformer = new OasysRiskUpdateTransformer(new FaultTransformer(), new CommonTransformer(getXmlMapper(), mock(ExceptionLogService.class)), getXmlMapper());
 
         SoapEnvelope expected = SoapEnvelope
                 .builder()
@@ -118,7 +120,7 @@ public class OasysRiskUpdateTransformerTest {
                 .body(root)
                 .build();
 
-        OasysRiskUpdateTransformer transformer = new OasysRiskUpdateTransformer(new FaultTransformer(), new CommonTransformer(), getXmlMapper());
+        OasysRiskUpdateTransformer transformer = new OasysRiskUpdateTransformer(new FaultTransformer(), new CommonTransformer(getXmlMapper(), mock(ExceptionLogService.class)), getXmlMapper());
 
         SoapEnvelope expected = anOasysRiskUpdateResponse();
 
@@ -152,7 +154,7 @@ public class OasysRiskUpdateTransformerTest {
 
         final XmlMapper xmlMapper = getXmlMapper();
 
-        OasysRiskUpdateTransformer transformer = new OasysRiskUpdateTransformer(new FaultTransformer(), new CommonTransformer(), xmlMapper);
+        OasysRiskUpdateTransformer transformer = new OasysRiskUpdateTransformer(new FaultTransformer(), new CommonTransformer(xmlMapper, mock(ExceptionLogService.class)), xmlMapper);
 
         final SoapEnvelope builtMessage = transformer.deliusRiskUpdateRequestOf(anOasysRiskUpdate());
 

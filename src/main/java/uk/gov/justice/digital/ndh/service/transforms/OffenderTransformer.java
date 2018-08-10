@@ -1,6 +1,8 @@
 package uk.gov.justice.digital.ndh.service.transforms;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.ImmutableList;
+import org.dom4j.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.ndh.api.delius.request.GetSubSetOffenderEventRequest;
@@ -11,7 +13,7 @@ import uk.gov.justice.digital.ndh.api.oasys.response.SubSetEvent;
 import uk.gov.justice.digital.ndh.api.oasys.response.SubSetOffender;
 import uk.gov.justice.digital.ndh.api.soap.SoapBody;
 import uk.gov.justice.digital.ndh.api.soap.SoapEnvelope;
-import uk.gov.justice.digital.ndh.service.filters.MappingService;
+import uk.gov.justice.digital.ndh.service.MappingService;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,11 +24,13 @@ public class OffenderTransformer {
 
     public static final long SENTENCE_CODE_TYPE = 3802L;
     private final CommonTransformer commonTransformer;
+    private final FaultTransformer faultTransformer;
     private final MappingService mappingService;
 
     @Autowired
-    public OffenderTransformer(CommonTransformer commonTransformer, MappingService mappingService) {
+    public OffenderTransformer(CommonTransformer commonTransformer, FaultTransformer faultTransformer, MappingService mappingService) {
         this.commonTransformer = commonTransformer;
+        this.faultTransformer = faultTransformer;
         this.mappingService = mappingService;
     }
 
@@ -51,7 +55,7 @@ public class OffenderTransformer {
                 .build();
     }
 
-    public SoapEnvelope oasysInitialSearchResponseOf(SoapEnvelope deliusInitialSearchResponse, SoapEnvelope oasysInitialSearchRequest) {
+    public SoapEnvelope oasysInitialSearchResponseOf(SoapEnvelope deliusInitialSearchResponse, Optional<SoapEnvelope> maybeOasysInitialSearchRequest) {
         return SoapEnvelope
                 .builder()
                 .body(
@@ -60,7 +64,7 @@ public class OffenderTransformer {
                                 .initialSearchResponse(
                                         InitialSearchResponse
                                                 .builder()
-                                                .header(oasysInitialSearchRequest.getBody().getInitialSearchRequest().getHeader())
+                                                .header(maybeOasysInitialSearchRequest.map(isr -> isr.getBody().getInitialSearchRequest().getHeader()).orElse(null))
                                                 .subSetOffenders(subsetOffendersOf(deliusInitialSearchResponse.getBody().getGetSubSetOffenderDetailsResponse()))
                                                 .build()
                                 )
@@ -117,5 +121,16 @@ public class OffenderTransformer {
         return Optional.ofNullable(orderType)
                 .map(ot -> mappingService.descriptionOf(orderType, SENTENCE_CODE_TYPE))
                 .orElse(null);
+    }
+
+    public String stringResponseOf(SoapEnvelope response, Optional<SoapEnvelope> maybeOasysInitialSearch, Optional<String> maybeRawResponse) throws DocumentException, JsonProcessingException {
+        final String correlationID = maybeOasysInitialSearch.get().getBody().getInitialSearchRequest().getHeader().getCorrelationID();
+        if (response.getBody().isSoapFault()) {
+            return faultTransformer.oasysFaultResponseOf(maybeRawResponse.get(), correlationID);
+        } else {
+            final SoapEnvelope transformedResponse = oasysInitialSearchResponseOf(response, maybeOasysInitialSearch);
+            return commonTransformer.transformedResponseXmlOf(transformedResponse);
+
+        }
     }
 }

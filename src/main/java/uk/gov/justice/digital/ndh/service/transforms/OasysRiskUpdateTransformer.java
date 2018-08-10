@@ -19,13 +19,11 @@ public class OasysRiskUpdateTransformer {
 
     private final FaultTransformer faultTransformer;
     private final CommonTransformer commonTransformer;
-    private final XmlMapper xmlMapper;
 
     @Autowired
     public OasysRiskUpdateTransformer(FaultTransformer faultTransformer, CommonTransformer commonTransformer, XmlMapper xmlMapper) {
         this.faultTransformer = faultTransformer;
         this.commonTransformer = commonTransformer;
-        this.xmlMapper = xmlMapper;
     }
 
     public SoapEnvelope deliusRiskUpdateRequestOf(SoapEnvelope oasysRiskUpdate) {
@@ -67,13 +65,7 @@ public class OasysRiskUpdateTransformer {
             return faultTransformer.oasysFaultResponseOf(rawDeliusResponse.get(), correlationID);
         } else {
             final SoapEnvelope transformedResponse = oasysRiskUpdateResponseOf(response, maybeOasysRiskUpdate);
-            return transformedResponseXmlOf(transformedResponse);
-
+            return commonTransformer.transformedResponseXmlOf(transformedResponse);
         }
     }
-
-    private String transformedResponseXmlOf(SoapEnvelope transformedResponse) throws JsonProcessingException {
-        return xmlMapper.writeValueAsString(transformedResponse);
-    }
-
 }

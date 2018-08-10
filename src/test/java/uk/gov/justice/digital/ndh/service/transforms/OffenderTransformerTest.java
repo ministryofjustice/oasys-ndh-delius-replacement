@@ -18,24 +18,27 @@ import uk.gov.justice.digital.ndh.api.oasys.request.InitialSearchRequest;
 import uk.gov.justice.digital.ndh.api.oasys.response.InitialSearchResponse;
 import uk.gov.justice.digital.ndh.api.soap.SoapBody;
 import uk.gov.justice.digital.ndh.api.soap.SoapEnvelope;
-import uk.gov.justice.digital.ndh.service.filters.MappingService;
+import uk.gov.justice.digital.ndh.service.ExceptionLogService;
+import uk.gov.justice.digital.ndh.service.MappingService;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class OffenderTransformerTest {
 
+    public static final CommonTransformer COMMON_TRANSFORMER = new CommonTransformer(new XmlMapper(), mock(ExceptionLogService.class));
+
     @Test
     public void canTransformOasysInitialSearchRequest() {
-        final CommonTransformer commonTransformer = new CommonTransformer();
-        OffenderTransformer offenderTransformer = new OffenderTransformer(commonTransformer, mock(MappingService.class));
+        final OffenderTransformer offenderTransformer = new OffenderTransformer(COMMON_TRANSFORMER, mock(FaultTransformer.class), mock(MappingService.class));
 
         SoapEnvelope oasysRequest = anOasysInitialSearchRequest();
 
         SoapEnvelope expected = SoapEnvelope
                 .builder()
-                .header(commonTransformer.deliusSoapHeaderOf("1234567890123456789012345678901"))
+                .header(COMMON_TRANSFORMER.deliusSoapHeaderOf("1234567890123456789012345678901"))
                 .body(SoapBody
                         .builder()
                         .getSubSetOffenderEventRequest(
@@ -79,8 +82,7 @@ public class OffenderTransformerTest {
     public void serializedDeliusRequestIsSchemaCompliant() throws JsonProcessingException {
 
         final XmlMapper xmlMapper = getXmlMapper();
-
-        OffenderTransformer transformer = new OffenderTransformer(new CommonTransformer(), mock(MappingService.class));
+        final OffenderTransformer transformer = new OffenderTransformer(COMMON_TRANSFORMER, mock(FaultTransformer.class), mock(MappingService.class));
 
         final SoapEnvelope builtMessage = transformer.deliusInitialSearchRequestOf(anOasysInitialSearchRequest());
 
@@ -106,19 +108,18 @@ public class OffenderTransformerTest {
 
     @Test
     public void canTransformDeliusInitialSearchResponse() {
-        final CommonTransformer commonTransformer = new CommonTransformer();
-
         final MappingService mappingService = mock(MappingService.class);
 
-        when(mappingService.descriptionOf("orderType", OffenderTransformer.SENTENCE_CODE_TYPE)).thenReturn("sentenceCode");
-        OffenderTransformer transformer = new OffenderTransformer(commonTransformer, mappingService);
+        when(mappingService.descriptionOf(eq("orderType"), eq(OffenderTransformer.SENTENCE_CODE_TYPE))).thenReturn("sentenceCode");
 
-        final SoapEnvelope deliusResponse = aDeliusInitialSearchResponse(commonTransformer);
+        final OffenderTransformer transformer = new OffenderTransformer(COMMON_TRANSFORMER, mock(FaultTransformer.class), mappingService);
+
+        final SoapEnvelope deliusResponse = aDeliusInitialSearchResponse(COMMON_TRANSFORMER);
         final SoapEnvelope oasysRequest = anOasysInitialSearchRequest();
 
         final SoapEnvelope expected = anOasysInitialSearchResponse(oasysRequest);
 
-        SoapEnvelope actual = transformer.oasysInitialSearchResponseOf(deliusResponse, oasysRequest);
+        SoapEnvelope actual = transformer.oasysInitialSearchResponseOf(deliusResponse, java.util.Optional.ofNullable(oasysRequest));
 
         assertThat(actual).isEqualTo(expected);
     }

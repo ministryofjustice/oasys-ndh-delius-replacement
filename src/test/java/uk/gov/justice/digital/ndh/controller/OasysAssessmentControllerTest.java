@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.ndh.controller;
 
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -15,7 +16,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import uk.gov.justice.digital.ndh.api.oasys.request.Header;
+import uk.gov.justice.digital.ndh.api.oasys.response.RiskUpdateResponse;
+import uk.gov.justice.digital.ndh.api.soap.SoapBody;
+import uk.gov.justice.digital.ndh.api.soap.SoapEnvelope;
 import uk.gov.justice.digital.ndh.service.ExceptionLogService;
+import uk.gov.justice.digital.ndh.service.MappingService;
 import uk.gov.justice.digital.ndh.service.MessageStoreService;
 
 import javax.management.InstanceNotFoundException;
@@ -25,6 +31,7 @@ import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.management.ReflectionException;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -37,24 +44,31 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static io.restassured.RestAssured.given;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
         "spring.jmx.enabled=true",
         "ndelius.assessment.update.url=http://localhost:8090/delius/assessmentUpdates",
-        "ndelius.risk.update.url=http://localhost:8090/delius/riskUpdates"})
+        "ndelius.risk.update.url=http://localhost:8090/delius/riskUpdates",
+        "ndelius.initial.search.url=http://localhost:8090/delius/initialSearch"
+})
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext
 public class OasysAssessmentControllerTest {
 
-    public static final String GOOD_RESPONSE_XML = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("__files/GoodDeliusResponse.xml")))
+    public static final String NON_FAULT_GENERIC_RESPONSE = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("wiremock/GoodDeliusResponse.xml")))
             .lines().collect(Collectors.joining("\n"));
-    public static final String BAD_RESPONSE_XML = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("__files/BadDeliusResponse.xml")))
+    public static final String FAULT_GENERIC_RESPONSE = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("wiremock/BadDeliusResponse.xml")))
+            .lines().collect(Collectors.joining("\n"));
+    public static final String GOOD_DELIUS_RISK_RESPONSE = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("wiremock/goodDeliusRiskResponse.xml")))
             .lines().collect(Collectors.joining("\n"));
 
     @Rule
@@ -66,7 +80,11 @@ public class OasysAssessmentControllerTest {
     private MessageStoreService messageStoreService;
     @MockBean
     private ExceptionLogService exceptionLogService;
+    @MockBean
+    MappingService mappingService;
 
+    @Autowired
+    private XmlMapper xmlMapper;
     @Autowired
     private MBeanServer mBeanServer;
 
@@ -74,9 +92,9 @@ public class OasysAssessmentControllerTest {
     public void setup() throws MalformedObjectNameException, MBeanException, InstanceNotFoundException, ReflectionException {
         RestAssured.port = port;
         purgeMessageQueue();
-//        Mockito.when(messageStoreService.writeMessage();ave(Mockito.any(MsgStore.class))).thenReturn(MsgStore.builder().build());
-//        Mockito.when(exceptionLogRepository.save(Mockito.any(ExceptionLog.class))).thenReturn(ExceptionLog.builder().build());
-//        reset(messageStoreRepository, exceptionLogRepository);
+        when(mappingService.descriptionOf(anyString(), anyLong())).thenReturn("description");
+        when(mappingService.targetValueOf(anyString(), anyLong())).thenReturn("targetValue");
+
     }
 
     private Object purgeMessageQueue() throws InstanceNotFoundException, MBeanException, ReflectionException, MalformedObjectNameException {
@@ -89,15 +107,15 @@ public class OasysAssessmentControllerTest {
     }
 
     @Test
-    public void postedXmlMessageIsSentToDeliusAndHandledAppropriately() throws InterruptedException {
+    public void postedAssessmentMessageIsSentToDeliusAndHandledAppropriately() throws InterruptedException {
 
         stubFor(post(urlEqualTo("/delius/assessmentUpdates")).willReturn(
                 aResponse()
-                        .withBody(GOOD_RESPONSE_XML)
+                        .withBody(NON_FAULT_GENERIC_RESPONSE)
                         .withStatus(200)));
 
         // Annoying: Stub seems to take time to register for some reason
-        Thread.sleep(5000);
+        Thread.sleep(2000);
 
         final String requestXml = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/AssessmentUpdates/OasysToNDHSoapEnvelope.xml")))
                 .lines().collect(Collectors.joining("\n"));
@@ -127,20 +145,15 @@ public class OasysAssessmentControllerTest {
     }
 
     @Test
-    public void badResponseFromDeliusIsLoggedAppropriately() throws InterruptedException {
+    public void badAssessmentResponseFromDeliusIsLoggedAppropriately() throws InterruptedException {
 
         stubFor(post(urlEqualTo("/delius/assessmentUpdates")).willReturn(
                 aResponse()
-                        .withBody(BAD_RESPONSE_XML)
+                        .withBody(FAULT_GENERIC_RESPONSE)
                         .withStatus(200)));
-
-        // Annoying: Stub seems to take time to register for some reason
-        Thread.sleep(5000);
 
         final String requestXml = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/AssessmentUpdates/OasysToNDHSoapEnvelope.xml")))
                 .lines().collect(Collectors.joining("\n"));
-
-        ClassLoader.getSystemResourceAsStream("xmls/AssessmentUpdates/OasysToNDHSoapEnvelope.xml");
 
         given()
                 .when()
@@ -156,4 +169,46 @@ public class OasysAssessmentControllerTest {
         Mockito.verify(exceptionLogService, times(1)).logFault(anyString(), anyString(), anyString());
 
     }
+
+    @Test
+    public void postedRiskMessageIsSentToDeliusAndHandledAppropriately() throws InterruptedException, IOException {
+
+        stubFor(post(urlEqualTo("/delius/riskUpdates")).willReturn(
+                aResponse()
+                        .withBody(GOOD_DELIUS_RISK_RESPONSE)
+                        .withStatus(200)));
+
+        // Annoying: Stub seems to take time to register for some reason
+        Thread.sleep(2000);
+
+        final String requestXml = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/RiskUpdate/oasysRiskRequestSoap.xml")))
+                .lines().collect(Collectors.joining("\n"));
+
+        final String actualXml = given()
+                .when()
+                .contentType(ContentType.XML)
+                .body(requestXml)
+                .post("/oasysRiskUpdates")
+                .then()
+                .statusCode(200).extract().body().asString();
+
+        final SoapEnvelope actual = xmlMapper.readValue(actualXml, SoapEnvelope.class);
+
+        final SoapEnvelope expected = SoapEnvelope.builder()
+                .body(SoapBody.builder()
+                        .riskUpdateResponse(RiskUpdateResponse.builder()
+                                .caseReferenceNumber("T123456")
+                                .header(Header.builder()
+                                        .applicationMode("L")
+                                        .correlationID("OASYSRPCN0220180726150731234567")
+                                        .messageTimestamp("2018-07-26T15:00:31+01:00")
+                                        .oasysRUsername("CN=Tony Gowland/OU=Northumbria/O=NPS")
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+
+        assertThat(actual).isEqualTo(expected);
+    }
+
 }

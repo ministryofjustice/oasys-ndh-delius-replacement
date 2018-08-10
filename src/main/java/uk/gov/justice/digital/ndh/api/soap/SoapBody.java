@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Value;
 import uk.gov.justice.digital.ndh.api.delius.request.GetSubSetOffenderEventRequest;
 import uk.gov.justice.digital.ndh.api.delius.request.SubmitAssessmentSummaryRequest;
@@ -16,6 +17,7 @@ import uk.gov.justice.digital.ndh.api.oasys.response.InitialSearchResponse;
 import uk.gov.justice.digital.ndh.api.oasys.response.RiskUpdateResponse;
 
 @Value
+@EqualsAndHashCode(exclude = "fault") //Compare "null" nodes returns false, so exclude
 @Builder
 public class SoapBody {
     @JsonProperty("RiskUpdateRequest")

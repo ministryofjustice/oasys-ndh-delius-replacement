@@ -19,7 +19,7 @@ public class DeliusRiskUpdateResponse {
 
     public Optional<String> getCaseReferenceNumber() {
         return Optional.of(body)
-                .map(b -> b.get("RiskUpdateResponse"))
+                .map(b -> b.get("SubmitRiskDataResponse"))
                 .map(srdr -> srdr.get("CaseReferenceNumber"))
                 .map(JsonNode::textValue);
     }

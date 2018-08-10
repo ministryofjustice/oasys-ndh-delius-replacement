@@ -15,6 +15,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.justice.digital.ndh.service.DeliusAssessmentUpdateClient;
 import uk.gov.justice.digital.ndh.service.ExceptionLogService;
+import uk.gov.justice.digital.ndh.service.MappingService;
 import uk.gov.justice.digital.ndh.service.MessageStoreService;
 
 import java.io.BufferedReader;
@@ -23,15 +24,18 @@ import java.util.stream.Collectors;
 
 import static io.restassured.RestAssured.given;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
         "spring.jmx.enabled=true",
         "ndelius.assessment.update.url=http://localhost:8090/delius/assessmentUpdates",
-        "ndelius.risk.update.url=http://localhost:8090/delius/riskUpdates"})
+        "ndelius.risk.update.url=http://localhost:8090/delius/riskUpdates",
+        "ndelius.initial.search.url=http://localhost:8090/delius/initialSearch"})
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext
 public class DeliusUnavailableBehaviourTest {
@@ -46,12 +50,18 @@ public class DeliusUnavailableBehaviourTest {
     private MessageStoreService messageStoreService;
 
     @MockBean
+    private MappingService mappingService;
+
+    @MockBean
     private DeliusAssessmentUpdateClient deliusAssessmentUpdateClient;
 
     @Before
     public void setup() throws UnirestException {
         RestAssured.port = port;
-        Mockito.when(deliusAssessmentUpdateClient.deliusWebServiceResponseOf(any(String.class))).thenThrow(new UnirestException("unreachable"));
+        when(deliusAssessmentUpdateClient.deliusWebServiceResponseOf(any(String.class))).thenThrow(new UnirestException("unreachable"));
+        when(mappingService.descriptionOf(anyString(), anyLong())).thenReturn("description");
+        when(mappingService.targetValueOf(anyString(), anyLong())).thenReturn("targetValue");
+
     }
 
     @After

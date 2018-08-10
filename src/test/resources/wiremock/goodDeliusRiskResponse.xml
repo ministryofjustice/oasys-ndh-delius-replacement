@@ -1,0 +1,13 @@
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:com="http://www.bconline.co.uk/oasys/common" xmlns:mes="http://www.bconline.co.uk/oasys/messages">
+    <soap:Header>
+        <com:Header>
+            <com:Version>1.0</com:Version>
+            <com:MessageID>OASYSRPCN0220180726150731234567</com:MessageID>
+        </com:Header>
+    </soap:Header>
+    <soap:Body>
+        <mes:SubmitRiskDataResponse>
+            <mes:CaseReferenceNumber>T123456</mes:CaseReferenceNumber>
+        </mes:SubmitRiskDataResponse>
+    </soap:Body>
+</soap:Envelope>

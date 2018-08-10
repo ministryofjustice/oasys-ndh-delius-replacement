@@ -158,7 +158,7 @@ public class OasysAssessmentUpdateListener {
         try {
             soapXmlFromOasys = readMessage(message);
         } catch (JMSException e) {
-            log.error("Can't read input message from queue. Ignore and continue. {}", e.getMessage());
+            log.error("Can't asSoapEnvelope input message from queue. Ignore and continue. {}", e.getMessage());
             return Optional.empty();
         }
 

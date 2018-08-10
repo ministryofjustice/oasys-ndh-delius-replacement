@@ -12,7 +12,8 @@ import uk.gov.justice.digital.ndh.api.oasys.request.Objective;
 import uk.gov.justice.digital.ndh.api.oasys.request.Risk;
 import uk.gov.justice.digital.ndh.api.soap.SoapBody;
 import uk.gov.justice.digital.ndh.api.soap.SoapEnvelope;
-import uk.gov.justice.digital.ndh.service.filters.MappingService;
+import uk.gov.justice.digital.ndh.service.MappingService;
+import uk.gov.justice.digital.ndh.service.exception.NDHMappingException;
 
 import java.util.Arrays;
 import java.util.List;
@@ -95,7 +96,7 @@ public class OasysAssessmentUpdateTransformer {
                 .orElse(null);
     }
 
-    private OasysSupervisionPlan deliusSupervisionPlanOf(Objective objective, Assessment assessment) {
+    private OasysSupervisionPlan deliusSupervisionPlanOf(Objective objective, Assessment assessment) throws NDHMappingException {
         return OasysSupervisionPlan.builder()
                 .caseReferenceNumber(assessment.getCmsProbNumber())
                 .oasysId(assessment.getAssessmentGUID())
@@ -163,7 +164,7 @@ public class OasysAssessmentUpdateTransformer {
         return Optional.ofNullable(layer1Obj)
                 .map(flags -> Arrays
                         .stream(flags.split(","))
-                        .map(part -> deliusLayerOf.apply(part))
+                        .map(deliusLayerOf)
                         .collect(Collectors.joining(",")))
                 .orElse(null);
     }
@@ -172,7 +173,7 @@ public class OasysAssessmentUpdateTransformer {
         return Optional.ofNullable(riskFlags)
                 .map(flags -> Arrays
                         .stream(flags.split(","))
-                        .map(part -> deliusRiskFlagOf.apply(part))
+                        .map(deliusRiskFlagOf)
                         .collect(Collectors.joining(",")))
                 .orElse(null);
     }
@@ -181,7 +182,7 @@ public class OasysAssessmentUpdateTransformer {
         return Optional.ofNullable(concernFlags)
                 .map(flags -> Arrays
                         .stream(flags.split(","))
-                        .map(part -> deliusConcernFlagOf.apply(part))
+                        .map(deliusConcernFlagOf)
                         .collect(Collectors.joining(",")))
                 .orElse(null);
     }

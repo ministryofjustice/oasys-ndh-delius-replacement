@@ -10,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.digital.ndh.api.delius.response.DeliusRiskUpdateResponse;
 import uk.gov.justice.digital.ndh.api.soap.SoapEnvelope;
+import uk.gov.justice.digital.ndh.service.exception.NDHMappingException;
+import uk.gov.justice.digital.ndh.service.transforms.CommonTransformer;
+import uk.gov.justice.digital.ndh.service.transforms.FaultTransformer;
 import uk.gov.justice.digital.ndh.service.transforms.OasysRiskUpdateTransformer;
 
 import java.io.IOException;
@@ -17,33 +20,32 @@ import java.util.Optional;
 
 @Service
 @Slf4j
-public class OasysRiskService {
+public class OasysRiskService extends RequestResponseService {
 
     private final OasysRiskUpdateTransformer oasysRiskUpdateTransformer;
-    private final XmlMapper xmlMapper;
-    private final MessageStoreService messageStoreService;
-    private final ExceptionLogService exceptionLogService;
     private final DeliusRiskUpdateClient deliusRiskUpdateClient;
+    private final FaultTransformer faultTransformer;
 
 
     @Autowired
-    public OasysRiskService(OasysRiskUpdateTransformer oasysRiskUpdateTransformer, XmlMapper xmlMapper, MessageStoreService messageStoreService, ExceptionLogService exceptionLogService, DeliusRiskUpdateClient deliusRiskUpdateClient) {
+    public OasysRiskService(OasysRiskUpdateTransformer oasysRiskUpdateTransformer, CommonTransformer commonTransformer, XmlMapper xmlMapper, MessageStoreService messageStoreService, ExceptionLogService exceptionLogService, DeliusRiskUpdateClient deliusRiskUpdateClient, FaultTransformer faultTransformer) {
+        super(exceptionLogService, commonTransformer, messageStoreService, xmlMapper);
         this.oasysRiskUpdateTransformer = oasysRiskUpdateTransformer;
-        this.xmlMapper = xmlMapper;
-        this.messageStoreService = messageStoreService;
-        this.exceptionLogService = exceptionLogService;
         this.deliusRiskUpdateClient = deliusRiskUpdateClient;
+        this.faultTransformer = faultTransformer;
     }
 
     public Optional<String> processRiskUpdate(String updateXml) {
 
-        val maybeOasysRiskUpdate = read(updateXml);
+        val maybeOasysRiskUpdate = commonTransformer.asSoapEnvelope(updateXml);
+
+        final String cmsProbNUmber = maybeOasysRiskUpdate.map(oru -> oru.getBody().getRiskUpdateRequest().getCmsProbNumber()).orElse(null);
 
         val correlationId = maybeOasysRiskUpdate.map(riskUpdate -> riskUpdate.getBody().getRiskUpdateRequest().getHeader().getCorrelationID()).orElse(null);
 
         val maybeTransformed = deliusRiskUpdateRequestOf(updateXml, maybeOasysRiskUpdate);
 
-        val maybeTransformedXml = deliusRiskUpdateXmlOf(maybeTransformed, correlationId);
+        val maybeTransformedXml = stringXmlOf(maybeTransformed, correlationId);
 
         val maybeRawResponse = rawDeliusUpdateRiskResponseOf(maybeTransformedXml, correlationId);
 
@@ -51,7 +53,19 @@ public class OasysRiskService {
 
         return maybeResponse.flatMap(response -> {
             try {
-                return Optional.of(oasysRiskUpdateTransformer.stringResponseOf(response, maybeOasysRiskUpdate, maybeRawResponse));
+                try {
+                    final String value = oasysRiskUpdateTransformer.stringResponseOf(response, maybeOasysRiskUpdate, maybeRawResponse);
+                    return Optional.of(value);
+                } catch (NDHMappingException ndhme) {
+                    exceptionLogService.logMappingFail(
+                            ndhme.getCode(),
+                            ndhme.getSourceValue(),
+                            ndhme.getSubject(),
+                            correlationId,
+                            cmsProbNUmber);
+
+                    return mappingSoapFault(correlationId);
+                }
             } catch (DocumentException e) {
                 log.error(e.getMessage());
                 exceptionLogService.logFault(response.toString(), correlationId, "Can't transform fault response: " + e.getMessage());
@@ -62,6 +76,10 @@ public class OasysRiskService {
                 throw new RuntimeException(e);
             }
         });
+    }
+
+    private Optional<String> mappingSoapFault(String correlationId) {
+        return Optional.of(faultTransformer.mappingSoapFaultOf(correlationId));
     }
 
     private Optional<DeliusRiskUpdateResponse> deliusRiskUpdateResponseOf(Optional<String> maybeRawResponse, String correlationId) {
@@ -81,23 +99,11 @@ public class OasysRiskService {
         return maybeTransformedXml.flatMap((String transformedXml) -> callDeliusRiskUpdate(transformedXml, correlationId));
     }
 
-    private Optional<String> deliusRiskUpdateXmlOf(Optional<SoapEnvelope> maybeTransformed, String correlationId) {
-        return maybeTransformed.flatMap(transformed -> {
-            try {
-                final String transformedXml = xmlMapper.writeValueAsString(transformed);
-                messageStoreService.writeMessage(transformedXml, correlationId, MessageStoreService.ProcStates.GLB_ProcState_InboundAfterTransformation);
-                return Optional.of(transformedXml);
-            } catch (JsonProcessingException e) {
-                log.error(e.getMessage());
-                exceptionLogService.logFault(transformed.toString(), correlationId, "Can't serialize transformed risk update to XML: " + e.getMessage());
-                return Optional.empty();
-            }
-        });
-    }
-
     private Optional<SoapEnvelope> deliusRiskUpdateRequestOf(String updateXml, Optional<SoapEnvelope> maybeOasysRiskUpdate) {
         return maybeOasysRiskUpdate.map(oasysRiskUpdate -> {
-            messageStoreService.writeMessage(updateXml, maybeOasysRiskUpdate.get().getHeader().getCorrelationId(), MessageStoreService.ProcStates.GLB_ProcState_InboundBeforeTransformation);
+            messageStoreService.writeMessage(updateXml,
+                    oasysRiskUpdate.getBody().getRiskUpdateRequest().getHeader().getCorrelationID(),
+                    MessageStoreService.ProcStates.GLB_ProcState_InboundBeforeTransformation);
             return oasysRiskUpdateTransformer.deliusRiskUpdateRequestOf(oasysRiskUpdate);
         });
     }
@@ -110,14 +116,5 @@ public class OasysRiskService {
             exceptionLogService.logFault(transformedXml, correlationId, "Can't talk to Delius risk update endpoint: " + e.getMessage());
             return Optional.empty();
         }
-    }
-
-    private Optional<SoapEnvelope> read(String updateXml) {
-        try {
-            return Optional.of(xmlMapper.readValue(updateXml, SoapEnvelope.class));
-        } catch (IOException e) {
-            exceptionLogService.logFault(updateXml, null, "Can't read xml soap message from Oasys: " + e.getMessage());
-        }
-        return Optional.empty();
     }
 }

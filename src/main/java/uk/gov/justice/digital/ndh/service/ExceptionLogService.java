@@ -15,6 +15,7 @@ import static uk.gov.justice.digital.ndh.ThatsNotMyNDH.NDH_PROCESS_NAME;
 @Slf4j
 public class ExceptionLogService {
 
+    public static final String MAPPING_EXCEPTION = "MAPPING EXCEPTION";
     private final ExceptionLogRepository exceptionLogRepository;
 
     @Autowired
@@ -24,7 +25,6 @@ public class ExceptionLogService {
 
 
     public void logFault(String body, String correlationId, String description) {
-        log.error("!!!!!!!!!");
         exceptionLogRepository.save(ExceptionLog
                 .builder()
                 .excDatetime(Timestamp.valueOf(LocalDateTime.now()))
@@ -35,11 +35,14 @@ public class ExceptionLogService {
                 .build());
     }
 
-    public void logMappingFail(Long codeType, String sourceVal) {
+    public void logMappingFail(Long codeType, String sourceVal, String context, String correlationId, String crnOrPnc) {
         exceptionLogRepository.save(ExceptionLog
                 .builder()
                 .excDatetime(Timestamp.valueOf(LocalDateTime.now()))
-                // TODO: FInd out where and how to write code & value
+                .description("Failed mapping: CodeType : " + codeType + ", SourceVal : " + sourceVal + " to " + context)
+                .correlationId(correlationId)
+                .customId(crnOrPnc)
+                .excCode(MAPPING_EXCEPTION)
                 .build());
 
     }
