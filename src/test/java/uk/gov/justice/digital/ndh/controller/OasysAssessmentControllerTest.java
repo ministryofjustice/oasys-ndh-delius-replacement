@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.ndh.controller;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -14,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.justice.digital.ndh.api.oasys.request.Header;
 import uk.gov.justice.digital.ndh.api.oasys.response.RiskUpdateResponse;
@@ -33,7 +33,6 @@ import javax.management.ReflectionException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -45,7 +44,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
@@ -61,7 +59,6 @@ import static org.mockito.Mockito.when;
         "ndelius.initial.search.url=http://localhost:8090/delius/initialSearch"
 })
 @RunWith(SpringJUnit4ClassRunner.class)
-@DirtiesContext
 public class OasysAssessmentControllerTest {
 
     public static final String NON_FAULT_GENERIC_RESPONSE = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("wiremock/GoodDeliusResponse.xml")))
@@ -72,50 +69,48 @@ public class OasysAssessmentControllerTest {
             .lines().collect(Collectors.joining("\n"));
 
     @Rule
-    public WireMockRule wm = new WireMockRule(options().port(8090));
+    public WireMockRule wm = new WireMockRule(options().port(8090).jettyStopTimeout(200000L));
 
     @LocalServerPort
     int port;
     @MockBean
+    MappingService mappingService;
+    @MockBean
     private MessageStoreService messageStoreService;
     @MockBean
     private ExceptionLogService exceptionLogService;
-    @MockBean
-    MappingService mappingService;
-
     @Autowired
     private XmlMapper xmlMapper;
     @Autowired
     private MBeanServer mBeanServer;
 
     @Before
-    public void setup() throws MalformedObjectNameException, MBeanException, InstanceNotFoundException, ReflectionException {
+    public void setup() throws MalformedObjectNameException, MBeanException, InstanceNotFoundException, ReflectionException, InterruptedException {
         RestAssured.port = port;
         purgeMessageQueue();
         when(mappingService.descriptionOf(anyString(), anyLong())).thenReturn("description");
         when(mappingService.targetValueOf(anyString(), anyLong())).thenReturn("targetValue");
 
+        Thread.sleep(3000);
+
     }
 
     private Object purgeMessageQueue() throws InstanceNotFoundException, MBeanException, ReflectionException, MalformedObjectNameException {
-        return mBeanServer.invoke(ObjectName.getInstance("org.apache.activemq:type=Broker,brokerName=localhost,destinationType=Queue,destinationName=OASYS_MESSAGES"), "purge",new Object[]{}, new String[]{});
+        return mBeanServer.invoke(ObjectName.getInstance("org.apache.activemq:type=Broker,brokerName=localhost,destinationType=Queue,destinationName=OASYS_MESSAGES"), "purge", new Object[]{}, new String[]{});
     }
 
     @After
     public void tearDown() {
-
     }
 
     @Test
     public void postedAssessmentMessageIsSentToDeliusAndHandledAppropriately() throws InterruptedException {
+        WireMock.verify(0, postRequestedFor(urlMatching("/delius/assessmentUpdates")));
 
         stubFor(post(urlEqualTo("/delius/assessmentUpdates")).willReturn(
                 aResponse()
                         .withBody(NON_FAULT_GENERIC_RESPONSE)
                         .withStatus(200)));
-
-        // Annoying: Stub seems to take time to register for some reason
-        Thread.sleep(2000);
 
         final String requestXml = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/AssessmentUpdates/OasysToNDHSoapEnvelope.xml")))
                 .lines().collect(Collectors.joining("\n"));
@@ -130,14 +125,8 @@ public class OasysAssessmentControllerTest {
                 .then()
                 .statusCode(200);
 
-        await().atMost(10, TimeUnit.SECONDS).until(() -> {
-            try {
-                wm.verify(1, postRequestedFor(urlMatching("/delius/assessmentUpdates")));
-                return true;
-            } catch (Throwable t) {
-                return false;
-            }
-        });
+        Thread.sleep(5000);
+        WireMock.verify(1, postRequestedFor(urlMatching("/delius/assessmentUpdates")));
 
         Mockito.verify(messageStoreService, times(2)).writeMessage(anyString(), anyString(), any(MessageStoreService.ProcStates.class));
         Mockito.verify(exceptionLogService, never()).logFault(anyString(), anyString(), anyString());
@@ -146,6 +135,7 @@ public class OasysAssessmentControllerTest {
 
     @Test
     public void badAssessmentResponseFromDeliusIsLoggedAppropriately() throws InterruptedException {
+
 
         stubFor(post(urlEqualTo("/delius/assessmentUpdates")).willReturn(
                 aResponse()
@@ -177,9 +167,6 @@ public class OasysAssessmentControllerTest {
                 aResponse()
                         .withBody(GOOD_DELIUS_RISK_RESPONSE)
                         .withStatus(200)));
-
-        // Annoying: Stub seems to take time to register for some reason
-        Thread.sleep(2000);
 
         final String requestXml = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/RiskUpdate/oasysRiskRequestSoap.xml")))
                 .lines().collect(Collectors.joining("\n"));

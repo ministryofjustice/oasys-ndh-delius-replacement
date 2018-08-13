@@ -56,17 +56,17 @@ public class DeliusUnavailableBehaviourTest {
     private DeliusAssessmentUpdateClient deliusAssessmentUpdateClient;
 
     @Before
-    public void setup() throws UnirestException {
+    public void setup() throws InterruptedException, UnirestException {
         RestAssured.port = port;
         when(deliusAssessmentUpdateClient.deliusWebServiceResponseOf(any(String.class))).thenThrow(new UnirestException("unreachable"));
         when(mappingService.descriptionOf(anyString(), anyLong())).thenReturn("description");
         when(mappingService.targetValueOf(anyString(), anyLong())).thenReturn("targetValue");
 
+        Thread.sleep(3000L);
     }
 
     @After
     public void tearDown() {
-
     }
 
     @Test
