@@ -1,8 +1,6 @@
 package uk.gov.justice.digital.ndh.service.transforms;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import org.dom4j.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.digital.ndh.api.delius.request.RiskType;
@@ -57,15 +55,5 @@ public class OasysRiskUpdateTransformer {
                                 .build())
                         .build())
                 .build();
-    }
-
-    public String stringResponseOf(DeliusRiskUpdateResponse response, Optional<SoapEnvelope> maybeOasysRiskUpdate, Optional<String> rawDeliusResponse) throws DocumentException, JsonProcessingException {
-        final String correlationID = maybeOasysRiskUpdate.get().getBody().getRiskUpdateRequest().getHeader().getCorrelationID();
-        if (response.isSoapFault()) {
-            return faultTransformer.oasysFaultResponseOf(rawDeliusResponse.get(), correlationID);
-        } else {
-            final SoapEnvelope transformedResponse = oasysRiskUpdateResponseOf(response, maybeOasysRiskUpdate);
-            return commonTransformer.transformedResponseXmlOf(transformedResponse);
-        }
     }
 }

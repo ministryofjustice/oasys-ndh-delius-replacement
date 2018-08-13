@@ -54,7 +54,7 @@ public class OasysRiskService extends RequestResponseService {
         return maybeResponse.flatMap(response -> {
             try {
                 try {
-                    final String value = oasysRiskUpdateTransformer.stringResponseOf(response, maybeOasysRiskUpdate, maybeRawResponse);
+                    final String value = stringResponseOf(response, maybeOasysRiskUpdate, maybeRawResponse);
                     return Optional.of(value);
                 } catch (NDHMappingException ndhme) {
                     exceptionLogService.logMappingFail(
@@ -77,6 +77,21 @@ public class OasysRiskService extends RequestResponseService {
             }
         });
     }
+
+    public String stringResponseOf(DeliusRiskUpdateResponse response, Optional<SoapEnvelope> maybeOasysRiskUpdate, Optional<String> rawDeliusResponse) throws DocumentException, JsonProcessingException {
+        final String correlationID = maybeOasysRiskUpdate.get().getBody().getRiskUpdateRequest().getHeader().getCorrelationID();
+        if (response.isSoapFault()) {
+            exceptionLogService.logFault(rawDeliusResponse.get(), correlationID, "SOAP Fault returned from Delius riskUpdate service");
+            return faultTransformer.oasysFaultResponseOf(rawDeliusResponse.get(), correlationID);
+        } else {
+            messageStoreService.writeMessage(rawDeliusResponse.get(), correlationID, MessageStoreService.ProcStates.GLB_ProcState_OutboundBeforeTransformation);
+            final SoapEnvelope transformedResponse = oasysRiskUpdateTransformer.oasysRiskUpdateResponseOf(response, maybeOasysRiskUpdate);
+            final String transformedResponseXmlOf = commonTransformer.transformedResponseXmlOf(transformedResponse);
+            messageStoreService.writeMessage(transformedResponseXmlOf, correlationID, MessageStoreService.ProcStates.GLB_ProcState_OutboundAfterTransformation);
+            return transformedResponseXmlOf;
+        }
+    }
+
 
     private Optional<String> mappingSoapFault(String correlationId) {
         return Optional.of(faultTransformer.mappingSoapFaultOf(correlationId));

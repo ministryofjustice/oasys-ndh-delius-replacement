@@ -112,7 +112,7 @@ public class OasysRiskUpdateTransformerTest {
     public void deliusRiskUpdateResponseIsTransformedCorrectly() {
 
         ObjectNode root = JsonNodeFactory.instance.objectNode();
-        root.putObject("RiskUpdateResponse").put("CaseReferenceNumber", "A1234");
+        root.putObject("SubmitRiskDataResponse").put("CaseReferenceNumber", "A1234");
 
 
         DeliusRiskUpdateResponse deliusResponse = DeliusRiskUpdateResponse

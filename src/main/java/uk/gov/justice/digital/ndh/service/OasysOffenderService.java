@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.digital.ndh.api.soap.SoapEnvelope;
 import uk.gov.justice.digital.ndh.service.transforms.CommonTransformer;
+import uk.gov.justice.digital.ndh.service.transforms.FaultTransformer;
 import uk.gov.justice.digital.ndh.service.transforms.OffenderTransformer;
 
 import java.io.IOException;
@@ -19,13 +20,15 @@ import java.util.Optional;
 @Slf4j
 public class OasysOffenderService extends RequestResponseService {
     private final OffenderTransformer offenderTransformer;
+    private final FaultTransformer faultTransformer;
     private final DeliusInitialSearchClient deliusInitialSearchClient;
 
     @Autowired
-    public OasysOffenderService(OffenderTransformer offenderTransformer, CommonTransformer commonTransformer, ExceptionLogService exceptionLogService, MessageStoreService messageStoreService, DeliusInitialSearchClient deliusInitialSearchClient, XmlMapper xmlMapper) {
+    public OasysOffenderService(OffenderTransformer offenderTransformer, CommonTransformer commonTransformer, ExceptionLogService exceptionLogService, MessageStoreService messageStoreService, DeliusInitialSearchClient deliusInitialSearchClient, XmlMapper xmlMapper, FaultTransformer faultTransformer) {
         super(exceptionLogService, commonTransformer, messageStoreService, xmlMapper);
         this.offenderTransformer = offenderTransformer;
         this.deliusInitialSearchClient = deliusInitialSearchClient;
+        this.faultTransformer = faultTransformer;
     }
 
     public Optional<String> initialSearch(String initialSearchXml) {
@@ -43,7 +46,7 @@ public class OasysOffenderService extends RequestResponseService {
 
         return maybeResponse.flatMap(response -> {
             try {
-                return Optional.of(offenderTransformer.stringResponseOf(response, maybeOasysInitialSearch, maybeRawResponse));
+                return Optional.of(stringResponseOf(response, maybeOasysInitialSearch, maybeRawResponse));
             } catch (DocumentException e) {
                 log.error(e.getMessage());
                 exceptionLogService.logFault(response.toString(), correlationId, "Can't transform fault response: " + e.getMessage());
@@ -55,6 +58,21 @@ public class OasysOffenderService extends RequestResponseService {
             }
         });
     }
+
+    public String stringResponseOf(SoapEnvelope response, Optional<SoapEnvelope> maybeOasysInitialSearch, Optional<String> maybeRawResponse) throws DocumentException, JsonProcessingException {
+        final String correlationID = maybeOasysInitialSearch.get().getBody().getInitialSearchRequest().getHeader().getCorrelationID();
+        if (response.getBody().isSoapFault()) {
+            exceptionLogService.logFault(maybeRawResponse.get(), correlationID, "SOAP Fault returned from Delius initialSearch service");
+            return faultTransformer.oasysFaultResponseOf(maybeRawResponse.get(), correlationID);
+        } else {
+            messageStoreService.writeMessage(maybeRawResponse.get(), correlationID, MessageStoreService.ProcStates.GLB_ProcState_OutboundBeforeTransformation);
+            final SoapEnvelope transformedResponse = offenderTransformer.oasysInitialSearchResponseOf(response, maybeOasysInitialSearch);
+            final String transformedResponseXmlOf = commonTransformer.transformedResponseXmlOf(transformedResponse);
+            messageStoreService.writeMessage(transformedResponseXmlOf, correlationID, MessageStoreService.ProcStates.GLB_ProcState_OutboundAfterTransformation);
+            return transformedResponseXmlOf;
+        }
+    }
+
 
     private Optional<SoapEnvelope> deliusInitialSearchResponseOf(Optional<String> maybeRawResponse, String correlationId) {
         return maybeRawResponse.flatMap(rawResponse -> {

@@ -61,11 +61,13 @@ import static org.mockito.Mockito.when;
 @RunWith(SpringJUnit4ClassRunner.class)
 public class OasysAssessmentControllerTest {
 
-    public static final String NON_FAULT_GENERIC_RESPONSE = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("wiremock/GoodDeliusResponse.xml")))
+    private static final String NON_FAULT_GENERIC_RESPONSE = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("wiremock/GoodDeliusResponse.xml")))
             .lines().collect(Collectors.joining("\n"));
-    public static final String FAULT_GENERIC_RESPONSE = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("wiremock/BadDeliusResponse.xml")))
+    private static final String FAULT_GENERIC_RESPONSE = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("wiremock/BadDeliusResponse.xml")))
             .lines().collect(Collectors.joining("\n"));
-    public static final String GOOD_DELIUS_RISK_RESPONSE = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("wiremock/goodDeliusRiskResponse.xml")))
+    private static final String GOOD_DELIUS_RISK_RESPONSE = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("wiremock/goodDeliusRiskResponse.xml")))
+            .lines().collect(Collectors.joining("\n"));
+    private static final String REAL_DELIUS_RISK_FAULT_RESPONSE = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/RiskUpdate/realFaultResponseFromDelius.xml")))
             .lines().collect(Collectors.joining("\n"));
 
     @Rule
@@ -126,6 +128,7 @@ public class OasysAssessmentControllerTest {
                 .statusCode(200);
 
         Thread.sleep(5000);
+
         WireMock.verify(1, postRequestedFor(urlMatching("/delius/assessmentUpdates")));
 
         Mockito.verify(messageStoreService, times(2)).writeMessage(anyString(), anyString(), any(MessageStoreService.ProcStates.class));
@@ -153,7 +156,7 @@ public class OasysAssessmentControllerTest {
                 .then()
                 .statusCode(200);
 
-        Thread.sleep(1000);
+        Thread.sleep(1000L);
 
         Mockito.verify(messageStoreService, times(2)).writeMessage(anyString(), anyString(), any(MessageStoreService.ProcStates.class));
         Mockito.verify(exceptionLogService, times(1)).logFault(anyString(), anyString(), anyString());
@@ -161,7 +164,7 @@ public class OasysAssessmentControllerTest {
     }
 
     @Test
-    public void postedRiskMessageIsSentToDeliusAndHandledAppropriately() throws InterruptedException, IOException {
+    public void postedRiskMessageIsSentToDeliusAndHandledAppropriately() throws IOException {
 
         stubFor(post(urlEqualTo("/delius/riskUpdates")).willReturn(
                 aResponse()
@@ -197,5 +200,33 @@ public class OasysAssessmentControllerTest {
 
         assertThat(actual).isEqualTo(expected);
     }
+
+    @Test
+    public void badRiskResponseFromDeliusIsLoggedAppropriately() {
+
+
+        stubFor(post(urlEqualTo("/delius/riskUpdates")).willReturn(
+                aResponse()
+                        .withBody(REAL_DELIUS_RISK_FAULT_RESPONSE)
+                        .withStatus(200)));
+
+        final String requestXml = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/RiskUpdate/oasysRiskRequestSoap.xml")))
+                .lines().collect(Collectors.joining("\n"));
+
+        given()
+                .when()
+                .contentType(ContentType.XML)
+                .body(requestXml)
+                .post("/oasysRiskUpdates")
+                .then()
+                .statusCode(200);
+
+        System.out.println(Mockito.mockingDetails(exceptionLogService).getInvocations());
+
+        Mockito.verify(messageStoreService, times(3)).writeMessage(anyString(), anyString(), any(MessageStoreService.ProcStates.class));
+        Mockito.verify(exceptionLogService, times(1)).logFault(anyString(), anyString(), anyString());
+
+    }
+
 
 }

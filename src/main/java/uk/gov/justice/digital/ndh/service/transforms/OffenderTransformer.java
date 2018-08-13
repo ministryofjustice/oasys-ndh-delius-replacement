@@ -1,8 +1,6 @@
 package uk.gov.justice.digital.ndh.service.transforms;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.ImmutableList;
-import org.dom4j.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.ndh.api.delius.request.GetSubSetOffenderEventRequest;
@@ -121,16 +119,5 @@ public class OffenderTransformer {
         return Optional.ofNullable(orderType)
                 .map(ot -> mappingService.descriptionOf(orderType, SENTENCE_CODE_TYPE))
                 .orElse(null);
-    }
-
-    public String stringResponseOf(SoapEnvelope response, Optional<SoapEnvelope> maybeOasysInitialSearch, Optional<String> maybeRawResponse) throws DocumentException, JsonProcessingException {
-        final String correlationID = maybeOasysInitialSearch.get().getBody().getInitialSearchRequest().getHeader().getCorrelationID();
-        if (response.getBody().isSoapFault()) {
-            return faultTransformer.oasysFaultResponseOf(maybeRawResponse.get(), correlationID);
-        } else {
-            final SoapEnvelope transformedResponse = oasysInitialSearchResponseOf(response, maybeOasysInitialSearch);
-            return commonTransformer.transformedResponseXmlOf(transformedResponse);
-
-        }
     }
 }
