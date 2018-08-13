@@ -81,7 +81,7 @@ public class OasysOffenderService extends RequestResponseService {
                 return Optional.of(xmlMapper.readValue(rawResponse, SoapEnvelope.class));
             } catch (IOException e) {
                 log.error(e.getMessage());
-                exceptionLogService.logFault(rawResponse, correlationId, "Can't deserialize delius risk update response: " + e.getMessage());
+                exceptionLogService.logFault(rawResponse, correlationId, "Can't deserialize delius initial search response: " + e.getMessage());
                 return Optional.empty();
             }
         });
@@ -93,7 +93,7 @@ public class OasysOffenderService extends RequestResponseService {
 
     private Optional<SoapEnvelope> deliusInitialSearchRequestOf(String updateXml, Optional<SoapEnvelope> maybeOasysInitialSearch) {
         return maybeOasysInitialSearch.map(oasysInitialSearch -> {
-            messageStoreService.writeMessage(updateXml, maybeOasysInitialSearch.get().getHeader().getCorrelationId(), MessageStoreService.ProcStates.GLB_ProcState_InboundBeforeTransformation);
+            messageStoreService.writeMessage(updateXml, maybeOasysInitialSearch.get().getBody().getInitialSearchRequest().getHeader().getCorrelationID(), MessageStoreService.ProcStates.GLB_ProcState_InboundBeforeTransformation);
             return offenderTransformer.deliusInitialSearchRequestOf(oasysInitialSearch);
         });
     }

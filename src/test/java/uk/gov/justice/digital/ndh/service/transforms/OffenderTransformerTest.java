@@ -131,7 +131,7 @@ public class OffenderTransformerTest {
                         .builder()
                         .initialSearchResponse(InitialSearchResponse
                                 .builder()
-                                .header(oasysRequest.getBody().getInitialSearchRequest().getHeader())
+                                .header(oasysRequest.getBody().getInitialSearchRequest().getHeader().toBuilder().oasysRUsername("PCMS").build())
                                 .subSetOffenders(ImmutableList.of(
                                         uk.gov.justice.digital.ndh.api.oasys.response.SubSetOffender
                                                 .builder()

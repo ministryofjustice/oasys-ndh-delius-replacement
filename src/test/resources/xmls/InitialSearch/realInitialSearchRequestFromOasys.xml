@@ -1,0 +1,18 @@
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope"
+               xmlns:init="http://www.hp.com/NDH_Web_Service/InitialSearchRequest"
+               xmlns:dom="http://www.hp.com/NDH_Web_Service/DomainTypes">
+    <soap:Header/>
+    <soap:Body>
+        <init:InitialSearchRequest xmlns:init="http://www.hp.com/NDH_Web_Service/InitialSearchRequest"
+                                   xmlns:dom="http://www.hp.com/NDH_Web_Service/DomainTypes"
+                                   xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
+            <init:header>
+                <dom:ApplicationMode>L</dom:ApplicationMode>
+                <dom:CorrelationID>OASYSRPCN0320180813140000000000</dom:CorrelationID>
+                <dom:OASysRUsername>TESTERTESTING</dom:OASysRUsername>
+                <dom:MessageTimestamp>2018-08-13T14:38:11+01:00</dom:MessageTimestamp>
+            </init:header>
+            <init:CMSProbNumber>E123456</init:CMSProbNumber>
+        </init:InitialSearchRequest>
+    </soap:Body>
+</soap:Envelope>

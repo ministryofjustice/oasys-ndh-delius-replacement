@@ -44,7 +44,7 @@ public class OasysAssessmentUpdateListener {
         return ((TextMessage) message).getText();
     }
 
-    private Optional<SoapEnvelope> buildOasysSoapEnvelope(Optional<SoapEnvelope> maybeNdhSoapMessage) {
+    private Optional<SoapEnvelope> buildDeliusSoapEnvelope(Optional<SoapEnvelope> maybeNdhSoapMessage) {
         return maybeNdhSoapMessage.map(oasysAssessmentUpdateTransformer::deliusAssessmentUpdateOf);
     }
 
@@ -56,7 +56,7 @@ public class OasysAssessmentUpdateListener {
 
         Optional<SoapEnvelope> maybeInputSoapMessage = buildNdhSoapEnvelope(maybeSoapXmlFromOasys);
 
-        Optional<SoapEnvelope> maybeDeliusRequest = buildOasysSoapEnvelope(maybeInputSoapMessage);
+        Optional<SoapEnvelope> maybeDeliusRequest = buildDeliusSoapEnvelope(maybeInputSoapMessage);
 
         Optional<String> maybeRawDeliusRequest = rawDeliusRequestOf(maybeDeliusRequest, message);
 
@@ -158,7 +158,7 @@ public class OasysAssessmentUpdateListener {
         try {
             soapXmlFromOasys = readMessage(message);
         } catch (JMSException e) {
-            log.error("Can't asSoapEnvelope input message from queue. Ignore and continue. {}", e.getMessage());
+            log.error("Can't read input message from queue. Ignore and continue. {}", e.getMessage());
             return Optional.empty();
         }
 

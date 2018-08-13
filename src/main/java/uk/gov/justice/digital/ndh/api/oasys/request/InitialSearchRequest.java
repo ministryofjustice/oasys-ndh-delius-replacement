@@ -7,7 +7,7 @@ import lombok.Value;
 @Value
 @Builder
 public class InitialSearchRequest {
-    @JsonProperty("Header")
+    @JsonProperty("header")
     private Header header;
     @JsonProperty("CMSProbNumber")
     private String cmsProbNumber;

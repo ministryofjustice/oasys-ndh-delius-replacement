@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
+    <soap:Header/>
+    <soap:Body>
+        <ns0:InitialSearchResponse xmlns:ns0="http://www.hp.com/NDH_Web_Service/InitialSearchResponse">
+            <ns0:header>
+                <ns1:ApplicationMode xmlns:ns1="http://www.hp.com/NDH_Web_Service/DomainTypes">L</ns1:ApplicationMode>
+                <ns1:CorrelationID xmlns:ns1="http://www.hp.com/NDH_Web_Service/DomainTypes">OASYSRPCN0320180813140000000000</ns1:CorrelationID>
+                <ns1:OASysRUsername xmlns:ns1="http://www.hp.com/NDH_Web_Service/DomainTypes">PCMS</ns1:OASysRUsername>
+                <ns1:MessageTimestamp xmlns:ns1="http://www.hp.com/NDH_Web_Service/DomainTypes">2018-08-13T14:38:12.063+01:00</ns1:MessageTimestamp>
+            </ns0:header>
+            <ns1:SubSetOffender xmlns:ns1="http://www.hp.com/NDH_Web_Service/subsetoffender">
+                <ns1:CMSProbNumber>E123456</ns1:CMSProbNumber>
+                <ns1:FamilyName>Testing</ns1:FamilyName>
+                <ns1:Forename1>Tester</ns1:Forename1>
+                <ns1:DateOfBirth>1998-01-01</ns1:DateOfBirth>
+                <ns1:Gender>1</ns1:Gender>
+                <ns1:LAOIndicator>N</ns1:LAOIndicator>
+                <ns2:SubSetEvent xmlns:ns2="http://www.hp.com/NDH_Web_Service/subsetevent">
+                    <ns2:EventNumber>1</ns2:EventNumber>
+                    <ns2:SentenceDate>2016-04-21</ns2:SentenceDate>
+                    <ns2:SentenceCode>ORA Youth Custody (inc PSS)</ns2:SentenceCode>
+                </ns2:SubSetEvent>
+            </ns1:SubSetOffender>
+        </ns0:InitialSearchResponse>
+    </soap:Body>
+</soap:Envelope>

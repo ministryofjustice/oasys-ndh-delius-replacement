@@ -1,31 +1,38 @@
 package uk.gov.justice.digital.ndh.controller;
 
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
+import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import uk.gov.justice.digital.ndh.api.soap.SoapEnvelope;
 import uk.gov.justice.digital.ndh.service.ExceptionLogService;
+import uk.gov.justice.digital.ndh.service.MappingService;
 import uk.gov.justice.digital.ndh.service.MessageStoreService;
 
-import javax.management.InstanceNotFoundException;
-import javax.management.MBeanException;
-import javax.management.MBeanServer;
-import javax.management.MalformedObjectNameException;
-import javax.management.ObjectName;
-import javax.management.ReflectionException;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.stream.Collectors;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
+import static io.restassured.RestAssured.given;
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
@@ -38,7 +45,7 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 @DirtiesContext
 public class OasysOffenderControllerTest {
 
-    public static final String GOOD_RESPONSE_XML = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("wiremock/GoodDeliusResponse.xml")))
+    public static final String GOOD_DELIUS_INITIAL_SEARCH_RESPONSE = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/InitialSearch/realInitialSearchResponseFromDelius.xml")))
             .lines().collect(Collectors.joining("\n"));
     public static final String BAD_RESPONSE_XML = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("wiremock/BadDeliusResponse.xml")))
             .lines().collect(Collectors.joining("\n"));
@@ -52,18 +59,16 @@ public class OasysOffenderControllerTest {
     private MessageStoreService messageStoreService;
     @MockBean
     private ExceptionLogService exceptionLogService;
+    @MockBean
+    private MappingService mappingService;
+
 
     @Autowired
-    private MBeanServer mBeanServer;
+    private XmlMapper xmlMapper;
 
     @Before
-    public void setup() throws MalformedObjectNameException, MBeanException, InstanceNotFoundException, ReflectionException {
+    public void setup() {
         RestAssured.port = port;
-        purgeMessageQueue();
-    }
-
-    private Object purgeMessageQueue() throws InstanceNotFoundException, MBeanException, ReflectionException, MalformedObjectNameException {
-        return mBeanServer.invoke(ObjectName.getInstance("org.apache.activemq:type=Broker,brokerName=localhost,destinationType=Queue,destinationName=OASYS_MESSAGES"), "purge",new Object[]{}, new String[]{});
     }
 
     @After
@@ -71,68 +76,58 @@ public class OasysOffenderControllerTest {
 
     }
 
+    @Test
+    public void postedInitialSearchMessageIsSentToDeliusAndHandledAppropriately() throws IOException {
+
+        stubFor(post(urlEqualTo("/delius/initialSearch")).willReturn(
+                aResponse()
+                        .withBody(GOOD_DELIUS_INITIAL_SEARCH_RESPONSE)
+                        .withStatus(200)));
+
+        Mockito.when(mappingService.descriptionOf("328", 3802L)).thenReturn("ORA Youth Custody (inc PSS)");
+
+        final String requestXml = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/InitialSearch/realInitialSearchRequestFromOasys.xml")))
+                .lines().collect(Collectors.joining("\n"));
+
+        final String actualXml = given()
+                .when()
+                .contentType(ContentType.XML)
+                .body(requestXml)
+                .post("/initialSearch")
+                .then()
+                .statusCode(200).extract().body().asString();
+
+        final SoapEnvelope actual = xmlMapper.readValue(actualXml, SoapEnvelope.class);
+
+        final SoapEnvelope expected = xmlMapper.readValue(new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/InitialSearch/realNdhInitialSearchResponseToOasys.xml")))
+                .lines().collect(Collectors.joining("\n")), SoapEnvelope.class);
+
+        assertThat(actual).isEqualTo(expected);
+    }
+
 //    @Test
-//    public void postedXmlMessageIsSentToDeliusAndHandledAppropriately() throws InterruptedException {
+//    public void badRiskResponseFromDeliusIsLoggedAppropriately() {
 //
-//        stubFor(post(urlEqualTo("/delius/assessmentUpdates")).willReturn(
+//
+//        stubFor(post(urlEqualTo("/delius/riskUpdates")).willReturn(
 //                aResponse()
-//                        .withBody(NON_FAULT_GENERIC_RESPONSE)
+//                        .withBody(REAL_DELIUS_RISK_FAULT_RESPONSE)
 //                        .withStatus(200)));
 //
-//        // Annoying: Stub seems to take time to register for some reason
-//        Thread.sleep(2000);
-//
-//        final String requestXml = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/AssessmentUpdates/OasysToNDHSoapEnvelope.xml")))
+//        final String requestXml = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/RiskUpdate/oasysRiskRequestSoap.xml")))
 //                .lines().collect(Collectors.joining("\n"));
-//
-//        ClassLoader.getSystemResourceAsStream("xmls/AssessmentUpdates/OasysToNDHSoapEnvelope.xml");
 //
 //        given()
 //                .when()
 //                .contentType(ContentType.XML)
 //                .body(requestXml)
-//                .post("/oasysAssessments")
+//                .post("/oasysRiskUpdates")
 //                .then()
 //                .statusCode(200);
 //
-//        await().atMost(10, TimeUnit.SECONDS).until(() -> {
-//            try {
-//                wm.verify(1, postRequestedFor(urlMatching("/delius/assessmentUpdates")));
-//                return true;
-//            } catch (Throwable t) {
-//                return false;
-//            }
-//        });
+//        System.out.println(Mockito.mockingDetails(exceptionLogService).getInvocations());
 //
-//        Mockito.verify(messageStoreService, times(2)).writeMessage(anyString(), anyString(), any(MessageStoreService.ProcStates.class));
-//        Mockito.verify(exceptionLogService, never()).logFault(anyString(), anyString(), anyString());
-//
-//    }
-//
-//    @Test
-//    public void badResponseFromDeliusIsLoggedAppropriately() throws InterruptedException {
-//
-//        stubFor(post(urlEqualTo("/delius/assessmentUpdates")).willReturn(
-//                aResponse()
-//                        .withBody(FAULT_GENERIC_RESPONSE)
-//                        .withStatus(200)));
-//
-//        final String requestXml = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/AssessmentUpdates/OasysToNDHSoapEnvelope.xml")))
-//                .lines().collect(Collectors.joining("\n"));
-//
-//        ClassLoader.getSystemResourceAsStream("xmls/AssessmentUpdates/OasysToNDHSoapEnvelope.xml");
-//
-//        given()
-//                .when()
-//                .contentType(ContentType.XML)
-//                .body(requestXml)
-//                .post("/oasysAssessments")
-//                .then()
-//                .statusCode(200);
-//
-//        Thread.sleep(1000);
-//
-//        Mockito.verify(messageStoreService, times(2)).writeMessage(anyString(), anyString(), any(MessageStoreService.ProcStates.class));
+//        Mockito.verify(messageStoreService, times(3)).writeMessage(anyString(), anyString(), any(MessageStoreService.ProcStates.class));
 //        Mockito.verify(exceptionLogService, times(1)).logFault(anyString(), anyString(), anyString());
 //
 //    }

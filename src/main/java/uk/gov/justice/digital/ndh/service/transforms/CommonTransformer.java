@@ -10,6 +10,7 @@ import uk.gov.justice.digital.ndh.api.soap.SoapHeader;
 import uk.gov.justice.digital.ndh.service.ExceptionLogService;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Component
@@ -26,7 +27,7 @@ public class CommonTransformer {
         this.exceptionLogService = exceptionLogService;
     }
 
-    public Header headerOf(String correlationId) {
+    public Header deliusHeaderOf(String correlationId) {
         return Header
                 .builder()
                 .messageId(correlationId)
@@ -37,7 +38,7 @@ public class CommonTransformer {
     public SoapHeader deliusSoapHeaderOf(String correlationID) {
         return SoapHeader
                 .builder()
-                .header(headerOf(correlationID))
+                .header(deliusHeaderOf(correlationID))
                 .build();
     }
 
@@ -55,4 +56,7 @@ public class CommonTransformer {
     }
 
 
+    public uk.gov.justice.digital.ndh.api.oasys.request.Header oasysHeaderOf(uk.gov.justice.digital.ndh.api.oasys.request.Header header) {
+        return header.toBuilder().oasysRUsername("PCMS").messageTimestamp(LocalDateTime.now().toString()).build();
+    }
 }

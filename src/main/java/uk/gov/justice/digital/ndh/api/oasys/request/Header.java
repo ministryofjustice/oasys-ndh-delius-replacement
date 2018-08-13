@@ -3,10 +3,12 @@ package uk.gov.justice.digital.ndh.api.oasys.request;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Value;
 
 @Value
-@Builder
+@Builder(toBuilder = true)
+@EqualsAndHashCode(exclude = "messageTimestamp")
 public class Header {
 
     @JsonProperty("ApplicationMode")

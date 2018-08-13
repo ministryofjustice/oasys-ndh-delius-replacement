@@ -34,7 +34,7 @@ public class OffenderTransformer {
 
     public SoapEnvelope deliusInitialSearchRequestOf(SoapEnvelope oasysInitialSearchRequest) {
 
-        final String correlationID = oasysInitialSearchRequest.getBody().getInitialSearchRequest().getHeader().getCorrelationID();
+        final String correlationID = oasysInitialSearchRequest.getBody().getInitialSearchRequest().getHeader().getCorrelationID().trim();
         return SoapEnvelope.builder()
                 .header(commonTransformer.deliusSoapHeaderOf(correlationID))
                 .body(SoapBody
@@ -62,7 +62,7 @@ public class OffenderTransformer {
                                 .initialSearchResponse(
                                         InitialSearchResponse
                                                 .builder()
-                                                .header(maybeOasysInitialSearchRequest.map(isr -> isr.getBody().getInitialSearchRequest().getHeader()).orElse(null))
+                                                .header(maybeOasysInitialSearchRequest.map(isr -> commonTransformer.oasysHeaderOf(isr.getBody().getInitialSearchRequest().getHeader())).orElse(null))
                                                 .subSetOffenders(subsetOffendersOf(deliusInitialSearchResponse.getBody().getGetSubSetOffenderDetailsResponse()))
                                                 .build()
                                 )
