@@ -93,7 +93,7 @@ public class OasysAssessmentControllerTest {
         when(mappingService.descriptionOf(anyString(), anyLong())).thenReturn("description");
         when(mappingService.targetValueOf(anyString(), anyLong())).thenReturn("targetValue");
 
-        Thread.sleep(3000);
+        Thread.sleep(5000);
 
     }
 

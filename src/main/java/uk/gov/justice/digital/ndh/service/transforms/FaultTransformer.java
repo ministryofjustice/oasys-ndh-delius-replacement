@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.ndh.service.transforms;
 
-import com.sun.javafx.binding.StringFormatter;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Namespace;
@@ -41,7 +40,7 @@ public class FaultTransformer {
     }
 
     private void transformFaultCode(Document document, String soapPrefix) {
-        final String faultCodeValueXpath = StringFormatter.format("//%s:Envelope/%s:Body/%s:Fault/%s:Code/%s:Value", soapPrefix, soapPrefix, soapPrefix, soapPrefix, soapPrefix).getValue();
+        final String faultCodeValueXpath = String.format("//%s:Envelope/%s:Body/%s:Fault/%s:Code/%s:Value", soapPrefix, soapPrefix, soapPrefix, soapPrefix, soapPrefix);
 
         Node faultCodeValueNode = document.selectSingleNode(faultCodeValueXpath);
 
@@ -49,7 +48,7 @@ public class FaultTransformer {
     }
 
     private void transformFaultReason(Document document, String soapPrefix) {
-        final String faultReasonTextXpath = StringFormatter.format("//%s:Envelope/%s:Body/%s:Fault/%s:Reason/%s:Text", soapPrefix, soapPrefix, soapPrefix, soapPrefix, soapPrefix).getValue();
+        final String faultReasonTextXpath = String.format("//%s:Envelope/%s:Body/%s:Fault/%s:Reason/%s:Text", soapPrefix, soapPrefix, soapPrefix, soapPrefix, soapPrefix);
 
         Node faultCodeValueNode = document.selectSingleNode(faultReasonTextXpath);
 
@@ -57,7 +56,7 @@ public class FaultTransformer {
     }
 
     private void transformFaultDetail(String correlationId, Document document, String soapPrefix) {
-        final String faultDetailXpath = StringFormatter.format("//%s:Envelope/%s:Body/%s:Fault/%s:Detail", soapPrefix, soapPrefix, soapPrefix, soapPrefix).getValue();
+        final String faultDetailXpath = String.format("//%s:Envelope/%s:Body/%s:Fault/%s:Detail", soapPrefix, soapPrefix, soapPrefix, soapPrefix);
 
         Node detailNode = document.selectSingleNode(faultDetailXpath);
 

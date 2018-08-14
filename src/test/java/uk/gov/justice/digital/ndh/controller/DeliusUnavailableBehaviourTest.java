@@ -62,7 +62,7 @@ public class DeliusUnavailableBehaviourTest {
         when(mappingService.descriptionOf(anyString(), anyLong())).thenReturn("description");
         when(mappingService.targetValueOf(anyString(), anyLong())).thenReturn("targetValue");
 
-        Thread.sleep(3000L);
+        Thread.sleep(5000L);
     }
 
     @After
