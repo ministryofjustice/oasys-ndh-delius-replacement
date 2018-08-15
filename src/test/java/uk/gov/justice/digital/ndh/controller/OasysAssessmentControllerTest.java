@@ -169,12 +169,15 @@ public class OasysAssessmentControllerTest {
     }
 
     @Test
-    public void postedRiskMessageIsSentToDeliusAndHandledAppropriately() throws IOException {
+    public void postedRiskMessageIsSentToDeliusAndHandledAppropriately() throws IOException, InterruptedException {
 
         stubFor(post(urlEqualTo("/delius/riskUpdates")).willReturn(
                 aResponse()
                         .withBody(GOOD_DELIUS_RISK_RESPONSE)
                         .withStatus(200)));
+
+        Thread.sleep(2000L);
+
 
         final String requestXml = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/RiskUpdate/oasysRiskRequestSoap.xml")))
                 .lines().collect(Collectors.joining("\n"));
@@ -207,13 +210,16 @@ public class OasysAssessmentControllerTest {
     }
 
     @Test
-    public void badRiskResponseFromDeliusIsLoggedAppropriately() {
+    public void badRiskResponseFromDeliusIsLoggedAppropriately() throws InterruptedException {
 
 
         stubFor(post(urlEqualTo("/delius/riskUpdates")).willReturn(
                 aResponse()
                         .withBody(REAL_DELIUS_RISK_FAULT_RESPONSE)
                         .withStatus(200)));
+
+        Thread.sleep(2000L);
+
 
         final String requestXml = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/RiskUpdate/oasysRiskRequestSoap.xml")))
                 .lines().collect(Collectors.joining("\n"));
