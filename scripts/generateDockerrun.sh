@@ -8,7 +8,7 @@ cat <<- _EOF_ > Dockerrun.aws.json
 {
   "AWSEBDockerrunVersion": "1",
   "Image": {
-    "Name": "mojdigitalstudio/ndh-microservice:${BUILD_VERSION}",
+    "Name": "mojdigitalstudio/ndh_microservice:${BUILD_VERSION}",
     "Update": "true"
   },
   "Ports": [
