@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.justice.digital.ndh.api.oasys.request.Header;
 import uk.gov.justice.digital.ndh.api.oasys.response.RiskUpdateResponse;
@@ -59,6 +60,7 @@ import static org.mockito.Mockito.when;
         "ndelius.initial.search.url=http://localhost:8090/delius/initialSearch"
 })
 @RunWith(SpringJUnit4ClassRunner.class)
+@DirtiesContext
 public class OasysAssessmentControllerTest {
 
     private static final String NON_FAULT_GENERIC_RESPONSE = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("wiremock/GoodDeliusResponse.xml")))
@@ -102,7 +104,8 @@ public class OasysAssessmentControllerTest {
     }
 
     @After
-    public void tearDown() {
+    public void tearDown() throws InterruptedException {
+        Thread.sleep(5000);
     }
 
     @Test
@@ -144,6 +147,8 @@ public class OasysAssessmentControllerTest {
                 aResponse()
                         .withBody(FAULT_GENERIC_RESPONSE)
                         .withStatus(200)));
+
+        Thread.sleep(2000L);
 
         final String requestXml = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/AssessmentUpdates/OasysToNDHSoapEnvelope.xml")))
                 .lines().collect(Collectors.joining("\n"));
