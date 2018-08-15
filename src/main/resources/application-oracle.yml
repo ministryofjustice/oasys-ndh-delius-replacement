@@ -1,14 +1,15 @@
 spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    jpa:
-      properties:
-        hibernate:
-          dialect: org.hibernate.dialect.Oracle10gDialect
 
     properties:
       hibernate:
         show_sql: true
 
+  jpa:
+    hibernate:
+      ddl-auto: none
+
 oasys.assessment.updates.path: Business/Processes/NDH_Web_Service/NDH_Web_Service_CMS_Update
 oasys.risk.updates.path: Business/Processes/NDH_Web_Service/NDH_Web_Service_Risk_Update
+oasys.initial.search.path: Business/Processes/NDH_Web_Service/NDH_Web_Service_Risk_Update
