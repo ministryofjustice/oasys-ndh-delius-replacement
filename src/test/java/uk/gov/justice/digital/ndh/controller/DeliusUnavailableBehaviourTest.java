@@ -32,10 +32,9 @@ import static org.mockito.Mockito.when;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
-        "spring.jmx.enabled=true",
-        "ndelius.assessment.update.url=http://localhost:8090/delius/assessmentUpdates",
-        "ndelius.risk.update.url=http://localhost:8090/delius/riskUpdates",
-        "ndelius.initial.search.url=http://localhost:8090/delius/initialSearch"})
+        "ndelius.assessment.update.url=http://localhost:8091/delius/assessmentUpdates",
+        "ndelius.risk.update.url=http://localhost:8091/delius/riskUpdates",
+        "ndelius.initial.search.url=http://localhost:8091/delius/initialSearch"})
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext
 public class DeliusUnavailableBehaviourTest {
@@ -54,6 +53,9 @@ public class DeliusUnavailableBehaviourTest {
 
     @MockBean
     private DeliusAssessmentUpdateClient deliusAssessmentUpdateClient;
+
+    @MockBean
+    private ActiveMQAdminController activeMQAdminController;
 
     @Before
     public void setup() throws InterruptedException, UnirestException {
