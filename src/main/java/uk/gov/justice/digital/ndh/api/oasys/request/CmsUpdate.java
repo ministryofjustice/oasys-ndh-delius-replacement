@@ -3,11 +3,11 @@ package uk.gov.justice.digital.ndh.api.oasys.request;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Value;
 
 import java.util.List;
 
-@Data
+@Value
 @Builder
 public class CmsUpdate {
     @JsonProperty("Header")

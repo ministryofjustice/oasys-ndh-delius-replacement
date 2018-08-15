@@ -1,11 +1,13 @@
 package uk.gov.justice.digital.ndh.jpa.entity;
 
-import lombok.*;
+import lombok.Value;
 
-import javax.persistence.*;
-import java.util.Objects;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
-@Data
+@Value
 @Entity
 @Table(name = "AREA_CMS_WEB_SERVICES")
 public class AreaCmsWebServices {

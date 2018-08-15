@@ -2,10 +2,10 @@ package uk.gov.justice.digital.ndh.api.oasys.response;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Value;
 import uk.gov.justice.digital.ndh.api.oasys.request.Header;
 
-@Data
+@Value
 @Builder
 public class RiskUpdateResponse {
     @JacksonXmlProperty(namespace = "http://www.hp.com/NDH_Web_Service/riskupdateresponse")

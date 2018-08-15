@@ -34,7 +34,7 @@ public class OasysAssessmentController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @RequestMapping(path = "/${oasys.assessment.updates.path:oasysRiskUpdates}", method = RequestMethod.POST, consumes = {"application/xml", "text/xml", "text/plain"}, produces = "application/xml")
+    @RequestMapping(path = "/${oasys.risk.updates.path:oasysRiskUpdates}", method = RequestMethod.POST, consumes = {"application/xml", "text/xml", "text/plain"}, produces = "application/xml")
     public ResponseEntity<String> handleOasysRiskUpdate(@RequestBody String updateXml) {
 
         final Optional<String> maybeResponse = oasysRiskService.processRiskUpdate(updateXml);

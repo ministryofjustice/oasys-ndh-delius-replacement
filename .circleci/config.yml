@@ -60,12 +60,12 @@ jobs:
 
       - setup_remote_docker
 
-#      - deploy:
-#          name: Push to Docker Hub
-#          command: |
-#            if [ "${CIRCLE_BRANCH}" == "master" ]; then
-#              ./scripts/publishDockerImage.sh oasys_ndh_delius_replacement "${BUILD_VERSION}" "${CIRCLE_BUILD_NUM}" "${CIRCLE_BUILD_URL}" "${CIRCLE_SHA1}" "${DOCKER_EMAIL}" "${DOCKER_USERNAME}" "${DOCKER_PASSWORD}"
-#            fi
+      - deploy:
+          name: Push to Docker Hub
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              ./scripts/publishDockerImage.sh ndh-microservice "${BUILD_VERSION}" "${CIRCLE_BUILD_NUM}" "${CIRCLE_BUILD_URL}" "${CIRCLE_SHA1}" "${DOCKER_EMAIL}" "${DOCKER_USERNAME}" "${DOCKER_PASSWORD}"
+            fi
 #
 #      - deploy:
 #          name: Install elastic beanstalk CLI

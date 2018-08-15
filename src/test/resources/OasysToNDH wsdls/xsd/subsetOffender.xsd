@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:sev="http://www.hp.com/NDH_Web_Service/subsetevent"
+           xmlns:dt="http://www.hp.com/NDH_Web_Service/DomainTypes" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://www.hp.com/NDH_Web_Service/subsetoffender" elementFormDefault="qualified"
+           attributeFormDefault="unqualified">
+    <xs:import namespace="http://www.hp.com/NDH_Web_Service/subsetevent"/>
+    <xs:import namespace="http://www.hp.com/NDH_Web_Service/DomainTypes"/>
+    <xs:element name="SubSetOffender">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="CMSProbNumber" type="dt:CMSNumber" minOccurs="0">
+                    <xs:annotation>
+                        <xs:appinfo>Offender.CRN</xs:appinfo>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="FamilyName" type="dt:PersonName" minOccurs="0">
+                    <xs:annotation>
+                        <xs:appinfo>Offender.Surname</xs:appinfo>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="Forename1" type="dt:PersonName" minOccurs="0"/>
+                <xs:element name="Forename2" type="dt:PersonName" minOccurs="0"/>
+                <xs:element name="Forename3" type="dt:PersonName" minOccurs="0"/>
+                <xs:element name="DateOfBirth" type="xs:date" minOccurs="0">
+                    <xs:annotation>
+                        <xs:appinfo>Offender.DateOfBirth</xs:appinfo>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="Gender" type="dt:ElementCode" minOccurs="0"/>
+                <xs:element name="LAOIndicator" type="xs:string" minOccurs="0">
+                    <xs:annotation>
+                        <xs:appinfo>Offender.LAO</xs:appinfo>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element ref="sev:SubSetEvent" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

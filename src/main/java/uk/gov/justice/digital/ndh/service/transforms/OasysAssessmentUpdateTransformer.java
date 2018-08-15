@@ -2,23 +2,18 @@ package uk.gov.justice.digital.ndh.service.transforms;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.justice.digital.ndh.api.delius.request.DeliusAssessmentUpdateSoapBody;
-import uk.gov.justice.digital.ndh.api.delius.request.DeliusAssessmentUpdateSoapEnvelope;
-import uk.gov.justice.digital.ndh.api.delius.request.DeliusAssessmentUpdateSoapHeader;
 import uk.gov.justice.digital.ndh.api.delius.request.OasysAssessmentSummary;
-import uk.gov.justice.digital.ndh.api.delius.request.OasysCommonHeader;
 import uk.gov.justice.digital.ndh.api.delius.request.OasysSupervisionPlan;
 import uk.gov.justice.digital.ndh.api.delius.request.RiskType;
 import uk.gov.justice.digital.ndh.api.delius.request.SubmitAssessmentSummaryRequest;
 import uk.gov.justice.digital.ndh.api.oasys.request.Assessment;
 import uk.gov.justice.digital.ndh.api.oasys.request.CmsUpdate;
-import uk.gov.justice.digital.ndh.api.oasys.request.Header;
 import uk.gov.justice.digital.ndh.api.oasys.request.Objective;
 import uk.gov.justice.digital.ndh.api.oasys.request.Risk;
+import uk.gov.justice.digital.ndh.api.soap.SoapBody;
 import uk.gov.justice.digital.ndh.api.soap.SoapEnvelope;
-import uk.gov.justice.digital.ndh.jpa.entity.MappingCodeData;
-import uk.gov.justice.digital.ndh.jpa.entity.MappingCodeDataPK;
-import uk.gov.justice.digital.ndh.jpa.repository.MappingRepository;
+import uk.gov.justice.digital.ndh.service.MappingService;
+import uk.gov.justice.digital.ndh.service.exception.NDHMappingException;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,46 +24,51 @@ import java.util.stream.Collectors;
 @Component
 public class OasysAssessmentUpdateTransformer {
 
-    public static final String VERSION = "1.0";
     private static final String UNMAPPED = "XXXX";
     private static final long OASYS_CRMS_CRIM_NEED = 5500L;
     private static final long OASYSRCMS_OBJ_STATUS_CODE = 5501L;
     private static final long OASYSRCMS_INTERVENTION = 5506L;
     private static final long OASYSRPCMS_COURTTYPE = 5507L;
     private static final long OASYSRPCMS_LAYER1OBJ = 5504L;
-    private final MappingRepository mappingRepository;
-    private Function<String, String> deliusLayerOf = part -> "".equals(part) ? "" : targetValueOf(part, OASYSRPCMS_LAYER1OBJ);
-    private Function<String, String> deliusRiskFlagOf = part -> "".equals(part) ? "L" : part;
-    private Function<String, String> deliusConcernFlagOf = part -> {
-        String mapped;
-        switch (part) {
-            case "YES":
-                mapped = "YES";
-                break;
-            case "NO":
-                mapped = "NO";
-                break;
-            default:
-                mapped = "DK";
-        }
-        return mapped;
-    };
+    private final MappingService mappingService;
+    private final CommonTransformer commonTransformer;
+
+    private final Function<String, String> deliusLayerOf;
+    private final Function<String, String> deliusRiskFlagOf;
+    private final Function<String, String> deliusConcernFlagOf;
 
     @Autowired
-    public OasysAssessmentUpdateTransformer(MappingRepository mappingRepository) {
-        this.mappingRepository = mappingRepository;
+    public OasysAssessmentUpdateTransformer(MappingService mappingService, CommonTransformer commonTransformer) {
+        this.mappingService = mappingService;
+        this.commonTransformer = commonTransformer;
+
+        deliusLayerOf = part -> "".equals(part) ? "" : mappingService.targetValueOf(part, OASYSRPCMS_LAYER1OBJ);
+        deliusRiskFlagOf = part -> "".equals(part) ? "L" : part;
+        deliusConcernFlagOf = part -> {
+            String mapped;
+            switch (part) {
+                case "YES":
+                    mapped = "YES";
+                    break;
+                case "NO":
+                    mapped = "NO";
+                    break;
+                default:
+                    mapped = "DK";
+            }
+            return mapped;
+        };
     }
 
-    public DeliusAssessmentUpdateSoapEnvelope deliusAssessmentUpdateOf(SoapEnvelope ndhSoapEnvelope) {
+    public SoapEnvelope deliusAssessmentUpdateOf(SoapEnvelope ndhSoapEnvelope) {
 
-        return DeliusAssessmentUpdateSoapEnvelope.builder()
-                .header(DeliusAssessmentUpdateSoapHeader
+        final String correlationID = ndhSoapEnvelope.getBody().getCmsUpdate().getHeader().getCorrelationID();
+
+        return SoapEnvelope.builder()
+                .header(commonTransformer.deliusSoapHeaderOf(correlationID))
+                .body(SoapBody
                         .builder()
-                        .commonHeader(deliusHeaderOf(ndhSoapEnvelope.getBody().getCmsUpdate().getHeader()))
-                        .build())
-                .body(DeliusAssessmentUpdateSoapBody
-                        .builder()
-                        .request(SubmitAssessmentSummaryRequest
+                        .submitAssessmentSummaryRequest(SubmitAssessmentSummaryRequest
                                 .builder()
                                 //TODO: May have to guard against NPEs for the following. Will every update have an Assessment??
                                 .oasysAssessmentSummary(deliusOasysAssessmentSummaryOf(ndhSoapEnvelope.getBody().getCmsUpdate().getAssessment()))
@@ -77,15 +77,6 @@ public class OasysAssessmentUpdateTransformer {
                                 .build())
                         .build())
                 .build();
-    }
-
-    private OasysCommonHeader deliusHeaderOf(Header ndhOasysHeader) {
-        return Optional.ofNullable(ndhOasysHeader).map(
-                header -> OasysCommonHeader.builder()
-                        .messageId(ndhOasysHeader.getCorrelationID())
-                        .version(VERSION)
-                        .build()
-        ).orElse(null);
     }
 
     private RiskType deliusRiskOf(Risk ndhRisk, Assessment assessment) {
@@ -105,48 +96,24 @@ public class OasysAssessmentUpdateTransformer {
                 .orElse(null);
     }
 
-    private OasysSupervisionPlan deliusSupervisionPlanOf(Objective objective, Assessment assessment) {
+    private OasysSupervisionPlan deliusSupervisionPlanOf(Objective objective, Assessment assessment) throws NDHMappingException {
         return OasysSupervisionPlan.builder()
                 .caseReferenceNumber(assessment.getCmsProbNumber())
                 .oasysId(assessment.getAssessmentGUID())
                 .objectiveNumber(objective.getObjectiveNumber())
-                .need1(Optional.ofNullable(descriptionOf(objective.getNeed1(), OASYS_CRMS_CRIM_NEED)).map(result -> limitLength(result, 50)).orElse(null))
-                .need2(Optional.ofNullable(descriptionOf(objective.getNeed2(), OASYS_CRMS_CRIM_NEED)).map(result -> limitLength(result, 50)).orElse(null))
-                .need3(Optional.ofNullable(descriptionOf(objective.getNeed3(), OASYS_CRMS_CRIM_NEED)).map(result -> limitLength(result, 50)).orElse(null))
-                .need4(Optional.ofNullable(descriptionOf(objective.getNeed4(), OASYS_CRMS_CRIM_NEED)).map(result -> limitLength(result, 50)).orElse(null))
+                .need1(Optional.ofNullable(mappingService.descriptionOf(objective.getNeed1(), OASYS_CRMS_CRIM_NEED)).map(result -> limitLength(result, 50)).orElse(null))
+                .need2(Optional.ofNullable(mappingService.descriptionOf(objective.getNeed2(), OASYS_CRMS_CRIM_NEED)).map(result -> limitLength(result, 50)).orElse(null))
+                .need3(Optional.ofNullable(mappingService.descriptionOf(objective.getNeed3(), OASYS_CRMS_CRIM_NEED)).map(result -> limitLength(result, 50)).orElse(null))
+                .need4(Optional.ofNullable(mappingService.descriptionOf(objective.getNeed4(), OASYS_CRMS_CRIM_NEED)).map(result -> limitLength(result, 50)).orElse(null))
                 .objective(Optional.ofNullable(objective.getObjectiveDescription()).map(o -> limitLength(o, 50)).orElse(null))
-                .objectiveStatus(Optional.ofNullable(descriptionOf(objective.getObjectiveStatus(), OASYSRCMS_OBJ_STATUS_CODE)).map(result -> limitLength(result, 50)).orElse(UNMAPPED))
-                .workSummary1(Optional.ofNullable(descriptionOf(objective.getActionCode1(), OASYSRCMS_INTERVENTION)).map(result -> limitLength(result, 50)).orElse(null))
-                .workSummary2(Optional.ofNullable(descriptionOf(objective.getActionCode2(), OASYSRCMS_INTERVENTION)).map(result -> limitLength(result, 50)).orElse(null))
-                .workSummary3(Optional.ofNullable(descriptionOf(objective.getActionCode3(), OASYSRCMS_INTERVENTION)).map(result -> limitLength(result, 50)).orElse(null))
+                .objectiveStatus(Optional.ofNullable(mappingService.descriptionOf(objective.getObjectiveStatus(), OASYSRCMS_OBJ_STATUS_CODE)).map(result -> limitLength(result, 50)).orElse(UNMAPPED))
+                .workSummary1(Optional.ofNullable(mappingService.descriptionOf(objective.getActionCode1(), OASYSRCMS_INTERVENTION)).map(result -> limitLength(result, 50)).orElse(null))
+                .workSummary2(Optional.ofNullable(mappingService.descriptionOf(objective.getActionCode2(), OASYSRCMS_INTERVENTION)).map(result -> limitLength(result, 50)).orElse(null))
+                .workSummary3(Optional.ofNullable(mappingService.descriptionOf(objective.getActionCode3(), OASYSRCMS_INTERVENTION)).map(result -> limitLength(result, 50)).orElse(null))
                 .text1(Optional.ofNullable(objective.getActionText1()).map(a -> limitLength(a, 100)).orElse(null))
                 .text2(Optional.ofNullable(objective.getActionText2()).map(a -> limitLength(a, 250)).orElse(null))
                 .text3(Optional.ofNullable(objective.getActionText3()).map(a -> limitLength(a, 250)).orElse(null))
                 .build();
-    }
-
-    private String descriptionOf(String sourceVal, Long codeType) {
-        //TODO record any mapping failures
-        Optional<MappingCodeData> maybeMapped = Optional.ofNullable(sourceVal).flatMap(
-                sv -> Optional.ofNullable(mappingRepository.findOne(MappingCodeDataPK.builder()
-                        .codeType(codeType)
-                        .sourceValue(sourceVal)
-                        .build())));
-
-        return maybeMapped.map(MappingCodeData::getDescription).orElse(null);
-
-    }
-
-    private String targetValueOf(String sourceVal, Long codeType) {
-        //TODO record any mapping failures
-        Optional<MappingCodeData> maybeMapped = Optional.ofNullable(sourceVal).flatMap(
-                sv -> Optional.ofNullable(mappingRepository.findOne(MappingCodeDataPK.builder()
-                        .codeType(codeType)
-                        .sourceValue(sourceVal)
-                        .build())));
-
-        return maybeMapped.map(MappingCodeData::getTargetValue).orElse(null);
-
     }
 
     private OasysAssessmentSummary deliusOasysAssessmentSummaryOf(Assessment ndhAssessment) {
@@ -171,7 +138,7 @@ public class OasysAssessmentUpdateTransformer {
                 .dateCreated(ndhAssessment.getDateCreated())
                 .assessedBy(ndhAssessment.getAssessedBy())
                 .court(ndhAssessment.getCourtCode())
-                .courtType(Optional.ofNullable(targetValueOf(ndhAssessment.getCourtType(), OASYSRPCMS_COURTTYPE)).orElse(null))
+                .courtType(Optional.ofNullable(mappingService.targetValueOf(ndhAssessment.getCourtType(), OASYSRPCMS_COURTTYPE)).orElse(null))
                 .offenceCode(ndhAssessment.getOffence().getOffenceGroupCode().concat(ndhAssessment.getOffence().getOffenceSubCode()))
                 .ogrsScore1(ndhAssessment.getOgrsScore1())
                 .ogrsScore2(ndhAssessment.getOgrsScore2())
@@ -197,7 +164,7 @@ public class OasysAssessmentUpdateTransformer {
         return Optional.ofNullable(layer1Obj)
                 .map(flags -> Arrays
                         .stream(flags.split(","))
-                        .map(part -> deliusLayerOf.apply(part))
+                        .map(deliusLayerOf)
                         .collect(Collectors.joining(",")))
                 .orElse(null);
     }
@@ -206,7 +173,7 @@ public class OasysAssessmentUpdateTransformer {
         return Optional.ofNullable(riskFlags)
                 .map(flags -> Arrays
                         .stream(flags.split(","))
-                        .map(part -> deliusRiskFlagOf.apply(part))
+                        .map(deliusRiskFlagOf)
                         .collect(Collectors.joining(",")))
                 .orElse(null);
     }
@@ -215,7 +182,7 @@ public class OasysAssessmentUpdateTransformer {
         return Optional.ofNullable(concernFlags)
                 .map(flags -> Arrays
                         .stream(flags.split(","))
-                        .map(part -> deliusConcernFlagOf.apply(part))
+                        .map(deliusConcernFlagOf)
                         .collect(Collectors.joining(",")))
                 .orElse(null);
     }
@@ -224,7 +191,4 @@ public class OasysAssessmentUpdateTransformer {
         return s.substring(0, Math.min(s.length(), i));
     }
 
-    public MappingRepository getMappingRepository() {
-        return mappingRepository;
-    }
 }

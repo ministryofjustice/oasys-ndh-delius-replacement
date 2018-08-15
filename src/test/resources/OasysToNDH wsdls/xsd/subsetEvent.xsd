@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:dt="http://www.hp.com/NDH_Web_Service/DomainTypes" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://www.hp.com/NDH_Web_Service/subsetevent" elementFormDefault="qualified"
+           attributeFormDefault="unqualified">
+    <xs:import namespace="http://www.hp.com/NDH_Web_Service/DomainTypes"/>
+    <xs:element name="SubSetEvent">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:choice>
+                    <xs:element name="EventNumber" type="xs:integer"/>
+                    <xs:element name="ICMSReference" type="dt:ICMSReference"/>
+                </xs:choice>
+                <xs:element name="SentenceDate" type="xs:date" minOccurs="0"/>
+                <xs:element name="SentenceCode" type="dt:SharedKeyCode" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation>Disposal / Order Type</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

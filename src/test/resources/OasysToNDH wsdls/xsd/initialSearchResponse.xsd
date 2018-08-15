@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:sof="http://www.hp.com/NDH_Web_Service/subsetoffender" xmlns:dt="http://www.hp.com/NDH_Web_Service/DomainTypes" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.hp.com/NDH_Web_Service/InitialSearchResponse" targetNamespace="http://www.hp.com/NDH_Web_Service/InitialSearchResponse" elementFormDefault="qualified" attributeFormDefault="unqualified">
+    <xs:import namespace="http://www.hp.com/NDH_Web_Service/subsetoffender"/>
+    <xs:import namespace="http://www.hp.com/NDH_Web_Service/DomainTypes"/>
+    <xs:element name="InitialSearchResponse">
+        <xs:annotation>
+            <xs:documentation>Comment describing your root element</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="header" type="dt:Header"/>
+                <xs:element ref="sof:SubSetOffender" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

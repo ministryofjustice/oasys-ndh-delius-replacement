@@ -7,8 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
-import uk.gov.justice.digital.ndh.api.delius.request.DeliusAssessmentUpdateSoapEnvelope;
-import uk.gov.justice.digital.ndh.api.delius.response.DeliusAssessmentSummaryResponse;
 import uk.gov.justice.digital.ndh.api.soap.SoapEnvelope;
 import uk.gov.justice.digital.ndh.service.ExceptionLogService;
 import uk.gov.justice.digital.ndh.service.MessageStoreService;
@@ -46,7 +44,7 @@ public class OasysAssessmentUpdateListener {
         return ((TextMessage) message).getText();
     }
 
-    private Optional<DeliusAssessmentUpdateSoapEnvelope> buildOasysSoapEnvelope(Optional<SoapEnvelope> maybeNdhSoapMessage) {
+    private Optional<SoapEnvelope> buildDeliusSoapEnvelope(Optional<SoapEnvelope> maybeNdhSoapMessage) {
         return maybeNdhSoapMessage.map(oasysAssessmentUpdateTransformer::deliusAssessmentUpdateOf);
     }
 
@@ -56,9 +54,9 @@ public class OasysAssessmentUpdateListener {
 
         Optional<String> maybeSoapXmlFromOasys = readFromQueue(message);
 
-        Optional<SoapEnvelope> maybeInputSoapMessage = buildNdhSoapEnvelope(maybeSoapXmlFromOasys, message);
+        Optional<SoapEnvelope> maybeInputSoapMessage = buildNdhSoapEnvelope(maybeSoapXmlFromOasys);
 
-        Optional<DeliusAssessmentUpdateSoapEnvelope> maybeDeliusRequest = buildOasysSoapEnvelope(maybeInputSoapMessage);
+        Optional<SoapEnvelope> maybeDeliusRequest = buildDeliusSoapEnvelope(maybeInputSoapMessage);
 
         Optional<String> maybeRawDeliusRequest = rawDeliusRequestOf(maybeDeliusRequest, message);
 
@@ -67,22 +65,20 @@ public class OasysAssessmentUpdateListener {
         handleDeliusResponse(maybeRawDeliusResponse, maybeDeliusRequest);
     }
 
-    private Optional<DeliusAssessmentSummaryResponse> handleDeliusResponse(Optional<String> maybeRawDeliusResponse, Optional<DeliusAssessmentUpdateSoapEnvelope> maybeDeliusRequest) {
+    private Optional<SoapEnvelope> handleDeliusResponse(Optional<String> maybeRawDeliusResponse, Optional<SoapEnvelope> maybeDeliusRequest) {
 
         return maybeRawDeliusResponse.map(
                 rawDeliusResponse -> {
 
-                    DeliusAssessmentSummaryResponse deliusResponse = null;
+                    SoapEnvelope deliusResponse = null;
 
                     try {
-                        deliusResponse = xmlMapper.readValue(rawDeliusResponse, DeliusAssessmentSummaryResponse.class);
-                        if (deliusResponse.isBadResponse()) {
-                            log.error("Bad response from Delius: {}", rawDeliusResponse);
-                            exceptionLogService.logFault(rawDeliusResponse, maybeDeliusRequest.get().getHeader().getCommonHeader().getMessageId(), "Bad response from Delius");
+                        deliusResponse = xmlMapper.readValue(rawDeliusResponse, SoapEnvelope.class);
+                        if (deliusResponse.getBody().isSoapFault()) {
+                            exceptionLogService.logFault(rawDeliusResponse, maybeDeliusRequest.get().getHeader().getHeader().getMessageId(), "SOAP Fault from Delius");
                         }
                     } catch (IOException e) {
-                        log.error("Garbage response from Delius: {}", e.getMessage());
-                        exceptionLogService.logFault(rawDeliusResponse, maybeDeliusRequest.get().getHeader().getCommonHeader().getMessageId(), "Garbage response from Delius");
+                        exceptionLogService.logFault(rawDeliusResponse, maybeDeliusRequest.get().getHeader().getHeader().getMessageId(), "Garbage response from Delius");
                     }
 
                     return deliusResponse;
@@ -90,7 +86,7 @@ public class OasysAssessmentUpdateListener {
         );
     }
 
-    private Optional<String> rawDeliusResponseOf(Optional<String> maybeRawDeliusRequest, Optional<DeliusAssessmentUpdateSoapEnvelope> maybeDeliusRequest, Optional<String> maybeSoapXmlFromOasys, Message message) throws JMSException, UnirestException {
+    private Optional<String> rawDeliusResponseOf(Optional<String> maybeRawDeliusRequest, Optional<SoapEnvelope> maybeDeliusRequest, Optional<String> maybeSoapXmlFromOasys, Message message) throws JMSException, UnirestException {
 
         boolean redelivered = message.getJMSRedelivered();
 
@@ -100,7 +96,7 @@ public class OasysAssessmentUpdateListener {
             } catch (UnirestException e) {
                 log.error("No response from Delius: {} Rejecting message {}", e.getMessage(), message);
                 if (!redelivered) {
-                    exceptionLogService.logFault(maybeSoapXmlFromOasys.get(), maybeDeliusRequest.get().getHeader().getCommonHeader().getMessageId(), "No response from Delius");
+                    exceptionLogService.logFault(maybeSoapXmlFromOasys.get(), maybeDeliusRequest.get().getHeader().getHeader().getMessageId(), "No response from Delius");
                 }
                 throw e;
             }
@@ -110,7 +106,7 @@ public class OasysAssessmentUpdateListener {
 
     }
 
-    private Optional<String> rawDeliusRequestOf(Optional<DeliusAssessmentUpdateSoapEnvelope> maybeDeliusRequest, Message message) throws JMSException {
+    private Optional<String> rawDeliusRequestOf(Optional<SoapEnvelope> maybeDeliusRequest, Message message) throws JMSException {
 
         final boolean redelivered = message.getJMSRedelivered();
 
@@ -120,24 +116,24 @@ public class OasysAssessmentUpdateListener {
             try {
                 rawDeliusRequest = xmlMapper.writeValueAsString(deliusAssessmentUpdateSoapEnvelope);
                 if (!redelivered) {
-                    messageStoreService.writeMessage(rawDeliusRequest, deliusAssessmentUpdateSoapEnvelope.getHeader().getCommonHeader().getMessageId(), MessageStoreService.ProcStates.GLB_ProcState_InboundAfterTransformation);
+                    messageStoreService.writeMessage(rawDeliusRequest, deliusAssessmentUpdateSoapEnvelope.getHeader().getHeader().getMessageId(), MessageStoreService.ProcStates.GLB_ProcState_InboundAfterTransformation);
                 }
             } catch (JsonProcessingException e) {
                 log.error("Can't serialize request to Delius. Ignore and continue: {}", e.getMessage());
-                exceptionLogService.logFault(deliusAssessmentUpdateSoapEnvelope.toString(), deliusAssessmentUpdateSoapEnvelope.getHeader().getCommonHeader().getMessageId(), "Can't serialize request to Delius");
+                exceptionLogService.logFault(deliusAssessmentUpdateSoapEnvelope.toString(), deliusAssessmentUpdateSoapEnvelope.getHeader().getHeader().getMessageId(), "Can't serialize request to Delius");
             }
 
             return rawDeliusRequest;
         });
 
-        if (maybeDeliusRequest == null) {
+        if (maybeRawDeliusRequest == null) {
             return Optional.empty();
         }
 
         return maybeRawDeliusRequest;
     }
 
-    private Optional<SoapEnvelope> buildNdhSoapEnvelope(Optional<String> maybeSoapXmlFromOasys, Message message) {
+    private Optional<SoapEnvelope> buildNdhSoapEnvelope(Optional<String> maybeSoapXmlFromOasys) {
 
         final Optional<SoapEnvelope> maybeNdhAssessmentUpdateSoapEnvelope = maybeSoapXmlFromOasys.map(soapXmlFromOasys -> {
             try {

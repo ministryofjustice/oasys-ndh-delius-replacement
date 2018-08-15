@@ -1,9 +1,10 @@
 package uk.gov.justice.digital.ndh.api;
 
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Value;
 
-@Data
+@Value
 @Builder
 public class Mapping {
     private Long codeType;
