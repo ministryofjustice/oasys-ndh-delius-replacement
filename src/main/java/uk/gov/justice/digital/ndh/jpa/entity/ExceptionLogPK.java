@@ -13,8 +13,8 @@ import java.sql.Timestamp;
 @Data
 public class ExceptionLogPK implements Serializable {
     @Column(name = "EXC_SEQ")
-    @SequenceGenerator(name = "EXC_SEQ", sequenceName = "EXC_SEQ")
-    @GeneratedValue(generator = "EXC_SEQ", strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(name = "EXCEPTION_LOG_SEQUENCE", sequenceName = "EXC_SEQ")
+    @GeneratedValue(generator = "EXCEPTION_LOG_SEQUENCE", strategy = GenerationType.SEQUENCE)
     @Id
     private Integer excSeq;
     @Column(name = "EXC_DATETIME")
