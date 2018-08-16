@@ -29,6 +29,8 @@ public class DeliusInitialSearchClient {
         return Unirest.post(ndeliusUrl)
                 .basicAuth(ndeliusUser, ndeliusPassword)
                 .header("Host", hostName)
+                .header("SOAPAction","/NDeliusOASYS/GetSubSetOffenderDetails")
+                .header("Content-Type","application/soap+xml")
                 .body(deliusSoapXml)
                 .asString().getBody();
     }

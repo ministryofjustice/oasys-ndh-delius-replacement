@@ -29,6 +29,8 @@ public class DeliusAssessmentUpdateClient {
         return Unirest.post(ndeliusUrl)
                 .basicAuth(ndeliusUser,ndeliusPassword)
                 .header("Host", hostName)
+                .header("SOAPAction","/NDeliusOASYS/SubmitAssessmentSummary")
+                .header("Content-Type","application/soap+xml")
                 .body(deliusSoapXml)
                 .asString().getBody();
     }

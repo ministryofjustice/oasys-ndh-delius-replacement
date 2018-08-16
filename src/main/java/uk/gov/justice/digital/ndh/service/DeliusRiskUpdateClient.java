@@ -29,6 +29,8 @@ public class DeliusRiskUpdateClient {
         return Unirest.post(ndeliusUrl)
                 .basicAuth(ndeliusUser, ndeliusPassword)
                 .header("Host", hostName)
+                .header("SOAPAction","/NDeliusOASYS/SubmitRiskData")
+                .header("Content-Type","application/soap+xml")
                 .body(deliusSoapXml)
                 .asString().getBody();
     }
