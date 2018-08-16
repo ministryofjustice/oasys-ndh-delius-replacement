@@ -21,6 +21,7 @@ ndelius.risk.update.url: https://httpbin.org/post
 ndelius.initial.search.url: https://httpbin.org/post
 ndelius.webservice.user:
 ndelius.webservice.password:
+ndelius.hostname: hostname
 
 # Disable security locally so that the health end point shows full
 # details and all Spring Boot Actuator end points are visible
