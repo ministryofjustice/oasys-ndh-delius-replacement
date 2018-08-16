@@ -131,7 +131,7 @@ public class OasysOffenderControllerTest {
                 .then()
                 .statusCode(200);
 
-        Mockito.verify(messageStoreService, times(3)).writeMessage(anyString(), anyString(), any(MessageStoreService.ProcStates.class));
+        Mockito.verify(messageStoreService, times(3)).writeMessage(anyString(), anyString(), anyString(), anyString(), any(MessageStoreService.ProcStates.class));
         Mockito.verify(exceptionLogService, times(1)).logFault(anyString(), anyString(), anyString());
 
     }
@@ -145,8 +145,8 @@ public class OasysOffenderControllerTest {
                         .withBody(REAL_DELIUS_RISK_FAULT_RESPONSE)
                         .withStatus(200)));
 
-        Mockito.when(mappingService.descriptionOf(anyString(),anyLong())).thenThrow(NDHMappingException.builder().subject("description").sourceValue("sourceVal").code(0L).build());
-        Mockito.when(mappingService.targetValueOf(anyString(),anyLong())).thenThrow(NDHMappingException.builder().subject("targetValue").sourceValue("sourceVal").code(0L).build());
+        Mockito.when(mappingService.descriptionOf(anyString(), anyLong())).thenThrow(NDHMappingException.builder().subject("description").sourceValue("sourceVal").code(0L).build());
+        Mockito.when(mappingService.targetValueOf(anyString(), anyLong())).thenThrow(NDHMappingException.builder().subject("targetValue").sourceValue("sourceVal").code(0L).build());
 
         final String requestXml = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/InitialSearch/realInitialSearchRequestFromOasys.xml")))
                 .lines().collect(Collectors.joining("\n"));
@@ -160,7 +160,7 @@ public class OasysOffenderControllerTest {
                 .statusCode(200).extract().body().asString();
 
         assertThat(s).contains("PCMS Web Service has returned an error");
-        Mockito.verify(messageStoreService, times(3)).writeMessage(anyString(), anyString(), any(MessageStoreService.ProcStates.class));
+        Mockito.verify(messageStoreService, times(3)).writeMessage(anyString(), anyString(), anyString(), anyString(), any(MessageStoreService.ProcStates.class));
         Mockito.verify(exceptionLogService, times(1)).logFault(anyString(), anyString(), anyString());
 
     }

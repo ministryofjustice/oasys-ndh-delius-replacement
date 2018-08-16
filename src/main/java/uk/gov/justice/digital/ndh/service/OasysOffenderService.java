@@ -19,6 +19,7 @@ import java.util.Optional;
 @Service
 @Slf4j
 public class OasysOffenderService extends RequestResponseService {
+    public static final String NDH_WEB_SERVICE_SEARCH = "NDH_Web_Service_Search";
     private final OffenderTransformer offenderTransformer;
     private final FaultTransformer faultTransformer;
     private final DeliusInitialSearchClient deliusInitialSearchClient;
@@ -35,18 +36,19 @@ public class OasysOffenderService extends RequestResponseService {
         val maybeOasysInitialSearch = commonTransformer.asSoapEnvelope(initialSearchXml);
 
         val correlationId = maybeOasysInitialSearch.map(initialSearch -> initialSearch.getBody().getInitialSearchRequest().getHeader().getCorrelationID()).orElse(null);
+        val offenderId = maybeOasysInitialSearch.map(initialSearch -> initialSearch.getBody().getInitialSearchRequest().getCmsProbNumber()).orElse(null);
 
-        val maybeTransformed = deliusInitialSearchRequestOf(initialSearchXml, maybeOasysInitialSearch);
+        val maybeTransformed = deliusInitialSearchRequestOf(initialSearchXml, maybeOasysInitialSearch, correlationId, offenderId);
 
-        val maybeTransformedXml = stringXmlOf(maybeTransformed, correlationId);
+        val maybeTransformedXml = stringXmlOf(maybeTransformed, correlationId, offenderId, NDH_WEB_SERVICE_SEARCH);
 
         val maybeRawResponse = rawDeliusInitialSearchResponseOf(maybeTransformedXml, correlationId);
 
-        val maybeResponse = deliusInitialSearchResponseOf(maybeRawResponse, correlationId);
+        val maybeResponse = deliusInitialSearchResponseOf(maybeRawResponse, correlationId, offenderId, NDH_WEB_SERVICE_SEARCH);
 
         return maybeResponse.flatMap(response -> {
             try {
-                return Optional.of(stringResponseOf(response, maybeOasysInitialSearch, maybeRawResponse));
+                return Optional.of(stringResponseOf(response, maybeOasysInitialSearch, maybeRawResponse, correlationId, offenderId, NDH_WEB_SERVICE_SEARCH));
             } catch (DocumentException e) {
                 log.error(e.getMessage());
                 exceptionLogService.logFault(response.toString(), correlationId, "Can't transform fault response: " + e.getMessage());
@@ -59,24 +61,23 @@ public class OasysOffenderService extends RequestResponseService {
         });
     }
 
-    public String stringResponseOf(SoapEnvelope response, Optional<SoapEnvelope> maybeOasysInitialSearch, Optional<String> maybeRawResponse) throws DocumentException, JsonProcessingException {
-        final String correlationID = maybeOasysInitialSearch.get().getBody().getInitialSearchRequest().getHeader().getCorrelationID();
+    public String stringResponseOf(SoapEnvelope response, Optional<SoapEnvelope> maybeOasysInitialSearch, Optional<String> maybeRawResponse, String correlationId, String offenderId, String processName) throws DocumentException, JsonProcessingException {
         if (response.getBody().isSoapFault()) {
-            exceptionLogService.logFault(maybeRawResponse.get(), correlationID, "SOAP Fault returned from Delius initialSearch service");
-            return faultTransformer.oasysFaultResponseOf(maybeRawResponse.get(), correlationID);
+            exceptionLogService.logFault(maybeRawResponse.get(), correlationId, "SOAP Fault returned from Delius initialSearch service");
+            return faultTransformer.oasysFaultResponseOf(maybeRawResponse.get(), correlationId);
         } else {
-            messageStoreService.writeMessage(maybeRawResponse.get(), correlationID, MessageStoreService.ProcStates.GLB_ProcState_OutboundBeforeTransformation);
+            messageStoreService.writeMessage(maybeRawResponse.get(), correlationId, offenderId, processName, MessageStoreService.ProcStates.GLB_ProcState_OutboundBeforeTransformation);
             final SoapEnvelope transformedResponse = offenderTransformer.oasysInitialSearchResponseOf(response, maybeOasysInitialSearch);
             final String transformedResponseXmlOf = commonTransformer.transformedResponseXmlOf(transformedResponse);
-            messageStoreService.writeMessage(transformedResponseXmlOf, correlationID, MessageStoreService.ProcStates.GLB_ProcState_OutboundAfterTransformation);
+            messageStoreService.writeMessage(transformedResponseXmlOf, correlationId, offenderId, processName, MessageStoreService.ProcStates.GLB_ProcState_OutboundAfterTransformation);
             return transformedResponseXmlOf;
         }
     }
 
 
-    private Optional<SoapEnvelope> deliusInitialSearchResponseOf(Optional<String> maybeRawResponse, String correlationId) {
+    private Optional<SoapEnvelope> deliusInitialSearchResponseOf(Optional<String> maybeRawResponse, String correlationId, String offenderId, String processName) {
         return maybeRawResponse.flatMap(rawResponse -> {
-            messageStoreService.writeMessage(rawResponse, correlationId, MessageStoreService.ProcStates.GLB_ProcState_OutboundAfterTransformation);
+            messageStoreService.writeMessage(rawResponse, correlationId, offenderId, processName, MessageStoreService.ProcStates.GLB_ProcState_OutboundAfterTransformation);
             try {
                 return Optional.of(xmlMapper.readValue(rawResponse, SoapEnvelope.class));
             } catch (IOException e) {
@@ -91,9 +92,9 @@ public class OasysOffenderService extends RequestResponseService {
         return maybeTransformedXml.flatMap((String transformedXml) -> callDeliusInitialSearch(transformedXml, correlationId));
     }
 
-    private Optional<SoapEnvelope> deliusInitialSearchRequestOf(String updateXml, Optional<SoapEnvelope> maybeOasysInitialSearch) {
+    private Optional<SoapEnvelope> deliusInitialSearchRequestOf(String updateXml, Optional<SoapEnvelope> maybeOasysInitialSearch, String correlationId, String offenderId) {
         return maybeOasysInitialSearch.map(oasysInitialSearch -> {
-            messageStoreService.writeMessage(updateXml, maybeOasysInitialSearch.get().getBody().getInitialSearchRequest().getHeader().getCorrelationID(), MessageStoreService.ProcStates.GLB_ProcState_InboundBeforeTransformation);
+            messageStoreService.writeMessage(updateXml, correlationId, offenderId, NDH_WEB_SERVICE_SEARCH, MessageStoreService.ProcStates.GLB_ProcState_InboundBeforeTransformation);
             return offenderTransformer.deliusInitialSearchRequestOf(oasysInitialSearch);
         });
     }

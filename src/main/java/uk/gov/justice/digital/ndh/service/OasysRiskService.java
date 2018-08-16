@@ -22,6 +22,7 @@ import java.util.Optional;
 @Slf4j
 public class OasysRiskService extends RequestResponseService {
 
+    public static final String NDH_WEB_SERVICE_RISK_UPDATE = "NDH_Web_Service_Risk_Update";
     private final OasysRiskUpdateTransformer oasysRiskUpdateTransformer;
     private final DeliusRiskUpdateClient deliusRiskUpdateClient;
     private final FaultTransformer faultTransformer;
@@ -39,22 +40,22 @@ public class OasysRiskService extends RequestResponseService {
 
         val maybeOasysRiskUpdate = commonTransformer.asSoapEnvelope(updateXml);
 
-        final String cmsProbNUmber = maybeOasysRiskUpdate.map(oru -> oru.getBody().getRiskUpdateRequest().getCmsProbNumber()).orElse(null);
+        val cmsProbNUmber = maybeOasysRiskUpdate.map(oru -> oru.getBody().getRiskUpdateRequest().getCmsProbNumber()).orElse(null);
 
         val correlationId = maybeOasysRiskUpdate.map(riskUpdate -> riskUpdate.getBody().getRiskUpdateRequest().getHeader().getCorrelationID()).orElse(null);
 
-        val maybeTransformed = deliusRiskUpdateRequestOf(updateXml, maybeOasysRiskUpdate);
+        val maybeTransformed = deliusRiskUpdateRequestOf(updateXml, maybeOasysRiskUpdate, correlationId, cmsProbNUmber);
 
-        val maybeTransformedXml = stringXmlOf(maybeTransformed, correlationId);
+        val maybeTransformedXml = stringXmlOf(maybeTransformed, correlationId, cmsProbNUmber, NDH_WEB_SERVICE_RISK_UPDATE);
 
         val maybeRawResponse = rawDeliusUpdateRiskResponseOf(maybeTransformedXml, correlationId);
 
-        val maybeResponse = deliusRiskUpdateResponseOf(maybeRawResponse, correlationId);
+        val maybeResponse = deliusRiskUpdateResponseOf(maybeRawResponse, correlationId, cmsProbNUmber);
 
         return maybeResponse.flatMap(response -> {
             try {
                 try {
-                    final String value = stringResponseOf(response, maybeOasysRiskUpdate, maybeRawResponse);
+                    final String value = stringResponseOf(response, maybeOasysRiskUpdate, maybeRawResponse, correlationId, cmsProbNUmber);
                     return Optional.of(value);
                 } catch (NDHMappingException ndhme) {
                     exceptionLogService.logMappingFail(
@@ -78,16 +79,15 @@ public class OasysRiskService extends RequestResponseService {
         });
     }
 
-    public String stringResponseOf(DeliusRiskUpdateResponse response, Optional<SoapEnvelope> maybeOasysRiskUpdate, Optional<String> rawDeliusResponse) throws DocumentException, JsonProcessingException {
-        final String correlationID = maybeOasysRiskUpdate.get().getBody().getRiskUpdateRequest().getHeader().getCorrelationID();
+    public String stringResponseOf(DeliusRiskUpdateResponse response, Optional<SoapEnvelope> maybeOasysRiskUpdate, Optional<String> rawDeliusResponse, String correlationId, String offenderId) throws DocumentException, JsonProcessingException {
         if (response.isSoapFault()) {
-            exceptionLogService.logFault(rawDeliusResponse.get(), correlationID, "SOAP Fault returned from Delius riskUpdate service");
-            return faultTransformer.oasysFaultResponseOf(rawDeliusResponse.get(), correlationID);
+            exceptionLogService.logFault(rawDeliusResponse.get(), correlationId, "SOAP Fault returned from Delius riskUpdate service");
+            return faultTransformer.oasysFaultResponseOf(rawDeliusResponse.get(), correlationId);
         } else {
-            messageStoreService.writeMessage(rawDeliusResponse.get(), correlationID, MessageStoreService.ProcStates.GLB_ProcState_OutboundBeforeTransformation);
+            messageStoreService.writeMessage(rawDeliusResponse.get(), correlationId, offenderId, NDH_WEB_SERVICE_RISK_UPDATE,MessageStoreService.ProcStates.GLB_ProcState_OutboundBeforeTransformation);
             final SoapEnvelope transformedResponse = oasysRiskUpdateTransformer.oasysRiskUpdateResponseOf(response, maybeOasysRiskUpdate);
             final String transformedResponseXmlOf = commonTransformer.transformedResponseXmlOf(transformedResponse);
-            messageStoreService.writeMessage(transformedResponseXmlOf, correlationID, MessageStoreService.ProcStates.GLB_ProcState_OutboundAfterTransformation);
+            messageStoreService.writeMessage(transformedResponseXmlOf, correlationId, offenderId,NDH_WEB_SERVICE_RISK_UPDATE,MessageStoreService.ProcStates.GLB_ProcState_OutboundAfterTransformation);
             return transformedResponseXmlOf;
         }
     }
@@ -97,9 +97,9 @@ public class OasysRiskService extends RequestResponseService {
         return Optional.of(faultTransformer.mappingSoapFaultOf(correlationId));
     }
 
-    private Optional<DeliusRiskUpdateResponse> deliusRiskUpdateResponseOf(Optional<String> maybeRawResponse, String correlationId) {
+    private Optional<DeliusRiskUpdateResponse> deliusRiskUpdateResponseOf(Optional<String> maybeRawResponse, String correlationId, String offenderId) {
         return maybeRawResponse.flatMap(rawResponse -> {
-            messageStoreService.writeMessage(rawResponse, correlationId, MessageStoreService.ProcStates.GLB_ProcState_OutboundAfterTransformation);
+            messageStoreService.writeMessage(rawResponse, correlationId, offenderId,NDH_WEB_SERVICE_RISK_UPDATE,MessageStoreService.ProcStates.GLB_ProcState_OutboundAfterTransformation);
             try {
                 return Optional.of(xmlMapper.readValue(rawResponse, DeliusRiskUpdateResponse.class));
             } catch (IOException e) {
@@ -114,10 +114,12 @@ public class OasysRiskService extends RequestResponseService {
         return maybeTransformedXml.flatMap((String transformedXml) -> callDeliusRiskUpdate(transformedXml, correlationId));
     }
 
-    private Optional<SoapEnvelope> deliusRiskUpdateRequestOf(String updateXml, Optional<SoapEnvelope> maybeOasysRiskUpdate) {
+    private Optional<SoapEnvelope> deliusRiskUpdateRequestOf(String updateXml, Optional<SoapEnvelope> maybeOasysRiskUpdate, String correlationId, String offenderId) {
         return maybeOasysRiskUpdate.map(oasysRiskUpdate -> {
             messageStoreService.writeMessage(updateXml,
-                    oasysRiskUpdate.getBody().getRiskUpdateRequest().getHeader().getCorrelationID(),
+                    correlationId,
+                    offenderId,
+                    NDH_WEB_SERVICE_RISK_UPDATE,
                     MessageStoreService.ProcStates.GLB_ProcState_InboundBeforeTransformation);
             return oasysRiskUpdateTransformer.deliusRiskUpdateRequestOf(oasysRiskUpdate);
         });

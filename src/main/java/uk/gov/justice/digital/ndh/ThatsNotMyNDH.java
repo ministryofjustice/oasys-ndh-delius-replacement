@@ -27,7 +27,7 @@ import org.springframework.jms.annotation.EnableJms;
 @EnableJms
 public class ThatsNotMyNDH {
 
-    public static final String NDH_PROCESS_NAME = "NDH_CMS_Web_Client";
+    public static final String ASSESSMENT_PROCESS = "NDH_CMS_Web_Client";
 
     public static void main(String[] args) {
         SpringApplication.run(ThatsNotMyNDH.class, args);

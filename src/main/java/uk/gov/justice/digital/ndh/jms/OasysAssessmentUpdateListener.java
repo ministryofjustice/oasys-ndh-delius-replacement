@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
+import org.dom4j.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
@@ -19,6 +21,7 @@ import javax.jms.TextMessage;
 import java.io.IOException;
 import java.util.Optional;
 
+import static uk.gov.justice.digital.ndh.ThatsNotMyNDH.ASSESSMENT_PROCESS;
 import static uk.gov.justice.digital.ndh.config.JmsConfig.OASYS_MESSAGES;
 
 @Component
@@ -49,16 +52,18 @@ public class OasysAssessmentUpdateListener {
     }
 
     @JmsListener(destination = OASYS_MESSAGES, concurrency = "1")
-    public void onMessage(Message message) throws UnirestException, JMSException {
+    public void onMessage(Message message) throws UnirestException, JMSException, DocumentException {
         log.info("HANDLING MESSAGE {}", message.toString());
 
         Optional<String> maybeSoapXmlFromOasys = readFromQueue(message);
 
         Optional<SoapEnvelope> maybeInputSoapMessage = buildNdhSoapEnvelope(maybeSoapXmlFromOasys);
+        val correlationId = maybeInputSoapMessage.map(assessmentUpdate -> assessmentUpdate.getBody().getCmsUpdate().getHeader().getCorrelationID()).orElse(null);
+        val offenderId = maybeInputSoapMessage.map(assessmentUpdate -> assessmentUpdate.getBody().getCmsUpdate().getAssessment().getCmsProbNumber()).orElse(null);
 
         Optional<SoapEnvelope> maybeDeliusRequest = buildDeliusSoapEnvelope(maybeInputSoapMessage);
 
-        Optional<String> maybeRawDeliusRequest = rawDeliusRequestOf(maybeDeliusRequest, message);
+        Optional<String> maybeRawDeliusRequest = rawDeliusRequestOf(maybeDeliusRequest, message, correlationId, offenderId);
 
         Optional<String> maybeRawDeliusResponse = rawDeliusResponseOf(maybeRawDeliusRequest, maybeDeliusRequest, maybeSoapXmlFromOasys, message);
 
@@ -106,7 +111,7 @@ public class OasysAssessmentUpdateListener {
 
     }
 
-    private Optional<String> rawDeliusRequestOf(Optional<SoapEnvelope> maybeDeliusRequest, Message message) throws JMSException {
+    private Optional<String> rawDeliusRequestOf(Optional<SoapEnvelope> maybeDeliusRequest, Message message, String correlationId, String offenderId) throws JMSException {
 
         final boolean redelivered = message.getJMSRedelivered();
 
@@ -116,7 +121,12 @@ public class OasysAssessmentUpdateListener {
             try {
                 rawDeliusRequest = xmlMapper.writeValueAsString(deliusAssessmentUpdateSoapEnvelope);
                 if (!redelivered) {
-                    messageStoreService.writeMessage(rawDeliusRequest, deliusAssessmentUpdateSoapEnvelope.getHeader().getHeader().getMessageId(), MessageStoreService.ProcStates.GLB_ProcState_InboundAfterTransformation);
+                    messageStoreService.writeMessage(
+                            rawDeliusRequest,
+                            correlationId,
+                            offenderId,
+                            ASSESSMENT_PROCESS,
+                            MessageStoreService.ProcStates.GLB_ProcState_InboundAfterTransformation);
                 }
             } catch (JsonProcessingException e) {
                 log.error("Can't serialize request to Delius. Ignore and continue: {}", e.getMessage());
@@ -153,7 +163,7 @@ public class OasysAssessmentUpdateListener {
 
     }
 
-    private Optional<String> readFromQueue(Message message) throws JMSException {
+    private Optional<String> readFromQueue(Message message) throws JMSException, DocumentException {
         String soapXmlFromOasys;
         try {
             soapXmlFromOasys = readMessage(message);
@@ -163,7 +173,12 @@ public class OasysAssessmentUpdateListener {
         }
 
         if (!message.getJMSRedelivered()) {
-            messageStoreService.writeMessage(soapXmlFromOasys, null, MessageStoreService.ProcStates.GLB_ProcState_InboundBeforeTransformation);
+            messageStoreService.writeMessage(
+                    soapXmlFromOasys,
+                    oasysAssessmentUpdateTransformer.correlationIdOf(soapXmlFromOasys),
+                    oasysAssessmentUpdateTransformer.customIdOf(soapXmlFromOasys),
+                    ASSESSMENT_PROCESS,
+                    MessageStoreService.ProcStates.GLB_ProcState_InboundBeforeTransformation);
         }
 
         return Optional.of(soapXmlFromOasys);

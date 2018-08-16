@@ -23,11 +23,11 @@ public abstract class RequestResponseService {
         this.xmlMapper = xmlMapper;
     }
 
-    protected Optional<String> stringXmlOf(Optional<SoapEnvelope> maybeTransformed, String correlationId) {
+    protected Optional<String> stringXmlOf(Optional<SoapEnvelope> maybeTransformed, String correlationId, String offenderId, String processName) {
         return maybeTransformed.flatMap(transformed -> {
             try {
                 final String transformedXml = xmlMapper.writeValueAsString(transformed);
-                messageStoreService.writeMessage(transformedXml, correlationId, MessageStoreService.ProcStates.GLB_ProcState_InboundAfterTransformation);
+                messageStoreService.writeMessage(transformedXml, correlationId, offenderId, processName, MessageStoreService.ProcStates.GLB_ProcState_InboundAfterTransformation);
                 return Optional.of(transformedXml);
             } catch (JsonProcessingException e) {
                 log.error(e.getMessage());

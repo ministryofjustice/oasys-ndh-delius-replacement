@@ -10,8 +10,6 @@ import uk.gov.justice.digital.ndh.jpa.repository.MessageStoreRepository;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
-import static uk.gov.justice.digital.ndh.ThatsNotMyNDH.NDH_PROCESS_NAME;
-
 @Service
 @Slf4j
 public class MessageStoreService {
@@ -25,14 +23,16 @@ public class MessageStoreService {
     }
 
     @Transactional
-    public void writeMessage(String body, String correlationId, ProcStates procState) {
+    public void writeMessage(String body, String correlationId, String crnOrPnc, String processName, ProcStates procState) {
         messageStoreRepository.save(MsgStore
                 .builder()
                 .correlationId(correlationId)
                 .payload(body)
                 .storeDatetime(Timestamp.valueOf(LocalDateTime.now()))
-                .processName(NDH_PROCESS_NAME)
+                .msgTimestamp(Timestamp.valueOf(LocalDateTime.now()))
+                .processName(processName)
                 .msgProcState(procState.getValue())
+                .customId(crnOrPnc)
                 .build());
     }
 

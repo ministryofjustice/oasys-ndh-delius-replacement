@@ -93,7 +93,7 @@ public class DeliusUnavailableBehaviourTest {
         }
 
         // Messages are logged before and after transformation, so check this happens only once
-        Mockito.verify(messageStoreService, times(2)).writeMessage(anyString(), anyString(), any(MessageStoreService.ProcStates.class));
+        Mockito.verify(messageStoreService, times(2)).writeMessage(anyString(), anyString(),anyString(),anyString(), any(MessageStoreService.ProcStates.class));
         // Exception is logged on the initial failure to talk to Delius, ensure only the first one is logged.
         Mockito.verify(exceptionLogService, times(1)).logFault(anyString(), anyString(), anyString());
     }

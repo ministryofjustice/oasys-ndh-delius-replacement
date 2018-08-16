@@ -9,7 +9,7 @@ import uk.gov.justice.digital.ndh.jpa.repository.ExceptionLogRepository;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
-import static uk.gov.justice.digital.ndh.ThatsNotMyNDH.NDH_PROCESS_NAME;
+import static uk.gov.justice.digital.ndh.ThatsNotMyNDH.ASSESSMENT_PROCESS;
 
 @Service
 @Slf4j
@@ -29,7 +29,7 @@ public class ExceptionLogService {
                 .builder()
                 .excDatetime(Timestamp.valueOf(LocalDateTime.now()))
                 .correlationId(correlationId)
-                .processName(NDH_PROCESS_NAME)
+                .processName(ASSESSMENT_PROCESS)
                 .description(description)
                 .payload(body)
                 .build());

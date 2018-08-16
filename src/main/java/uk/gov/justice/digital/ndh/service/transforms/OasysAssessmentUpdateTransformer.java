@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.ndh.service.transforms;
 
+import org.dom4j.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.ndh.api.delius.request.OasysAssessmentSummary;
@@ -190,5 +191,15 @@ public class OasysAssessmentUpdateTransformer {
     private String limitLength(String s, int i) {
         return s.substring(0, Math.min(s.length(), i));
     }
+
+    public String customIdOf(String oasysAssessmentUpdateRequestXml) throws DocumentException {
+        return commonTransformer.evaluateXpathText(oasysAssessmentUpdateRequestXml, "/*[local-name()='Envelope']/*[local-name()='Body']/*[local-name()='CMSUpdate']/*[local-name()='Assessment']/*[local-name()='CMSProbNumber']");
+    }
+
+    public String correlationIdOf(String oasysAssessmentUpdateRequestXml) throws DocumentException {
+        return commonTransformer.evaluateXpathText(oasysAssessmentUpdateRequestXml, "/*[local-name()='Envelope']/*[local-name()='Body']/*[local-name()='CMSUpdate']/*[local-name()='Header']//*[local-name()='CorrelationID']");
+    }
+
+
 
 }
