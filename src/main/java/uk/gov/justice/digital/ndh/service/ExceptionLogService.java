@@ -16,6 +16,7 @@ import static uk.gov.justice.digital.ndh.ThatsNotMyNDH.ASSESSMENT_PROCESS;
 public class ExceptionLogService {
 
     public static final String MAPPING_EXCEPTION = "MAPPING EXCEPTION";
+    public static final String PROCESS_EXCEPTION = "PROCESS EXCEPTION";
     private final ExceptionLogRepository exceptionLogRepository;
 
     @Autowired
@@ -32,6 +33,7 @@ public class ExceptionLogService {
                 .processName(ASSESSMENT_PROCESS)
                 .description(description)
                 .payload(body)
+                .excCode(PROCESS_EXCEPTION)
                 .build());
     }
 
