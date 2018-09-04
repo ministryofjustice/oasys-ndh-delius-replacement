@@ -21,6 +21,8 @@ import uk.gov.justice.digital.ndh.api.soap.SoapEnvelope;
 import uk.gov.justice.digital.ndh.service.ExceptionLogService;
 import uk.gov.justice.digital.ndh.service.MappingService;
 
+import java.time.LocalDateTime;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -69,7 +71,7 @@ public class OffenderTransformerTest {
                                 .header(Header
                                         .builder()
                                         .oasysRUsername("oasysRUsername")
-                                        .messageTimestamp("messageTimestamp")
+                                        .messageTimestamp(LocalDateTime.now().toString())
                                         .correlationID("1234567890123456789012345678901")
                                         .applicationMode("applicationMode")
                                         .build())
