@@ -12,8 +12,10 @@ import uk.gov.justice.digital.ndh.api.delius.request.SubmitAssessmentSummaryRequ
 import uk.gov.justice.digital.ndh.api.delius.response.GetSubSetOffenderDetailsResponse;
 import uk.gov.justice.digital.ndh.api.oasys.request.CmsUpdate;
 import uk.gov.justice.digital.ndh.api.oasys.request.InitialSearchRequest;
+import uk.gov.justice.digital.ndh.api.oasys.request.OffenderDetailsRequest;
 import uk.gov.justice.digital.ndh.api.oasys.request.SubmitRiskDataRequest;
 import uk.gov.justice.digital.ndh.api.oasys.response.InitialSearchResponse;
+import uk.gov.justice.digital.ndh.api.oasys.response.OffenderDetailsResponse;
 import uk.gov.justice.digital.ndh.api.oasys.response.RiskUpdateResponse;
 
 @Value
@@ -36,6 +38,13 @@ public class SoapBody {
     @JacksonXmlProperty(localName = "InitialSearchResponse", namespace = "http://www.hp.com/NDH_Web_Service/initialsearchresponse")
     @JsonProperty("InitialSearchResponse")
     private InitialSearchResponse initialSearchResponse;
+
+    @JsonProperty("OffenderDetailsRequest")
+    private OffenderDetailsRequest offenderDetailsRequest;
+
+    @JacksonXmlProperty(localName = "OffenderDetailsResponse", namespace = "http://www.hp.com/NDH_Web_Service/Offender_Details_Response")
+    @JsonProperty("OffenderDetailsResponse")
+    private OffenderDetailsResponse offenderDetailsResponse;
 
     @JacksonXmlProperty(localName = "SubmitAssessmentSummaryRequest", namespace = "http://www.bconline.co.uk/oasys/messages")
     private SubmitAssessmentSummaryRequest submitAssessmentSummaryRequest;
