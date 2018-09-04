@@ -3,6 +3,7 @@ package uk.gov.justice.digital.ndh.service;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 
@@ -14,12 +15,12 @@ public class OasysAssessmentService {
 
     private final JmsTemplate jmsTemplate;
     private final Queue oasysMessagesQueue;
-    private final DeliusAssessmentUpdateClient deliusAssessmentUpdateClient;
+    private final DeliusSOAPClient deliusAssessmentUpdateClient;
 
     @Autowired
     public OasysAssessmentService(JmsTemplate jmsTemplate,
                                   Queue oasysMessagesQueue,
-                                  DeliusAssessmentUpdateClient deliusAssessmentUpdateClient) {
+                                  @Qualifier("assessmentUpdateClient") DeliusSOAPClient deliusAssessmentUpdateClient) {
         this.jmsTemplate = jmsTemplate;
         this.oasysMessagesQueue = oasysMessagesQueue;
         this.deliusAssessmentUpdateClient = deliusAssessmentUpdateClient;

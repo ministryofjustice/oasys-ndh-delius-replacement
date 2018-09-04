@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.dom4j.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.digital.ndh.api.soap.SoapEnvelope;
 import uk.gov.justice.digital.ndh.service.transforms.CommonTransformer;
@@ -22,10 +23,16 @@ public class OasysOffenderService extends RequestResponseService {
     public static final String NDH_WEB_SERVICE_SEARCH = "NDH_Web_Service_Search";
     private final OffenderTransformer offenderTransformer;
     private final FaultTransformer faultTransformer;
-    private final DeliusInitialSearchClient deliusInitialSearchClient;
+    private final DeliusSOAPClient deliusInitialSearchClient;
 
     @Autowired
-    public OasysOffenderService(OffenderTransformer offenderTransformer, CommonTransformer commonTransformer, ExceptionLogService exceptionLogService, MessageStoreService messageStoreService, DeliusInitialSearchClient deliusInitialSearchClient, XmlMapper xmlMapper, FaultTransformer faultTransformer) {
+    public OasysOffenderService(OffenderTransformer offenderTransformer,
+                                CommonTransformer commonTransformer,
+                                ExceptionLogService exceptionLogService,
+                                MessageStoreService messageStoreService,
+                                @Qualifier("initialSearchClient") DeliusSOAPClient deliusInitialSearchClient,
+                                XmlMapper xmlMapper,
+                                FaultTransformer faultTransformer) {
         super(exceptionLogService, commonTransformer, messageStoreService, xmlMapper);
         this.offenderTransformer = offenderTransformer;
         this.deliusInitialSearchClient = deliusInitialSearchClient;

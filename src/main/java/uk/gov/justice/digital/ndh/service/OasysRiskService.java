@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.dom4j.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.digital.ndh.api.delius.response.DeliusRiskUpdateResponse;
 import uk.gov.justice.digital.ndh.api.soap.SoapEnvelope;
@@ -24,12 +25,18 @@ public class OasysRiskService extends RequestResponseService {
 
     public static final String NDH_WEB_SERVICE_RISK_UPDATE = "NDH_Web_Service_Risk_Update";
     private final OasysRiskUpdateTransformer oasysRiskUpdateTransformer;
-    private final DeliusRiskUpdateClient deliusRiskUpdateClient;
+    private final DeliusSOAPClient deliusRiskUpdateClient;
     private final FaultTransformer faultTransformer;
 
 
     @Autowired
-    public OasysRiskService(OasysRiskUpdateTransformer oasysRiskUpdateTransformer, CommonTransformer commonTransformer, XmlMapper xmlMapper, MessageStoreService messageStoreService, ExceptionLogService exceptionLogService, DeliusRiskUpdateClient deliusRiskUpdateClient, FaultTransformer faultTransformer) {
+    public OasysRiskService(OasysRiskUpdateTransformer oasysRiskUpdateTransformer,
+                            CommonTransformer commonTransformer,
+                            XmlMapper xmlMapper,
+                            MessageStoreService messageStoreService,
+                            ExceptionLogService exceptionLogService,
+                            @Qualifier("riskUpdateClient") DeliusSOAPClient deliusRiskUpdateClient,
+                            FaultTransformer faultTransformer) {
         super(exceptionLogService, commonTransformer, messageStoreService, xmlMapper);
         this.oasysRiskUpdateTransformer = oasysRiskUpdateTransformer;
         this.deliusRiskUpdateClient = deliusRiskUpdateClient;
@@ -84,10 +91,10 @@ public class OasysRiskService extends RequestResponseService {
             exceptionLogService.logFault(rawDeliusResponse.get(), correlationId, "SOAP Fault returned from Delius riskUpdate service");
             return faultTransformer.oasysFaultResponseOf(rawDeliusResponse.get(), correlationId);
         } else {
-            messageStoreService.writeMessage(rawDeliusResponse.get(), correlationId, offenderId, NDH_WEB_SERVICE_RISK_UPDATE,MessageStoreService.ProcStates.GLB_ProcState_OutboundBeforeTransformation);
+            messageStoreService.writeMessage(rawDeliusResponse.get(), correlationId, offenderId, NDH_WEB_SERVICE_RISK_UPDATE, MessageStoreService.ProcStates.GLB_ProcState_OutboundBeforeTransformation);
             final SoapEnvelope transformedResponse = oasysRiskUpdateTransformer.oasysRiskUpdateResponseOf(response, maybeOasysRiskUpdate);
             final String transformedResponseXmlOf = commonTransformer.transformedResponseXmlOf(transformedResponse);
-            messageStoreService.writeMessage(transformedResponseXmlOf, correlationId, offenderId,NDH_WEB_SERVICE_RISK_UPDATE,MessageStoreService.ProcStates.GLB_ProcState_OutboundAfterTransformation);
+            messageStoreService.writeMessage(transformedResponseXmlOf, correlationId, offenderId, NDH_WEB_SERVICE_RISK_UPDATE, MessageStoreService.ProcStates.GLB_ProcState_OutboundAfterTransformation);
             return transformedResponseXmlOf;
         }
     }
@@ -99,7 +106,7 @@ public class OasysRiskService extends RequestResponseService {
 
     private Optional<DeliusRiskUpdateResponse> deliusRiskUpdateResponseOf(Optional<String> maybeRawResponse, String correlationId, String offenderId) {
         return maybeRawResponse.flatMap(rawResponse -> {
-            messageStoreService.writeMessage(rawResponse, correlationId, offenderId,NDH_WEB_SERVICE_RISK_UPDATE,MessageStoreService.ProcStates.GLB_ProcState_OutboundAfterTransformation);
+            messageStoreService.writeMessage(rawResponse, correlationId, offenderId, NDH_WEB_SERVICE_RISK_UPDATE, MessageStoreService.ProcStates.GLB_ProcState_OutboundAfterTransformation);
             try {
                 return Optional.of(xmlMapper.readValue(rawResponse, DeliusRiskUpdateResponse.class));
             } catch (IOException e) {

@@ -13,7 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import uk.gov.justice.digital.ndh.service.DeliusAssessmentUpdateClient;
+import uk.gov.justice.digital.ndh.service.DeliusSOAPClient;
 import uk.gov.justice.digital.ndh.service.ExceptionLogService;
 import uk.gov.justice.digital.ndh.service.MappingService;
 import uk.gov.justice.digital.ndh.service.MessageStoreService;
@@ -51,8 +51,8 @@ public class DeliusUnavailableBehaviourTest {
     @MockBean
     private MappingService mappingService;
 
-    @MockBean
-    private DeliusAssessmentUpdateClient deliusAssessmentUpdateClient;
+    @MockBean(name = "assessmentUpdateClient")
+    private DeliusSOAPClient deliusAssessmentUpdateClient;
 
     @MockBean
     private ActiveMQAdminController activeMQAdminController;
@@ -93,7 +93,7 @@ public class DeliusUnavailableBehaviourTest {
         }
 
         // Messages are logged before and after transformation, so check this happens only once
-        Mockito.verify(messageStoreService, times(2)).writeMessage(anyString(), anyString(),anyString(),anyString(), any(MessageStoreService.ProcStates.class));
+        Mockito.verify(messageStoreService, times(2)).writeMessage(anyString(), anyString(), anyString(), anyString(), any(MessageStoreService.ProcStates.class));
         // Exception is logged on the initial failure to talk to Delius, ensure only the first one is logged.
         Mockito.verify(exceptionLogService, times(1)).logFault(anyString(), anyString(), anyString());
     }
