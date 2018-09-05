@@ -35,7 +35,7 @@ public class SoapBody {
     @JsonProperty("InitialSearchRequest")
     private InitialSearchRequest initialSearchRequest;
 
-    @JacksonXmlProperty(localName = "InitialSearchResponse", namespace = "http://www.hp.com/NDH_Web_Service/initialsearchresponse")
+    @JacksonXmlProperty(localName = "InitialSearchResponse", namespace = "http://www.hp.com/NDH_Web_Service/InitialSearchResponse")
     @JsonProperty("InitialSearchResponse")
     private InitialSearchResponse initialSearchResponse;
 
