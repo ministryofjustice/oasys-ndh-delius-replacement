@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.justice.digital.ndh.service.OasysAssessmentService;
 import uk.gov.justice.digital.ndh.service.OasysRiskService;
+import uk.gov.justice.digital.ndh.service.transforms.CommonTransformer;
 
 import java.util.Optional;
 
@@ -19,15 +20,18 @@ public class OasysAssessmentController {
 
     private final OasysAssessmentService oasysAssessmentService;
     private final OasysRiskService oasysRiskService;
+    private final CommonTransformer commonTransformer;
 
     @Autowired
-    public OasysAssessmentController(OasysAssessmentService oasysAssessmentService, OasysRiskService oasysRiskService) {
+    public OasysAssessmentController(OasysAssessmentService oasysAssessmentService, OasysRiskService oasysRiskService, CommonTransformer commonTransformer) {
         this.oasysAssessmentService = oasysAssessmentService;
         this.oasysRiskService = oasysRiskService;
+        this.commonTransformer = commonTransformer;
     }
 
     @RequestMapping(path = "/${oasys.assessment.updates.path:oasysAssessments}", method = RequestMethod.POST, consumes = {"application/xml", "text/xml", "text/plain"})
     public ResponseEntity<Void> handleOasysAssessment(@RequestBody String updateXml) {
+        log.info("Received POSTed assessment update request beginning {}...", commonTransformer.limitLength(updateXml,30));
 
         oasysAssessmentService.publishAssessmentUpdate(updateXml);
 
@@ -36,6 +40,8 @@ public class OasysAssessmentController {
 
     @RequestMapping(path = "/${oasys.risk.updates.path:oasysRiskUpdates}", method = RequestMethod.POST, consumes = {"application/xml", "text/xml", "text/plain"}, produces = "application/xml")
     public ResponseEntity<String> handleOasysRiskUpdate(@RequestBody String updateXml) {
+
+        log.info("Received POSTed risk update request beginning {}...", commonTransformer.limitLength(updateXml,30));
 
         final Optional<String> maybeResponse = oasysRiskService.processRiskUpdate(updateXml);
 

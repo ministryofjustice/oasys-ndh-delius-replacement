@@ -102,18 +102,18 @@ public class OasysAssessmentUpdateTransformer {
                 .caseReferenceNumber(assessment.getCmsProbNumber())
                 .oasysId(assessment.getAssessmentGUID())
                 .objectiveNumber(objective.getObjectiveNumber())
-                .need1(Optional.ofNullable(mappingService.descriptionOf(objective.getNeed1(), OASYS_CRMS_CRIM_NEED)).map(result -> limitLength(result, 50)).orElse(null))
-                .need2(Optional.ofNullable(mappingService.descriptionOf(objective.getNeed2(), OASYS_CRMS_CRIM_NEED)).map(result -> limitLength(result, 50)).orElse(null))
-                .need3(Optional.ofNullable(mappingService.descriptionOf(objective.getNeed3(), OASYS_CRMS_CRIM_NEED)).map(result -> limitLength(result, 50)).orElse(null))
-                .need4(Optional.ofNullable(mappingService.descriptionOf(objective.getNeed4(), OASYS_CRMS_CRIM_NEED)).map(result -> limitLength(result, 50)).orElse(null))
-                .objective(Optional.ofNullable(objective.getObjectiveDescription()).map(o -> limitLength(o, 50)).orElse(null))
-                .objectiveStatus(Optional.ofNullable(mappingService.descriptionOf(objective.getObjectiveStatus(), OASYSRCMS_OBJ_STATUS_CODE)).map(result -> limitLength(result, 50)).orElse(UNMAPPED))
-                .workSummary1(Optional.ofNullable(mappingService.descriptionOf(objective.getActionCode1(), OASYSRCMS_INTERVENTION)).map(result -> limitLength(result, 50)).orElse(null))
-                .workSummary2(Optional.ofNullable(mappingService.descriptionOf(objective.getActionCode2(), OASYSRCMS_INTERVENTION)).map(result -> limitLength(result, 50)).orElse(null))
-                .workSummary3(Optional.ofNullable(mappingService.descriptionOf(objective.getActionCode3(), OASYSRCMS_INTERVENTION)).map(result -> limitLength(result, 50)).orElse(null))
-                .text1(Optional.ofNullable(objective.getActionText1()).map(a -> limitLength(a, 100)).orElse(null))
-                .text2(Optional.ofNullable(objective.getActionText2()).map(a -> limitLength(a, 250)).orElse(null))
-                .text3(Optional.ofNullable(objective.getActionText3()).map(a -> limitLength(a, 250)).orElse(null))
+                .need1(Optional.ofNullable(mappingService.descriptionOf(objective.getNeed1(), OASYS_CRMS_CRIM_NEED)).map(result -> commonTransformer.limitLength(result, 50)).orElse(null))
+                .need2(Optional.ofNullable(mappingService.descriptionOf(objective.getNeed2(), OASYS_CRMS_CRIM_NEED)).map(result -> commonTransformer.limitLength(result, 50)).orElse(null))
+                .need3(Optional.ofNullable(mappingService.descriptionOf(objective.getNeed3(), OASYS_CRMS_CRIM_NEED)).map(result -> commonTransformer.limitLength(result, 50)).orElse(null))
+                .need4(Optional.ofNullable(mappingService.descriptionOf(objective.getNeed4(), OASYS_CRMS_CRIM_NEED)).map(result -> commonTransformer.limitLength(result, 50)).orElse(null))
+                .objective(Optional.ofNullable(objective.getObjectiveDescription()).map(o -> commonTransformer.limitLength(o, 50)).orElse(null))
+                .objectiveStatus(Optional.ofNullable(mappingService.descriptionOf(objective.getObjectiveStatus(), OASYSRCMS_OBJ_STATUS_CODE)).map(result -> commonTransformer.limitLength(result, 50)).orElse(UNMAPPED))
+                .workSummary1(Optional.ofNullable(mappingService.descriptionOf(objective.getActionCode1(), OASYSRCMS_INTERVENTION)).map(result -> commonTransformer.limitLength(result, 50)).orElse(null))
+                .workSummary2(Optional.ofNullable(mappingService.descriptionOf(objective.getActionCode2(), OASYSRCMS_INTERVENTION)).map(result -> commonTransformer.limitLength(result, 50)).orElse(null))
+                .workSummary3(Optional.ofNullable(mappingService.descriptionOf(objective.getActionCode3(), OASYSRCMS_INTERVENTION)).map(result -> commonTransformer.limitLength(result, 50)).orElse(null))
+                .text1(Optional.ofNullable(objective.getActionText1()).map(a -> commonTransformer.limitLength(a, 100)).orElse(null))
+                .text2(Optional.ofNullable(objective.getActionText2()).map(a -> commonTransformer.limitLength(a, 250)).orElse(null))
+                .text3(Optional.ofNullable(objective.getActionText3()).map(a -> commonTransformer.limitLength(a, 250)).orElse(null))
                 .build();
     }
 
@@ -135,7 +135,7 @@ public class OasysAssessmentUpdateTransformer {
                 .oasysId(ndhAssessment.getAssessmentGUID())
                 .oasysTotalScore(ndhAssessment.getTotalScore())
                 .purposeOfAssessmentCode(ndhAssessment.getPurposeOfAssessmentCode())
-                .purposeOfAssessmentDescription(limitLength(ndhAssessment.getPurposeOfAssessmentDescription(), 50))
+                .purposeOfAssessmentDescription(commonTransformer.limitLength(ndhAssessment.getPurposeOfAssessmentDescription(), 50))
                 .dateCreated(ndhAssessment.getDateCreated())
                 .assessedBy(ndhAssessment.getAssessedBy())
                 .court(ndhAssessment.getCourtCode())
@@ -186,10 +186,6 @@ public class OasysAssessmentUpdateTransformer {
                         .map(deliusConcernFlagOf)
                         .collect(Collectors.joining(",")))
                 .orElse(null);
-    }
-
-    private String limitLength(String s, int i) {
-        return s.substring(0, Math.min(s.length(), i));
     }
 
     public String customIdOf(String oasysAssessmentUpdateRequestXml) throws DocumentException {

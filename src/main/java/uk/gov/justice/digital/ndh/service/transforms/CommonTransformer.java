@@ -75,4 +75,7 @@ public class CommonTransformer {
     }
 
 
+    public String limitLength(String s, int i) {
+        return s.substring(0, Math.min(s.length(), i));
+    }
 }
