@@ -1,6 +1,8 @@
 package uk.gov.justice.digital.ndh.service.transforms;
 
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.junit.Test;
+import uk.gov.justice.digital.ndh.service.ExceptionLogService;
 import uk.gov.justice.digital.ndh.service.MappingService;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -10,10 +12,10 @@ public class OasysAssessmentUpdateTransformerTest {
 
     @Test
     public void riskFlagsTransformedCorrectly() {
-        OasysAssessmentUpdateTransformer transformer = new OasysAssessmentUpdateTransformer(mock(MappingService.class), mock(CommonTransformer.class));
+        CommonTransformer transformer = new CommonTransformer(mock(XmlMapper.class), mock(ExceptionLogService.class));
 
-        assertThat(transformer.deliusRiskFlagsOf(",,,,,")).isEqualTo("L,L,L,L,L,L");
-        assertThat(transformer.deliusRiskFlagsOf(",M,H")).isEqualTo("L,M,H");
+        assertThat(transformer.deliusRiskFlagsOf(",,,,,", OasysAssessmentUpdateTransformer.deliusRiskFlagOf)).isEqualTo("L,L,L,L,L,L");
+        assertThat(transformer.deliusRiskFlagsOf(",M,H", OasysAssessmentUpdateTransformer.deliusRiskFlagOf)).isEqualTo("L,M,H");
 
     }
 

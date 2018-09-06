@@ -12,4 +12,6 @@ public class SubmitRiskDataRequest {
     private String cmsProbNumber;
     @JsonProperty("Risk")
     private Risk risk;
+    @JsonProperty("RiskFlags")
+    private String riskFlags;
 }

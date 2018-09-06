@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.ndh.service.transforms;
 
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.digital.ndh.api.delius.request.RiskType;
@@ -11,16 +10,16 @@ import uk.gov.justice.digital.ndh.api.soap.SoapBody;
 import uk.gov.justice.digital.ndh.api.soap.SoapEnvelope;
 
 import java.util.Optional;
+import java.util.function.Function;
 
 @Service
 public class OasysRiskUpdateTransformer {
 
-    private final FaultTransformer faultTransformer;
     private final CommonTransformer commonTransformer;
+    public static final Function<String, String> deliusRiskFlagOf = part -> "".equals(part) ? "N" : part;
 
     @Autowired
-    public OasysRiskUpdateTransformer(FaultTransformer faultTransformer, CommonTransformer commonTransformer, XmlMapper xmlMapper) {
-        this.faultTransformer = faultTransformer;
+    public OasysRiskUpdateTransformer(CommonTransformer commonTransformer) {
         this.commonTransformer = commonTransformer;
     }
 
@@ -35,7 +34,7 @@ public class OasysRiskUpdateTransformer {
                                 .builder()
                                 .risk(RiskType
                                         .builder()
-                                        .riskOfHarm(oasysRiskUpdate.getBody().getRiskUpdateRequest().getRisk().getRiskofHarm())
+                                        .riskOfHarm(commonTransformer.deliusRiskFlagsOf(oasysRiskUpdate.getBody().getRiskUpdateRequest().getRiskFlags(), deliusRiskFlagOf))
                                         .caseReferenceNumber(oasysRiskUpdate.getBody().getRiskUpdateRequest().getCmsProbNumber())
                                         .build())
                                 .build())
@@ -56,4 +55,5 @@ public class OasysRiskUpdateTransformer {
                         .build())
                 .build();
     }
+
 }

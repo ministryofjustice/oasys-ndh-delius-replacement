@@ -34,7 +34,7 @@ public class OasysAssessmentUpdateTransformer {
     private final CommonTransformer commonTransformer;
 
     private final Function<String, String> deliusLayerOf;
-    private final Function<String, String> deliusRiskFlagOf;
+    public static final Function<String, String> deliusRiskFlagOf = part -> "".equals(part) ? "L" : part;
     private final Function<String, String> deliusConcernFlagOf;
 
     @Autowired
@@ -43,7 +43,6 @@ public class OasysAssessmentUpdateTransformer {
         this.commonTransformer = commonTransformer;
 
         deliusLayerOf = part -> "".equals(part) ? "" : mappingService.targetValueOf(part, OASYSRPCMS_LAYER1OBJ);
-        deliusRiskFlagOf = part -> "".equals(part) ? "L" : part;
         deliusConcernFlagOf = part -> {
             String mapped;
             switch (part) {
@@ -83,7 +82,7 @@ public class OasysAssessmentUpdateTransformer {
         return Optional.ofNullable(assessment).map(
                 a -> RiskType.builder()
                         .caseReferenceNumber(assessment.getCmsProbNumber())
-                        .riskOfHarm(deliusRiskFlagsOf(a.getRiskFlags()))
+                        .riskOfHarm(commonTransformer.deliusRiskFlagsOf(a.getRiskFlags(), deliusRiskFlagOf))
                         .build()).orElse(null);
 
     }
@@ -165,15 +164,6 @@ public class OasysAssessmentUpdateTransformer {
                 .map(flags -> Arrays
                         .stream(flags.split(",", -1))
                         .map(deliusLayerOf)
-                        .collect(Collectors.joining(",")))
-                .orElse(null);
-    }
-
-    public String deliusRiskFlagsOf(String riskFlags) {
-        return Optional.ofNullable(riskFlags)
-                .map(flags -> Arrays
-                        .stream(flags.split(",", -1))
-                        .map(deliusRiskFlagOf)
                         .collect(Collectors.joining(",")))
                 .orElse(null);
     }
