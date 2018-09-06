@@ -68,12 +68,11 @@ public class OasysOffenderService extends RequestResponseService {
         });
     }
 
-    public String stringResponseOf(SoapEnvelope response, Optional<SoapEnvelope> maybeOasysInitialSearch, Optional<String> maybeRawResponse, String correlationId, String offenderId, String processName) throws DocumentException, JsonProcessingException {
+    private String stringResponseOf(SoapEnvelope response, Optional<SoapEnvelope> maybeOasysInitialSearch, Optional<String> maybeRawResponse, String correlationId, String offenderId, String processName) throws DocumentException, JsonProcessingException {
         if (response.getBody().isSoapFault()) {
             exceptionLogService.logFault(maybeRawResponse.get(), correlationId, "SOAP Fault returned from Delius initialSearch service");
             return faultTransformer.oasysFaultResponseOf(maybeRawResponse.get(), correlationId);
         } else {
-            messageStoreService.writeMessage(maybeRawResponse.get(), correlationId, offenderId, processName, MessageStoreService.ProcStates.GLB_ProcState_OutboundBeforeTransformation);
             final SoapEnvelope transformedResponse = offenderTransformer.oasysInitialSearchResponseOf(response, maybeOasysInitialSearch);
             final String transformedResponseXmlOf = commonTransformer.transformedResponseXmlOf(transformedResponse);
             messageStoreService.writeMessage(transformedResponseXmlOf, correlationId, offenderId, processName, MessageStoreService.ProcStates.GLB_ProcState_OutboundAfterTransformation);
@@ -84,7 +83,7 @@ public class OasysOffenderService extends RequestResponseService {
 
     private Optional<SoapEnvelope> deliusInitialSearchResponseOf(Optional<String> maybeRawResponse, String correlationId, String offenderId, String processName) {
         return maybeRawResponse.flatMap(rawResponse -> {
-            messageStoreService.writeMessage(rawResponse, correlationId, offenderId, processName, MessageStoreService.ProcStates.GLB_ProcState_OutboundAfterTransformation);
+            messageStoreService.writeMessage(rawResponse, correlationId, offenderId, processName, MessageStoreService.ProcStates.GLB_ProcState_OutboundBeforeTransformation);
             try {
                 return Optional.of(xmlMapper.readValue(rawResponse, SoapEnvelope.class));
             } catch (IOException e) {

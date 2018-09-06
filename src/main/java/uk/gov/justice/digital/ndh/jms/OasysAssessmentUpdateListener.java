@@ -57,9 +57,12 @@ public class OasysAssessmentUpdateListener {
 
         Optional<String> maybeSoapXmlFromOasys = readFromQueue(message);
 
-        Optional<SoapEnvelope> maybeInputSoapMessage = buildNdhSoapEnvelope(maybeSoapXmlFromOasys);
-        val correlationId = maybeInputSoapMessage.map(assessmentUpdate -> assessmentUpdate.getBody().getCmsUpdate().getHeader().getCorrelationID()).orElse(null);
-        val offenderId = maybeInputSoapMessage.map(assessmentUpdate -> assessmentUpdate.getBody().getCmsUpdate().getAssessment().getCmsProbNumber()).orElse(null);
+        val correlationId = oasysAssessmentUpdateTransformer.correlationIdOf(maybeSoapXmlFromOasys.orElse("?"));
+        val offenderId = oasysAssessmentUpdateTransformer.customIdOf(maybeSoapXmlFromOasys.orElse("?"));
+
+        logIdempotent(message, maybeSoapXmlFromOasys, correlationId, offenderId, MessageStoreService.ProcStates.GLB_ProcState_InboundBeforeTransformation);
+
+        Optional<SoapEnvelope> maybeInputSoapMessage = buildNdhSoapEnvelope(maybeSoapXmlFromOasys, correlationId, message);
 
         Optional<SoapEnvelope> maybeDeliusRequest = buildDeliusSoapEnvelope(maybeInputSoapMessage);
 
@@ -68,6 +71,23 @@ public class OasysAssessmentUpdateListener {
         Optional<String> maybeRawDeliusResponse = rawDeliusResponseOf(maybeRawDeliusRequest, maybeDeliusRequest, maybeSoapXmlFromOasys, message);
 
         handleDeliusResponse(maybeRawDeliusResponse, maybeDeliusRequest);
+    }
+
+    private void logIdempotent(Message message, Optional<String> maybeSoapXmlFromOasys, String correlationId, String offenderId, MessageStoreService.ProcStates procState) {
+        if (maybeSoapXmlFromOasys.isPresent()) {
+            try {
+                if (!message.getJMSRedelivered()) {
+                    messageStoreService.writeMessage(
+                            maybeSoapXmlFromOasys.get(),
+                            correlationId,
+                            offenderId,
+                            ASSESSMENT_PROCESS,
+                            procState);
+                }
+            } catch (JMSException e) {
+                log.error(e.getMessage());
+            }
+        }
     }
 
     private Optional<SoapEnvelope> handleDeliusResponse(Optional<String> maybeRawDeliusResponse, Optional<SoapEnvelope> maybeDeliusRequest) {
@@ -93,16 +113,12 @@ public class OasysAssessmentUpdateListener {
 
     private Optional<String> rawDeliusResponseOf(Optional<String> maybeRawDeliusRequest, Optional<SoapEnvelope> maybeDeliusRequest, Optional<String> maybeSoapXmlFromOasys, Message message) throws JMSException, UnirestException {
 
-        boolean redelivered = message.getJMSRedelivered();
-
         if (maybeRawDeliusRequest.isPresent()) {
             try {
                 return Optional.of(oasysAssessmentService.deliusWebServiceResponseOf(maybeRawDeliusRequest.get()));
             } catch (UnirestException e) {
                 log.error("No response from Delius: {} Rejecting message {}", e.getMessage(), message);
-                if (!redelivered) {
-                    exceptionLogService.logFault(maybeSoapXmlFromOasys.get(), maybeDeliusRequest.get().getHeader().getHeader().getMessageId(), "No response from Delius");
-                }
+                errorIdempotent(maybeDeliusRequest.get().getHeader().getHeader().getMessageId(), maybeSoapXmlFromOasys, message, "No response from Delius");
                 throw e;
             }
         } else {
@@ -111,26 +127,28 @@ public class OasysAssessmentUpdateListener {
 
     }
 
-    private Optional<String> rawDeliusRequestOf(Optional<SoapEnvelope> maybeDeliusRequest, Message message, String correlationId, String offenderId) throws JMSException {
+    private void errorIdempotent(String correlationId, Optional<String> maybeSoapXml, Message message, String description) {
+        try {
+            if (!message.getJMSRedelivered()) {
+                exceptionLogService.logFault(maybeSoapXml.get(), correlationId, description);
+            }
+        } catch (JMSException e) {
+            log.error(e.getMessage());
+            exceptionLogService.logFault(maybeSoapXml.get(), correlationId, e.getMessage());
+        }
+    }
 
-        final boolean redelivered = message.getJMSRedelivered();
+    private Optional<String> rawDeliusRequestOf(Optional<SoapEnvelope> maybeDeliusRequest, Message message, String correlationId, String offenderId) throws JMSException {
 
         final Optional<String> maybeRawDeliusRequest = maybeDeliusRequest.map(deliusAssessmentUpdateSoapEnvelope -> {
 
             String rawDeliusRequest = null;
             try {
                 rawDeliusRequest = xmlMapper.writeValueAsString(deliusAssessmentUpdateSoapEnvelope);
-                if (!redelivered) {
-                    messageStoreService.writeMessage(
-                            rawDeliusRequest,
-                            correlationId,
-                            offenderId,
-                            ASSESSMENT_PROCESS,
-                            MessageStoreService.ProcStates.GLB_ProcState_InboundAfterTransformation);
-                }
+                logIdempotent(message, Optional.ofNullable(rawDeliusRequest), correlationId, offenderId, MessageStoreService.ProcStates.GLB_ProcState_InboundAfterTransformation);
             } catch (JsonProcessingException e) {
                 log.error("Can't serialize request to Delius. Ignore and continue: {}", e.getMessage());
-                exceptionLogService.logFault(deliusAssessmentUpdateSoapEnvelope.toString(), deliusAssessmentUpdateSoapEnvelope.getHeader().getHeader().getMessageId(), "Can't serialize request to Delius");
+                errorIdempotent(correlationId, Optional.of(deliusAssessmentUpdateSoapEnvelope.toString()), message, "Can't serialize request to Delius.");
             }
 
             return rawDeliusRequest;
@@ -143,14 +161,22 @@ public class OasysAssessmentUpdateListener {
         return maybeRawDeliusRequest;
     }
 
-    private Optional<SoapEnvelope> buildNdhSoapEnvelope(Optional<String> maybeSoapXmlFromOasys) {
+    private Optional<SoapEnvelope> buildNdhSoapEnvelope(Optional<String> maybeSoapXmlFromOasys, String correlationId, Message message) {
 
         final Optional<SoapEnvelope> maybeNdhAssessmentUpdateSoapEnvelope = maybeSoapXmlFromOasys.map(soapXmlFromOasys -> {
             try {
-                return xmlMapper.readValue(soapXmlFromOasys, SoapEnvelope.class);
+                final SoapEnvelope soapEnvelope = xmlMapper.readValue(soapXmlFromOasys, SoapEnvelope.class);
+
+                if (soapEnvelope.getBody() == null) {
+                    log.error("Input message has no SOAP body. Ignore and continue: {}", soapXmlFromOasys);
+                    errorIdempotent(correlationId, Optional.ofNullable(soapXmlFromOasys), message, "Input message has no SOAP body");
+                    return null;
+                }
+
+                return soapEnvelope;
             } catch (IOException e) {
                 log.error("Can't parse input message. Ignore and continue: {}", e.getMessage());
-                exceptionLogService.logFault(soapXmlFromOasys, null, "Can't parse input message");
+                errorIdempotent(correlationId, Optional.ofNullable(soapXmlFromOasys), message, "Can't parse input message");
                 return null;
             }
         });
@@ -163,22 +189,13 @@ public class OasysAssessmentUpdateListener {
 
     }
 
-    private Optional<String> readFromQueue(Message message) throws JMSException, DocumentException {
+    private Optional<String> readFromQueue(Message message) {
         String soapXmlFromOasys;
         try {
             soapXmlFromOasys = readMessage(message);
         } catch (JMSException e) {
             log.error("Can't read input message from queue. Ignore and continue. {}", e.getMessage());
             return Optional.empty();
-        }
-
-        if (!message.getJMSRedelivered()) {
-            messageStoreService.writeMessage(
-                    soapXmlFromOasys,
-                    oasysAssessmentUpdateTransformer.correlationIdOf(soapXmlFromOasys),
-                    oasysAssessmentUpdateTransformer.customIdOf(soapXmlFromOasys),
-                    ASSESSMENT_PROCESS,
-                    MessageStoreService.ProcStates.GLB_ProcState_InboundBeforeTransformation);
         }
 
         return Optional.of(soapXmlFromOasys);

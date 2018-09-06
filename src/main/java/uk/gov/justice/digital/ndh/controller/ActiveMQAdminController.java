@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.ndh.controller;
 
 import com.google.common.collect.ImmutableMap;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ import javax.management.ObjectName;
 import javax.management.ReflectionException;
 
 @RestController
+@Slf4j
 public class ActiveMQAdminController {
 
     public static final String MBEAN_PATH = "org.apache.activemq:type=Broker,brokerName=localhost,destinationType=Queue,destinationName=%s";
@@ -28,6 +30,8 @@ public class ActiveMQAdminController {
 
     @RequestMapping(path = "/activemq/queues/{queueName}", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity<Object> getStatus(@PathVariable("queueName") String queueName) throws MalformedObjectNameException, ReflectionException, IntrospectionException, AttributeNotFoundException, MBeanException {
+
+        log.info("Received GET queue status for queue {}", queueName);
 
         final ImmutableMap<String, Object> infos;
         try {
