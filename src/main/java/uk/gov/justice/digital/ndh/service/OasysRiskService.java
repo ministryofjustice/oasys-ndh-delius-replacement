@@ -42,17 +42,17 @@ public class OasysRiskService extends RequestResponseService {
 
         val maybeOasysRiskUpdate = commonTransformer.asSoapEnvelope(updateXml);
 
-        val cmsProbNUmber = maybeOasysRiskUpdate.map(oru -> oru.getBody().getRiskUpdateRequest().getCmsProbNumber()).orElse(null);
+        val cmsProbNumber = maybeOasysRiskUpdate.map(oru -> oru.getBody().getRiskUpdateRequest().getCmsProbNumber()).orElse(null);
 
         val correlationId = maybeOasysRiskUpdate.map(riskUpdate -> riskUpdate.getBody().getRiskUpdateRequest().getHeader().getCorrelationID()).orElse(null);
 
-        logMessage(cmsProbNUmber, correlationId, updateXml, MessageStoreService.ProcStates.GLB_ProcState_InboundBeforeTransformation);
+        logMessage(cmsProbNumber, correlationId, updateXml, MessageStoreService.ProcStates.GLB_ProcState_InboundBeforeTransformation);
 
         val maybeTransformed = deliusRiskUpdateRequestOf(maybeOasysRiskUpdate);
 
         val maybeTransformedXml = stringXmlOf(maybeTransformed, correlationId);
 
-        maybeTransformedXml.ifPresent(transformedXml -> logMessage(cmsProbNUmber, correlationId, transformedXml, MessageStoreService.ProcStates.GLB_ProcState_InboundAfterTransformation));
+        maybeTransformedXml.ifPresent(transformedXml -> logMessage(cmsProbNumber, correlationId, transformedXml, MessageStoreService.ProcStates.GLB_ProcState_InboundAfterTransformation));
 
         val maybeRawResponse = rawDeliusUpdateRiskResponseOf(maybeTransformedXml, correlationId);
 
@@ -66,11 +66,11 @@ public class OasysRiskService extends RequestResponseService {
 
         val maybeOasysSOAPResponse = maybeResponse.flatMap(response -> oasysRiskUpdateTransformer.oasysRiskUpdateResponseOf(Optional.of(response), maybeOasysRiskUpdate));
 
-        maybeRawResponse.ifPresent(xml -> logMessage(cmsProbNUmber, correlationId, xml, MessageStoreService.ProcStates.GLB_ProcState_OutboundBeforeTransformation));
+        maybeRawResponse.ifPresent(xml -> logMessage(cmsProbNumber, correlationId, xml, MessageStoreService.ProcStates.GLB_ProcState_OutboundBeforeTransformation));
 
         Optional<String> maybeXmlResponse = maybeOasysSOAPResponse.map(oasysResponse -> handleOkResponse(correlationId, oasysResponse));
 
-        maybeXmlResponse.ifPresent(xml -> logMessage(correlationId, xml, cmsProbNUmber, MessageStoreService.ProcStates.GLB_ProcState_OutboundAfterTransformation));
+        maybeXmlResponse.ifPresent(xml -> logMessage(cmsProbNumber, correlationId, xml, MessageStoreService.ProcStates.GLB_ProcState_OutboundAfterTransformation));
 
         return maybeXmlResponse;
     }
