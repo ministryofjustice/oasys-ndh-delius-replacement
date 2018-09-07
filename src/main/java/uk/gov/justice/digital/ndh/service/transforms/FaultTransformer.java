@@ -8,6 +8,7 @@ import org.dom4j.io.SAXReader;
 import org.dom4j.tree.DefaultElement;
 import org.springframework.stereotype.Component;
 import org.xml.sax.InputSource;
+import uk.gov.justice.digital.ndh.service.exception.NDHMappingException;
 
 import java.io.StringReader;
 import java.time.LocalDateTime;
@@ -87,11 +88,12 @@ public class FaultTransformer {
         }
     }
 
-    public String mappingSoapFaultOf(String correlationId) {
-        String faultTemplate = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://www.w3.org/2003/05/soap-envelope\"><SOAP-ENV:Body><SOAP-ENV:Fault><SOAP-ENV:Code><SOAP-ENV:Value>SOAP-ENV:NDH</SOAP-ENV:Value></SOAP-ENV:Code><SOAP-ENV:Reason><SOAP-ENV:Text xml:lang=\"en-US\">PCMS mapping error</SOAP-ENV:Text></SOAP-ENV:Reason><SOAP-ENV:Node/><SOAP-ENV:Role/><SOAP-ENV:Detail><ns:Fault xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:ns=\"http://www.hp.com/NDH_Web_Service/Fault\" xmlns:ns0=\"http://www.w3.org/2003/05/soap-envelope\"><ns:BusinessException><ns:Code>NDH</ns:Code><ns:Description>Failed when mapping PCMS Response in NDH</ns:Description><ns:Timestamp>TIMESTAMP</ns:Timestamp><ns:RequestMessage>CORRELATION_ID</ns:RequestMessage></ns:BusinessException></ns:Fault></SOAP-ENV:Detail></SOAP-ENV:Fault></SOAP-ENV:Body></SOAP-ENV:Envelope>";
+    public String mappingSoapFaultOf(NDHMappingException ndhme, String correlationId) {
+        String faultTemplate = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://www.w3.org/2003/05/soap-envelope\"><SOAP-ENV:Body><SOAP-ENV:Fault><SOAP-ENV:Code><SOAP-ENV:Value>SOAP-ENV:NDH</SOAP-ENV:Value></SOAP-ENV:Code><SOAP-ENV:Reason><SOAP-ENV:Text xml:lang=\"en-US\">PCMS mapping error</SOAP-ENV:Text></SOAP-ENV:Reason><SOAP-ENV:Node/><SOAP-ENV:Role/><SOAP-ENV:Detail><ns:Fault xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:ns=\"http://www.hp.com/NDH_Web_Service/Fault\" xmlns:ns0=\"http://www.w3.org/2003/05/soap-envelope\"><ns:BusinessException><ns:Code>NDH</ns:Code><ns:Description>DESCRIPTION</ns:Description><ns:Timestamp>TIMESTAMP</ns:Timestamp><ns:RequestMessage>CORRELATION_ID</ns:RequestMessage></ns:BusinessException></ns:Fault></SOAP-ENV:Detail></SOAP-ENV:Fault></SOAP-ENV:Body></SOAP-ENV:Envelope>";
 
         return faultTemplate
                 .replace("CORRELATION_ID", correlationId)
+                .replace("DESCRIPTION", ndhme.getMessage())
                 .replace("TIMESTAMP", LocalDateTime.now().toString());
     }
 }

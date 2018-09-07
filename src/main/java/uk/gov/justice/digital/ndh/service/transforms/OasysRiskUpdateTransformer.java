@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.ndh.service.transforms;
 
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.digital.ndh.api.delius.request.RiskType;
@@ -11,16 +10,16 @@ import uk.gov.justice.digital.ndh.api.soap.SoapBody;
 import uk.gov.justice.digital.ndh.api.soap.SoapEnvelope;
 
 import java.util.Optional;
+import java.util.function.Function;
 
 @Service
 public class OasysRiskUpdateTransformer {
 
-    private final FaultTransformer faultTransformer;
+    public static final Function<String, String> deliusRiskFlagOf = part -> "".equals(part) ? "N" : part;
     private final CommonTransformer commonTransformer;
 
     @Autowired
-    public OasysRiskUpdateTransformer(FaultTransformer faultTransformer, CommonTransformer commonTransformer, XmlMapper xmlMapper) {
-        this.faultTransformer = faultTransformer;
+    public OasysRiskUpdateTransformer(CommonTransformer commonTransformer) {
         this.commonTransformer = commonTransformer;
     }
 
@@ -35,7 +34,7 @@ public class OasysRiskUpdateTransformer {
                                 .builder()
                                 .risk(RiskType
                                         .builder()
-                                        .riskOfHarm(oasysRiskUpdate.getBody().getRiskUpdateRequest().getRisk().getRiskofHarm())
+                                        .riskOfHarm(commonTransformer.deliusRiskFlagsOf(oasysRiskUpdate.getBody().getRiskUpdateRequest().getRiskFlags(), deliusRiskFlagOf))
                                         .caseReferenceNumber(oasysRiskUpdate.getBody().getRiskUpdateRequest().getCmsProbNumber())
                                         .build())
                                 .build())
@@ -43,17 +42,19 @@ public class OasysRiskUpdateTransformer {
                 .build();
     }
 
-    public SoapEnvelope oasysRiskUpdateResponseOf(DeliusRiskUpdateResponse deliusRiskUpdateResponse, Optional<SoapEnvelope> maybeOasysRiskUpdate) {
-        return SoapEnvelope
-                .builder()
-                .body(SoapBody
+    public Optional<SoapEnvelope> oasysRiskUpdateResponseOf(Optional<DeliusRiskUpdateResponse> maybeDeliusRiskUpdateResponse, Optional<SoapEnvelope> maybeOasysRiskUpdate) {
+        return maybeDeliusRiskUpdateResponse.map(deliusRiskUpdateResponse ->
+                SoapEnvelope
                         .builder()
-                        .riskUpdateResponse(RiskUpdateResponse
+                        .body(SoapBody
                                 .builder()
-                                .caseReferenceNumber(deliusRiskUpdateResponse.getCaseReferenceNumber().orElse(null))
-                                .header(maybeOasysRiskUpdate.map(soapEnvelope -> soapEnvelope.getBody().getRiskUpdateRequest().getHeader()).orElse(null))
+                                .riskUpdateResponse(RiskUpdateResponse
+                                        .builder()
+                                        .caseReferenceNumber(deliusRiskUpdateResponse.getCaseReferenceNumber().orElse(null))
+                                        .header(maybeOasysRiskUpdate.map(soapEnvelope -> soapEnvelope.getBody().getRiskUpdateRequest().getHeader()).orElse(null))
+                                        .build())
                                 .build())
-                        .build())
-                .build();
+                        .build());
     }
+
 }

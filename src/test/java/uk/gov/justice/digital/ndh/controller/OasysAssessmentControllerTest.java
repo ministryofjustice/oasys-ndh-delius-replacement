@@ -234,7 +234,7 @@ public class OasysAssessmentControllerTest {
 
         System.out.println(Mockito.mockingDetails(exceptionLogService).getInvocations());
 
-        Mockito.verify(messageStoreService, times(3)).writeMessage(anyString(), anyString(), anyString(), anyString(), any(MessageStoreService.ProcStates.class));
+        Mockito.verify(messageStoreService, times(2)).writeMessage(anyString(), anyString(), anyString(), anyString(), any(MessageStoreService.ProcStates.class));
         Mockito.verify(exceptionLogService, times(1)).logFault(anyString(), anyString(), anyString());
 
     }

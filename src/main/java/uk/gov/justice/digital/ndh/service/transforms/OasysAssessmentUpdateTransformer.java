@@ -10,7 +10,6 @@ import uk.gov.justice.digital.ndh.api.delius.request.SubmitAssessmentSummaryRequ
 import uk.gov.justice.digital.ndh.api.oasys.request.Assessment;
 import uk.gov.justice.digital.ndh.api.oasys.request.CmsUpdate;
 import uk.gov.justice.digital.ndh.api.oasys.request.Objective;
-import uk.gov.justice.digital.ndh.api.oasys.request.Risk;
 import uk.gov.justice.digital.ndh.api.soap.SoapBody;
 import uk.gov.justice.digital.ndh.api.soap.SoapEnvelope;
 import uk.gov.justice.digital.ndh.service.MappingService;
@@ -35,7 +34,7 @@ public class OasysAssessmentUpdateTransformer {
     private final CommonTransformer commonTransformer;
 
     private final Function<String, String> deliusLayerOf;
-    private final Function<String, String> deliusRiskFlagOf;
+    public static final Function<String, String> deliusRiskFlagOf = part -> "".equals(part) ? "L" : part;
     private final Function<String, String> deliusConcernFlagOf;
 
     @Autowired
@@ -44,7 +43,6 @@ public class OasysAssessmentUpdateTransformer {
         this.commonTransformer = commonTransformer;
 
         deliusLayerOf = part -> "".equals(part) ? "" : mappingService.targetValueOf(part, OASYSRPCMS_LAYER1OBJ);
-        deliusRiskFlagOf = part -> "".equals(part) ? "L" : part;
         deliusConcernFlagOf = part -> {
             String mapped;
             switch (part) {
@@ -74,17 +72,17 @@ public class OasysAssessmentUpdateTransformer {
                                 //TODO: May have to guard against NPEs for the following. Will every update have an Assessment??
                                 .oasysAssessmentSummary(deliusOasysAssessmentSummaryOf(ndhSoapEnvelope.getBody().getCmsUpdate().getAssessment()))
                                 .oasysSupervisionPlans(deliusSupervisionPlansOf(ndhSoapEnvelope.getBody().getCmsUpdate()))
-                                .riskType(deliusRiskOf(ndhSoapEnvelope.getBody().getCmsUpdate().getAssessment().getRisk(), ndhSoapEnvelope.getBody().getCmsUpdate().getAssessment()))
+                                .riskType(deliusRiskOf(ndhSoapEnvelope.getBody().getCmsUpdate().getAssessment()))
                                 .build())
                         .build())
                 .build();
     }
 
-    private RiskType deliusRiskOf(Risk ndhRisk, Assessment assessment) {
-        return Optional.ofNullable(ndhRisk).map(
-                risk -> RiskType.builder()
+    private RiskType deliusRiskOf(Assessment assessment) {
+        return Optional.ofNullable(assessment).map(
+                a -> RiskType.builder()
                         .caseReferenceNumber(assessment.getCmsProbNumber())
-                        .riskOfHarm(deliusRiskFlagsOf(ndhRisk.getRiskofHarm()))
+                        .riskOfHarm(commonTransformer.deliusRiskFlagsOf(a.getRiskFlags(), deliusRiskFlagOf))
                         .build()).orElse(null);
 
     }
@@ -164,25 +162,16 @@ public class OasysAssessmentUpdateTransformer {
     private String deliusLayersOf(String layer1Obj) {
         return Optional.ofNullable(layer1Obj)
                 .map(flags -> Arrays
-                        .stream(flags.split(","))
+                        .stream(flags.split(",", -1))
                         .map(deliusLayerOf)
                         .collect(Collectors.joining(",")))
                 .orElse(null);
     }
 
-    private String deliusRiskFlagsOf(String riskFlags) {
-        return Optional.ofNullable(riskFlags)
-                .map(flags -> Arrays
-                        .stream(flags.split(","))
-                        .map(deliusRiskFlagOf)
-                        .collect(Collectors.joining(",")))
-                .orElse(null);
-    }
-
-    private String deliusConcernFlagsOf(String concernFlags) {
+    public String deliusConcernFlagsOf(String concernFlags) {
         return Optional.ofNullable(concernFlags)
                 .map(flags -> Arrays
-                        .stream(flags.split(","))
+                        .stream(flags.split(",", -1))
                         .map(deliusConcernFlagOf)
                         .collect(Collectors.joining(",")))
                 .orElse(null);
@@ -195,7 +184,6 @@ public class OasysAssessmentUpdateTransformer {
     public String correlationIdOf(String oasysAssessmentUpdateRequestXml) throws DocumentException {
         return commonTransformer.evaluateXpathText(oasysAssessmentUpdateRequestXml, "/*[local-name()='Envelope']/*[local-name()='Body']/*[local-name()='CMSUpdate']/*[local-name()='Header']//*[local-name()='CorrelationID']");
     }
-
 
 
 }

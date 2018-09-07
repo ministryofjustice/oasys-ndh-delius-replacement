@@ -22,13 +22,11 @@ public class OffenderTransformer {
 
     public static final long SENTENCE_CODE_TYPE = 3802L;
     private final CommonTransformer commonTransformer;
-    private final FaultTransformer faultTransformer;
     private final MappingService mappingService;
 
     @Autowired
     public OffenderTransformer(CommonTransformer commonTransformer, FaultTransformer faultTransformer, MappingService mappingService) {
         this.commonTransformer = commonTransformer;
-        this.faultTransformer = faultTransformer;
         this.mappingService = mappingService;
     }
 
@@ -53,8 +51,9 @@ public class OffenderTransformer {
                 .build();
     }
 
-    public SoapEnvelope oasysInitialSearchResponseOf(SoapEnvelope deliusInitialSearchResponse, Optional<SoapEnvelope> maybeOasysInitialSearchRequest) {
-        return SoapEnvelope
+    public Optional<SoapEnvelope> oasysInitialSearchResponseOf(Optional<SoapEnvelope> maybeDeliusInitialSearchResponse, Optional<SoapEnvelope> maybeOasysInitialSearchRequest) {
+        return maybeDeliusInitialSearchResponse.map( deliusInitialSearchResponse ->
+                SoapEnvelope
                 .builder()
                 .body(
                         SoapBody
@@ -65,10 +64,9 @@ public class OffenderTransformer {
                                                 .header(maybeOasysInitialSearchRequest.map(isr -> commonTransformer.oasysHeaderOf(isr.getBody().getInitialSearchRequest().getHeader())).orElse(null))
                                                 .subSetOffenders(subsetOffendersOf(deliusInitialSearchResponse.getBody().getGetSubSetOffenderDetailsResponse()))
                                                 .build()
-                                )
-                                .build()
+                                ).build()
                 )
-                .build();
+                .build());
     }
 
     private List<SubSetOffender> subsetOffendersOf(GetSubSetOffenderDetailsResponse getSubSetOffenderDetailsResponse) {
@@ -117,7 +115,7 @@ public class OffenderTransformer {
 
     private String sentenceCodeOf(String orderType) {
         return Optional.ofNullable(orderType)
-                .map(ot -> mappingService.descriptionOf(orderType, SENTENCE_CODE_TYPE))
+                .map(ot -> mappingService.descriptionOf(ot, SENTENCE_CODE_TYPE))
                 .orElse(null);
     }
 }

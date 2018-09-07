@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.dom4j.DocumentException;
 import org.junit.Test;
-import org.xml.sax.SAXException;
 import org.xmlunit.builder.DiffBuilder;
 import org.xmlunit.builder.Input;
 import org.xmlunit.diff.Diff;
@@ -24,10 +23,7 @@ import uk.gov.justice.digital.ndh.api.soap.SoapEnvelope;
 import uk.gov.justice.digital.ndh.api.soap.SoapHeader;
 import uk.gov.justice.digital.ndh.service.ExceptionLogService;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPathExpressionException;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -38,14 +34,23 @@ import static org.mockito.Mockito.mock;
 
 public class OasysRiskUpdateTransformerTest {
 
-    public static final String NOW = LocalDateTime.now().toString();
+    private static final String NOW = LocalDateTime.now().toString();
+
+    @Test
+    public void riskFlagsTransformedCorrectly() {
+        CommonTransformer transformer = new CommonTransformer(mock(XmlMapper.class), mock(ExceptionLogService.class));
+
+        assertThat(transformer.deliusRiskFlagsOf(",,,,,", OasysRiskUpdateTransformer.deliusRiskFlagOf)).isEqualTo("N,N,N,N,N,N");
+        assertThat(transformer.deliusRiskFlagsOf(",M,H", OasysRiskUpdateTransformer.deliusRiskFlagOf)).isEqualTo("N,M,H");
+
+    }
 
     @Test
     public void oasysRiskUpdateIsTransformedCorrectly() {
 
         final SoapEnvelope oasysRequest = anOasysRiskUpdate();
 
-        OasysRiskUpdateTransformer transformer = new OasysRiskUpdateTransformer(new FaultTransformer(), new CommonTransformer(getXmlMapper(), mock(ExceptionLogService.class)), getXmlMapper());
+        OasysRiskUpdateTransformer transformer = new OasysRiskUpdateTransformer(new CommonTransformer(getXmlMapper(), mock(ExceptionLogService.class)));
 
         SoapEnvelope expected = SoapEnvelope
                 .builder()
@@ -64,7 +69,7 @@ public class OasysRiskUpdateTransformerTest {
                                 .risk(uk.gov.justice.digital.ndh.api.delius.request.RiskType
                                         .builder()
                                         .caseReferenceNumber("A1234")
-                                        .riskOfHarm("riskOfHarm")
+                                        .riskOfHarm("N,M,H")
                                         .build())
                                 .build())
                         .build())
@@ -97,6 +102,7 @@ public class OasysRiskUpdateTransformerTest {
                                         .builder()
                                         .RiskofHarm("riskOfHarm")
                                         .build())
+                                .riskFlags(",M,H")
                                 .build())
                         .build()
                 )
@@ -120,13 +126,14 @@ public class OasysRiskUpdateTransformerTest {
                 .body(root)
                 .build();
 
-        OasysRiskUpdateTransformer transformer = new OasysRiskUpdateTransformer(new FaultTransformer(), new CommonTransformer(getXmlMapper(), mock(ExceptionLogService.class)), getXmlMapper());
+        OasysRiskUpdateTransformer transformer = new OasysRiskUpdateTransformer(new CommonTransformer(getXmlMapper(), mock(ExceptionLogService.class)));
 
         SoapEnvelope expected = anOasysRiskUpdateResponse();
 
-        final SoapEnvelope actual = transformer.oasysRiskUpdateResponseOf(deliusResponse, Optional.of(anOasysRiskUpdate()));
+        final Optional<SoapEnvelope> actual = transformer.oasysRiskUpdateResponseOf(Optional.of(deliusResponse), Optional.of(anOasysRiskUpdate()));
 
-        assertThat(actual).isEqualTo(expected);
+        assertThat(actual.isPresent()).isTrue();
+        assertThat(actual.get()).isEqualTo(expected);
     }
 
     private SoapEnvelope anOasysRiskUpdateResponse() {
@@ -154,7 +161,7 @@ public class OasysRiskUpdateTransformerTest {
 
         final XmlMapper xmlMapper = getXmlMapper();
 
-        OasysRiskUpdateTransformer transformer = new OasysRiskUpdateTransformer(new FaultTransformer(), new CommonTransformer(xmlMapper, mock(ExceptionLogService.class)), xmlMapper);
+        OasysRiskUpdateTransformer transformer = new OasysRiskUpdateTransformer(new CommonTransformer(xmlMapper, mock(ExceptionLogService.class)));
 
         final SoapEnvelope builtMessage = transformer.deliusRiskUpdateRequestOf(anOasysRiskUpdate());
 
@@ -200,7 +207,7 @@ public class OasysRiskUpdateTransformerTest {
 
 
     @Test
-    public void faultResponseIsTransformedCorrectly() throws ParserConfigurationException, SAXException, XPathExpressionException, IOException, DocumentException {
+    public void faultResponseIsTransformedCorrectly() throws DocumentException {
 
         final String deliusFaultResponseXml = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/RiskUpdate/realFaultResponseFromDelius.xml")))
                 .lines().collect(Collectors.joining("\n"));

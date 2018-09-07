@@ -16,7 +16,10 @@ import uk.gov.justice.digital.ndh.service.ExceptionLogService;
 import java.io.IOException;
 import java.io.StringReader;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Component
 public class CommonTransformer {
@@ -74,6 +77,14 @@ public class CommonTransformer {
         return maybeNode.map(Node::getText).orElse(null);
     }
 
+    public String deliusRiskFlagsOf(String riskFlags, Function<String,String> transform) {
+        return Optional.ofNullable(riskFlags)
+                .map(flags -> Arrays
+                        .stream(flags.split(",", -1))
+                        .map(transform)
+                        .collect(Collectors.joining(",")))
+                .orElse(null);
+    }
 
     public String limitLength(String s, int i) {
         return s.substring(0, Math.min(s.length(), i));

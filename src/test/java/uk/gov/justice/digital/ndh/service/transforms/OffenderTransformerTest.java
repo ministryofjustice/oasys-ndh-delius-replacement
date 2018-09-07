@@ -22,6 +22,7 @@ import uk.gov.justice.digital.ndh.service.ExceptionLogService;
 import uk.gov.justice.digital.ndh.service.MappingService;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.eq;
@@ -121,9 +122,10 @@ public class OffenderTransformerTest {
 
         final SoapEnvelope expected = anOasysInitialSearchResponse(oasysRequest);
 
-        SoapEnvelope actual = transformer.oasysInitialSearchResponseOf(deliusResponse, java.util.Optional.ofNullable(oasysRequest));
+        Optional<SoapEnvelope> actual = transformer.oasysInitialSearchResponseOf(Optional.of(deliusResponse), Optional.ofNullable(oasysRequest));
 
-        assertThat(actual).isEqualTo(expected);
+        assertThat(actual.isPresent()).isTrue();
+        assertThat(actual.get()).isEqualTo(expected);
     }
 
     public SoapEnvelope anOasysInitialSearchResponse(SoapEnvelope oasysRequest) {
