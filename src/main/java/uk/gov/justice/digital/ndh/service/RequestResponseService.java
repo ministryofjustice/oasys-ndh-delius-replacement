@@ -3,8 +3,10 @@ package uk.gov.justice.digital.ndh.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.dom4j.DocumentException;
 import uk.gov.justice.digital.ndh.api.soap.SoapEnvelope;
 import uk.gov.justice.digital.ndh.service.transforms.CommonTransformer;
+import uk.gov.justice.digital.ndh.service.transforms.FaultTransformer;
 
 import java.util.Optional;
 
@@ -15,19 +17,20 @@ public abstract class RequestResponseService {
     protected final ExceptionLogService exceptionLogService;
     protected final MessageStoreService messageStoreService;
     protected final XmlMapper xmlMapper;
+    protected final FaultTransformer faultTransformer;
 
-    public RequestResponseService(ExceptionLogService exceptionLogService, CommonTransformer commonTransformer, MessageStoreService messageStoreService, XmlMapper xmlMapper) {
+    public RequestResponseService(ExceptionLogService exceptionLogService, CommonTransformer commonTransformer, MessageStoreService messageStoreService, XmlMapper xmlMapper, FaultTransformer faultTransformer) {
         this.exceptionLogService = exceptionLogService;
         this.commonTransformer = commonTransformer;
         this.messageStoreService = messageStoreService;
         this.xmlMapper = xmlMapper;
+        this.faultTransformer = faultTransformer;
     }
 
-    protected Optional<String> stringXmlOf(Optional<SoapEnvelope> maybeTransformed, String correlationId, String offenderId, String processName) {
+    protected Optional<String> stringXmlOf(Optional<SoapEnvelope> maybeTransformed, String correlationId) {
         return maybeTransformed.flatMap(transformed -> {
             try {
                 final String transformedXml = xmlMapper.writeValueAsString(transformed);
-                messageStoreService.writeMessage(transformedXml, correlationId, offenderId, processName, MessageStoreService.ProcStates.GLB_ProcState_InboundAfterTransformation);
                 return Optional.of(transformedXml);
             } catch (JsonProcessingException e) {
                 log.error(e.getMessage());
@@ -37,4 +40,24 @@ public abstract class RequestResponseService {
         });
     }
 
+    public Optional<String> handleSoapFault(String correlationId, Optional<String> maybeRawResponse, String body) {
+        exceptionLogService.logFault(maybeRawResponse.get(), correlationId, "SOAP Fault returned from Delius initialSearch service");
+        try {
+            return Optional.ofNullable(faultTransformer.oasysFaultResponseOf(maybeRawResponse.get(), correlationId));
+        } catch (DocumentException e) {
+            log.error(e.getMessage());
+            exceptionLogService.logFault(body, correlationId, "Can't serialize SOAP Fault response: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String handleOkResponse(String correlationId, SoapEnvelope oasysResponse) {
+        try {
+            return commonTransformer.transformedResponseXmlOf(oasysResponse);
+        } catch (JsonProcessingException e) {
+            log.error(e.getMessage());
+            exceptionLogService.logFault(oasysResponse.toString(), correlationId, "Can't serialize transformed risk update response: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
 }

@@ -13,6 +13,7 @@ import uk.gov.justice.digital.ndh.api.soap.SoapEnvelope;
 import uk.gov.justice.digital.ndh.service.ExceptionLogService;
 import uk.gov.justice.digital.ndh.service.MessageStoreService;
 import uk.gov.justice.digital.ndh.service.OasysAssessmentService;
+import uk.gov.justice.digital.ndh.service.exception.NDHMappingException;
 import uk.gov.justice.digital.ndh.service.transforms.OasysAssessmentUpdateTransformer;
 
 import javax.jms.JMSException;
@@ -60,33 +61,39 @@ public class OasysAssessmentUpdateListener {
         val correlationId = oasysAssessmentUpdateTransformer.correlationIdOf(maybeSoapXmlFromOasys.orElse("?"));
         val offenderId = oasysAssessmentUpdateTransformer.customIdOf(maybeSoapXmlFromOasys.orElse("?"));
 
-        logIdempotent(message, maybeSoapXmlFromOasys, correlationId, offenderId, MessageStoreService.ProcStates.GLB_ProcState_InboundBeforeTransformation);
+        maybeSoapXmlFromOasys.ifPresent(xml -> logIdempotent(message, xml, correlationId, offenderId, MessageStoreService.ProcStates.GLB_ProcState_InboundBeforeTransformation));
 
         Optional<SoapEnvelope> maybeInputSoapMessage = buildNdhSoapEnvelope(maybeSoapXmlFromOasys, correlationId, message);
 
-        Optional<SoapEnvelope> maybeDeliusRequest = buildDeliusSoapEnvelope(maybeInputSoapMessage);
+        Optional<SoapEnvelope> maybeDeliusRequest = Optional.empty();
+
+        try {
+            maybeDeliusRequest = buildDeliusSoapEnvelope(maybeInputSoapMessage);
+        }  catch (NDHMappingException ndhme) {
+            exceptionLogService.logMappingFail(ndhme.getCode(), ndhme.getSourceValue(), ndhme.getSubject(), correlationId, offenderId);
+        }
 
         Optional<String> maybeRawDeliusRequest = rawDeliusRequestOf(maybeDeliusRequest, message, correlationId, offenderId);
+
+        maybeRawDeliusRequest.ifPresent(xml -> logIdempotent(message, xml, correlationId, offenderId, MessageStoreService.ProcStates.GLB_ProcState_InboundAfterTransformation));
 
         Optional<String> maybeRawDeliusResponse = rawDeliusResponseOf(maybeRawDeliusRequest, maybeDeliusRequest, maybeSoapXmlFromOasys, message);
 
         handleDeliusResponse(maybeRawDeliusResponse, maybeDeliusRequest);
     }
 
-    private void logIdempotent(Message message, Optional<String> maybeSoapXmlFromOasys, String correlationId, String offenderId, MessageStoreService.ProcStates procState) {
-        if (maybeSoapXmlFromOasys.isPresent()) {
-            try {
-                if (!message.getJMSRedelivered()) {
-                    messageStoreService.writeMessage(
-                            maybeSoapXmlFromOasys.get(),
-                            correlationId,
-                            offenderId,
-                            ASSESSMENT_PROCESS,
-                            procState);
-                }
-            } catch (JMSException e) {
-                log.error(e.getMessage());
+    private void logIdempotent(Message message, String xml, String correlationId, String offenderId, MessageStoreService.ProcStates procState) {
+        try {
+            if (!message.getJMSRedelivered()) {
+                messageStoreService.writeMessage(
+                        xml,
+                        correlationId,
+                        offenderId,
+                        ASSESSMENT_PROCESS,
+                        procState);
             }
+        } catch (JMSException e) {
+            log.error(e.getMessage());
         }
     }
 
@@ -145,7 +152,6 @@ public class OasysAssessmentUpdateListener {
             String rawDeliusRequest = null;
             try {
                 rawDeliusRequest = xmlMapper.writeValueAsString(deliusAssessmentUpdateSoapEnvelope);
-                logIdempotent(message, Optional.ofNullable(rawDeliusRequest), correlationId, offenderId, MessageStoreService.ProcStates.GLB_ProcState_InboundAfterTransformation);
             } catch (JsonProcessingException e) {
                 log.error("Can't serialize request to Delius. Ignore and continue: {}", e.getMessage());
                 errorIdempotent(correlationId, Optional.of(deliusAssessmentUpdateSoapEnvelope.toString()), message, "Can't serialize request to Delius.");

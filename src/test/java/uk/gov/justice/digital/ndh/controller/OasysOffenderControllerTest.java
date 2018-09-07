@@ -131,18 +131,18 @@ public class OasysOffenderControllerTest {
                 .then()
                 .statusCode(200);
 
-        Mockito.verify(messageStoreService, times(3)).writeMessage(anyString(), anyString(), anyString(), anyString(), any(MessageStoreService.ProcStates.class));
+        Mockito.verify(messageStoreService, times(2)).writeMessage(anyString(), anyString(), anyString(), anyString(), any(MessageStoreService.ProcStates.class));
         Mockito.verify(exceptionLogService, times(1)).logFault(anyString(), anyString(), anyString());
 
     }
 
     @Test
-    public void mappingFailureRiskResponseFromDeliusIsLoggedAppropriately() {
+    public void mappingFailureInitialSearchResponseFromDeliusIsLoggedAppropriately() {
 
 
         stubFor(post(urlEqualTo("/delius/initialSearch")).willReturn(
                 aResponse()
-                        .withBody(REAL_DELIUS_RISK_FAULT_RESPONSE)
+                        .withBody(GOOD_DELIUS_INITIAL_SEARCH_RESPONSE)
                         .withStatus(200)));
 
         Mockito.when(mappingService.descriptionOf(anyString(), anyLong())).thenThrow(NDHMappingException.builder().subject("description").sourceValue("sourceVal").code(0L).build());
@@ -159,9 +159,9 @@ public class OasysOffenderControllerTest {
                 .then()
                 .statusCode(200).extract().body().asString();
 
-        assertThat(s).contains("PCMS Web Service has returned an error");
+        assertThat(s).contains("PCMS mapping error");
         Mockito.verify(messageStoreService, times(3)).writeMessage(anyString(), anyString(), anyString(), anyString(), any(MessageStoreService.ProcStates.class));
-        Mockito.verify(exceptionLogService, times(1)).logFault(anyString(), anyString(), anyString());
+        Mockito.verify(exceptionLogService, times(1)).logMappingFail(anyLong(), anyString(), anyString(), anyString(), anyString());
 
     }
 

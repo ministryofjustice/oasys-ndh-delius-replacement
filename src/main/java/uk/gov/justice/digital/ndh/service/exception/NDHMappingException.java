@@ -11,4 +11,9 @@ public class NDHMappingException extends RuntimeException {
     private String subject;
     private Long code;
     private String sourceValue;
+
+    @Override
+    public String getMessage() {
+        return String.format("Failed when mapping PCMS Response in NDH: Could not resolve subject %s from sourceValue %s and code %s ", subject, sourceValue, code);
+    }
 }

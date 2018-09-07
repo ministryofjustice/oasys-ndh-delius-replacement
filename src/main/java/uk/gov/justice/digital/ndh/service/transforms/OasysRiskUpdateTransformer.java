@@ -15,8 +15,8 @@ import java.util.function.Function;
 @Service
 public class OasysRiskUpdateTransformer {
 
-    private final CommonTransformer commonTransformer;
     public static final Function<String, String> deliusRiskFlagOf = part -> "".equals(part) ? "N" : part;
+    private final CommonTransformer commonTransformer;
 
     @Autowired
     public OasysRiskUpdateTransformer(CommonTransformer commonTransformer) {
@@ -42,18 +42,19 @@ public class OasysRiskUpdateTransformer {
                 .build();
     }
 
-    public SoapEnvelope oasysRiskUpdateResponseOf(DeliusRiskUpdateResponse deliusRiskUpdateResponse, Optional<SoapEnvelope> maybeOasysRiskUpdate) {
-        return SoapEnvelope
-                .builder()
-                .body(SoapBody
+    public Optional<SoapEnvelope> oasysRiskUpdateResponseOf(Optional<DeliusRiskUpdateResponse> maybeDeliusRiskUpdateResponse, Optional<SoapEnvelope> maybeOasysRiskUpdate) {
+        return maybeDeliusRiskUpdateResponse.map(deliusRiskUpdateResponse ->
+                SoapEnvelope
                         .builder()
-                        .riskUpdateResponse(RiskUpdateResponse
+                        .body(SoapBody
                                 .builder()
-                                .caseReferenceNumber(deliusRiskUpdateResponse.getCaseReferenceNumber().orElse(null))
-                                .header(maybeOasysRiskUpdate.map(soapEnvelope -> soapEnvelope.getBody().getRiskUpdateRequest().getHeader()).orElse(null))
+                                .riskUpdateResponse(RiskUpdateResponse
+                                        .builder()
+                                        .caseReferenceNumber(deliusRiskUpdateResponse.getCaseReferenceNumber().orElse(null))
+                                        .header(maybeOasysRiskUpdate.map(soapEnvelope -> soapEnvelope.getBody().getRiskUpdateRequest().getHeader()).orElse(null))
+                                        .build())
                                 .build())
-                        .build())
-                .build();
+                        .build());
     }
 
 }

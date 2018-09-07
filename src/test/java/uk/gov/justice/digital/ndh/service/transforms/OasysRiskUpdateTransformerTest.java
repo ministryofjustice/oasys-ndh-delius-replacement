@@ -130,9 +130,10 @@ public class OasysRiskUpdateTransformerTest {
 
         SoapEnvelope expected = anOasysRiskUpdateResponse();
 
-        final SoapEnvelope actual = transformer.oasysRiskUpdateResponseOf(deliusResponse, Optional.of(anOasysRiskUpdate()));
+        final Optional<SoapEnvelope> actual = transformer.oasysRiskUpdateResponseOf(Optional.of(deliusResponse), Optional.of(anOasysRiskUpdate()));
 
-        assertThat(actual).isEqualTo(expected);
+        assertThat(actual.isPresent()).isTrue();
+        assertThat(actual.get()).isEqualTo(expected);
     }
 
     private SoapEnvelope anOasysRiskUpdateResponse() {
