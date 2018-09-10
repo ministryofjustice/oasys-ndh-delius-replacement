@@ -6,7 +6,7 @@ import lombok.Value;
 
 @Value
 @Builder
-public class GetOffenderDetailsResponse {
+public class DeliusOffenderDetailsResponse {
     @JsonProperty("Offender")
     private Offender offender;
 

@@ -10,7 +10,7 @@ import lombok.Value;
 import uk.gov.justice.digital.ndh.api.delius.request.GetOffenderDetailsRequest;
 import uk.gov.justice.digital.ndh.api.delius.request.GetSubSetOffenderEventRequest;
 import uk.gov.justice.digital.ndh.api.delius.request.SubmitAssessmentSummaryRequest;
-import uk.gov.justice.digital.ndh.api.delius.response.GetOffenderDetailsResponse;
+import uk.gov.justice.digital.ndh.api.delius.response.DeliusOffenderDetailsResponse;
 import uk.gov.justice.digital.ndh.api.delius.response.GetSubSetOffenderDetailsResponse;
 import uk.gov.justice.digital.ndh.api.oasys.request.CmsUpdate;
 import uk.gov.justice.digital.ndh.api.oasys.request.InitialSearchRequest;
@@ -76,8 +76,8 @@ public class SoapBody {
     private GetOffenderDetailsRequest getOffenderDetailsRequest;
 
     // From NDelius (offender details response)
-    @JsonProperty("GetOffenderDetailsResponse")
-    private GetOffenderDetailsResponse getOffenderDetailsResponse;
+    @JsonProperty("DeliusOffenderDetailsResponse")
+    private DeliusOffenderDetailsResponse deliusOffenderDetailsResponse;
 
     @JsonProperty(value = "Fault")
     private JsonNode fault;

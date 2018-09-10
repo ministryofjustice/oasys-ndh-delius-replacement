@@ -19,7 +19,7 @@ public class DeliusClientConfig {
 
     @Bean
     public DeliusSOAPClient assessmentUpdateClient(@Value("${ndelius.assessment.update.url}") String ndeliusUrl,
-                                                   @Value("${ndelius.assessment.update.soapAction:SubmitAssessmentSummary}") String soapAction) {
+                                                   @Value("${ndelius.assessment.update.soapAction:submitAssessmentSummary}") String soapAction) {
         return DeliusSOAPClient.builder()
                 .hostName(hostName)
                 .ndeliusPassword(ndeliusPassword)
@@ -31,7 +31,19 @@ public class DeliusClientConfig {
 
     @Bean
     public DeliusSOAPClient initialSearchClient(@Value("${ndelius.initial.search.url}") String ndeliusUrl,
-                                                @Value("${ndelius.initial.search.soapAction:GetSubSetOffenderDetails}") String soapAction) {
+                                                @Value("${ndelius.initial.search.soapAction:getSubSetOffenderDetails}") String soapAction) {
+        return DeliusSOAPClient.builder()
+                .hostName(hostName)
+                .ndeliusPassword(ndeliusPassword)
+                .ndeliusUrl(ndeliusUrl)
+                .ndeliusUser(ndeliusUser)
+                .soapAction(soapAction)
+                .build();
+    }
+
+    @Bean
+    public DeliusSOAPClient offenderDetailsClient(@Value("${ndelius.offender.details.url}") String ndeliusUrl,
+                                                  @Value("${ndelius.initial.search.soapAction:getOffenderDetails}") String soapAction) {
         return DeliusSOAPClient.builder()
                 .hostName(hostName)
                 .ndeliusPassword(ndeliusPassword)
@@ -43,7 +55,7 @@ public class DeliusClientConfig {
 
     @Bean
     public DeliusSOAPClient riskUpdateClient(@Value("${ndelius.risk.update.url}") String ndeliusUrl,
-                                             @Value("${ndelius.initial.search.soapAction:SubmitRiskData}") String soapAction) {
+                                             @Value("${ndelius.initial.search.soapAction:submitRiskData}") String soapAction) {
         return DeliusSOAPClient.builder()
                 .hostName(hostName)
                 .ndeliusPassword(ndeliusPassword)

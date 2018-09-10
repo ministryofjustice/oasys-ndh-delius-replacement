@@ -122,7 +122,7 @@ public class OffenderTransformerTest {
 
         final SoapEnvelope expected = anOasysInitialSearchResponse(oasysRequest);
 
-        Optional<SoapEnvelope> actual = transformer.oasysInitialSearchResponseOf(Optional.of(deliusResponse), Optional.ofNullable(oasysRequest));
+        Optional<SoapEnvelope> actual = transformer.initialSearchResponseTransform.apply(Optional.ofNullable(oasysRequest), Optional.of(deliusResponse));
 
         assertThat(actual.isPresent()).isTrue();
         assertThat(actual.get()).isEqualTo(expected);
@@ -224,7 +224,6 @@ public class OffenderTransformerTest {
 
         assertThat(result.isValid()).isTrue();
     }
-
 
 
 }

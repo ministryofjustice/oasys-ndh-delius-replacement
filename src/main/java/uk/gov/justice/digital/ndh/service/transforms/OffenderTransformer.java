@@ -3,10 +3,16 @@ package uk.gov.justice.digital.ndh.service.transforms;
 import com.google.common.collect.ImmutableList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.justice.digital.ndh.api.delius.request.GetOffenderDetailsRequest;
 import uk.gov.justice.digital.ndh.api.delius.request.GetSubSetOffenderEventRequest;
+import uk.gov.justice.digital.ndh.api.delius.response.DeliusOffenderDetailsResponse;
 import uk.gov.justice.digital.ndh.api.delius.response.GetSubSetOffenderDetailsResponse;
 import uk.gov.justice.digital.ndh.api.oasys.request.InitialSearchRequest;
+import uk.gov.justice.digital.ndh.api.oasys.request.OffenderDetailsRequest;
+import uk.gov.justice.digital.ndh.api.oasys.response.EventDetail;
 import uk.gov.justice.digital.ndh.api.oasys.response.InitialSearchResponse;
+import uk.gov.justice.digital.ndh.api.oasys.response.OffenderDetail;
+import uk.gov.justice.digital.ndh.api.oasys.response.OffenderDetailsResponse;
 import uk.gov.justice.digital.ndh.api.oasys.response.SubSetEvent;
 import uk.gov.justice.digital.ndh.api.oasys.response.SubSetOffender;
 import uk.gov.justice.digital.ndh.api.soap.SoapBody;
@@ -15,19 +21,66 @@ import uk.gov.justice.digital.ndh.service.MappingService;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 @Component
 public class OffenderTransformer {
 
     public static final long SENTENCE_CODE_TYPE = 3802L;
+
     private final CommonTransformer commonTransformer;
     private final MappingService mappingService;
+    public final BiFunction<Optional<SoapEnvelope>, Optional<SoapEnvelope>, Optional<SoapEnvelope>> initialSearchResponseTransform;
+    public final BiFunction<Optional<SoapEnvelope>, Optional<SoapEnvelope>, Optional<SoapEnvelope>> offenderDetailsResponseTransform;
 
     @Autowired
     public OffenderTransformer(CommonTransformer commonTransformer, FaultTransformer faultTransformer, MappingService mappingService) {
         this.commonTransformer = commonTransformer;
         this.mappingService = mappingService;
+        initialSearchResponseTransform = (rq, rs) -> rs.map(deliusInitialSearchResponse ->
+                SoapEnvelope
+                        .builder()
+                        .body(
+                                SoapBody
+                                        .builder()
+                                        .initialSearchResponse(
+                                                InitialSearchResponse
+                                                        .builder()
+                                                        .header(rq.map(isr -> commonTransformer.oasysHeaderOf(isr.getBody().getInitialSearchRequest().getHeader())).orElse(null))
+                                                        .subSetOffenders(subsetOffendersOf(deliusInitialSearchResponse.getBody().getGetSubSetOffenderDetailsResponse()))
+                                                        .build()
+                                        ).build()
+                        )
+                        .build());
+
+        offenderDetailsResponseTransform = (rq, rs) -> rs.map(deliusOffenderDetailsResponse ->
+                SoapEnvelope
+                        .builder()
+                        .body(
+                                SoapBody
+                                        .builder()
+                                        .offenderDetailsResponse(
+                                                OffenderDetailsResponse
+                                                        .builder()
+                                                        .header(rq.map(isr -> commonTransformer.oasysHeaderOf(isr.getBody().getInitialSearchRequest().getHeader())).orElse(null))
+                                                        .offenderDetail(oasysOffenderDetailOf(deliusOffenderDetailsResponse.getBody().getDeliusOffenderDetailsResponse()))
+                                                        .eventDetail(oasysEventDetailOf(deliusOffenderDetailsResponse.getBody().getDeliusOffenderDetailsResponse()))
+                                                        .build()
+                                        ).build()
+                        )
+                        .build());
+
+    }
+
+    private EventDetail oasysEventDetailOf(DeliusOffenderDetailsResponse deliusOffenderDetailsResponse) {
+        //TODO:
+        return EventDetail.builder().build();
+    }
+
+    private OffenderDetail oasysOffenderDetailOf(DeliusOffenderDetailsResponse deliusOffenderDetailsResponse) {
+        //TODO:
+        return OffenderDetail.builder().build();
     }
 
     public SoapEnvelope deliusInitialSearchRequestOf(SoapEnvelope oasysInitialSearchRequest) {
@@ -49,24 +102,6 @@ public class OffenderTransformer {
                 .forename1(oasysInitialSearchRequest.getForename1())
                 .surname(oasysInitialSearchRequest.getFamilyName())
                 .build();
-    }
-
-    public Optional<SoapEnvelope> oasysInitialSearchResponseOf(Optional<SoapEnvelope> maybeDeliusInitialSearchResponse, Optional<SoapEnvelope> maybeOasysInitialSearchRequest) {
-        return maybeDeliusInitialSearchResponse.map( deliusInitialSearchResponse ->
-                SoapEnvelope
-                .builder()
-                .body(
-                        SoapBody
-                                .builder()
-                                .initialSearchResponse(
-                                        InitialSearchResponse
-                                                .builder()
-                                                .header(maybeOasysInitialSearchRequest.map(isr -> commonTransformer.oasysHeaderOf(isr.getBody().getInitialSearchRequest().getHeader())).orElse(null))
-                                                .subSetOffenders(subsetOffendersOf(deliusInitialSearchResponse.getBody().getGetSubSetOffenderDetailsResponse()))
-                                                .build()
-                                ).build()
-                )
-                .build());
     }
 
     private List<SubSetOffender> subsetOffendersOf(GetSubSetOffenderDetailsResponse getSubSetOffenderDetailsResponse) {
@@ -117,5 +152,29 @@ public class OffenderTransformer {
         return Optional.ofNullable(orderType)
                 .map(ot -> mappingService.descriptionOf(ot, SENTENCE_CODE_TYPE))
                 .orElse(null);
+    }
+
+    public SoapEnvelope deliusOffenderDetailsRequestOf(SoapEnvelope oasysOffenderDetailRequest) {
+        final String correlationID = oasysOffenderDetailRequest.getBody().getOffenderDetailsRequest().getHeader().getCorrelationID().trim();
+
+        return SoapEnvelope
+                .builder()
+                .header(commonTransformer.deliusSoapHeaderOf(correlationID))
+                .body(SoapBody
+                        .builder()
+                        .getOffenderDetailsRequest(getOffenderDetailsRequestOf(
+                                oasysOffenderDetailRequest.getBody().getOffenderDetailsRequest()))
+                        .build()
+                )
+                .build();
+    }
+
+    private GetOffenderDetailsRequest getOffenderDetailsRequestOf(OffenderDetailsRequest oasysRequest) {
+        return GetOffenderDetailsRequest
+                .builder()
+                .caseReferenceNumber(oasysRequest.getCmsProbNumber())
+                .eventNumber(oasysRequest.getEventNumber())
+//                .notesId(oasysRequest.getHeader().)
+                .build();
     }
 }

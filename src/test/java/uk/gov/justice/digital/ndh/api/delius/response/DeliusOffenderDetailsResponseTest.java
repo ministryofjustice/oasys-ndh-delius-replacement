@@ -10,7 +10,7 @@ import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class GetOffenderDetailsResponseTest {
+public class DeliusOffenderDetailsResponseTest {
 
     @Test
     public void canDeserializeSoapResponse() throws IOException {
@@ -23,7 +23,7 @@ public class GetOffenderDetailsResponseTest {
                 "      </com:Header>\n" +
                 "   </soap:Header>\n" +
                 "   <soap:Body>\n" +
-                "      <mes:GetOffenderDetailsResponse>\n" +
+                "      <mes:DeliusOffenderDetailsResponse>\n" +
                 "         <mes:Offender>\n" +
                 "            <off:LAOIndicator>?</off:LAOIndicator>\n" +
                 "            <off:CaseReferenceNumber>?</off:CaseReferenceNumber>\n" +
@@ -149,11 +149,11 @@ public class GetOffenderDetailsResponseTest {
                 "               </even:LicenceConditions>\n" +
                 "            </even:Custody>\n" +
                 "         </mes:Event>\n" +
-                "      </mes:GetOffenderDetailsResponse>\n" +
+                "      </mes:DeliusOffenderDetailsResponse>\n" +
                 "   </soap:Body>\n" +
                 "</soap:Envelope>";
 
-        final GetOffenderDetailsResponse expected = GetOffenderDetailsResponse
+        final DeliusOffenderDetailsResponse expected = DeliusOffenderDetailsResponse
                 .builder()
                 .event(Event
                         .builder()
@@ -212,7 +212,7 @@ public class GetOffenderDetailsResponseTest {
 
         final SoapEnvelope soapEnvelope = xmlMapper.readValue(soap, SoapEnvelope.class);
 
-        final GetOffenderDetailsResponse actual = soapEnvelope.getBody().getGetOffenderDetailsResponse();
+        final DeliusOffenderDetailsResponse actual = soapEnvelope.getBody().getDeliusOffenderDetailsResponse();
 
         assertThat(actual).isEqualTo(expected);
     }

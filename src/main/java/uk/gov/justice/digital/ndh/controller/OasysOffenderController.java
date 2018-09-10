@@ -34,4 +34,12 @@ public class OasysOffenderController {
         return maybeResponse.map(response -> new ResponseEntity<>(response, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
     }
 
+    @RequestMapping(path = "/${oasys.offender.details.path:offenderDetails}", method = RequestMethod.POST, consumes = {"application/soap+xml", "application/xml", "text/xml", "text/plain"}, produces = "application/xml")
+    public ResponseEntity<String> handleOffenderDetails(@RequestBody String offenderDetailsRequestXml) {
+        log.info("Received POSTed offender details request beginning {}...", commonTransformer.limitLength(offenderDetailsRequestXml,30));
+        final Optional<String> maybeResponse = oasysOffenderService.offenderDetails(offenderDetailsRequestXml);
+
+        return maybeResponse.map(response -> new ResponseEntity<>(response, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
+    }
+
 }

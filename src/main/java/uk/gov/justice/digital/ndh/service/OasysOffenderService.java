@@ -15,6 +15,7 @@ import uk.gov.justice.digital.ndh.service.transforms.OffenderTransformer;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.function.BiFunction;
 
 @Service
 @Slf4j
@@ -23,6 +24,7 @@ public class OasysOffenderService extends RequestResponseService {
     private final OffenderTransformer offenderTransformer;
     private final FaultTransformer faultTransformer;
     private final DeliusSOAPClient deliusInitialSearchClient;
+    private final DeliusSOAPClient deliusOffenderDetailsClient;
 
     @Autowired
     public OasysOffenderService(OffenderTransformer offenderTransformer,
@@ -30,12 +32,14 @@ public class OasysOffenderService extends RequestResponseService {
                                 ExceptionLogService exceptionLogService,
                                 MessageStoreService messageStoreService,
                                 @Qualifier("initialSearchClient") DeliusSOAPClient deliusInitialSearchClient,
+                                @Qualifier("offenderDetailsClient") DeliusSOAPClient deliusOffenderDetailsClient,
                                 XmlMapper xmlMapper,
                                 FaultTransformer faultTransformer) {
         super(exceptionLogService, commonTransformer, messageStoreService, xmlMapper, faultTransformer);
         this.offenderTransformer = offenderTransformer;
         this.deliusInitialSearchClient = deliusInitialSearchClient;
         this.faultTransformer = faultTransformer;
+        this.deliusOffenderDetailsClient = deliusOffenderDetailsClient;
     }
 
     public Optional<String> initialSearch(String initialSearchXml) {
@@ -46,7 +50,7 @@ public class OasysOffenderService extends RequestResponseService {
 
         logMessage(correlationId, initialSearchXml, offenderId, MessageStoreService.ProcStates.GLB_ProcState_InboundBeforeTransformation);
 
-        val maybeTransformed = deliusInitialSearchRequestOf(maybeOasysInitialSearch);
+        val maybeTransformed = maybeOasysInitialSearch.map(offenderTransformer::deliusInitialSearchRequestOf);
 
         val maybeTransformedXml = stringXmlOf(maybeTransformed, correlationId);
 
@@ -56,6 +60,48 @@ public class OasysOffenderService extends RequestResponseService {
 
         val maybeResponse = deliusInitialSearchResponseOf(maybeRawResponse, correlationId);
 
+        return handleResponse(maybeOasysInitialSearch, correlationId, offenderId, maybeRawResponse, maybeResponse, offenderTransformer.initialSearchResponseTransform);
+    }
+
+
+    private Optional<SoapEnvelope> deliusInitialSearchResponseOf(Optional<String> maybeRawResponse, String correlationId) {
+        return getSoapEnvelope(maybeRawResponse, correlationId, "Can't deserialize delius initial search response: ");
+    }
+
+    private Optional<String> rawDeliusInitialSearchResponseOf(Optional<String> maybeTransformedXml, String correlationId) {
+        return maybeTransformedXml.flatMap((String transformedXml) -> callDeliusInitialSearch(transformedXml, correlationId));
+    }
+
+    private void logMessage(String correlationId, String xml, String offenderId, MessageStoreService.ProcStates procState) {
+        messageStoreService.writeMessage(xml, correlationId, offenderId, NDH_WEB_SERVICE_SEARCH, procState);
+    }
+
+    private Optional<String> callDeliusInitialSearch(String transformedXml, String correlationId) {
+        return doCall(transformedXml, correlationId, deliusInitialSearchClient, "Can't talk to Delius initial search endpoint: ");
+    }
+
+    public Optional<String> offenderDetails(String offenderDetailsRequestXml) {
+        val maybeOasysOffenderDetailsRequest = commonTransformer.asSoapEnvelope(offenderDetailsRequestXml);
+
+        val correlationId = maybeOasysOffenderDetailsRequest.map(initialSearch -> initialSearch.getBody().getInitialSearchRequest().getHeader().getCorrelationID()).orElse(null);
+        val offenderId = maybeOasysOffenderDetailsRequest.map(initialSearch -> initialSearch.getBody().getInitialSearchRequest().getCmsProbNumber()).orElse(null);
+
+        logMessage(correlationId, offenderDetailsRequestXml, offenderId, MessageStoreService.ProcStates.GLB_ProcState_InboundBeforeTransformation);
+
+        val maybeTransformed = maybeOasysOffenderDetailsRequest.map(offenderTransformer::deliusOffenderDetailsRequestOf);
+
+        val maybeTransformedXml = stringXmlOf(maybeTransformed, correlationId);
+
+        maybeTransformedXml.ifPresent(xml -> logMessage(correlationId, xml, offenderId, MessageStoreService.ProcStates.GLB_ProcState_InboundAfterTransformation));
+
+        val maybeRawResponse = rawDeliusOffenderDetailsResponseOf(maybeTransformedXml, correlationId);
+
+        val maybeResponse = deliusOffenderDetailsResponseOf(maybeRawResponse, correlationId);
+
+        return handleResponse(maybeOasysOffenderDetailsRequest, correlationId, offenderId, maybeRawResponse, maybeResponse, offenderTransformer.offenderDetailsResponseTransform);
+    }
+
+    public Optional<String> handleResponse(Optional<SoapEnvelope> maybeOasysOffenderDetailsRequest, String correlationId, String offenderId, Optional<String> maybeRawResponse, Optional<SoapEnvelope> maybeResponse, BiFunction<Optional<SoapEnvelope>, Optional<SoapEnvelope>, Optional<SoapEnvelope>> transform) {
         if (maybeResponse.isPresent()) {
             if (maybeResponse.get().getBody().isSoapFault()) {
                 return handleSoapFault(correlationId, maybeRawResponse, maybeResponse.get().toString());
@@ -66,8 +112,8 @@ public class OasysOffenderService extends RequestResponseService {
 
         Optional<SoapEnvelope> maybeOasysSOAPResponse;
         try {
-            maybeOasysSOAPResponse = offenderTransformer.oasysInitialSearchResponseOf(maybeResponse, maybeOasysInitialSearch);
-        }  catch (NDHMappingException ndhme) {
+            maybeOasysSOAPResponse = transform.apply(maybeOasysOffenderDetailsRequest, maybeResponse);
+        } catch (NDHMappingException ndhme) {
             exceptionLogService.logMappingFail(ndhme.getCode(), ndhme.getSourceValue(), ndhme.getSubject(), correlationId, offenderId);
             return Optional.ofNullable(faultTransformer.mappingSoapFaultOf(ndhme, correlationId));
         }
@@ -79,38 +125,38 @@ public class OasysOffenderService extends RequestResponseService {
         return maybeXmlResponse;
     }
 
+    private Optional<SoapEnvelope> deliusOffenderDetailsResponseOf(Optional<String> maybeRawResponse, String correlationId) {
+        return getSoapEnvelope(maybeRawResponse, correlationId, "Can't deserialize delius offender details response: ");
+    }
 
-    private Optional<SoapEnvelope> deliusInitialSearchResponseOf(Optional<String> maybeRawResponse, String correlationId) {
+    private Optional<SoapEnvelope> getSoapEnvelope(Optional<String> maybeRawResponse, String correlationId, String descriptionPreamble) {
         return maybeRawResponse.flatMap(rawResponse -> {
             try {
                 return Optional.of(xmlMapper.readValue(rawResponse, SoapEnvelope.class));
             } catch (IOException e) {
                 log.error(e.getMessage());
-                exceptionLogService.logFault(rawResponse, correlationId, "Can't deserialize delius initial search response: " + e.getMessage());
+                exceptionLogService.logFault(rawResponse, correlationId, descriptionPreamble + e.getMessage());
                 return Optional.empty();
             }
         });
     }
 
-    private Optional<String> rawDeliusInitialSearchResponseOf(Optional<String> maybeTransformedXml, String correlationId) {
-        return maybeTransformedXml.flatMap((String transformedXml) -> callDeliusInitialSearch(transformedXml, correlationId));
+    private Optional<String> rawDeliusOffenderDetailsResponseOf(Optional<String> maybeTransformedXml, String correlationId) {
+        return maybeTransformedXml.flatMap((String transformedXml) -> callDeliusOffenderDetails(transformedXml, correlationId, deliusOffenderDetailsClient));
     }
 
-    private Optional<SoapEnvelope> deliusInitialSearchRequestOf(Optional<SoapEnvelope> maybeOasysInitialSearch) {
-        return maybeOasysInitialSearch.map(offenderTransformer::deliusInitialSearchRequestOf);
+    private Optional<String> callDeliusOffenderDetails(String transformedXml, String correlationId, DeliusSOAPClient soapClient) {
+        return doCall(transformedXml, correlationId, soapClient, "Can't talk to Delius offender details endpoint: ");
     }
 
-    private void logMessage(String correlationId, String xml, String offenderId, MessageStoreService.ProcStates procState) {
-        messageStoreService.writeMessage(xml, correlationId, offenderId, NDH_WEB_SERVICE_SEARCH, procState);
-    }
-
-    private Optional<String> callDeliusInitialSearch(String transformedXml, String correlationId) {
+    private Optional<String> doCall(String transformedXml, String correlationId, DeliusSOAPClient deliusSOAPClient, String descriptionPreamble) {
         try {
-            return Optional.of(deliusInitialSearchClient.deliusWebServiceResponseOf(transformedXml));
+            return Optional.of(deliusSOAPClient.deliusWebServiceResponseOf(transformedXml));
         } catch (UnirestException e) {
             log.error(e.getMessage());
-            exceptionLogService.logFault(transformedXml, correlationId, "Can't talk to Delius initial search endpoint: " + e.getMessage());
+            exceptionLogService.logFault(transformedXml, correlationId, descriptionPreamble + e.getMessage());
             return Optional.empty();
         }
     }
+
 }
