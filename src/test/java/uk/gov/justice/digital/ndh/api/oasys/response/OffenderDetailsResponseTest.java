@@ -313,8 +313,10 @@ public class OffenderDetailsResponseTest {
 
         String actual = xmlMapper.writeValueAsString(oasysResponse);
 
-        Diff myDiff = DiffBuilder.compare(expected).withTest(actual)
+        Diff myDiff = DiffBuilder.compare(actual).withTest(expected)
                 .withDifferenceEvaluator(DifferenceEvaluators.Default)
+                .ignoreComments()
+                .ignoreWhitespace()
                 .checkForSimilar()
                 .build();
 
