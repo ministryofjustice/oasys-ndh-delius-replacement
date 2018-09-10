@@ -29,7 +29,7 @@ public class OasysAssessmentController {
         this.commonTransformer = commonTransformer;
     }
 
-    @RequestMapping(path = "/${oasys.assessment.updates.path:oasysAssessments}", method = RequestMethod.POST, consumes = {"application/xml", "text/xml", "text/plain"})
+    @RequestMapping(path = "/${oasys.assessment.updates.path:oasysAssessments}", method = RequestMethod.POST, consumes = {"application/soap+xml", "application/xml", "text/xml", "text/plain"})
     public ResponseEntity<Void> handleOasysAssessment(@RequestBody String updateXml) {
         log.info("Received POSTed assessment update request beginning {}...", commonTransformer.limitLength(updateXml,30));
 
@@ -38,7 +38,7 @@ public class OasysAssessmentController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @RequestMapping(path = "/${oasys.risk.updates.path:oasysRiskUpdates}", method = RequestMethod.POST, consumes = {"application/xml", "text/xml", "text/plain"}, produces = "application/xml")
+    @RequestMapping(path = "/${oasys.risk.updates.path:oasysRiskUpdates}", method = RequestMethod.POST, consumes = {"application/soap+xml", "application/xml", "text/xml", "text/plain"}, produces = "application/xml")
     public ResponseEntity<String> handleOasysRiskUpdate(@RequestBody String updateXml) {
 
         log.info("Received POSTed risk update request beginning {}...", commonTransformer.limitLength(updateXml,30));
