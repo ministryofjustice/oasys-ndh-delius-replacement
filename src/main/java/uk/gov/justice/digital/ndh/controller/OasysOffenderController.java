@@ -26,7 +26,7 @@ public class OasysOffenderController {
         this.commonTransformer = commonTransformer;
     }
 
-    @RequestMapping(path = "/${oasys.initial.search.path:initialSearch}", method = RequestMethod.POST, consumes = {"application/xml", "text/xml", "text/plain"}, produces = "application/xml")
+    @RequestMapping(path = "/${oasys.initial.search.path:initialSearch}", method = RequestMethod.POST, consumes = {"application/soap+xml", "application/xml", "text/xml", "text/plain"}, produces = "application/xml")
     public ResponseEntity<String> handleInitialSearch(@RequestBody String initialSearchXml) {
         log.info("Received POSTed initial search request beginning {}...", commonTransformer.limitLength(initialSearchXml,30));
         final Optional<String> maybeResponse = oasysOffenderService.initialSearch(initialSearchXml);
