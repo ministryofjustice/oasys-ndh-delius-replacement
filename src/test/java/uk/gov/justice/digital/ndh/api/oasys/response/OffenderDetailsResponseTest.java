@@ -1,270 +1,324 @@
 package uk.gov.justice.digital.ndh.api.oasys.response;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
-import uk.gov.justice.digital.ndh.api.delius.response.AddressFirstLine;
-import uk.gov.justice.digital.ndh.api.delius.response.Category;
-import uk.gov.justice.digital.ndh.api.delius.response.Custody;
-import uk.gov.justice.digital.ndh.api.delius.response.Event;
-import uk.gov.justice.digital.ndh.api.delius.response.GetOffenderDetailsResponse;
-import uk.gov.justice.digital.ndh.api.delius.response.LicenceCondition;
-import uk.gov.justice.digital.ndh.api.delius.response.MainAddress;
-import uk.gov.justice.digital.ndh.api.delius.response.Offender;
-import uk.gov.justice.digital.ndh.api.delius.response.RequirementDetails;
-import uk.gov.justice.digital.ndh.api.delius.response.Type;
+import org.xmlunit.builder.DiffBuilder;
+import org.xmlunit.diff.Diff;
+import org.xmlunit.diff.DifferenceEvaluators;
+import uk.gov.justice.digital.ndh.api.oasys.common.ICMSReference;
+import uk.gov.justice.digital.ndh.api.oasys.request.Header;
+import uk.gov.justice.digital.ndh.api.soap.SoapBody;
 import uk.gov.justice.digital.ndh.api.soap.SoapEnvelope;
-
-import java.io.IOException;
+import uk.gov.justice.digital.ndh.api.soap.SoapHeader;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class OffenderDetailsResponseTest {
 
     @Test
-    public void canDeserializeSoapResponse() throws IOException {
-
-        final String soap = "<soap:Envelope xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:com=\"http://www.bconline.co.uk/oasys/common\" xmlns:mes=\"http://www.bconline.co.uk/oasys/messages\" xmlns:off=\"http://www.bconline.co.uk/oasys/offender\" xmlns:even=\"http://www.bconline.co.uk/oasys/event\">\n" +
-                "   <soap:Header>\n" +
-                "      <com:Header>\n" +
-                "         <com:Version>?</com:Version>\n" +
-                "         <com:MessageID>?</com:MessageID>\n" +
-                "      </com:Header>\n" +
-                "   </soap:Header>\n" +
+    public void serilizedResponseIsSchemaCompliant() throws JsonProcessingException {
+        final String expected = "<soap:Envelope xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:off=\"http://www.hp.com/NDH_Web_Service/Offender_Details_Response\" xmlns:dom=\"http://www.hp.com/NDH_Web_Service/DomainTypes\" xmlns:off1=\"http://www.hp.com/NDH_Web_Service/offender\" xmlns:even=\"http://www.hp.com/NDH_Web_Service/event\">\n" +
+                "   <soap:Header/>\n" +
                 "   <soap:Body>\n" +
-                "      <mes:GetOffenderDetailsResponse>\n" +
-                "         <mes:Offender>\n" +
-                "            <off:LAOIndicator>?</off:LAOIndicator>\n" +
-                "            <off:CaseReferenceNumber>?</off:CaseReferenceNumber>\n" +
+                "      <off:OffenderDetailsResponse>\n" +
+                "         <off:Header>\n" +
+                "            <dom:ApplicationMode>?</dom:ApplicationMode>\n" +
+                "            <dom:CorrelationID>?</dom:CorrelationID>\n" +
+                "            <dom:OASysRUsername>?</dom:OASysRUsername>\n" +
+                "            <dom:MessageTimestamp>?</dom:MessageTimestamp>\n" +
+                "         </off:Header>\n" +
+                "         <off1:OffenderDetail>\n" +
                 "            <!--Optional:-->\n" +
-                "            <off:PoliceNationalComputerIdentifier>?</off:PoliceNationalComputerIdentifier>\n" +
+                "            <off1:CMSProbNumber>?</off1:CMSProbNumber>\n" +
                 "            <!--Optional:-->\n" +
-                "            <off:LastName>?</off:LastName>\n" +
+                "            <off1:PrisonNumber>?</off1:PrisonNumber>\n" +
                 "            <!--Optional:-->\n" +
-                "            <off:Forename1>?</off:Forename1>\n" +
+                "            <off1:NomisID>?</off1:NomisID>\n" +
                 "            <!--Optional:-->\n" +
-                "            <off:Forename2>?</off:Forename2>\n" +
+                "            <off1:FamilyName>?</off1:FamilyName>\n" +
                 "            <!--Optional:-->\n" +
-                "            <off:Forename3>?</off:Forename3>\n" +
+                "            <off1:Forename1>?</off1:Forename1>\n" +
                 "            <!--Optional:-->\n" +
-                "            <off:Alias>?</off:Alias>\n" +
+                "            <off1:Forename2>?</off1:Forename2>\n" +
                 "            <!--Optional:-->\n" +
-                "            <off:Gender>?</off:Gender>\n" +
+                "            <off1:Forename3>?</off1:Forename3>\n" +
                 "            <!--Optional:-->\n" +
-                "            <off:DateOfBirth>?</off:DateOfBirth>\n" +
+                "            <off1:Gender>?</off1:Gender>\n" +
                 "            <!--Optional:-->\n" +
-                "            <off:Language>?</off:Language>\n" +
-                "            <!--Optional:-->\n" +
-                "            <off:Religion>?</off:Religion>\n" +
-                "            <!--Optional:-->\n" +
-                "            <off:CRO>?</off:CRO>\n" +
-                "            <!--Optional:-->\n" +
-                "            <off:Ethnicity>?</off:Ethnicity>\n" +
-                "            <!--Optional:-->\n" +
-                "            <off:MainAddress>\n" +
+                "            <off1:DateOfBirth>?</off1:DateOfBirth>\n" +
+                "            <!--Zero or more repetitions:-->\n" +
+                "            <off1:Alias>\n" +
                 "               <!--Optional:-->\n" +
-                "               <off:AddressFirstLine>\n" +
-                "                  <!--You may enter the following 2 items in any order-->\n" +
-                "                  <!--Optional:-->\n" +
-                "                  <off:BuildingName>?</off:BuildingName>\n" +
-                "                  <!--Optional:-->\n" +
-                "                  <off:HouseNumber>?</off:HouseNumber>\n" +
-                "               </off:AddressFirstLine>\n" +
+                "               <off1:AliasFamilyName>?</off1:AliasFamilyName>\n" +
                 "               <!--Optional:-->\n" +
-                "               <off:StreetName>?</off:StreetName>\n" +
+                "               <off1:AliasForename1>?</off1:AliasForename1>\n" +
                 "               <!--Optional:-->\n" +
-                "               <off:District>?</off:District>\n" +
+                "               <off1:AliasForename2>?</off1:AliasForename2>\n" +
                 "               <!--Optional:-->\n" +
-                "               <off:TownOrCity>?</off:TownOrCity>\n" +
+                "               <off1:AliasForename3>?</off1:AliasForename3>\n" +
                 "               <!--Optional:-->\n" +
-                "               <off:County>?</off:County>\n" +
-                "               <!--Optional:-->\n" +
-                "               <off:TelephoneNumber>?</off:TelephoneNumber>\n" +
-                "            </off:MainAddress>\n" +
+                "               <off1:AliasDateOfBirth>?</off1:AliasDateOfBirth>\n" +
+                "            </off1:Alias>\n" +
                 "            <!--Optional:-->\n" +
-                "            <off:PrisonNumber>?</off:PrisonNumber>\n" +
+                "            <off1:EthnicCategory>?</off1:EthnicCategory>\n" +
                 "            <!--Optional:-->\n" +
-                "            <off:Postcode>?</off:Postcode>\n" +
-                "            <off:Telephone>?</off:Telephone>\n" +
-                "         </mes:Offender>\n" +
-                "         <mes:Event>\n" +
+                "            <off1:AddressLine1>?</off1:AddressLine1>\n" +
+                "            <!--Optional:-->\n" +
+                "            <off1:AddressLine2>?</off1:AddressLine2>\n" +
+                "            <!--Optional:-->\n" +
+                "            <off1:AddressLine3>?</off1:AddressLine3>\n" +
+                "            <!--Optional:-->\n" +
+                "            <off1:AddressLine4>?</off1:AddressLine4>\n" +
+                "            <!--Optional:-->\n" +
+                "            <off1:AddressLine5>?</off1:AddressLine5>\n" +
+                "            <!--Optional:-->\n" +
+                "            <off1:AddressLine6>?</off1:AddressLine6>\n" +
+                "            <!--Optional:-->\n" +
+                "            <off1:PostCode>?</off1:PostCode>\n" +
+                "            <!--Optional:-->\n" +
+                "            <off1:TelephoneNumber>?</off1:TelephoneNumber>\n" +
+                "            <!--Optional:-->\n" +
+                "            <off1:PNC>?</off1:PNC>\n" +
+                "            <!--Optional:-->\n" +
+                "            <off1:CRONumber>?</off1:CRONumber>\n" +
+                "            <!--Optional:-->\n" +
+                "            <off1:Language>?</off1:Language>\n" +
+                "            <!--Optional:-->\n" +
+                "            <off1:Religion>?</off1:Religion>\n" +
+                "            <!--Optional:-->\n" +
+                "            <off1:ReleaseDate>?</off1:ReleaseDate>\n" +
+                "            <!--Optional:-->\n" +
+                "            <off1:ReleaseType>?</off1:ReleaseType>\n" +
+                "            <!--Optional:-->\n" +
+                "            <off1:License>?</off1:License>\n" +
+                "            <!--Optional:-->\n" +
+                "            <off1:LAOIndicator>?</off1:LAOIndicator>\n" +
+                "            <!--Optional:-->\n" +
+                "            <off1:CellLocation>?</off1:CellLocation>\n" +
+                "            <!--Optional:-->\n" +
+                "            <off1:SecurityCategory>?</off1:SecurityCategory>\n" +
+                "            <!--Optional:-->\n" +
+                "            <off1:DischargeAddressLine1>?</off1:DischargeAddressLine1>\n" +
+                "            <!--Optional:-->\n" +
+                "            <off1:DischargeAddressLine2>?</off1:DischargeAddressLine2>\n" +
+                "            <!--Optional:-->\n" +
+                "            <off1:DischargeAddressLine3>?</off1:DischargeAddressLine3>\n" +
+                "            <!--Optional:-->\n" +
+                "            <off1:DischargeAddressLine4>?</off1:DischargeAddressLine4>\n" +
+                "            <!--Optional:-->\n" +
+                "            <off1:DischargeAddressLine5>?</off1:DischargeAddressLine5>\n" +
+                "            <!--Optional:-->\n" +
+                "            <off1:DischargeAddressLine6>?</off1:DischargeAddressLine6>\n" +
+                "            <!--Optional:-->\n" +
+                "            <off1:DischargePostcode>?</off1:DischargePostcode>\n" +
+                "            <!--Optional:-->\n" +
+                "            <off1:DischargeTelphoneNumber>?</off1:DischargeTelphoneNumber>\n" +
+                "            <!--Optional:-->\n" +
+                "            <off1:AppealPendingIndicator>?</off1:AppealPendingIndicator>\n" +
+                "            <!--Optional:-->\n" +
+                "            <off1:CurfewDate>?</off1:CurfewDate>\n" +
+                "            <!--Optional:-->\n" +
+                "            <off1:ParoleEligibilityDate>?</off1:ParoleEligibilityDate>\n" +
+                "            <!--Optional:-->\n" +
+                "            <off1:LicenceExpiryDate>?</off1:LicenceExpiryDate>\n" +
+                "            <!--Optional:-->\n" +
+                "            <off1:SentenceExpiryDate>?</off1:SentenceExpiryDate>\n" +
+                "            <!--Optional:-->\n" +
+                "            <off1:NonParoleDate>?</off1:NonParoleDate>\n" +
+                "            <!--Optional:-->\n" +
+                "            <off1:AutomaticReleaseDate>?</off1:AutomaticReleaseDate>\n" +
+                "            <!--Optional:-->\n" +
+                "            <off1:ConditionalReleaseDate>?</off1:ConditionalReleaseDate>\n" +
+                "            <!--Optional:-->\n" +
+                "            <off1:RiskOfSelfHarm>?</off1:RiskOfSelfHarm>\n" +
+                "            <!--Optional:-->\n" +
+                "            <off1:NumberOfOffences>?</off1:NumberOfOffences>\n" +
+                "            <!--Optional:-->\n" +
+                "            <off1:FirstConvictionAge>?</off1:FirstConvictionAge>\n" +
+                "            <!--Zero or more repetitions:-->\n" +
+                "            <off1:NOMCondition>?</off1:NOMCondition>\n" +
+                "         </off1:OffenderDetail>\n" +
+                "         <!--Optional:-->\n" +
+                "         <even:EventDetail>\n" +
+                "            <!--You have a CHOICE of the next 2 items at this level-->\n" +
                 "            <even:EventNumber>?</even:EventNumber>\n" +
+                "            <even:ICMSReference>\n" +
+                "               <dom:RefClient>?</dom:RefClient>\n" +
+                "               <dom:RefLink>?</dom:RefLink>\n" +
+                "               <dom:RefSupervision>?</dom:RefSupervision>\n" +
+                "            </even:ICMSReference>\n" +
+                "            <!--Zero or more repetitions:-->\n" +
+                "            <even:Offences>\n" +
+                "               <!--Optional:-->\n" +
+                "               <dom:OffenceGroupCode>?</dom:OffenceGroupCode>\n" +
+                "               <!--Optional:-->\n" +
+                "               <dom:OffenceSubCode>?</dom:OffenceSubCode>\n" +
+                "               <!--Optional:-->\n" +
+                "               <dom:AdditionalIndicator>?</dom:AdditionalIndicator>\n" +
+                "            </even:Offences>\n" +
                 "            <!--Optional:-->\n" +
-                "            <even:OffenceCode>?</even:OffenceCode>\n" +
+                "            <even:ReleaseDate>?</even:ReleaseDate>\n" +
+                "            <!--Optional:-->\n" +
+                "            <even:SentenceCode>?</even:SentenceCode>\n" +
+                "            <!--Optional:-->\n" +
+                "            <even:SentenceDate>?</even:SentenceDate>\n" +
                 "            <!--Optional:-->\n" +
                 "            <even:OffenceDate>?</even:OffenceDate>\n" +
                 "            <!--Optional:-->\n" +
-                "            <even:CommencementDate>?</even:CommencementDate>\n" +
+                "            <even:SentenceLength>?</even:SentenceLength>\n" +
                 "            <!--Optional:-->\n" +
-                "            <even:OrderType>?</even:OrderType>\n" +
+                "            <even:ConbinedLength>?</even:ConbinedLength>\n" +
                 "            <!--Optional:-->\n" +
-                "            <even:OrderLength>?</even:OrderLength>\n" +
+                "            <even:CourtCode>?</even:CourtCode>\n" +
                 "            <!--Optional:-->\n" +
-                "            <even:Court>?</even:Court>\n" +
+                "            <even:CourtName>?</even:CourtName>\n" +
                 "            <!--Optional:-->\n" +
                 "            <even:CourtType>?</even:CourtType>\n" +
-                "            <!--Optional:-->\n" +
-                "            <even:UWHours>?</even:UWHours>\n" +
-                "            <!--Optional:-->\n" +
-                "            <even:Requirements>\n" +
-                "               <!--1 or more repetitions:-->\n" +
-                "               <even:Requirement>\n" +
-                "                  <even:Code>?</even:Code>\n" +
-                "                  <even:MainCategory>?</even:MainCategory>\n" +
-                "                  <even:SubCategory>?</even:SubCategory>\n" +
-                "                  <!--Optional:-->\n" +
-                "                  <even:RequirementDetails>\n" +
-                "                     <even:Length>?</even:Length>\n" +
-                "                  </even:RequirementDetails>\n" +
-                "               </even:Requirement>\n" +
-                "            </even:Requirements>\n" +
-                "            <!--Optional:-->\n" +
-                "            <even:AdditionalRequirements>\n" +
-                "               <!--1 to 3 repetitions:-->\n" +
-                "               <even:AdditionalRequirement>\n" +
-                "                  <even:Code>?</even:Code>\n" +
-                "                  <even:MainCategory>?</even:MainCategory>\n" +
-                "                  <even:SubCategory>?</even:SubCategory>\n" +
-                "                  <!--Optional:-->\n" +
-                "                  <even:RequirementDetails>\n" +
-                "                     <even:Length>?</even:Length>\n" +
-                "                  </even:RequirementDetails>\n" +
-                "               </even:AdditionalRequirement>\n" +
-                "            </even:AdditionalRequirements>\n" +
-                "            <!--Optional:-->\n" +
-                "            <even:Custody>\n" +
+                "            <!--Zero or more repetitions:-->\n" +
+                "            <even:SentenceDetail>\n" +
                 "               <!--Optional:-->\n" +
-                "               <even:ReleaseDate>?</even:ReleaseDate>\n" +
+                "               <even:AttributeCategory>?</even:AttributeCategory>\n" +
                 "               <!--Optional:-->\n" +
-                "               <even:ReleaseType>?</even:ReleaseType>\n" +
+                "               <even:AttributeElement>?</even:AttributeElement>\n" +
+                "               <!--You have a CHOICE of the next 3 items at this level-->\n" +
                 "               <!--Optional:-->\n" +
-                "               <even:LicenceConditions>\n" +
-                "                  <!--1 or more repetitions:-->\n" +
-                "                  <even:LicenceCondition>\n" +
-                "                     <even:Type>\n" +
-                "                        <!--You have a CHOICE of the next 2 items at this level-->\n" +
-                "                        <even:PreCJALicenceConditionType>\n" +
-                "                           <even:Code>?</even:Code>\n" +
-                "                           <even:MainCategory>?</even:MainCategory>\n" +
-                "                           <even:SubCategory>?</even:SubCategory>\n" +
-                "                        </even:PreCJALicenceConditionType>\n" +
-                "                        <even:PostCJALicenceConditionType>\n" +
-                "                           <even:Code>?</even:Code>\n" +
-                "                           <even:MainCategory>?</even:MainCategory>\n" +
-                "                           <even:SubCategory>?</even:SubCategory>\n" +
-                "                        </even:PostCJALicenceConditionType>\n" +
-                "                     </even:Type>\n" +
-                "                  </even:LicenceCondition>\n" +
-                "               </even:LicenceConditions>\n" +
-                "            </even:Custody>\n" +
-                "         </mes:Event>\n" +
-                "      </mes:GetOffenderDetailsResponse>\n" +
+                "               <even:Description>?</even:Description>\n" +
+                "               <!--Optional:-->\n" +
+                "               <even:LengthInHours>?</even:LengthInHours>\n" +
+                "               <!--Optional:-->\n" +
+                "               <even:LengthInMonths>?</even:LengthInMonths>\n" +
+                "            </even:SentenceDetail>\n" +
+                "         </even:EventDetail>\n" +
+                "      </off:OffenderDetailsResponse>\n" +
                 "   </soap:Body>\n" +
                 "</soap:Envelope>";
 
-        final GetOffenderDetailsResponse expected = GetOffenderDetailsResponse
+        final SoapEnvelope oasysResponse = SoapEnvelope
                 .builder()
-                .event(Event
+                .header(SoapHeader
                         .builder()
-                        .additionalRequirements(ImmutableList.of(aRequirement()))
-                        .commencementDate("?")
-                        .court("?")
-                        .courtType("?")
-                        .custody(Custody
-                                .builder()
-                                .licenceConditions(ImmutableList.of(
-                                        LicenceCondition
-                                                .builder()
-                                                .type(Type
-                                                        .builder()
-                                                        .postCJALicenceConditionType(aLicenceCondition())
-                                                        .preCJALicenceConditionType(aLicenceCondition())
-                                                        .build())
-                                                .build()
-                                ))
-                                .releaseDate("?")
-                                .releaseType("?")
-                                .build())
-                        .eventNumber("?")
-                        .offenceCode("?")
-                        .offenceDate("?")
-                        .orderLength("?")
-                        .orderType("?")
-                        .requirements(ImmutableList.of(aRequirement()))
-                        .uwHours("?")
                         .build())
-                .offender(Offender
+                .body(SoapBody
                         .builder()
-                        .aliases(ImmutableList.of("?"))
-                        .caseReferenceNumber("?")
-                        .cro("?")
-                        .dateOfBirth("?")
-                        .ethnicity("?")
-                        .forename1("?")
-                        .forename2("?")
-                        .forename3("?")
-                        .gender("?")
-                        .language("?")
-                        .laoIndicator("?")
-                        .lastName("?")
-                        .mainAddress(anAddress())
-                        .policeNationalComputerIdentifier("?")
-                        .postcode("?")
-                        .prisonNumber("?")
-                        .religion("?")
-                        .telephone("?")
+                        .offenderDetailsResponse(OffenderDetailsResponse
+                                .builder()
+                                .header(Header
+                                        .builder()
+                                        .messageTimestamp("?")
+                                        .oasysRUsername("?")
+                                        .correlationID("?")
+                                        .applicationMode("?")
+                                        .build())
+                                .eventDetail(EventDetail
+                                        .builder()
+                                        .combinedLength("?")
+                                        .courtCode("?")
+                                        .courtName("?")
+                                        .courtType("?")
+                                        .eventNumber("?")
+                                        .icmsReference(ICMSReference
+                                                .builder()
+                                                .refClient("?")
+                                                .refLink("?")
+                                                .refSupervision("?")
+                                                .build())
+                                        .offenceDate("?")
+                                        .offences(ImmutableList.of(Offences
+                                                .builder()
+                                                .additionalIndicator("?")
+                                                .offenceGroupCode("?")
+                                                .offenceSubCode("?")
+                                                .build()))
+                                        .releaseDate("?")
+                                        .sentenceCode("?")
+                                        .sentenceDate("?")
+                                        .sentenceDetails(ImmutableList.of(SentenceDetail
+                                                .builder()
+                                                .attributeCategory("?")
+                                                .attributeElement("?")
+                                                .description("?")
+                                                .lengthInHours("?")
+                                                .lengthInMonths("?")
+                                                .build()))
+                                        .sentenceLength("?")
+                                        .build())
+                                .offenderDetail(OffenderDetail
+                                        .builder()
+                                        .addressLine1("?")
+                                        .addressLine2("?")
+                                        .addressLine3("?")
+                                        .addressLine4("?")
+                                        .addressLine5("?")
+                                        .addressLine6("?")
+                                        .aliases(ImmutableList.of(Alias
+                                                .builder()
+                                                .aliasDateOfBirth("?")
+                                                .aliasFamilyName("?")
+                                                .aliasForename1("?")
+                                                .aliasForename2("?")
+                                                .aliasForename3("?")
+                                                .build()))
+                                        .appealPendingIndicator("?")
+                                        .automaticReleaseDate("?")
+                                        .cellLocation("?")
+                                        .cmsProbNumber("?")
+                                        .conditionalReleaseDate("?")
+                                        .croNumber("?")
+                                        .curfewDate("?")
+                                        .dateOfBirth("?")
+                                        .dischargeAddressLine1("?")
+                                        .dischargeAddressLine2("?")
+                                        .dischargeAddressLine3("?")
+                                        .dischargeAddressLine4("?")
+                                        .dischargeAddressLine5("?")
+                                        .dischargeAddressLine6("?")
+                                        .dischargePostCode("?")
+                                        .dischargeTelephoneNumber("?")
+                                        .ethnicCategory("?")
+                                        .familyName("?")
+                                        .firstConvictionAge("?")
+                                        .forename1("?")
+                                        .forename2("?")
+                                        .forename3("?")
+                                        .gender("?")
+                                        .language("?")
+                                        .laoIndicator("?")
+                                        .licenceExpiryDate("?")
+                                        .license("?")
+                                        .nomConditions(ImmutableList.of("?"))
+                                        .nomisId("?")
+                                        .nonParoleDate("?")
+                                        .numberOfOffences("?")
+                                        .paroleEligibilityDate("?")
+                                        .pnc("?")
+                                        .postCode("?")
+                                        .prisonNumber("?")
+                                        .releaseDate("?")
+                                        .releaseType("?")
+                                        .religion("?")
+                                        .riskOfSelfHarm("?")
+                                        .securityCategory("?")
+                                        .sentenceExpiryDate("?")
+                                        .telephoneNumber("?")
+                                        .build())
+                                .build())
                         .build())
                 .build();
 
         XmlMapper xmlMapper = new XmlMapper();
-        xmlMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
+        xmlMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
-        final SoapEnvelope soapEnvelope = xmlMapper.readValue(soap, SoapEnvelope.class);
+        String actual = xmlMapper.writeValueAsString(oasysResponse);
 
-        final GetOffenderDetailsResponse actual = soapEnvelope.getBody().getGetOffenderDetailsResponse();
-
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    private MainAddress anAddress() {
-        return MainAddress
-                .builder()
-                .addressFirstLine(AddressFirstLine
-                        .builder()
-                        .buildingName("?")
-                        .houseNumber("?")
-                        .build())
-                .county("?")
-                .district("?")
-                .streetName("?")
-                .telephoneNumber("?")
-                .townOrCity("?")
+        Diff myDiff = DiffBuilder.compare(expected).withTest(actual)
+                .withDifferenceEvaluator(DifferenceEvaluators.Default)
+                .checkForSimilar()
                 .build();
-    }
 
-    public Category aRequirement() {
-        return Category
-                .builder()
-                .code("?")
-                .mainCategory("?")
-                .requirementDetails(
-                        RequirementDetails
-                                .builder()
-                                .length("?")
-                                .build()
-                )
-                .subCategory("?")
-                .build();
-    }
-
-    public Category aLicenceCondition() {
-        return Category
-                .builder()
-                .mainCategory("?")
-                .subCategory("?")
-                .code("?")
-                .build();
+        assertThat(myDiff.hasDifferences()).isFalse();
     }
 
 }
