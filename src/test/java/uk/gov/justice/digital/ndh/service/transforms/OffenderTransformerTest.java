@@ -18,6 +18,7 @@ import uk.gov.justice.digital.ndh.api.oasys.request.InitialSearchRequest;
 import uk.gov.justice.digital.ndh.api.oasys.response.InitialSearchResponse;
 import uk.gov.justice.digital.ndh.api.soap.SoapBody;
 import uk.gov.justice.digital.ndh.api.soap.SoapEnvelope;
+import uk.gov.justice.digital.ndh.jpa.repository.RequirementLookupRepository;
 import uk.gov.justice.digital.ndh.service.ExceptionLogService;
 import uk.gov.justice.digital.ndh.service.MappingService;
 
@@ -35,7 +36,7 @@ public class OffenderTransformerTest {
 
     @Test
     public void canTransformOasysInitialSearchRequest() {
-        final OffenderTransformer offenderTransformer = new OffenderTransformer(COMMON_TRANSFORMER, mock(FaultTransformer.class), mock(MappingService.class));
+        final OffenderTransformer offenderTransformer = new OffenderTransformer(COMMON_TRANSFORMER, mock(MappingService.class), mock(RequirementLookupRepository.class));
 
         SoapEnvelope oasysRequest = anOasysInitialSearchRequest();
 
@@ -85,7 +86,7 @@ public class OffenderTransformerTest {
     public void serializedDeliusRequestIsSchemaCompliant() throws JsonProcessingException {
 
         final XmlMapper xmlMapper = getXmlMapper();
-        final OffenderTransformer transformer = new OffenderTransformer(COMMON_TRANSFORMER, mock(FaultTransformer.class), mock(MappingService.class));
+        final OffenderTransformer transformer = new OffenderTransformer(COMMON_TRANSFORMER, mock(MappingService.class), mock(RequirementLookupRepository.class));
 
         final SoapEnvelope builtMessage = transformer.deliusInitialSearchRequestOf(anOasysInitialSearchRequest());
 
@@ -115,7 +116,7 @@ public class OffenderTransformerTest {
 
         when(mappingService.descriptionOf(eq("orderType"), eq(OffenderTransformer.SENTENCE_CODE_TYPE))).thenReturn("sentenceCode");
 
-        final OffenderTransformer transformer = new OffenderTransformer(COMMON_TRANSFORMER, mock(FaultTransformer.class), mappingService);
+        final OffenderTransformer transformer = new OffenderTransformer(COMMON_TRANSFORMER, mappingService, mock(RequirementLookupRepository.class));
 
         final SoapEnvelope deliusResponse = aDeliusInitialSearchResponse(COMMON_TRANSFORMER);
         final SoapEnvelope oasysRequest = anOasysInitialSearchRequest();
