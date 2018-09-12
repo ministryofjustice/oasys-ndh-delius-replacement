@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.ndh.api.delius.request.GetOffenderDetailsRequest;
 import uk.gov.justice.digital.ndh.api.delius.request.GetSubSetOffenderEventRequest;
+import uk.gov.justice.digital.ndh.api.delius.response.AddressFirstLine;
 import uk.gov.justice.digital.ndh.api.delius.response.Category;
 import uk.gov.justice.digital.ndh.api.delius.response.Custody;
 import uk.gov.justice.digital.ndh.api.delius.response.DeliusOffenderDetailsResponse;
@@ -26,6 +27,7 @@ import uk.gov.justice.digital.ndh.api.oasys.response.SubSetEvent;
 import uk.gov.justice.digital.ndh.api.oasys.response.SubSetOffender;
 import uk.gov.justice.digital.ndh.api.soap.SoapBody;
 import uk.gov.justice.digital.ndh.api.soap.SoapEnvelope;
+import uk.gov.justice.digital.ndh.api.soap.SoapHeader;
 import uk.gov.justice.digital.ndh.jpa.repository.RequirementLookup;
 import uk.gov.justice.digital.ndh.jpa.repository.RequirementLookupRepository;
 import uk.gov.justice.digital.ndh.service.MappingService;
@@ -41,11 +43,11 @@ import java.util.stream.Stream;
 @Component
 public class OffenderTransformer {
 
-    private static final long SENTENCE_CODE_TYPE = 3802L;
-    private static final long COURT_CODE_TYPE = 5507L;
-    private static final long LANGUAGE_CODE_TYPE = 3806L;
-    private static final long LICENCE_MAIN_CATEGORY = 3803L;
-    private static final long LICENCE_SUB_CATEGORY = 3804L;
+    public static final long SENTENCE_CODE_TYPE = 3802L;
+    public static final long COURT_CODE_TYPE = 5507L;
+    public static final long LANGUAGE_CODE_TYPE = 3806L;
+    public static final long LICENCE_MAIN_CATEGORY = 3803L;
+    public static final long LICENCE_SUB_CATEGORY = 3804L;
     private static final String ADDITIONAL_SENTENCING_REQUIREMENTS = "ADDITIONAL_SENTENCING_REQUIREMENTS";
     public final BiFunction<Optional<SoapEnvelope>, Optional<SoapEnvelope>, Optional<SoapEnvelope>> initialSearchResponseTransform;
     public final BiFunction<Optional<SoapEnvelope>, Optional<SoapEnvelope>, Optional<SoapEnvelope>> offenderDetailsResponseTransform;
@@ -78,13 +80,14 @@ public class OffenderTransformer {
         offenderDetailsResponseTransform = (rq, rs) -> rs.map(deliusOffenderDetailsResponse ->
                 SoapEnvelope
                         .builder()
+                        .header(SoapHeader.builder().build())
                         .body(
                                 SoapBody
                                         .builder()
                                         .offenderDetailsResponse(
                                                 OffenderDetailsResponse
                                                         .builder()
-                                                        .header(rq.map(isr -> commonTransformer.oasysHeaderOf(isr.getBody().getInitialSearchRequest().getHeader())).orElse(null))
+                                                        .header(rq.map(isr -> commonTransformer.oasysHeaderOf(isr.getBody().getOffenderDetailsRequest().getHeader())).orElse(null))
                                                         .offenderDetail(oasysOffenderDetailOf(deliusOffenderDetailsResponse.getBody().getDeliusOffenderDetailsResponse()))
                                                         .eventDetail(oasysEventDetailOf(deliusOffenderDetailsResponse.getBody().getDeliusOffenderDetailsResponse()))
                                                         .build()
@@ -180,7 +183,7 @@ public class OffenderTransformer {
 
     private String oasysSentenceCodeOf(Event event) {
         return Optional.ofNullable(event.getOrderType()).map(orderType ->
-                mappingService.targetValueOf(orderType, SENTENCE_CODE_TYPE)).orElse(null);
+                mappingService.sourceValueOf(orderType, SENTENCE_CODE_TYPE)).orElse(null);
     }
 
     private List<Offences> oasysOffencesOf(Event event) {
@@ -188,8 +191,7 @@ public class OffenderTransformer {
                 .map(offenceCode -> ImmutableList.of(Offences
                         .builder()
                         .offenceGroupCode(offenceCode.substring(0, 3))
-                        .offenceSubCode(offenceCode.substring(3, 6))
-
+                        .offenceSubCode(offenceCode.substring(3, 5))
                         .build()
                 ))
                 .orElse(null);
@@ -209,12 +211,12 @@ public class OffenderTransformer {
                         .dateOfBirth(offender.getDateOfBirth())
                         .aliases(oasysAliasesOf(offender.getAliases()))
                         .ethnicCategory(offender.getEthnicity())
-                        .addressLine1(offender.getMainAddress().getAddressFirstLine().getHouseNumber())
-                        .addressLine2(offender.getMainAddress().getAddressFirstLine().getBuildingName())
-                        .addressLine3(offender.getMainAddress().getStreetName())
-                        .addressLine4(offender.getMainAddress().getDistrict())
-                        .addressLine5(offender.getMainAddress().getTownOrCity())
-                        .addressLine6(offender.getMainAddress().getCounty())
+                        .addressLine1(Optional.ofNullable(offender.getMainAddress()).flatMap(addr -> Optional.ofNullable(addr.getAddressFirstLine())).map(AddressFirstLine::getHouseNumber).orElse(null))
+                        .addressLine2(Optional.ofNullable(offender.getMainAddress()).flatMap(addr -> Optional.ofNullable(addr.getAddressFirstLine())).map(AddressFirstLine::getBuildingName).orElse(null))
+                        .addressLine3(Optional.ofNullable(offender.getMainAddress()).flatMap(addr -> Optional.ofNullable(addr.getStreetName())).orElse(null))
+                        .addressLine4(Optional.ofNullable(offender.getMainAddress()).flatMap(addr -> Optional.ofNullable(addr.getDistrict())).orElse(null))
+                        .addressLine5(Optional.ofNullable(offender.getMainAddress()).flatMap(addr -> Optional.ofNullable(addr.getTownOrCity())).orElse(null))
+                        .addressLine6(Optional.ofNullable(offender.getMainAddress()).flatMap(addr -> Optional.ofNullable(addr.getCounty())).orElse(null))
                         .postCode(offender.getPostcode())
                         .telephoneNumber(offender.getTelephone())
                         .pnc(offender.getPoliceNationalComputerIdentifier())
@@ -271,10 +273,11 @@ public class OffenderTransformer {
     }
 
     private List<Alias> oasysAliasesOf(List<String> aliases) {
-        return aliases
+        return Optional.ofNullable(aliases).map(as -> as
                 .stream()
                 .map(a -> Alias.builder().aliasFamilyName(a).build())
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()))
+                .orElse(null);
     }
 
     public SoapEnvelope deliusInitialSearchRequestOf(SoapEnvelope oasysInitialSearchRequest) {

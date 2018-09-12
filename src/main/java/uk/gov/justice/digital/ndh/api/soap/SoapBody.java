@@ -76,7 +76,7 @@ public class SoapBody {
     private GetOffenderDetailsRequest getOffenderDetailsRequest;
 
     // From NDelius (offender details response)
-    @JsonProperty("DeliusOffenderDetailsResponse")
+    @JsonProperty("GetOffenderDetailsResponse")
     private DeliusOffenderDetailsResponse deliusOffenderDetailsResponse;
 
     @JsonProperty(value = "Fault")

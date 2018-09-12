@@ -166,11 +166,11 @@ public class DeliusOffenderDetailsResponseTest {
                                 .licenceConditions(ImmutableList.of(
                                         LicenceCondition
                                                 .builder()
-                                                .type(Type
+                                                .types(ImmutableList.of(Type
                                                         .builder()
                                                         .postCJALicenceConditionType(aLicenceCondition())
                                                         .preCJALicenceConditionType(aLicenceCondition())
-                                                        .build())
+                                                        .build()))
                                                 .build()
                                 ))
                                 .releaseDate("?")

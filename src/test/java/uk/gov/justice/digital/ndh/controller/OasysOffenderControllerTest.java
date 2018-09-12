@@ -145,8 +145,8 @@ public class OasysOffenderControllerTest {
                         .withBody(GOOD_DELIUS_INITIAL_SEARCH_RESPONSE)
                         .withStatus(200)));
 
-        Mockito.when(mappingService.descriptionOf(anyString(), anyLong())).thenThrow(NDHMappingException.builder().subject("description").sourceValue("sourceVal").code(0L).build());
-        Mockito.when(mappingService.targetValueOf(anyString(), anyLong())).thenThrow(NDHMappingException.builder().subject("targetValue").sourceValue("sourceVal").code(0L).build());
+        Mockito.when(mappingService.descriptionOf(anyString(), anyLong())).thenThrow(NDHMappingException.builder().subject("description").value("sourceVal").code(0L).build());
+        Mockito.when(mappingService.targetValueOf(anyString(), anyLong())).thenThrow(NDHMappingException.builder().subject("targetValue").value("sourceVal").code(0L).build());
 
         final String requestXml = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/InitialSearch/realInitialSearchRequestFromOasys.xml")))
                 .lines().collect(Collectors.joining("\n"));
