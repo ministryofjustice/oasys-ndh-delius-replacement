@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.ndh.service.transforms;
 
 import com.google.common.collect.ImmutableList;
+import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.ndh.api.delius.request.GetOffenderDetailsRequest;
@@ -11,6 +12,7 @@ import uk.gov.justice.digital.ndh.api.delius.response.DeliusOffenderDetailsRespo
 import uk.gov.justice.digital.ndh.api.delius.response.Event;
 import uk.gov.justice.digital.ndh.api.delius.response.GetSubSetOffenderDetailsResponse;
 import uk.gov.justice.digital.ndh.api.delius.response.RequirementDetails;
+import uk.gov.justice.digital.ndh.api.delius.response.Type;
 import uk.gov.justice.digital.ndh.api.oasys.request.InitialSearchRequest;
 import uk.gov.justice.digital.ndh.api.oasys.request.OffenderDetailsRequest;
 import uk.gov.justice.digital.ndh.api.oasys.response.Alias;
@@ -34,14 +36,17 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 public class OffenderTransformer {
 
-    public static final long SENTENCE_CODE_TYPE = 3802L;
-    public static final String ADDITIONAL_SENTENCING_REQUIREMENTS = "ADDITIONAL_SENTENCING_REQUIREMENTS";
-    public static final long COURT_CODE_TYPE = 5507L;
-    public static final long LANGUAGE_CODE_TYPE = 3806L;
+    private static final long SENTENCE_CODE_TYPE = 3802L;
+    private static final long COURT_CODE_TYPE = 5507L;
+    private static final long LANGUAGE_CODE_TYPE = 3806L;
+    private static final long LICENCE_MAIN_CATEGORY = 3803L;
+    private static final long LICENCE_SUB_CATEGORY = 3804L;
+    private static final String ADDITIONAL_SENTENCING_REQUIREMENTS = "ADDITIONAL_SENTENCING_REQUIREMENTS";
     public final BiFunction<Optional<SoapEnvelope>, Optional<SoapEnvelope>, Optional<SoapEnvelope>> initialSearchResponseTransform;
     public final BiFunction<Optional<SoapEnvelope>, Optional<SoapEnvelope>, Optional<SoapEnvelope>> offenderDetailsResponseTransform;
     private final CommonTransformer commonTransformer;
@@ -224,8 +229,34 @@ public class OffenderTransformer {
     }
 
     private String oasysLicenseOf(DeliusOffenderDetailsResponse deliusOffenderDetailsResponse) {
-        //TODO:
-        return null;
+
+        val categories =
+                Optional.ofNullable(deliusOffenderDetailsResponse.getEvent())
+                        .flatMap(e -> Optional.ofNullable(e.getCustody()))
+                        .flatMap(c -> Optional.ofNullable(c.getLicenceConditions()))
+                        .map(licenceConditions -> licenceConditions
+                                .stream()
+                                .flatMap(licenceCondition -> licenceCondition.getTypes()
+                                        .stream()
+                                        .filter(type -> Optional.ofNullable(type.getPostCJALicenceConditionType()).isPresent())
+                                        .map(Type::getPostCJALicenceConditionType))
+                                .collect(Collectors.toList())).orElse(Collections.emptyList());
+
+        return categories
+                .stream()
+                .map(this::oasysLicenceStringOf)
+                .collect(Collectors.joining(","));
+    }
+
+    private String oasysLicenceStringOf(Category category) {
+        final String mainCategory = mappingService.sourceValueOf(category.getMainCategory(), LICENCE_MAIN_CATEGORY);
+
+        final Optional<String> maybeTargetSubCategory = Optional.ofNullable(category.getSubCategory()).filter(sc -> sc.equals("99"));
+        final Optional<String> maybeSourceSubcategory = maybeTargetSubCategory.map(tsc -> mappingService.sourceValueOf(tsc, LICENCE_SUB_CATEGORY));
+
+        return maybeSourceSubcategory
+                .map(sc -> Stream.of(mainCategory, sc).collect(Collectors.joining(":")))
+                .orElse(mainCategory);
     }
 
     private String oasysLanguageOf(String language) {
