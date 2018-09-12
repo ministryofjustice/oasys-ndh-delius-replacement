@@ -69,8 +69,8 @@ public class OasysAssessmentUpdateListener {
 
         try {
             maybeDeliusRequest = buildDeliusSoapEnvelope(maybeInputSoapMessage);
-        }  catch (NDHMappingException ndhme) {
-            exceptionLogService.logMappingFail(ndhme.getCode(), ndhme.getSourceValue(), ndhme.getSubject(), correlationId, offenderId);
+        } catch (NDHMappingException ndhme) {
+            exceptionLogService.logMappingFail(ndhme.getCode(), ndhme.getValue(), ndhme.getSubject(), correlationId, offenderId);
         }
 
         Optional<String> maybeRawDeliusRequest = rawDeliusRequestOf(maybeDeliusRequest, message, correlationId, offenderId);

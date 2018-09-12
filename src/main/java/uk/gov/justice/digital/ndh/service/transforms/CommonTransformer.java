@@ -77,7 +77,7 @@ public class CommonTransformer {
         return maybeNode.map(Node::getText).orElse(null);
     }
 
-    public String deliusRiskFlagsOf(String riskFlags, Function<String,String> transform) {
+    public String deliusRiskFlagsOf(String riskFlags, Function<String, String> transform) {
         return Optional.ofNullable(riskFlags)
                 .map(flags -> Arrays
                         .stream(flags.split(",", -1))

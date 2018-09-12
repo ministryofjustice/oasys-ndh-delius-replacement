@@ -6,7 +6,7 @@ import lombok.Value;
 
 @Value
 @Builder
-public class    SubmitRiskDataRequest {
+public class SubmitRiskDataRequest {
     @JacksonXmlProperty(localName = "RiskType", namespace = "http://www.bconline.co.uk/oasys/risk")
     private RiskType risk;
 }

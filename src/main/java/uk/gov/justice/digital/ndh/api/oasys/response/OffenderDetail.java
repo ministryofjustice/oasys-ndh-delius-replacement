@@ -112,10 +112,4 @@ public class OffenderDetail {
     private List<String> nomConditions;
 
 
-
-
-
-
-
-
 }

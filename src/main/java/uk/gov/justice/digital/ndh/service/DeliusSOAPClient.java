@@ -15,10 +15,10 @@ public class DeliusSOAPClient {
 
     public String deliusWebServiceResponseOf(String deliusSoapXml) throws UnirestException {
         return Unirest.post(ndeliusUrl)
-                .basicAuth(ndeliusUser,ndeliusPassword)
+                .basicAuth(ndeliusUser, ndeliusPassword)
                 .header("Host", hostName)
-                .header("SOAPAction","/NDeliusOASYS/" + soapAction)
-                .header("Content-Type","application/soap+xml")
+                .header("SOAPAction", "/NDeliusOASYS/" + soapAction)
+                .header("Content-Type", "application/soap+xml")
                 .body(deliusSoapXml)
                 .asString().getBody();
     }

@@ -18,5 +18,4 @@ public class SubSetEvent {
     private String sentenceCode;
 
 
-
 }

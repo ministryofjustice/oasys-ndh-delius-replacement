@@ -114,7 +114,7 @@ public class OasysOffenderService extends RequestResponseService {
         try {
             maybeOasysSOAPResponse = transform.apply(maybeOasysOffenderDetailsRequest, maybeResponse);
         } catch (NDHMappingException ndhme) {
-            exceptionLogService.logMappingFail(ndhme.getCode(), ndhme.getSourceValue(), ndhme.getSubject(), correlationId, offenderId);
+            exceptionLogService.logMappingFail(ndhme.getCode(), ndhme.getValue(), ndhme.getSubject(), correlationId, offenderId);
             return Optional.ofNullable(faultTransformer.mappingSoapFaultOf(ndhme, correlationId));
         }
 

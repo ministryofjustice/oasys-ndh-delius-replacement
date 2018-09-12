@@ -5,10 +5,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.ndh.api.delius.request.GetOffenderDetailsRequest;
 import uk.gov.justice.digital.ndh.api.delius.request.GetSubSetOffenderEventRequest;
+import uk.gov.justice.digital.ndh.api.delius.response.Category;
 import uk.gov.justice.digital.ndh.api.delius.response.Custody;
 import uk.gov.justice.digital.ndh.api.delius.response.DeliusOffenderDetailsResponse;
 import uk.gov.justice.digital.ndh.api.delius.response.Event;
 import uk.gov.justice.digital.ndh.api.delius.response.GetSubSetOffenderDetailsResponse;
+import uk.gov.justice.digital.ndh.api.delius.response.RequirementDetails;
 import uk.gov.justice.digital.ndh.api.oasys.request.InitialSearchRequest;
 import uk.gov.justice.digital.ndh.api.oasys.request.OffenderDetailsRequest;
 import uk.gov.justice.digital.ndh.api.oasys.response.Alias;
@@ -27,6 +29,7 @@ import uk.gov.justice.digital.ndh.jpa.repository.RequirementLookupRepository;
 import uk.gov.justice.digital.ndh.service.MappingService;
 import uk.gov.justice.digital.ndh.service.exception.NDHRequirementLookupException;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -36,6 +39,9 @@ import java.util.stream.Collectors;
 public class OffenderTransformer {
 
     public static final long SENTENCE_CODE_TYPE = 3802L;
+    public static final String ADDITIONAL_SENTENCING_REQUIREMENTS = "ADDITIONAL_SENTENCING_REQUIREMENTS";
+    public static final long COURT_CODE_TYPE = 5507L;
+    public static final long LANGUAGE_CODE_TYPE = 3806L;
     public final BiFunction<Optional<SoapEnvelope>, Optional<SoapEnvelope>, Optional<SoapEnvelope>> initialSearchResponseTransform;
     public final BiFunction<Optional<SoapEnvelope>, Optional<SoapEnvelope>, Optional<SoapEnvelope>> offenderDetailsResponseTransform;
     private final CommonTransformer commonTransformer;
@@ -84,7 +90,6 @@ public class OffenderTransformer {
     }
 
     private EventDetail oasysEventDetailOf(DeliusOffenderDetailsResponse deliusOffenderDetailsResponse) {
-        //TODO:
         return Optional.ofNullable(deliusOffenderDetailsResponse)
                 .flatMap(deliusResponse -> Optional.ofNullable(deliusResponse.getEvent()))
                 .map(event -> EventDetail
@@ -104,42 +109,73 @@ public class OffenderTransformer {
     }
 
     private List<SentenceDetail> oasysSentenceDetailsOf(Event event) throws NDHRequirementLookupException {
-        return Optional.ofNullable(event).flatMap(e -> Optional.ofNullable(e.getRequirements()))
+        final List<SentenceDetail> requirementSentenceDetails = Optional.ofNullable(event).flatMap(e -> Optional.ofNullable(e.getRequirements()))
                 .map(requirements -> requirements
                         .stream()
                         .map(requirement -> {
-                                    final Optional<RequirementLookup> maybeMapped = requirementLookupRepository.findByReqTypeAndReqCodeAndSubCode("N", requirement.getMainCategory(), requirement.getSubCategory());
-                                    return maybeMapped
-                                            .map(mapped ->
-                                                    SentenceDetail
-                                                            .builder()
-                                                            .attributeCategory(mapped.getSentenceAttributeCat())
-                                                            .attributeElement(mapped.getSentenceAttributeElm())
-                                                            .description(mapped.getActivityDesc())
-                                                            //TODO:
-                                                            .lengthInMonths("?")
-                                                            .lengthInHours("?")
-                                                            .build())
-                                            .orElseThrow(() -> NDHRequirementLookupException
+                            final Optional<RequirementLookup> maybeMapped = requirementLookupRepository.findByReqTypeAndReqCodeAndSubCode("N", requirement.getMainCategory(), requirement.getSubCategory());
+                            return maybeMapped
+                                    .map(mapped ->
+                                            SentenceDetail
                                                     .builder()
-                                                    .reqType("N")
-                                                    .reqCode(requirement.getMainCategory())
-                                                    .subCode(requirement.getSubCategory())
-                                                    .build());
+                                                    .attributeCategory(mapped.getSentenceAttributeCat())
+                                                    .attributeElement(mapped.getSentenceAttributeElm())
+                                                    .description(mapped.getActivityDesc())
+                                                    .lengthInMonths(lengthInMonthsOf(mapped, requirement))
+                                                    .lengthInHours(lengthInHoursOf(mapped, requirement))
+                                                    .build())
+                                    .orElseThrow(() -> NDHRequirementLookupException
+                                            .builder()
+                                            .reqType("N")
+                                            .reqCode(requirement.getMainCategory())
+                                            .subCode(requirement.getSubCategory())
+                                            .build());
                         })
                         .collect(Collectors.toList()))
+                .orElse(Collections.emptyList());
+
+        final List<SentenceDetail> additionalRequirementSentenceDetails = Optional.ofNullable(event).flatMap(e -> Optional.ofNullable(e.getAdditionalRequirements()))
+                .map(requirements -> requirements
+                        .stream()
+                        .map(requirement ->
+                                SentenceDetail
+                                        .builder()
+                                        .attributeCategory(ADDITIONAL_SENTENCING_REQUIREMENTS)
+                                        .attributeElement(requirement.getMainCategory())
+                                        .build())
+                        .collect(Collectors.toList()))
+                .orElse(Collections.emptyList());
+
+        return ImmutableList.<SentenceDetail>builder()
+                .addAll(requirementSentenceDetails)
+                .addAll(additionalRequirementSentenceDetails)
+                .build();
+    }
+
+    private String lengthInHoursOf(RequirementLookup mapped, Category requirement) {
+        return Optional.ofNullable(mapped.getCjaUnpaidHours()).
+                map(hours -> Optional.ofNullable(requirement.getRequirementDetails())
+                        .map(RequirementDetails::getLength)
+                        .orElse(null))
+                .orElse(null);
+
+    }
+
+    private String lengthInMonthsOf(RequirementLookup mapped, Category requirement) {
+        return Optional.ofNullable(mapped.getCjaSupervisionMonths()).
+                map(months -> Optional.ofNullable(requirement.getRequirementDetails())
+                        .map(RequirementDetails::getLength)
+                        .orElse(null))
                 .orElse(null);
     }
 
     private String oasysCourtTypeOf(String courtType) {
-        //TODO:
-        return null;
+        return Optional.ofNullable(courtType).map(ct -> mappingService.sourceValueOf(courtType, COURT_CODE_TYPE)).orElse(null);
     }
 
     private String oasysSentenceCodeOf(Event event) {
         return Optional.ofNullable(event.getOrderType()).map(orderType ->
-                mappingService.targetValueOf(orderType, 3802L)
-        ).orElse(null);
+                mappingService.targetValueOf(orderType, SENTENCE_CODE_TYPE)).orElse(null);
     }
 
     private List<Offences> oasysOffencesOf(Event event) {
@@ -148,6 +184,7 @@ public class OffenderTransformer {
                         .builder()
                         .offenceGroupCode(offenceCode.substring(0, 3))
                         .offenceSubCode(offenceCode.substring(3, 6))
+
                         .build()
                 ))
                 .orElse(null);
@@ -192,8 +229,7 @@ public class OffenderTransformer {
     }
 
     private String oasysLanguageOf(String language) {
-        //TODO:
-        return null;
+        return Optional.ofNullable(language).map(lang -> mappingService.sourceValueOf(language, LANGUAGE_CODE_TYPE)).orElse(null);
     }
 
     private String releaseDateOf(DeliusOffenderDetailsResponse deliusOffenderDetailsResponse) {

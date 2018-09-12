@@ -24,7 +24,7 @@ public class RequirementLookupRepositoryDataSourceBacked implements RequirementL
 
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(
-                    "SELECT * FROM REQUIREMENT_LOOKUP R WHERE REQ_TYPE = ? AND REQ_CODE = ? and SUB_CODE = ?",
+                    "SELECT * FROM REQUIREMENT_LOOKUP R WHERE R.REQ_TYPE = ? AND R.REQ_CODE = ? and R.SUB_CODE = ?",
                     (rs, rowNum) -> RequirementLookup.builder()
                             .activityDesc(rs.getString("ACTIVITY_DESC"))
                             .cjaSupervisionMonths(rs.getString("CJA_SUPERVISION_MONTHS"))
