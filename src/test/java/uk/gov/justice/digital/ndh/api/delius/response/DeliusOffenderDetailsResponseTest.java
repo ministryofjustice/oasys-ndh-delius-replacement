@@ -23,7 +23,7 @@ public class DeliusOffenderDetailsResponseTest {
                 "      </com:Header>\n" +
                 "   </soap:Header>\n" +
                 "   <soap:Body>\n" +
-                "      <mes:DeliusOffenderDetailsResponse>\n" +
+                "      <mes:GetOffenderDetailsResponse>\n" +
                 "         <mes:Offender>\n" +
                 "            <off:LAOIndicator>?</off:LAOIndicator>\n" +
                 "            <off:CaseReferenceNumber>?</off:CaseReferenceNumber>\n" +
@@ -149,7 +149,7 @@ public class DeliusOffenderDetailsResponseTest {
                 "               </even:LicenceConditions>\n" +
                 "            </even:Custody>\n" +
                 "         </mes:Event>\n" +
-                "      </mes:DeliusOffenderDetailsResponse>\n" +
+                "      </mes:GetOffenderDetailsResponse>\n" +
                 "   </soap:Body>\n" +
                 "</soap:Envelope>";
 

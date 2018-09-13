@@ -44,7 +44,8 @@ import static org.mockito.Mockito.times;
         "spring.jmx.enabled=true",
         "ndelius.assessment.update.url=http://localhost:8090/delius/assessmentUpdates",
         "ndelius.risk.update.url=http://localhost:8090/delius/riskUpdates",
-        "ndelius.initial.search.url=http://localhost:8090/delius/initialSearch"
+        "ndelius.initial.search.url=http://localhost:8090/delius/initialSearch",
+        "ndelius.offender.details.url=http://localhost:8090/delius/offenderDetails"
 })
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext
