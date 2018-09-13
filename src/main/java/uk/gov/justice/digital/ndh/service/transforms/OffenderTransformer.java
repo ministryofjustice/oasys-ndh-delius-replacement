@@ -178,12 +178,12 @@ public class OffenderTransformer {
     }
 
     private String oasysCourtTypeOf(String courtType) {
-        return Optional.ofNullable(courtType).map(ct -> mappingService.sourceValueOf(courtType, COURT_CODE_TYPE)).orElse(null);
+        return Optional.ofNullable(courtType).map(ct -> mappingService.targetValueOf(courtType, COURT_CODE_TYPE)).orElse(null);
     }
 
     private String oasysSentenceCodeOf(Event event) {
         return Optional.ofNullable(event.getOrderType()).map(orderType ->
-                mappingService.sourceValueOf(orderType, SENTENCE_CODE_TYPE)).orElse(null);
+                mappingService.targetValueOf(orderType, SENTENCE_CODE_TYPE)).orElse(null);
     }
 
     private List<Offences> oasysOffencesOf(Event event) {
@@ -253,10 +253,10 @@ public class OffenderTransformer {
     }
 
     private String oasysLicenceStringOf(Category category) {
-        final String mainCategory = mappingService.sourceValueOf(category.getMainCategory(), LICENCE_MAIN_CATEGORY);
+        final String mainCategory = mappingService.targetValueOf(category.getMainCategory(), LICENCE_MAIN_CATEGORY);
 
         final Optional<String> maybeTargetSubCategory = Optional.ofNullable(category.getSubCategory()).filter(sc -> sc.equals("99"));
-        final Optional<String> maybeSourceSubcategory = maybeTargetSubCategory.map(tsc -> mappingService.sourceValueOf(tsc, LICENCE_SUB_CATEGORY));
+        final Optional<String> maybeSourceSubcategory = maybeTargetSubCategory.map(tsc -> mappingService.targetValueOf(tsc, LICENCE_SUB_CATEGORY));
 
         return maybeSourceSubcategory
                 .map(sc -> Stream.of(mainCategory, sc).collect(Collectors.joining(":")))
@@ -264,7 +264,7 @@ public class OffenderTransformer {
     }
 
     private String oasysLanguageOf(String language) {
-        return Optional.ofNullable(language).map(lang -> mappingService.sourceValueOf(language, LANGUAGE_CODE_TYPE)).orElse(null);
+        return Optional.ofNullable(language).map(lang -> mappingService.targetValueOf(language, LANGUAGE_CODE_TYPE)).orElse(null);
     }
 
     private String releaseDateOf(DeliusOffenderDetailsResponse deliusOffenderDetailsResponse) {

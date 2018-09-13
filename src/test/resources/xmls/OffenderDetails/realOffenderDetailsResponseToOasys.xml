@@ -1,0 +1,53 @@
+<soap:Envelope
+        xmlns:soap="http://www.w3.org/2003/05/soap-envelope"
+>
+    <soap:Header/>
+    <soap:Body>
+        <ns0:OffenderDetailsResponse
+                xmlns:ns0="http://www.hp.com/NDH_Web_Service/Offender_Details_Response">
+            <ns0:Header>
+                <ns1:ApplicationMode
+                        xmlns:ns1="http://www.hp.com/NDH_Web_Service/DomainTypes">I</ns1:ApplicationMode>
+                <ns1:CorrelationID
+                        xmlns:ns1="http://www.hp.com/NDH_Web_Service/DomainTypes">OASYSRPCWWS20180910130951604609</ns1:CorrelationID>
+                <ns1:OASysRUsername
+                        xmlns:ns1="http://www.hp.com/NDH_Web_Service/DomainTypes">PCMS</ns1:OASysRUsername>
+                <ns1:MessageTimestamp
+                        xmlns:ns1="http://www.hp.com/NDH_Web_Service/DomainTypes">2018-09-10T13:59:51+01:00</ns1:MessageTimestamp>
+            </ns0:Header>
+            <ns1:OffenderDetail
+                    xmlns:ns1="http://www.hp.com/NDH_Web_Service/offender">
+                <ns1:CMSProbNumber>H923526</ns1:CMSProbNumber>
+                <ns1:FamilyName>ServiceReleaseTwelveSurThree</ns1:FamilyName>
+                <ns1:Forename1>ServiceReleaseTwelveForThree</ns1:Forename1>
+                <ns1:Gender>1</ns1:Gender>
+                <ns1:DateOfBirth>1982-07-19</ns1:DateOfBirth>
+                <ns1:EthnicCategory />
+                <ns1:TelephoneNumber />
+                <ns1:Language />
+                <ns1:LAOIndicator>N</ns1:LAOIndicator>
+            </ns1:OffenderDetail>
+            <ns1:EventDetail
+                    xmlns:ns1="http://www.hp.com/NDH_Web_Service/event">
+                <ns1:EventNumber>1</ns1:EventNumber>
+                <ns1:Offences>
+                    <ns2:OffenceGroupCode
+                            xmlns:ns2="http://www.hp.com/NDH_Web_Service/DomainTypes">037</ns2:OffenceGroupCode>
+                    <ns2:OffenceSubCode
+                            xmlns:ns2="http://www.hp.com/NDH_Web_Service/DomainTypes">00</ns2:OffenceSubCode>
+                </ns1:Offences>
+                <ns1:SentenceCode>910</ns1:SentenceCode>
+                <ns1:SentenceDate>2017-07-19</ns1:SentenceDate>
+                <ns1:OffenceDate>2017-07-19</ns1:OffenceDate>
+                <ns1:SentenceLength>14</ns1:SentenceLength>
+                <ns1:CourtCode>THMSMC</ns1:CourtCode>
+                <ns1:CourtType>MC</ns1:CourtType>
+                <ns1:SentenceDetail>
+                    <ns1:AttributeCategory>CJA_REQUIREMENT</ns1:AttributeCategory>
+                    <ns1:AttributeElement>EXCLUSION</ns1:AttributeElement>
+                    <ns1:Description>Named Licenced Premises</ns1:Description>
+                </ns1:SentenceDetail>
+            </ns1:EventDetail>
+        </ns0:OffenderDetailsResponse>
+    </soap:Body>
+</soap:Envelope>

@@ -17,6 +17,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.justice.digital.ndh.api.soap.SoapEnvelope;
+import uk.gov.justice.digital.ndh.jpa.repository.RequirementLookup;
+import uk.gov.justice.digital.ndh.jpa.repository.RequirementLookupRepository;
 import uk.gov.justice.digital.ndh.service.ExceptionLogService;
 import uk.gov.justice.digital.ndh.service.MappingService;
 import uk.gov.justice.digital.ndh.service.MessageStoreService;
@@ -25,6 +27,7 @@ import uk.gov.justice.digital.ndh.service.exception.NDHMappingException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -38,6 +41,9 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
+import static uk.gov.justice.digital.ndh.service.transforms.OffenderTransformer.COURT_CODE_TYPE;
+import static uk.gov.justice.digital.ndh.service.transforms.OffenderTransformer.SENTENCE_CODE_TYPE;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
@@ -55,6 +61,8 @@ public class OasysOffenderControllerTest {
             .lines().collect(Collectors.joining("\n"));
     private static final String REAL_DELIUS_RISK_FAULT_RESPONSE = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/RiskUpdate/realFaultResponseFromDelius.xml")))
             .lines().collect(Collectors.joining("\n"));
+    public static final String GOOD_DELIUS_OFFENDER_DETAILS_RESPONSE = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/OffenderDetails/realOffenderDetailsResponseFromDelius.xml")))
+            .lines().collect(Collectors.joining("\n"));
 
     @Rule
     public WireMockRule wm = new WireMockRule(options().port(8090));
@@ -67,6 +75,8 @@ public class OasysOffenderControllerTest {
     private ExceptionLogService exceptionLogService;
     @MockBean
     private MappingService mappingService;
+    @MockBean
+    private RequirementLookupRepository requirementLookupRepository;
 
 
     @Autowired
@@ -107,6 +117,45 @@ public class OasysOffenderControllerTest {
         final SoapEnvelope actual = xmlMapper.readValue(actualXml, SoapEnvelope.class);
 
         final SoapEnvelope expected = xmlMapper.readValue(new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/InitialSearch/realNdhInitialSearchResponseToOasys.xml")))
+                .lines().collect(Collectors.joining("\n")), SoapEnvelope.class);
+
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void postedOffenderDetailsMessageIsSentToDeliusAndHandledAppropriately() throws IOException {
+
+        stubFor(post(urlEqualTo("/delius/offenderDetails")).willReturn(
+                aResponse()
+                        .withBody(GOOD_DELIUS_OFFENDER_DETAILS_RESPONSE)
+                        .withStatus(200)));
+
+        when(mappingService.targetValueOf("MAG", COURT_CODE_TYPE)).thenReturn("MC");
+        when(mappingService.targetValueOf("201", SENTENCE_CODE_TYPE)).thenReturn("910");
+        when(requirementLookupRepository.findByReqTypeAndReqCodeAndSubCode("N", "X","X02")).thenReturn(
+                Optional.of(RequirementLookup.builder()
+                        .activityDesc("Named Licenced Premises")
+                        .reqType("N")
+                        .reqCode("X")
+                        .subCode("X02")
+                        .sentenceAttributeCat("CJA_REQUIREMENT")
+                        .sentenceAttributeElm("EXCLUSION")
+                        .build()));
+
+        final String requestXml = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/OffenderDetails/realOffenderDetailsRequestFromOasys.xml")))
+                .lines().collect(Collectors.joining("\n"));
+
+        final String actualXml = given()
+                .when()
+                .contentType(ContentType.XML)
+                .body(requestXml)
+                .post("/offenderDetails")
+                .then()
+                .statusCode(200).extract().body().asString();
+
+        final SoapEnvelope actual = xmlMapper.readValue(actualXml, SoapEnvelope.class);
+
+        final SoapEnvelope expected = xmlMapper.readValue(new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/OffenderDetails/realOffenderDetailsResponseToOasys.xml")))
                 .lines().collect(Collectors.joining("\n")), SoapEnvelope.class);
 
         assertThat(actual).isEqualTo(expected);

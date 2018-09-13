@@ -374,8 +374,8 @@ public class OffenderTransformerTest {
         final MappingService mappingService = mock(MappingService.class);
         final RequirementLookupRepository requirementLookupRepository = mock(RequirementLookupRepository.class);
 
-        when(mappingService.sourceValueOf("MAG", COURT_CODE_TYPE)).thenReturn("MC");
-        when(mappingService.sourceValueOf("201", SENTENCE_CODE_TYPE)).thenReturn("910");
+        when(mappingService.targetValueOf("MAG", COURT_CODE_TYPE)).thenReturn("MC");
+        when(mappingService.targetValueOf("201", SENTENCE_CODE_TYPE)).thenReturn("910");
         when(requirementLookupRepository.findByReqTypeAndReqCodeAndSubCode("N", "X","X02")).thenReturn(
                 Optional.of(RequirementLookup.builder()
                     .activityDesc("Named Licenced Premises")

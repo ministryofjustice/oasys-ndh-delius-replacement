@@ -57,20 +57,4 @@ public class MappingService {
                         .build());
 
     }
-
-    public String sourceValueOf(String targetVal, long codeType) {
-        Optional<MappingCodeData> maybeMapped = Optional.ofNullable(targetVal).flatMap(
-                sv -> mappingRepository.findByTargetValueAndCodeType(targetVal, codeType));
-
-        if (!maybeMapped.isPresent()) {
-            log.error("Could not map target {} and code {} to sourceValue.", targetVal, codeType);
-        }
-
-        return maybeMapped.map(MappingCodeData::getTargetValue).orElseThrow(() ->
-                NDHMappingException.builder()
-                        .value(targetVal)
-                        .code(codeType)
-                        .subject("sourceValue")
-                        .build());
-    }
 }
