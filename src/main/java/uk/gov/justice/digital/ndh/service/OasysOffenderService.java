@@ -83,8 +83,8 @@ public class OasysOffenderService extends RequestResponseService {
     public Optional<String> offenderDetails(String offenderDetailsRequestXml) {
         val maybeOasysOffenderDetailsRequest = commonTransformer.asSoapEnvelope(offenderDetailsRequestXml);
 
-        val correlationId = maybeOasysOffenderDetailsRequest.map(initialSearch -> initialSearch.getBody().getInitialSearchRequest().getHeader().getCorrelationID()).orElse(null);
-        val offenderId = maybeOasysOffenderDetailsRequest.map(initialSearch -> initialSearch.getBody().getInitialSearchRequest().getCmsProbNumber()).orElse(null);
+        val correlationId = maybeOasysOffenderDetailsRequest.map(offenderDetails -> offenderDetails.getBody().getOffenderDetailsRequest().getHeader().getCorrelationID()).orElse(null);
+        val offenderId = maybeOasysOffenderDetailsRequest.map(offenderDetails -> offenderDetails.getBody().getOffenderDetailsRequest().getCmsProbNumber()).orElse(null);
 
         logMessage(correlationId, offenderDetailsRequestXml, offenderId, MessageStoreService.ProcStates.GLB_ProcState_InboundBeforeTransformation);
 
