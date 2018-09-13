@@ -34,7 +34,8 @@ import static org.mockito.Mockito.when;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
         "ndelius.assessment.update.url=http://localhost:8091/delius/assessmentUpdates",
         "ndelius.risk.update.url=http://localhost:8091/delius/riskUpdates",
-        "ndelius.initial.search.url=http://localhost:8091/delius/initialSearch"})
+        "ndelius.initial.search.url=http://localhost:8091/delius/initialSearch",
+        "ndelius.offender.details.url=http://localhost:8090/delius/offenderDetails"})
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext
 public class DeliusUnavailableBehaviourTest {

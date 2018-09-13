@@ -19,6 +19,8 @@ spring:
 ndelius.assessment.update.url: https://httpbin.org/post
 ndelius.risk.update.url: https://httpbin.org/post
 ndelius.initial.search.url: https://httpbin.org/post
+ndelius.offender.details.url: https://httpbin.org/post
+
 ndelius.webservice.user:
 ndelius.webservice.password:
 ndelius.hostname: hostname
