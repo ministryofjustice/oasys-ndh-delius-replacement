@@ -321,7 +321,7 @@ public class OffenderTransformerTest {
                 "\t\t\t\t\txmlns:ns1=\"http://www.hp.com/NDH_Web_Service/DomainTypes\">OASYSRPCWWS20180910130951604609\n" +
                 "\t\t\t\t</ns1:CorrelationID>\n" +
                 "\t\t\t\t<ns1:OASysRUsername\n" +
-                "\t\t\t\t\txmlns:ns1=\"http://www.hp.com/NDH_Web_Service/DomainTypes\">CENTRALSUPPORTONE\n" +
+                "\t\t\t\t\txmlns:ns1=\"http://www.hp.com/NDH_Web_Service/DomainTypes\">PCMS\n" +
                 "\t\t\t\t</ns1:OASysRUsername>\n" +
                 "\t\t\t\t<ns1:MessageTimestamp\n" +
                 "\t\t\t\t\txmlns:ns1=\"http://www.hp.com/NDH_Web_Service/DomainTypes\">2018-09-10T13:59:51+01:00\n" +
@@ -392,7 +392,7 @@ public class OffenderTransformerTest {
 
         final String oasysResponseXml = xmlMapper.writeValueAsString(oasysResponseSoapEnvelope.get());
 
-        Diff myDiff = DiffBuilder.compare(oasysResponseXml).withTest(expected)
+        Diff myDiff = DiffBuilder.compare(expected).withTest(oasysResponseXml)
                 .withDifferenceEvaluator(DifferenceEvaluators.Default)
                 .ignoreComments()
                 .ignoreWhitespace()

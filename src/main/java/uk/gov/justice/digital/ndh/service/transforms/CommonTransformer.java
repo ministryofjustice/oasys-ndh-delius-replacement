@@ -15,7 +15,6 @@ import uk.gov.justice.digital.ndh.service.ExceptionLogService;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.function.Function;
@@ -66,7 +65,7 @@ public class CommonTransformer {
 
 
     public uk.gov.justice.digital.ndh.api.oasys.request.Header oasysHeaderOf(uk.gov.justice.digital.ndh.api.oasys.request.Header header) {
-        return header.toBuilder().oasysRUsername("PCMS").messageTimestamp(LocalDateTime.now().toString()).build();
+        return header.toBuilder().oasysRUsername("PCMS").build();
     }
 
     public String evaluateXpathText(String source, String xpath) throws DocumentException {

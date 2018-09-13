@@ -210,7 +210,7 @@ public class OffenderTransformer {
                         .gender(oasysGenderOf(offender.getGender()))
                         .dateOfBirth(offender.getDateOfBirth())
                         .aliases(oasysAliasesOf(offender.getAliases()))
-                        .ethnicCategory(offender.getEthnicity())
+                        .ethnicCategory(Optional.ofNullable(offender.getEthnicity()).orElse(""))
                         .addressLine1(Optional.ofNullable(offender.getMainAddress()).flatMap(addr -> Optional.ofNullable(addr.getAddressFirstLine())).map(AddressFirstLine::getHouseNumber).orElse(null))
                         .addressLine2(Optional.ofNullable(offender.getMainAddress()).flatMap(addr -> Optional.ofNullable(addr.getAddressFirstLine())).map(AddressFirstLine::getBuildingName).orElse(null))
                         .addressLine3(Optional.ofNullable(offender.getMainAddress()).flatMap(addr -> Optional.ofNullable(addr.getStreetName())).orElse(null))
@@ -218,10 +218,10 @@ public class OffenderTransformer {
                         .addressLine5(Optional.ofNullable(offender.getMainAddress()).flatMap(addr -> Optional.ofNullable(addr.getTownOrCity())).orElse(null))
                         .addressLine6(Optional.ofNullable(offender.getMainAddress()).flatMap(addr -> Optional.ofNullable(addr.getCounty())).orElse(null))
                         .postCode(offender.getPostcode())
-                        .telephoneNumber(offender.getTelephone())
+                        .telephoneNumber(Optional.ofNullable(offender.getTelephone()).orElse(""))
                         .pnc(offender.getPoliceNationalComputerIdentifier())
                         .croNumber(offender.getCro())
-                        .language(oasysLanguageOf(offender.getLanguage()))
+                        .language(Optional.ofNullable(oasysLanguageOf(offender.getLanguage())).orElse(""))
                         .religion(offender.getReligion())
                         .releaseDate(releaseDateOf(deliusOffenderDetailsResponse))
                         .license(oasysLicenseOf(deliusOffenderDetailsResponse))
@@ -244,10 +244,12 @@ public class OffenderTransformer {
                                         .map(Type::getPostCJALicenceConditionType))
                                 .collect(Collectors.toList())).orElse(Collections.emptyList());
 
-        return categories
+        final val licenceStr = categories
                 .stream()
                 .map(this::oasysLicenceStringOf)
                 .collect(Collectors.joining(","));
+
+        return (licenceStr.isEmpty()) ? null : licenceStr;
     }
 
     private String oasysLicenceStringOf(Category category) {
