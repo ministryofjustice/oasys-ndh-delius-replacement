@@ -44,7 +44,7 @@ import java.util.stream.Stream;
 public class OffenderTransformer {
 
     public static final long SENTENCE_CODE_TYPE = 3802L;
-    public static final long COURT_CODE_TYPE = 5507L;
+    public static final long COURT_CODE_TYPE = 3807L;
     public static final long LANGUAGE_CODE_TYPE = 3806L;
     public static final long LICENCE_MAIN_CATEGORY = 3803L;
     public static final long LICENCE_SUB_CATEGORY = 3804L;
