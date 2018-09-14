@@ -59,8 +59,8 @@ public class CommonTransformer {
         return Optional.empty();
     }
 
-    public String transformedResponseXmlOf(SoapEnvelope transformedResponse) throws JsonProcessingException {
-        return xmlMapper.writeValueAsString(transformedResponse);
+    public String asString(SoapEnvelope soapEnvelope) throws JsonProcessingException {
+        return xmlMapper.writeValueAsString(soapEnvelope);
     }
 
 

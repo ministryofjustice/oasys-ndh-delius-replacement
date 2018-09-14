@@ -322,7 +322,7 @@ public class OffenderTransformer {
         return builder.build();
     }
 
-    private String oasysGenderOf(String gender) {
+    public String oasysGenderOf(String gender) {
         return Optional.ofNullable(gender).map(this::mapGender).orElse(null);
     }
 
