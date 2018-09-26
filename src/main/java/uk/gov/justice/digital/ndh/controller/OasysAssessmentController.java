@@ -31,7 +31,7 @@ public class OasysAssessmentController {
 
     @RequestMapping(path = "/${oasys.assessment.updates.path:oasysAssessments}", method = RequestMethod.POST, consumes = {"application/soap+xml", "application/xml", "text/xml", "text/plain"})
     public ResponseEntity<Void> handleOasysAssessment(@RequestBody String updateXml) {
-        log.info("Received POSTed assessment update request beginning {}...", commonTransformer.limitLength(updateXml, 30));
+        log.info("Received POSTed assessment update request beginning {}...", commonTransformer.limitLength(updateXml, 50));
 
         oasysAssessmentService.publishAssessmentUpdate(updateXml);
 
@@ -41,7 +41,7 @@ public class OasysAssessmentController {
     @RequestMapping(path = "/${oasys.risk.updates.path:oasysRiskUpdates}", method = RequestMethod.POST, consumes = {"application/soap+xml", "application/xml", "text/xml", "text/plain"}, produces = "application/xml")
     public ResponseEntity<String> handleOasysRiskUpdate(@RequestBody String updateXml) {
 
-        log.info("Received POSTed risk update request beginning {}...", commonTransformer.limitLength(updateXml, 30));
+        log.info("Received POSTed risk update request beginning {}...", commonTransformer.limitLength(updateXml, 50));
 
         final Optional<String> maybeResponse = oasysRiskService.processRiskUpdate(updateXml);
 
