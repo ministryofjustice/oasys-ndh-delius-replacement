@@ -1,11 +1,15 @@
 package uk.gov.justice.digital.ndh.service.transforms;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.dom4j.DocumentException;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.xml.sax.InputSource;
 import uk.gov.justice.digital.ndh.api.delius.request.Header;
@@ -16,22 +20,27 @@ import uk.gov.justice.digital.ndh.service.ExceptionLogService;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component
+@Slf4j
 public class CommonTransformer {
 
     public static final String VERSION = "1.0";
 
     private final XmlMapper xmlMapper;
+    private final ObjectMapper objectMapper;
     private final ExceptionLogService exceptionLogService;
     public static final SAXReader READER = new SAXReader();
 
     @Autowired
-    public CommonTransformer(XmlMapper xmlMapper, ExceptionLogService exceptionLogService) {
+    public CommonTransformer(XmlMapper xmlMapper, @Qualifier("globalObjectMapper") ObjectMapper objectMapper, ExceptionLogService exceptionLogService) {
         this.xmlMapper = xmlMapper;
+        this.objectMapper = objectMapper;
         this.exceptionLogService = exceptionLogService;
     }
 
@@ -88,4 +97,14 @@ public class CommonTransformer {
     public String limitLength(String s, int i) {
         return s.substring(0, Math.min(s.length(), i));
     }
+
+    public <U> List<U> asListOf(String jsonStr) {
+        try {
+            return objectMapper.readValue(jsonStr, new TypeReference<List<U>>() {});
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
 }

@@ -2,6 +2,7 @@ package uk.gov.justice.digital.ndh.service.transforms;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
@@ -39,11 +40,11 @@ import static uk.gov.justice.digital.ndh.service.transforms.OffenderTransformer.
 
 public class OffenderTransformerTest {
 
-    public static final CommonTransformer COMMON_TRANSFORMER = new CommonTransformer(new XmlMapper(), mock(ExceptionLogService.class));
+    public static final CommonTransformer COMMON_TRANSFORMER = new CommonTransformer(new XmlMapper(), mock(ObjectMapper.class), mock(ExceptionLogService.class));
 
     @Test
     public void canTransformOasysInitialSearchRequest() {
-        final OffenderTransformer offenderTransformer = new OffenderTransformer(COMMON_TRANSFORMER, mock(MappingService.class), mock(RequirementLookupRepository.class));
+        final OffenderTransformer offenderTransformer = new OffenderTransformer(COMMON_TRANSFORMER, mock(MappingService.class), mock(RequirementLookupRepository.class), objectMapper);
 
         SoapEnvelope oasysRequest = anOasysInitialSearchRequest();
 
@@ -93,7 +94,7 @@ public class OffenderTransformerTest {
     public void serializedDeliusRequestIsSchemaCompliant() throws JsonProcessingException {
 
         final XmlMapper xmlMapper = getXmlMapper();
-        final OffenderTransformer transformer = new OffenderTransformer(COMMON_TRANSFORMER, mock(MappingService.class), mock(RequirementLookupRepository.class));
+        final OffenderTransformer transformer = new OffenderTransformer(COMMON_TRANSFORMER, mock(MappingService.class), mock(RequirementLookupRepository.class), objectMapper);
 
         final SoapEnvelope builtMessage = transformer.deliusInitialSearchRequestOf(anOasysInitialSearchRequest());
 
@@ -123,7 +124,7 @@ public class OffenderTransformerTest {
 
         when(mappingService.descriptionOf(eq("orderType"), eq(SENTENCE_CODE_TYPE))).thenReturn("sentenceCode");
 
-        final OffenderTransformer transformer = new OffenderTransformer(COMMON_TRANSFORMER, mappingService, mock(RequirementLookupRepository.class));
+        final OffenderTransformer transformer = new OffenderTransformer(COMMON_TRANSFORMER, mappingService, mock(RequirementLookupRepository.class), objectMapper);
 
         final SoapEnvelope deliusResponse = aDeliusInitialSearchResponse(COMMON_TRANSFORMER);
         final SoapEnvelope oasysRequest = anOasysInitialSearchRequest();
@@ -386,7 +387,7 @@ public class OffenderTransformerTest {
                 .sentenceAttributeElm("EXCLUSION")
                 .build()));
 
-        OffenderTransformer offenderTransformer = new OffenderTransformer(new CommonTransformer(xmlMapper, mock(ExceptionLogService.class)), mappingService, requirementLookupRepository);
+        OffenderTransformer offenderTransformer = new OffenderTransformer(new CommonTransformer(xmlMapper, mock(ObjectMapper.class), mock(ExceptionLogService.class)), mappingService, requirementLookupRepository, objectMapper);
 
         final Optional<SoapEnvelope> oasysResponseSoapEnvelope = offenderTransformer.offenderDetailsResponseTransform.apply(Optional.of(dummyOasysRequesSoapEnvelope), Optional.of(deliusResponseSoapEnvelope));
 
