@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.ndh.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -46,7 +45,6 @@ public class OasysOffenderService extends RequestResponseService {
     private final DeliusSOAPClient deliusInitialSearchClient;
     private final DeliusSOAPClient deliusOffenderDetailsClient;
     private final NomisClient nomisClient;
-    private final ObjectMapper objectMapper;
 
     @Autowired
     public OasysOffenderService(OffenderTransformer offenderTransformer,
@@ -56,15 +54,13 @@ public class OasysOffenderService extends RequestResponseService {
                                 @Qualifier("initialSearchClient") DeliusSOAPClient deliusInitialSearchClient,
                                 @Qualifier("offenderDetailsClient") DeliusSOAPClient deliusOffenderDetailsClient,
                                 NomisClient nomisClient,
-                                XmlMapper xmlMapper,
-                                @Qualifier("globalObjectMapper") ObjectMapper objectMapper) {
+                                XmlMapper xmlMapper) {
         super(exceptionLogService, commonTransformer, messageStoreService, xmlMapper, faultTransformer);
         this.offenderTransformer = offenderTransformer;
         this.deliusInitialSearchClient = deliusInitialSearchClient;
         this.faultTransformer = faultTransformer;
         this.deliusOffenderDetailsClient = deliusOffenderDetailsClient;
         this.nomisClient = nomisClient;
-        this.objectMapper = objectMapper;
     }
 
     public Optional<String> initialSearch(String initialSearchXml) {
@@ -402,9 +398,12 @@ public class OasysOffenderService extends RequestResponseService {
         return handleResponse(maybeOasysOffenderDetailsRequest, correlationId, offenderId, maybeRawResponse, maybeResponse, offenderTransformer.offenderDetailsResponseTransform);
     }
 
-    public Optional<String> handleResponse(Optional<SoapEnvelope> maybeOasysOffenderDetailsRequest, String
-            correlationId, String
-                                                   offenderId, Optional<String> maybeRawResponse, Optional<SoapEnvelope> maybeResponse, BiFunction<Optional<SoapEnvelope>, Optional<SoapEnvelope>, Optional<SoapEnvelope>> transform) {
+    public Optional<String> handleResponse(Optional<SoapEnvelope> maybeOasysOffenderDetailsRequest,
+                                           String correlationId,
+                                           String offenderId,
+                                           Optional<String> maybeRawResponse,
+                                           Optional<SoapEnvelope> maybeResponse,
+                                           BiFunction<Optional<SoapEnvelope>, Optional<SoapEnvelope>, Optional<SoapEnvelope>> transform) {
         if (maybeResponse.isPresent()) {
             if (maybeResponse.get().getBody().isSoapFault()) {
                 return handleSoapFault(correlationId, maybeRawResponse, maybeResponse.get().toString());
