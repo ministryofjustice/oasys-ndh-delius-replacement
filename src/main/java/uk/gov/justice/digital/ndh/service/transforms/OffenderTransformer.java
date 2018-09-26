@@ -80,6 +80,7 @@ public class OffenderTransformer {
     public static final String YES = "YES";
     public static final long SECURITY_CATEGORY_CODE_TYPE = 13L;
     private static final String ADDITIONAL_SENTENCING_REQUIREMENTS = "ADDITIONAL_SENTENCING_REQUIREMENTS";
+    public static final long RELEASE_NAME_CODE_TYPE = 34L;
     public final BiFunction<Optional<SoapEnvelope>, Optional<SoapEnvelope>, Optional<SoapEnvelope>> initialSearchResponseTransform;
     public final BiFunction<Optional<SoapEnvelope>, Optional<SoapEnvelope>, Optional<SoapEnvelope>> offenderDetailsResponseTransform;
     private final CommonTransformer commonTransformer;
@@ -467,6 +468,7 @@ public class OffenderTransformer {
                                                 .pnc(identifierOf(maybeOffender, "PNC"))
                                                 .riskOfSelfHarm(f2052AlertOf(maybeF2052Alerts))
                                                 .securityCategory(securityCategoryOf(maybeAssessments))
+                                                .releaseType(releaseTypeOf(maybeSentenceCalc))
                                                 .build()
                                 )
                                 .eventDetail(
@@ -481,6 +483,12 @@ public class OffenderTransformer {
                                 .build())
                         .build())
                 .build();
+    }
+
+    private String releaseTypeOf(Optional<SentenceCalculation> maybeSentenceCalc) {
+        return maybeSentenceCalc.map(SentenceCalculation::getReleaseType)
+                .map(rt -> mappingService.targetValueOf(rt, RELEASE_NAME_CODE_TYPE))
+                .orElse(null);
     }
 
     private String f2052AlertOf(Optional<List<Alert>> maybeF2052Alerts) {
