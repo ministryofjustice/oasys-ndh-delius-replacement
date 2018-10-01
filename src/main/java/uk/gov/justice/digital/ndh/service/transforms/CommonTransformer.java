@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.ndh.service.transforms;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -20,8 +19,6 @@ import uk.gov.justice.digital.ndh.service.ExceptionLogService;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -96,15 +93,6 @@ public class CommonTransformer {
 
     public String limitLength(String s, int i) {
         return s.substring(0, Math.min(s.length(), i));
-    }
-
-    public <U> List<U> asListOf(String jsonStr) {
-        try {
-            return objectMapper.readValue(jsonStr, new TypeReference<List<U>>() {});
-        } catch (IOException e) {
-            log.error(e.getMessage());
-            return Collections.emptyList();
-        }
     }
 
 }

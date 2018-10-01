@@ -1,0 +1,229 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/custodyapi/offenders/offenderId/1376169/alerts"
+  },
+  "response": {
+    "jsonBody": [
+      {
+        "bookingId": 1048600,
+        "alertSeq": 1,
+        "offenderId": 1376169,
+        "caseloadType": "INST",
+        "alertDate": "2011-01-24",
+        "expiryDate": "2016-08-01",
+        "alertType": "O",
+        "alertCode": {
+          "code": "OPPO",
+          "description": "PPO Case"
+        },
+        "alertStatus": "INACTIVE",
+        "verified": false
+      },
+      {
+        "bookingId": 1048600,
+        "alertSeq": 2,
+        "offenderId": 1376169,
+        "caseloadType": "INST",
+        "alertDate": "2011-02-16",
+        "expiryDate": "2011-05-25",
+        "alertType": "T",
+        "alertCode": {
+          "code": "TAP",
+          "description": "Accredited Programme hold"
+        },
+        "authorizePersonText": "UVKrmwKpUVKrmwK",
+        "alertStatus": "INACTIVE",
+        "verified": true,
+        "comments": "zqNSoFaIFZVOmuzqNSoFaIFZVOmu"
+      },
+      {
+        "bookingId": 1048600,
+        "alertSeq": 3,
+        "offenderId": 1376169,
+        "caseloadType": "INST",
+        "alertDate": "2015-12-04",
+        "expiryDate": "2015-12-10",
+        "alertType": "X",
+        "alertCode": {
+          "code": "XNR",
+          "description": "Not For Release"
+        },
+        "alertStatus": "INACTIVE",
+        "verified": false
+      },
+      {
+        "bookingId": 1048600,
+        "alertSeq": 4,
+        "offenderId": 1376169,
+        "caseloadType": "INST",
+        "alertDate": "2015-12-13",
+        "alertType": "R",
+        "alertCode": {
+          "code": "REG",
+          "description": "Risk to certain ethnic groups"
+        },
+        "alertStatus": "ACTIVE",
+        "verified": false,
+        "comments": "muKmuK"
+      },
+      {
+        "bookingId": 1048600,
+        "alertSeq": 5,
+        "offenderId": 1376169,
+        "caseloadType": "INST",
+        "alertDate": "2016-02-08",
+        "alertType": "V",
+        "alertCode": {
+          "code": "VI",
+          "description": "Victim"
+        },
+        "authorizePersonText": "HeSHe",
+        "alertStatus": "ACTIVE",
+        "verified": false,
+        "comments": "LcptrATYkaHgRDoHcNPClFLcptrATYkaHgRDoHcNPCl"
+      },
+      {
+        "bookingId": 1048600,
+        "alertSeq": 6,
+        "offenderId": 1376169,
+        "caseloadType": "INST",
+        "alertDate": "2016-02-16",
+        "expiryDate": "2016-03-24",
+        "alertType": "T",
+        "alertCode": {
+          "code": "TAP",
+          "description": "Accredited Programme hold"
+        },
+        "authorizePersonText": "oIo",
+        "alertStatus": "INACTIVE",
+        "verified": false,
+        "comments": "zdhzdh"
+      },
+      {
+        "bookingId": 1048600,
+        "alertSeq": 7,
+        "offenderId": 1376169,
+        "caseloadType": "INST",
+        "alertDate": "2016-07-13",
+        "alertType": "R",
+        "alertCode": {
+          "code": "ROH",
+          "description": "OASys Serious Harm-High"
+        },
+        "alertStatus": "ACTIVE",
+        "verified": false
+      },
+      {
+        "bookingId": 1048600,
+        "alertSeq": 8,
+        "offenderId": 1376169,
+        "caseloadType": "INST",
+        "alertDate": "2016-08-01",
+        "alertType": "R",
+        "alertCode": {
+          "code": "RDV",
+          "description": "Domestic Violence Perpetrator"
+        },
+        "alertStatus": "ACTIVE",
+        "verified": false
+      },
+      {
+        "bookingId": 1048600,
+        "alertSeq": 9,
+        "offenderId": 1376169,
+        "caseloadType": "INST",
+        "alertDate": "2016-08-01",
+        "alertType": "T",
+        "alertCode": {
+          "code": "TAH",
+          "description": "Allocation Hold"
+        },
+        "alertStatus": "ACTIVE",
+        "verified": false,
+        "comments": "NMYPEzmXLUFAeydEJYHIGNMYPEzmXLUFAeydEJYHIG"
+      },
+      {
+        "bookingId": 1048600,
+        "alertSeq": 10,
+        "offenderId": 1376169,
+        "caseloadType": "INST",
+        "alertDate": "2016-09-06",
+        "expiryDate": "2017-05-21",
+        "alertType": "X",
+        "alertCode": {
+          "code": "XVL",
+          "description": "Violent"
+        },
+        "alertStatus": "ACTIVE",
+        "verified": false,
+        "comments": "NCXCniyNydghumHuwWjMUPQHdgaNyiqrfJkBhVNCDoeSilNCXCniyNydghumHuwWjMUPQHdgaNyiqrfJkBhVNCDoeSil"
+      },
+      {
+        "bookingId": 1048600,
+        "alertSeq": 11,
+        "offenderId": 1376169,
+        "caseloadType": "INST",
+        "alertDate": "2016-12-30",
+        "alertType": "O",
+        "alertCode": {
+          "code": "OHCO",
+          "description": "Harassment Offences/Court orders"
+        },
+        "alertStatus": "ACTIVE",
+        "verified": false,
+        "comments": "SGHmLuteFkOOMwvuUsMOkrlJnlwzJkwPBGgSulKRDjEnyinRoOhduCNGrDlSGHmLuteFkOOMwvuUsMOkrlJnlwzJkwPBGgSulKRDjEnyinRoOhduCNGrDl"
+      },
+      {
+        "bookingId": 1048600,
+        "alertSeq": 12,
+        "offenderId": 1376169,
+        "caseloadType": "INST",
+        "alertDate": "2017-03-23",
+        "alertType": "T",
+        "alertCode": {
+          "code": "TAP",
+          "description": "Accredited Programme hold"
+        },
+        "alertStatus": "ACTIVE",
+        "verified": false,
+        "comments": "GBVaxGBVax"
+      },
+      {
+        "bookingId": 165263,
+        "alertSeq": 1,
+        "offenderId": 1376169,
+        "caseloadType": "INST",
+        "alertDate": "2011-01-24",
+        "alertType": "O",
+        "alertCode": {
+          "code": "OPPO",
+          "description": "PPO Case"
+        },
+        "alertStatus": "ACTIVE",
+        "verified": false
+      },
+      {
+        "bookingId": 165263,
+        "alertSeq": 2,
+        "offenderId": 1376169,
+        "caseloadType": "INST",
+        "alertDate": "2011-02-16",
+        "expiryDate": "2011-05-25",
+        "alertType": "T",
+        "alertCode": {
+          "code": "TAP",
+          "description": "Accredited Programme hold"
+        },
+        "authorizePersonText": "snyqUfytsnyqUfy",
+        "alertStatus": "INACTIVE",
+        "verified": true,
+        "comments": "zNsDrTQXazxBCgzNsDrTQXazxBCg"
+      }
+    ],
+    "headers": {
+      "Content-Type": "application/json;charset=UTF-8"
+    },
+    "status": 200
+  }
+}

@@ -3,13 +3,13 @@ package uk.gov.justice.digital.ndh.api.nomis;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Value;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
-@Data
+@Value
 @Builder
 public class Address {
     private Long addressId;

@@ -1,13 +1,13 @@
 package uk.gov.justice.digital.ndh.api.nomis;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Value;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Data
+@Value
 @Builder
 public class OffenderAssessment {
     private Long bookingId;

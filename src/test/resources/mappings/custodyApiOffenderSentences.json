@@ -1,0 +1,213 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/custodyapi/offenders/offenderId/1376169/sentences"
+  },
+  "response": {
+    "jsonBody": [
+      {
+        "offenderId": 1376169,
+        "bookingId": 1048600,
+        "sentenceSequenceNumber": 3,
+        "isActive": true,
+        "sentenceCategory": "2003",
+        "sentenceCalculationType": {
+          "sentenceCategory": "2003",
+          "sentenceCalculationType": "ADIMP",
+          "sentenceType": "INST",
+          "description": "CJA03 Standard Determinate Sentence",
+          "active": false,
+          "functionType": "OM"
+        },
+        "sentenceLevel": "IND",
+        "startDate": "2016-08-10",
+        "endDate": "2020-02-06",
+        "crdCalculatedDate": "2017-10-11",
+        "ledCalculatedDate": "2019-06-22",
+        "sedCalculatedDate": "2019-07-23",
+        "hdcedCalculatedDate": "2017-05-03",
+        "createdAt": "2016-07-13T09:21:42.958221",
+        "dischargeDate": "2020-01-29",
+        "hdcExclusion": false
+      },
+      {
+        "offenderId": 1376169,
+        "bookingId": 1048600,
+        "sentenceSequenceNumber": 4,
+        "isActive": true,
+        "sentenceCategory": "2003",
+        "sentenceCalculationType": {
+          "sentenceCategory": "2003",
+          "sentenceCalculationType": "ADIMP",
+          "sentenceType": "INST",
+          "description": "CJA03 Standard Determinate Sentence",
+          "active": false,
+          "functionType": "OM"
+        },
+        "sentenceLevel": "IND",
+        "startDate": "2016-07-27",
+        "endDate": "2017-01-13",
+        "ardCalculatedDate": "2016-03-26",
+        "sedCalculatedDate": "2016-05-24",
+        "hdcedCalculatedDate": "2016-02-14",
+        "createdAt": "2016-08-01T14:10:24.733978",
+        "dischargeDate": "2017-01-20",
+        "hdcExclusion": false
+      },
+      {
+        "offenderId": 1376169,
+        "bookingId": 165263,
+        "sentenceSequenceNumber": 1,
+        "isActive": false,
+        "sentenceCategory": "1991",
+        "sentenceCalculationType": {
+          "sentenceCategory": "1991",
+          "sentenceCalculationType": "AR",
+          "sentenceType": "INST",
+          "description": "Adult Imprisonment less than 12 months",
+          "active": false
+        },
+        "fineAmount": 0,
+        "aggregateAdjustDays": 0,
+        "sentenceLevel": "IND",
+        "extendedDays": 0,
+        "startDate": "2010-06-09",
+        "endDate": "2010-10-15",
+        "ardCalculatedDate": "2010-08-24",
+        "sedCalculatedDate": "2010-10-22",
+        "hdcedCalculatedDate": "2010-08-18",
+        "createdAt": "2010-06-02T13:50:25.223604",
+        "dischargeDate": "2010-10-18",
+        "hdcExclusion": false
+      },
+      {
+        "offenderId": 1376169,
+        "bookingId": 1048600,
+        "sentenceSequenceNumber": 1,
+        "isActive": false,
+        "sentenceCategory": "2003",
+        "sentenceCalculationType": {
+          "sentenceCategory": "2003",
+          "sentenceCalculationType": "ADIMP_ORA",
+          "sentenceType": "INST",
+          "description": "ORA CJA03 Standard Determinate Sentence",
+          "active": false
+        },
+        "sentenceLevel": "IND",
+        "startDate": "2016-01-07",
+        "endDate": "2016-01-12",
+        "crdCalculatedDate": "2016-01-21",
+        "ledCalculatedDate": "2015-12-23",
+        "sedCalculatedDate": "2016-01-01",
+        "createdAt": "2015-12-04T14:33:14.472194",
+        "dischargeDate": "2016-01-28",
+        "tusedCalculatedDate": "2017-01-18",
+        "hdcExclusion": false
+      },
+      {
+        "offenderId": 1376169,
+        "bookingId": 165263,
+        "sentenceSequenceNumber": 2,
+        "isActive": false,
+        "sentenceCategory": "1991",
+        "sentenceCalculationType": {
+          "sentenceCategory": "1991",
+          "sentenceCalculationType": "AR",
+          "sentenceType": "INST",
+          "description": "Adult Imprisonment less than 12 months",
+          "active": false
+        },
+        "fineAmount": 0,
+        "aggregateAdjustDays": 0,
+        "sentenceLevel": "IND",
+        "extendedDays": 0,
+        "startDate": "2010-07-13",
+        "endDate": "2010-10-10",
+        "ardCalculatedDate": "2010-08-31",
+        "sedCalculatedDate": "2010-11-11",
+        "hdcedCalculatedDate": "2010-07-20",
+        "createdAt": "2010-06-02T13:50:25.251946",
+        "dischargeDate": "2010-10-27",
+        "hdcExclusion": false
+      },
+      {
+        "offenderId": 1376169,
+        "bookingId": 1048600,
+        "sentenceSequenceNumber": 2,
+        "isActive": false,
+        "sentenceCategory": "LICENCE",
+        "sentenceCalculationType": {
+          "sentenceCategory": "LICENCE",
+          "sentenceCalculationType": "PSS_AP",
+          "sentenceType": "ALL",
+          "description": "All Purpose PSS Licence",
+          "active": false
+        },
+        "sentenceLevel": "IND",
+        "startDate": "2016-01-15",
+        "endDate": "2016-01-09",
+        "sedCalculatedDate": "2015-12-26",
+        "createdAt": "2015-12-09T11:12:23.798972",
+        "tusedCalculatedDate": "2016-12-21",
+        "hdcExclusion": false
+      },
+      {
+        "offenderId": 1376169,
+        "bookingId": 165263,
+        "sentenceSequenceNumber": 3,
+        "isActive": false,
+        "sentenceCategory": "2003",
+        "sentenceCalculationType": {
+          "sentenceCategory": "2003",
+          "sentenceCalculationType": "ADIMP",
+          "sentenceType": "INST",
+          "description": "CJA03 Standard Determinate Sentence",
+          "active": false,
+          "functionType": "OM"
+        },
+        "fineAmount": 0,
+        "aggregateAdjustDays": 32,
+        "sentenceLevel": "IND",
+        "extendedDays": 0,
+        "startDate": "2010-06-15",
+        "endDate": "2013-06-11",
+        "crdCalculatedDate": "2011-10-27",
+        "sedCalculatedDate": "2013-04-28",
+        "hdcedCalculatedDate": "2011-06-30",
+        "createdAt": "2010-06-02T13:50:25.328435",
+        "dischargeDate": "2013-06-20",
+        "hdcExclusion": false
+      },
+      {
+        "offenderId": 1376169,
+        "bookingId": 165263,
+        "sentenceSequenceNumber": 4,
+        "isActive": false,
+        "sentenceCategory": "1991",
+        "sentenceCalculationType": {
+          "sentenceCategory": "1991",
+          "sentenceCalculationType": "AR",
+          "sentenceType": "INST",
+          "description": "Adult Imprisonment less than 12 months",
+          "active": false
+        },
+        "fineAmount": 0,
+        "aggregateAdjustDays": 32,
+        "sentenceLevel": "IND",
+        "extendedDays": 0,
+        "startDate": "2010-06-02",
+        "endDate": "2011-01-04",
+        "ardCalculatedDate": "2010-09-04",
+        "sedCalculatedDate": "2010-11-18",
+        "hdcedCalculatedDate": "2010-07-01",
+        "createdAt": "2010-06-02T13:50:25.376678",
+        "dischargeDate": "2010-12-21",
+        "hdcExclusion": false
+      }
+    ],
+    "headers": {
+      "Content-Type": "application/json;charset=UTF-8"
+    },
+    "status": 200
+  }
+}

@@ -3,11 +3,11 @@ package uk.gov.justice.digital.ndh.api.nomis;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Value;
 
 import java.util.Map;
 
-@Data
+@Value
 @Builder
 public class Phone {
     private Long phoneId;

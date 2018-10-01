@@ -1,11 +1,11 @@
 package uk.gov.justice.digital.ndh.api.nomis;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Value;
 
 import java.time.LocalDate;
 
-@Data
+@Value
 @Builder
 public class Alert {
     private Long bookingId;

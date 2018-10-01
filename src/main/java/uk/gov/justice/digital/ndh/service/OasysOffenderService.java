@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.ndh.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -10,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.digital.ndh.api.nomis.Address;
 import uk.gov.justice.digital.ndh.api.nomis.AgencyLocation;
@@ -30,6 +32,7 @@ import uk.gov.justice.digital.ndh.service.transforms.FaultTransformer;
 import uk.gov.justice.digital.ndh.service.transforms.OffenderTransformer;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -45,6 +48,7 @@ public class OasysOffenderService extends RequestResponseService {
     private final DeliusSOAPClient deliusInitialSearchClient;
     private final DeliusSOAPClient deliusOffenderDetailsClient;
     private final NomisClient nomisClient;
+    private final ObjectMapper objectMapper;
 
     @Autowired
     public OasysOffenderService(OffenderTransformer offenderTransformer,
@@ -54,13 +58,16 @@ public class OasysOffenderService extends RequestResponseService {
                                 @Qualifier("initialSearchClient") DeliusSOAPClient deliusInitialSearchClient,
                                 @Qualifier("offenderDetailsClient") DeliusSOAPClient deliusOffenderDetailsClient,
                                 NomisClient nomisClient,
-                                XmlMapper xmlMapper) {
+                                XmlMapper xmlMapper,
+                                @Qualifier("globalObjectMapper")
+                                        ObjectMapper objectMapper) {
         super(exceptionLogService, commonTransformer, messageStoreService, xmlMapper, faultTransformer);
         this.offenderTransformer = offenderTransformer;
         this.deliusInitialSearchClient = deliusInitialSearchClient;
         this.faultTransformer = faultTransformer;
         this.deliusOffenderDetailsClient = deliusOffenderDetailsClient;
         this.nomisClient = nomisClient;
+        this.objectMapper = objectMapper;
     }
 
     public Optional<String> initialSearch(String initialSearchXml) {
@@ -109,13 +116,26 @@ public class OasysOffenderService extends RequestResponseService {
 
         logMessage(correlationId, offenderDetailsRequestXml, offenderId, MessageStoreService.ProcStates.GLB_ProcState_InboundBeforeTransformation);
 
-        final Optional<String> stringResponse = maybeOasysOffenderDetailsRequest.flatMap(
-                rq -> Optional.ofNullable(rq.getBody().getOffenderDetailsRequest().getNomisId()))
-                .map(nomisId -> deliusOffenderDetailsOf(maybeOasysOffenderDetailsRequest, correlationId, offenderId))
-                .orElse(nomisOffenderDetailsOf(maybeOasysOffenderDetailsRequest, correlationId, offenderId));
+        final Optional<String> maybeProbationId = maybeOasysOffenderDetailsRequest.flatMap(
+                rq -> Optional.ofNullable(rq.getBody().getOffenderDetailsRequest().getCmsProbNumber()));
 
+        final Optional<String> maybeCustodyId = maybeOasysOffenderDetailsRequest.flatMap(
+                rq -> Optional.ofNullable(rq.getBody().getOffenderDetailsRequest().getNomisId()));
 
-        return stringResponse;
+        final Optional<String> maybeProbationDetails = maybeProbationId
+                .flatMap(probId -> deliusOffenderDetailsOf(maybeOasysOffenderDetailsRequest, correlationId, probId));
+
+        final Optional<String> maybeCustodyDetails = maybeCustodyId
+                .flatMap(custId -> {
+                    try {
+                        return nomisOffenderDetailsOf(maybeOasysOffenderDetailsRequest, correlationId, custId);
+                    } catch (JsonProcessingException e) {
+                        log.error(e.getMessage());
+                        return Optional.empty();
+                    }
+                });
+
+        return Optional.ofNullable(maybeProbationDetails.orElse(maybeCustodyDetails.orElse(null)));
     }
 
     private String offenderIdOf(OffenderDetailsRequest offenderDetailsRequest) {
@@ -153,11 +173,17 @@ public class OasysOffenderService extends RequestResponseService {
 
         final Optional<SoapEnvelope> oasysOffenderDetailsResponse = maybeOffender.map(offender -> offenderTransformer.oasysOffenderDetailResponseOf(maybeOffender, latestBooking, maybeSentenceCalc, maybeSentence, maybeImprisonmentStatus, maybeCourtEvents, sentencingCourtAgencyLocation, maybeHomeAddress, maybeDischargeAddress, maybePhysicals, maybeAssessments, maybeAlerts, offender));
 
+        Optional<String> response;
+
         if (oasysOffenderDetailsResponse.isPresent()) {
-            return Optional.of(commonTransformer.asString(oasysOffenderDetailsResponse.get()));
+            response = Optional.of(commonTransformer.asString(oasysOffenderDetailsResponse.get()));
+        } else {
+            response = Optional.of(notFound(correlationId, nomsId));
         }
 
-        return Optional.of(notFound());
+        response.ifPresent(s -> logMessage(correlationId, s, nomsId, MessageStoreService.ProcStates.GLB_ProcState_OutboundAfterTransformation));
+
+        return response;
     }
 
     private Optional<List<Alert>> maybeF2052AlertsOf(Optional<Offender> maybeOffender, Booking latestBooking) {
@@ -170,14 +196,24 @@ public class OasysOffenderService extends RequestResponseService {
                                                 "alertType", "H",
                                                 "alertCode", "HA",
                                                 "alertStatus", "ACTIVE"))
+                                .filter(r -> r.getStatus() == HttpStatus.OK.value())
                                 .map(HttpResponse::getBody)
-                                .map(commonTransformer::asListOf);
+                                .map(this::asAlerts);
 
                     } catch (Exception e) {
                         log.error(e.getMessage());
                         return Optional.empty();
                     }
                 });
+    }
+
+    private List<Alert> asAlerts(String jsonStr) {
+        try {
+            return Arrays.asList(objectMapper.readValue(jsonStr, Alert[].class));
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            return Collections.emptyList();
+        }
     }
 
 
@@ -188,8 +224,9 @@ public class OasysOffenderService extends RequestResponseService {
                         return nomisClient
                                 .doGetWithRetry("offenders/offenderId/" + offender.getOffenderId() + "/assessments",
                                         ImmutableMap.of("bookingId", latestBooking.getBookingId()))
+                                .filter(r -> r.getStatus() == HttpStatus.OK.value())
                                 .map(HttpResponse::getBody)
-                                .map(commonTransformer::asListOf);
+                                .map(this::asOffenderAssessments);
 
                     } catch (Exception e) {
                         log.error(e.getMessage());
@@ -200,8 +237,21 @@ public class OasysOffenderService extends RequestResponseService {
 
     }
 
-    private String notFound() {
-        return "TODO";
+    private List<OffenderAssessment> asOffenderAssessments(String jsonStr) {
+        try {
+            return Arrays.asList(objectMapper.readValue(jsonStr, OffenderAssessment[].class));
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+    private String notFound(String correlationId, String nomsId) {
+        return faultTransformer.businessSoapFaultOf(notFoundInNOMISMessage(nomsId), correlationId, notFoundInNOMISMessage(nomsId));
+    }
+
+    private String notFoundInNOMISMessage(String nomsId) {
+        return "No offender details returned from NOMIS for offender - " + nomsId;
     }
 
     private Optional<List<Physicals>> maybePhysicalsOf(Optional<Offender> maybeOffender, Booking latestBooking) {
@@ -211,8 +261,9 @@ public class OasysOffenderService extends RequestResponseService {
                         return nomisClient
                                 .doGetWithRetry("offenders/offenderId/" + offender.getOffenderId() + "/physicals",
                                         ImmutableMap.of("bookingId", latestBooking.getBookingId()))
+                                .filter(r -> r.getStatus() == HttpStatus.OK.value())
                                 .map(HttpResponse::getBody)
-                                .map(commonTransformer::asListOf);
+                                .map(this::asPhysicals);
 
                     } catch (Exception e) {
                         log.error(e.getMessage());
@@ -220,6 +271,15 @@ public class OasysOffenderService extends RequestResponseService {
                     }
                 }
         );
+    }
+
+    private List<Physicals> asPhysicals(String jsonStr) {
+        try {
+            return Arrays.asList(objectMapper.readValue(jsonStr, Physicals[].class));
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            return Collections.emptyList();
+        }
     }
 
     private Optional<Address> maybeHomeAddressOf(Optional<List<Address>> maybeAddresses) {
@@ -246,8 +306,9 @@ public class OasysOffenderService extends RequestResponseService {
                         return nomisClient
                                 .doGetWithRetry("offenders/offenderId/" + offender.getOffenderId() + "/addresses",
                                         ImmutableMap.of("bookingId", latestBooking.getBookingId()))
+                                .filter(r -> r.getStatus() == HttpStatus.OK.value())
                                 .map(HttpResponse::getBody)
-                                .map(commonTransformer::asListOf);
+                                .map(this::asAddresses);
 
                     } catch (Exception e) {
                         log.error(e.getMessage());
@@ -255,6 +316,15 @@ public class OasysOffenderService extends RequestResponseService {
                     }
                 }
         );
+    }
+
+    private List<Address> asAddresses(String jsonStr) {
+        try {
+            return Arrays.asList(objectMapper.readValue(jsonStr, Address[].class));
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            return Collections.emptyList();
+        }
     }
 
     private Optional<List<CourtEvent>> maybeCourtEventsOf(Optional<Offender> maybeOffender, Booking
@@ -265,8 +335,9 @@ public class OasysOffenderService extends RequestResponseService {
                         return nomisClient
                                 .doGetWithRetry("offenders/offenderId/" + offender.getOffenderId() + "/courtEvents",
                                         ImmutableMap.of("bookingId", latestBooking.getBookingId()))
+                                .filter(r -> r.getStatus() == HttpStatus.OK.value())
                                 .map(HttpResponse::getBody)
-                                .map(commonTransformer::asListOf);
+                                .map(this::asCourtEvents);
 
                     } catch (Exception e) {
                         log.error(e.getMessage());
@@ -274,6 +345,15 @@ public class OasysOffenderService extends RequestResponseService {
                     }
                 }
         );
+    }
+
+    private List<CourtEvent> asCourtEvents(String jsonStr) {
+        try {
+            return Arrays.asList(objectMapper.readValue(jsonStr, CourtEvent[].class));
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            return Collections.emptyList();
+        }
     }
 
     private Optional<OffenderImprisonmentStatus> maybeImprisonmentStatusOf
@@ -284,6 +364,7 @@ public class OasysOffenderService extends RequestResponseService {
                         return nomisClient
                                 .doGetWithRetry("offenders/offenderId/" + offender.getOffenderId() + "/imprisonmentStatuses",
                                         ImmutableMap.of("bookingId", latestBooking.getBookingId()))
+                                .filter(r -> r.getStatus() == HttpStatus.OK.value())
                                 .map(HttpResponse::getBody)
                                 .map(this::asImprisonmentStatuses)
                                 .flatMap(statuses -> statuses.stream()
@@ -305,6 +386,7 @@ public class OasysOffenderService extends RequestResponseService {
                         return nomisClient
                                 .doGetWithRetry("offenders/offenderId/" + offender.getOffenderId() + "/sentences",
                                         ImmutableMap.of("bookingId", latestBooking.getBookingId()))
+                                .filter(r -> r.getStatus() == HttpStatus.OK.value())
                                 .map(HttpResponse::getBody)
                                 .map(this::asSentences)
                                 .flatMap(sentences -> sentences.stream()
@@ -319,6 +401,10 @@ public class OasysOffenderService extends RequestResponseService {
         );
     }
 
+    private boolean filter(Sentence s) {
+        return s.getIsActive();
+    }
+
     private Optional<SentenceCalculation> maybeSentenceCalculationOf(Optional<Offender> maybeOffender, Booking
             latestBooking) {
         return maybeOffender.flatMap(
@@ -327,6 +413,7 @@ public class OasysOffenderService extends RequestResponseService {
                         return nomisClient
                                 .doGetWithRetry("offenders/offenderId/" + offender.getOffenderId() + "/sentenceCalculations",
                                         ImmutableMap.of("bookingId", latestBooking.getBookingId()))
+                                .filter(r -> r.getStatus() == HttpStatus.OK.value())
                                 .map(HttpResponse::getBody)
                                 .map(this::asSentenceCalculations)
                                 .flatMap(sentenceCalculations -> sentenceCalculations.stream().findFirst());
@@ -343,15 +430,14 @@ public class OasysOffenderService extends RequestResponseService {
         return maybeOffender.flatMap(offender -> offender.getBookings().stream().findFirst());
     }
 
-    private Optional<Offender> maybeOffenderOf(Optional<SoapEnvelope> maybeOasysOffenderDetailsRequest, String
-            nomsId) {
+    private Optional<Offender> maybeOffenderOf(Optional<SoapEnvelope> maybeOasysOffenderDetailsRequest, String nomsId) {
         return maybeOasysOffenderDetailsRequest.flatMap(
                 rq -> {
                     try {
                         return nomisClient.doGetWithRetry("offenders/nomsId/" + nomsId)
+                                .filter(r -> r.getStatus() == HttpStatus.OK.value())
                                 .map(HttpResponse::getBody)
                                 .map(offenderTransformer::asOffender);
-
                     } catch (Exception e) {
                         log.error(e.getMessage());
                         return Optional.empty();
@@ -371,16 +457,31 @@ public class OasysOffenderService extends RequestResponseService {
 
 
     private List<OffenderImprisonmentStatus> asImprisonmentStatuses(String jsonStr) {
-        return commonTransformer.asListOf(jsonStr);
+        try {
+            return Arrays.asList(objectMapper.readValue(jsonStr, OffenderImprisonmentStatus[].class));
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            return Collections.emptyList();
+        }
     }
 
     private List<Sentence> asSentences(String jsonStr) {
-        return commonTransformer.asListOf(jsonStr);
+        try {
+            return Arrays.asList(objectMapper.readValue(jsonStr, Sentence[].class));
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            return Collections.emptyList();
+        }
     }
 
 
     private List<SentenceCalculation> asSentenceCalculations(String jsonStr) {
-        return commonTransformer.asListOf(jsonStr);
+        try {
+            return Arrays.asList(objectMapper.readValue(jsonStr, SentenceCalculation[].class));
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            return Collections.emptyList();
+        }
     }
 
     public Optional<String> deliusOffenderDetailsOf

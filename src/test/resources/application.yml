@@ -3,5 +3,5 @@ spring:
     broker-url: vm://localhost:61616
     in-memory: true
 
-
+custody.api.base.url:
 activemq.delivery.mode: 1

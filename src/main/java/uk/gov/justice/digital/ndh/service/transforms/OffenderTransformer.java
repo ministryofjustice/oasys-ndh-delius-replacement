@@ -568,7 +568,7 @@ public class OffenderTransformer {
 
     private String releaseDateOf(Optional<SentenceCalculation> maybeSentenceCalc) {
         return maybeSentenceCalc.flatMap(
-                sc -> Optional.of(sc.getReleaseDate()))
+                sc -> Optional.ofNullable(sc.getReleaseDate()))
                 .map(LocalDate::toString)
                 .orElse(null);
     }

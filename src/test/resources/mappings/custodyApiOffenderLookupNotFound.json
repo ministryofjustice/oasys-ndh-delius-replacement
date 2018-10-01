@@ -1,0 +1,9 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/custodyapi/offenders/nomsId/A0000AA"
+  },
+  "response": {
+    "status": 404
+  }
+}

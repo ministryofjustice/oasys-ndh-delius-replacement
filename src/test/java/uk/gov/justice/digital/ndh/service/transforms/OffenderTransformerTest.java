@@ -44,7 +44,7 @@ public class OffenderTransformerTest {
 
     @Test
     public void canTransformOasysInitialSearchRequest() {
-        final OffenderTransformer offenderTransformer = new OffenderTransformer(COMMON_TRANSFORMER, mock(MappingService.class), mock(RequirementLookupRepository.class), objectMapper);
+        final OffenderTransformer offenderTransformer = new OffenderTransformer(COMMON_TRANSFORMER, mock(MappingService.class), mock(RequirementLookupRepository.class), mock(ObjectMapper.class));
 
         SoapEnvelope oasysRequest = anOasysInitialSearchRequest();
 
@@ -94,7 +94,7 @@ public class OffenderTransformerTest {
     public void serializedDeliusRequestIsSchemaCompliant() throws JsonProcessingException {
 
         final XmlMapper xmlMapper = getXmlMapper();
-        final OffenderTransformer transformer = new OffenderTransformer(COMMON_TRANSFORMER, mock(MappingService.class), mock(RequirementLookupRepository.class), objectMapper);
+        final OffenderTransformer transformer = new OffenderTransformer(COMMON_TRANSFORMER, mock(MappingService.class), mock(RequirementLookupRepository.class), mock(ObjectMapper.class));
 
         final SoapEnvelope builtMessage = transformer.deliusInitialSearchRequestOf(anOasysInitialSearchRequest());
 
@@ -124,7 +124,7 @@ public class OffenderTransformerTest {
 
         when(mappingService.descriptionOf(eq("orderType"), eq(SENTENCE_CODE_TYPE))).thenReturn("sentenceCode");
 
-        final OffenderTransformer transformer = new OffenderTransformer(COMMON_TRANSFORMER, mappingService, mock(RequirementLookupRepository.class), objectMapper);
+        final OffenderTransformer transformer = new OffenderTransformer(COMMON_TRANSFORMER, mappingService, mock(RequirementLookupRepository.class), mock(ObjectMapper.class));
 
         final SoapEnvelope deliusResponse = aDeliusInitialSearchResponse(COMMON_TRANSFORMER);
         final SoapEnvelope oasysRequest = anOasysInitialSearchRequest();
@@ -387,7 +387,7 @@ public class OffenderTransformerTest {
                 .sentenceAttributeElm("EXCLUSION")
                 .build()));
 
-        OffenderTransformer offenderTransformer = new OffenderTransformer(new CommonTransformer(xmlMapper, mock(ObjectMapper.class), mock(ExceptionLogService.class)), mappingService, requirementLookupRepository, objectMapper);
+        OffenderTransformer offenderTransformer = new OffenderTransformer(new CommonTransformer(xmlMapper, mock(ObjectMapper.class), mock(ExceptionLogService.class)), mappingService, requirementLookupRepository, mock(ObjectMapper.class));
 
         final Optional<SoapEnvelope> oasysResponseSoapEnvelope = offenderTransformer.offenderDetailsResponseTransform.apply(Optional.of(dummyOasysRequesSoapEnvelope), Optional.of(deliusResponseSoapEnvelope));
 

@@ -1,0 +1,185 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/custodyapi/offenders/offenderId/1376169/addresses"
+  },
+  "response": {
+    "jsonBody": [
+      {
+        "addressId": 1647746,
+        "type": "offender",
+        "addressType": "HOME",
+        "ownerClass": "PER",
+        "street": "manvdwOmanvdw",
+        "locality": "ryDIMryDIM",
+        "cityCode": "24847",
+        "city": {
+          "code": "24847",
+          "description": "Cardiff"
+        },
+        "countryCode": "WALES",
+        "country": {
+          "code": "WALES",
+          "description": "Wales"
+        },
+        "validatedPaf": false,
+        "primary": true,
+        "mail": true,
+        "noFixedAddress": false,
+        "services": false,
+        "startDate": "2011-04-01",
+        "phones": [
+          {
+            "phoneId": 409391,
+            "ownerClass": "ADDR",
+            "phoneType": "MOB",
+            "phoneNo": "574 555 735",
+            "addressId": 1647746
+          }
+        ],
+        "offenderId": 1376169
+      },
+      {
+        "addressId": 4844277,
+        "type": "offender",
+        "addressUsages": [
+          {
+            "usage": {
+              "code": "DPH",
+              "description": "Discharge - Permanent Housing"
+            },
+            "active": true
+          },
+          {
+            "usage": {
+              "code": "RECEP",
+              "description": "Reception"
+            },
+            "active": true
+          },
+          {
+            "usage": {
+              "code": "HOME",
+              "description": "Home"
+            },
+            "active": false
+          }
+        ],
+        "ownerClass": "OFF",
+        "premise": "ss",
+        "street": "GlFNhbGlFNhb",
+        "locality": "HZpTHZp",
+        "cityCode": "25343",
+        "city": {
+          "code": "25343",
+          "description": "Sheffield"
+        },
+        "countyCode": "S.YORKSHIRE",
+        "county": {
+          "code": "S.YORKSHIRE",
+          "description": "South Yorkshire"
+        },
+        "countryCode": "ENG",
+        "country": {
+          "code": "ENG",
+          "description": "England"
+        },
+        "validatedPaf": false,
+        "primary": true,
+        "mail": false,
+        "noFixedAddress": false,
+        "services": false,
+        "startDate": "2015-11-01",
+        "offenderId": 1376169
+      },
+      {
+        "addressId": 1748749,
+        "type": "offender",
+        "addressUsages": [
+          {
+            "usage": {
+              "code": "DPH",
+              "description": "Discharge - Permanent Housing"
+            },
+            "active": false
+          },
+          {
+            "usage": {
+              "code": "HDC",
+              "description": "HDC Address"
+            },
+            "active": false
+          }
+        ],
+        "ownerClass": "OFF",
+        "street": "sbJXrAvsbJXrAv",
+        "locality": "ENmTMlXOqMtCjENmTMlXOqMtC",
+        "cityCode": "25343",
+        "city": {
+          "code": "25343",
+          "description": "Sheffield"
+        },
+        "countyCode": "S.YORKSHIRE",
+        "county": {
+          "code": "S.YORKSHIRE",
+          "description": "South Yorkshire"
+        },
+        "postalCode": "L7 2LE",
+        "countryCode": "ENG",
+        "country": {
+          "code": "ENG",
+          "description": "England"
+        },
+        "validatedPaf": false,
+        "primary": false,
+        "mail": false,
+        "noFixedAddress": false,
+        "services": false,
+        "startDate": "2011-10-01",
+        "offenderId": 1376169
+      },
+      {
+        "addressId": 962331,
+        "type": "offender",
+        "addressUsages": [
+          {
+            "usage": {
+              "code": "RECEP",
+              "description": "Reception"
+            },
+            "active": false
+          }
+        ],
+        "ownerClass": "OFF",
+        "street": "AFTfUznpUAFTfUznpU",
+        "cityCode": "25343",
+        "city": {
+          "code": "25343",
+          "description": "Sheffield"
+        },
+        "countyCode": "S.YORKSHIRE",
+        "county": {
+          "code": "S.YORKSHIRE",
+          "description": "South Yorkshire"
+        },
+        "postalCode": "I1 1OO",
+        "countryCode": "GBR",
+        "country": {
+          "code": "GBR",
+          "description": "United Kingdom"
+        },
+        "validatedPaf": true,
+        "primary": false,
+        "mail": false,
+        "comments": "vxMorBvxMorB",
+        "noFixedAddress": false,
+        "services": false,
+        "offenderId": 1376169
+      }
+    ],
+    "headers": {
+      "Content-Type": "application/json;charset=UTF-8"
+    },
+    "status": 200
+  }
+}

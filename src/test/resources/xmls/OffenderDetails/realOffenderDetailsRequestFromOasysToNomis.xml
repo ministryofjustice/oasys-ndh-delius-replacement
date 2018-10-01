@@ -1,0 +1,19 @@
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope"
+               xmlns:off="http://www.hp.com/NDH_Web_Service/OffenderDetailsRequest"
+               xmlns:dom="http://www.hp.com/NDH_Web_Service/DomainTypes">
+    <soap:Header/>
+    <soap:Body>
+        <off:OffenderDetailsRequest xmlns:off="http://www.hp.com/NDH_Web_Service/OffenderDetailsRequest"
+                                    xmlns:dom="http://www.hp.com/NDH_Web_Service/DomainTypes"
+                                    xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
+            <off:header>
+                <dom:ApplicationMode>I</dom:ApplicationMode>
+                <dom:CorrelationID>OASYSRPCWWS20180910130951604609</dom:CorrelationID>
+                <dom:OASysRUsername>CENTRALSUPPORTONE</dom:OASysRUsername>
+                <dom:MessageTimestamp>2018-09-10T13:59:51+01:00</dom:MessageTimestamp>
+            </off:header>
+            <off:NomisID>G8696GH</off:NomisID>
+            <off:EventNumber>1</off:EventNumber>
+        </off:OffenderDetailsRequest>
+    </soap:Body>
+</soap:Envelope>

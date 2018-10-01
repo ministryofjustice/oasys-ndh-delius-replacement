@@ -2,14 +2,14 @@ package uk.gov.justice.digital.ndh.api.nomis;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Value;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
-@Data
+@Value
 @Builder(toBuilder = true)
 public class Charge {
     private Long chargeId;

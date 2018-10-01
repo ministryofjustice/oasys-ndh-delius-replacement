@@ -2,11 +2,11 @@ package uk.gov.justice.digital.ndh.api.nomis;
 
 import com.google.common.collect.ImmutableMap;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Value;
 
 import java.util.Map;
 
-@Data
+@Value
 @Builder
 public class IdPair {
     private String key;
