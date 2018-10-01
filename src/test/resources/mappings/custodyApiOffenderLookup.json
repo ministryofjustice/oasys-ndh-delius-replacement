@@ -1,0 +1,239 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/custodyapi/offenders/nomsId/G8696GH"
+  },
+  "response": {
+    "jsonBody": {
+      "nomsId": "G8696GH",
+      "offenderId": 1376169,
+      "firstName": "DUPTCELSE",
+      "middleNames": "CHANDLEVIEVE",
+      "surname": "PIERCWYN",
+      "dateOfBirth": "1987-02-05",
+      "gender": {
+        "code": "M",
+        "description": "Male"
+      },
+      "ethnicity": {
+        "code": "W1",
+        "description": "White: Eng./Welsh/Scot./N.Irish/British"
+      },
+      "aliases": [
+        {
+          "nomsId": "G8696GH",
+          "firstName": "DUPTCELSE",
+          "surname": "HENRONZO",
+          "dateOfBirth": "1987-02-01",
+          "gender": {
+            "code": "M",
+            "description": "Male"
+          },
+          "ethnicity": {
+            "code": "W1",
+            "description": "White: Eng./Welsh/Scot./N.Irish/British"
+          },
+          "offenderId": 1376170
+        }
+      ],
+      "bookings": [
+        {
+          "bookingId": 1048600,
+          "bookingNo": "V32481",
+          "offenderId": 1376169,
+          "rootOffenderId": 1376169,
+          "agencyLocation": {
+            "agencyLocationId": "RNI",
+            "description": "RANBY (HMP)",
+            "longDescription": "HMP RANBY",
+            "agencyLocationType": "INST",
+            "districtCode": "EMID",
+            "bailOffice": false,
+            "housingLev1Code": "WING",
+            "housingLev2Code": "LAND",
+            "housingLev3Code": "CELL",
+            "housingLev4Code": "NULL",
+            "serviceRequired": false,
+            "active": true,
+            "areaCode": "EMID",
+            "nomsRegionCode": "EMIDS",
+            "geographicRegionCode": "EMID",
+            "cjitCode": "E00RN00"
+          },
+          "livingUnit": {
+            "internalLocationId": 506497,
+            "internalLocationCode": "002",
+            "agencyLocationId": "RNI",
+            "internalLocationType": "CELL",
+            "description": "RNI-HB4-2-002",
+            "capacity": 2,
+            "parentInternalLocationId": 506484,
+            "active": true,
+            "listSequence": 2,
+            "cnaNumber": 2,
+            "certified": true,
+            "unitType": "NA",
+            "operationCapacity": 2,
+            "numberOfOccupants": 2,
+            "trackingFlag": "N"
+          },
+          "activeFlag": true,
+          "bookingStatus": "O",
+          "inOutStatus": "IN",
+          "statusReason": "ADM-INT",
+          "startDate": "2015-11-26",
+          "bookingSequence": 1,
+          "lastMovement": {
+            "bookingId": 1048600,
+            "offenderId": 1376169,
+            "sequenceNumber": 13,
+            "movementDateTime": "2017-01-22T12:19:00",
+            "movementTypeCode": "ADM",
+            "movementReasonCode": "INT",
+            "movementReasonDescription": "Transfer In from Other Establishment",
+            "movementDirection": "IN",
+            "active": true,
+            "fromAgencyLocation": {
+              "agencyLocationId": "MDI",
+              "description": "MOORLAND (HMP & YOI)",
+              "longDescription": "HMP & YOI MOORLAND",
+              "agencyLocationType": "INST",
+              "districtCode": "YORK",
+              "bailOffice": false,
+              "housingLev1Code": "WING",
+              "housingLev2Code": "LAND",
+              "housingLev3Code": "SPUR",
+              "housingLev4Code": "CELL",
+              "serviceRequired": false,
+              "active": true,
+              "areaCode": "YORK",
+              "nomsRegionCode": "YOHUM",
+              "geographicRegionCode": "YORK",
+              "cjitCode": "E00MD00"
+            },
+            "toAgencyLocation": {
+              "agencyLocationId": "RNI",
+              "description": "RANBY (HMP)",
+              "longDescription": "HMP RANBY",
+              "agencyLocationType": "INST",
+              "districtCode": "EMID",
+              "bailOffice": false,
+              "housingLev1Code": "WING",
+              "housingLev2Code": "LAND",
+              "housingLev3Code": "CELL",
+              "housingLev4Code": "NULL",
+              "serviceRequired": false,
+              "active": true,
+              "areaCode": "EMID",
+              "nomsRegionCode": "EMIDS",
+              "geographicRegionCode": "EMID",
+              "cjitCode": "E00RN00"
+            },
+            "unemploymentPay": false,
+            "escapeRecapture": false,
+            "inMovementReasonCode": "INT",
+            "transportation": false
+          }
+        },
+        {
+          "bookingId": 165263,
+          "bookingNo": "HC9223",
+          "offenderId": 1376169,
+          "rootOffenderId": 1376169,
+          "agencyLocation": {
+            "agencyLocationId": "OUT",
+            "description": "OUTSIDE",
+            "longDescription": "OUTSIDE JURISDICTION",
+            "agencyLocationType": "INST",
+            "districtCode": "FD",
+            "deactivationDate": "2008-05-29",
+            "jurisdictionCode": "CC",
+            "bailOffice": true,
+            "listSeq": 2,
+            "housingLev1Code": "BED",
+            "propertyLev1Code": "BOX",
+            "serviceRequired": false,
+            "active": false,
+            "disabilityAccessCode": "WHEEL",
+            "cjitCode": "TEST"
+          },
+          "activeFlag": false,
+          "bookingStatus": "C",
+          "inOutStatus": "OUT",
+          "statusReason": "REL-CR",
+          "startDate": "2010-04-12",
+          "endDate": "2011-10-11",
+          "bookingSequence": 2,
+          "lastMovement": {
+            "bookingId": 165263,
+            "offenderId": 1376169,
+            "sequenceNumber": 10,
+            "movementDateTime": "2011-11-09T09:08:00",
+            "movementTypeCode": "REL",
+            "movementReasonCode": "CR",
+            "movementReasonDescription": "CONDITIONAL RELEASE",
+            "movementDirection": "OUT",
+            "active": false,
+            "fromAgencyLocation": {
+              "agencyLocationId": "LHI",
+              "description": "LINDHOLME (HMP)",
+              "longDescription": "HMP LINDHOLME",
+              "agencyLocationType": "INST",
+              "districtCode": "YORK",
+              "bailOffice": false,
+              "housingLev1Code": "WING",
+              "housingLev2Code": "LAND",
+              "housingLev3Code": "SPUR",
+              "housingLev4Code": "CELL",
+              "serviceRequired": false,
+              "active": true,
+              "areaCode": "YORK",
+              "nomsRegionCode": "YOHUM",
+              "geographicRegionCode": "YORK",
+              "cjitCode": "E00LH00"
+            },
+            "toAgencyLocation": {
+              "agencyLocationId": "OUT",
+              "description": "OUTSIDE",
+              "longDescription": "OUTSIDE JURISDICTION",
+              "agencyLocationType": "INST",
+              "districtCode": "FD",
+              "deactivationDate": "2008-05-29",
+              "jurisdictionCode": "CC",
+              "bailOffice": true,
+              "listSeq": 2,
+              "housingLev1Code": "BED",
+              "propertyLev1Code": "BOX",
+              "serviceRequired": false,
+              "active": false,
+              "disabilityAccessCode": "WHEEL",
+              "cjitCode": "TEST"
+            },
+            "unemploymentPay": false,
+            "escapeRecapture": false,
+            "inMovementReasonCode": "CR",
+            "transportation": false
+          }
+        }
+      ],
+      "identifiers": [
+        {
+          "identifierType": "PNC",
+          "identifier": "01/395484N",
+          "sequenceNumber": 2,
+          "createdDateTime": "2010-06-02T13:49:47.978661"
+        },
+        {
+          "identifierType": "CRO",
+          "identifier": "333803/01K",
+          "sequenceNumber": 1,
+          "createdDateTime": "2010-06-02T13:49:47.958062"
+        }
+      ]
+    },
+    "headers": {
+      "Content-Type": "application/json;charset=UTF-8"
+    },
+    "status": 200
+  }
+}

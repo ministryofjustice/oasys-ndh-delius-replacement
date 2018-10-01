@@ -79,7 +79,7 @@ public class SoapBody {
     @JsonProperty("GetOffenderDetailsResponse")
     private DeliusOffenderDetailsResponse deliusOffenderDetailsResponse;
 
-    @JsonProperty(value = "Fault")
+    @JsonProperty(value = "Fault", access = JsonProperty.Access.WRITE_ONLY)
     private JsonNode fault;
 
     @JsonIgnore

@@ -1,7 +1,9 @@
 package uk.gov.justice.digital.ndh.controller;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.github.tomakehurst.wiremock.common.ClasspathFileSource;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.github.tomakehurst.wiremock.standalone.JsonFileMappingsSource;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.After;
@@ -51,7 +53,9 @@ import static uk.gov.justice.digital.ndh.service.transforms.OffenderTransformer.
         "ndelius.assessment.update.url=http://localhost:8090/delius/assessmentUpdates",
         "ndelius.risk.update.url=http://localhost:8090/delius/riskUpdates",
         "ndelius.initial.search.url=http://localhost:8090/delius/initialSearch",
-        "ndelius.offender.details.url=http://localhost:8090/delius/offenderDetails"
+        "ndelius.offender.details.url=http://localhost:8090/delius/offenderDetails",
+        "custody.api.base.url=http://localhost:8090/custodyapi/",
+        "oauth.url=http://localhost:8090/oauth/token"
 })
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext
@@ -212,6 +216,58 @@ public class OasysOffenderControllerTest {
         assertThat(s).contains("PCMS mapping error");
         Mockito.verify(messageStoreService, times(3)).writeMessage(anyString(), anyString(), anyString(), anyString(), any(MessageStoreService.ProcStates.class));
         Mockito.verify(exceptionLogService, times(1)).logMappingFail(anyLong(), anyString(), anyString(), anyString(), anyString());
+
+    }
+
+    @Test
+    public void postedOffenderDetailsMessageIsSentToCustodyAPIAndHandledAppropriately() throws IOException {
+        wm.loadMappingsUsing(new JsonFileMappingsSource(new ClasspathFileSource("mappings")));
+
+        assertThat(wm.getStubMappings().size()).isGreaterThan(0);
+
+        Mockito.when(mappingService.targetValueOf("HDCAD", 34L)).thenReturn("HDC");
+        Mockito.when(mappingService.targetValueOf("C", 13L)).thenReturn("CAT-C");
+
+        final String requestXml = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/OffenderDetails/realOffenderDetailsRequestFromOasysToNomis.xml")))
+                .lines().collect(Collectors.joining("\n"));
+
+        final String actualXml = given()
+                .when()
+                .contentType(ContentType.XML)
+                .body(requestXml)
+                .post("/offenderDetails")
+                .then()
+                .statusCode(200).extract().body().asString();
+
+        final SoapEnvelope actual = xmlMapper.readValue(actualXml, SoapEnvelope.class);
+
+        final SoapEnvelope expected = xmlMapper.readValue("<?xml version='1.0' encoding='UTF-8'?><Envelope xmlns=\"http://www.w3.org/2003/05/soap-envelope\"><Header/><Body><wstxns1:OffenderDetailsResponse xmlns:wstxns1=\"http://www.hp.com/NDH_Web_Service/Offender_Details_Response\"><wstxns2:OffenderDetail xmlns:wstxns2=\"http://www.hp.com/NDH_Web_Service/offender\"><wstxns2:PrisonNumber>V32481</wstxns2:PrisonNumber><wstxns2:NomisID>G8696GH</wstxns2:NomisID><wstxns2:FamilyName>PIERCWYN</wstxns2:FamilyName><wstxns2:Forename1>DUPTCELSE</wstxns2:Forename1><wstxns2:Forename2>CHANDLEVIEVE</wstxns2:Forename2><wstxns2:Gender>1</wstxns2:Gender><wstxns2:DateOfBirth>1987-02-05</wstxns2:DateOfBirth><wstxns2:Alias><wstxns2:AliasFamilyName>HENRONZO</wstxns2:AliasFamilyName><wstxns2:AliasForename1>DUPTCELSE</wstxns2:AliasForename1><wstxns2:AliasDateOfBirth>1987-02-01</wstxns2:AliasDateOfBirth></wstxns2:Alias><wstxns2:PNC>01/395484N</wstxns2:PNC><wstxns2:CRONumber>333803/01K</wstxns2:CRONumber><wstxns2:Religion>NIL</wstxns2:Religion><wstxns2:ReleaseDate>2017-10-22</wstxns2:ReleaseDate><wstxns2:ReleaseType>HDC</wstxns2:ReleaseType><wstxns2:CellLocation>RNI-HB4-2-002</wstxns2:CellLocation><wstxns2:SecurityCategory>CAT-C</wstxns2:SecurityCategory><wstxns2:DischargeAddressLine2>ss</wstxns2:DischargeAddressLine2><wstxns2:DischargeAddressLine3>GlFNhbGlFNhb</wstxns2:DischargeAddressLine3><wstxns2:DischargeAddressLine4>HZpTHZp</wstxns2:DischargeAddressLine4><wstxns2:DischargeAddressLine5>Sheffield</wstxns2:DischargeAddressLine5><wstxns2:DischargeAddressLine6>S.YORKSHIRE</wstxns2:DischargeAddressLine6><wstxns2:AppealPendingIndicator>N</wstxns2:AppealPendingIndicator><wstxns2:LicenceExpiryDate>2019-07-04T00:00</wstxns2:LicenceExpiryDate><wstxns2:SentenceExpiryDate>2019-07-16T00:00</wstxns2:SentenceExpiryDate><wstxns2:ConditionalReleaseDate>2017-10-22T00:00</wstxns2:ConditionalReleaseDate><wstxns2:RiskOfSelfHarm>YES</wstxns2:RiskOfSelfHarm></wstxns2:OffenderDetail><wstxns3:EventDetail xmlns:wstxns3=\"http://www.hp.com/NDH_Web_Service/event\"><wstxns3:SentenceCode>920</wstxns3:SentenceCode><wstxns3:SentenceDate>2016-08-10</wstxns3:SentenceDate><wstxns3:SentenceLength>438</wstxns3:SentenceLength></wstxns3:EventDetail></wstxns1:OffenderDetailsResponse></Body></Envelope>", SoapEnvelope.class);
+
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void offenderNotFoundInNomisRespondsAppropriately() throws IOException {
+        wm.loadMappingsUsing(new JsonFileMappingsSource(new ClasspathFileSource("mappings")));
+
+        assertThat(wm.getStubMappings().size()).isGreaterThan(0);
+
+        final String requestXml = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/OffenderDetails/realOffenderDetailsRequestFromOasysToNomis.xml")))
+                .lines().collect(Collectors.joining("\n"));
+
+        final String actualXml = given()
+                .when()
+                .contentType(ContentType.XML)
+                .body(requestXml.replace("G8696GH", "A0000AA"))
+                .post("/offenderDetails")
+                .then()
+                .statusCode(200).extract().body().asString();
+
+        final SoapEnvelope actual = xmlMapper.readValue(actualXml, SoapEnvelope.class);
+
+        final SoapEnvelope expected = xmlMapper.readValue("<?xml version=\"1.0\" encoding=\"UTF-8\"?><SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://www.w3.org/2003/05/soap-envelope\"><SOAP-ENV:Body><SOAP-ENV:Fault><SOAP-ENV:Code><SOAP-ENV:Value>SOAP-ENV:NDH</SOAP-ENV:Value></SOAP-ENV:Code><SOAP-ENV:Reason><SOAP-ENV:Text xml:lang=\"en-US\">No offender details returned from NOMIS for offender - A0000AA</SOAP-ENV:Text></SOAP-ENV:Reason><SOAP-ENV:Node/><SOAP-ENV:Role/><SOAP-ENV:Detail><ns:Fault xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:ns=\"http://www.hp.com/NDH_Web_Service/Fault\" xmlns:ns0=\"http://www.w3.org/2003/05/soap-envelope\"><ns:BusinessException><ns:Code>NDH</ns:Code><ns:Description>No offender details returned from NOMIS for offender - A0000AA</ns:Description><ns:Timestamp>2018-10-01T14:22:06.641</ns:Timestamp><ns:RequestMessage>OASYSRPCWWS20180910130951604609</ns:RequestMessage></ns:BusinessException></ns:Fault></SOAP-ENV:Detail></SOAP-ENV:Fault></SOAP-ENV:Body></SOAP-ENV:Envelope>", SoapEnvelope.class);
+
+        assertThat(actual).isEqualTo(expected);
 
     }
 

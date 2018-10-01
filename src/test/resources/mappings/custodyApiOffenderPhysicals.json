@@ -1,0 +1,449 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/custodyapi/offenders/offenderId/1376169/physicals"
+  },
+  "response": {
+    "jsonBody": [
+      {
+        "bookingId": 165263,
+        "identifyingMarks": [
+          {
+            "idMarkSeq": 1,
+            "bodyPartCode": "TORSO",
+            "markType": "OTH",
+            "comments": "kEEqQFTvpkEEqQFTvp"
+          }
+        ],
+        "physicalAttributes": [
+          {
+            "attributeSeq": 1,
+            "heightFeet": 6,
+            "heightInches": 2,
+            "heightCm": 187,
+            "weightLbs": 147,
+            "weightKg": 67
+          }
+        ],
+        "profileDetails": [
+          {
+            "profileSeq": 1,
+            "profileType": "APPEAR",
+            "listSeq": 9,
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "BUILD",
+            "profileCode": "SLIGHT",
+            "profileDescription": "cUWcUW",
+            "listSeq": 7,
+            "comments": "NBmwPNBmwP",
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "CHILD",
+            "listSeq": 4,
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "DIET",
+            "listSeq": 12,
+            "comments": "MSiVnMSiVn",
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "DNA",
+            "listSeq": 10,
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "DOMESTIC",
+            "listSeq": 5,
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "DOMVIC",
+            "listSeq": 6,
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "FACE",
+            "profileCode": "OVAL",
+            "profileDescription": "jiji",
+            "listSeq": 6,
+            "comments": "lMtTalMtTa",
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "FACIAL_HAIR",
+            "profileCode": "CLEAN SHAVEN",
+            "profileDescription": "QSvTGNQSvTGN",
+            "listSeq": 5,
+            "comments": "wGwPDwGwPD",
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "HAIR",
+            "profileCode": "BLONDE",
+            "profileDescription": "URTURT",
+            "listSeq": 2,
+            "comments": "TBSiuTBSiu",
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "IMM",
+            "profileCode": "N",
+            "profileDescription": "XX",
+            "listSeq": 11,
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "LIST_REC",
+            "listSeq": 14,
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "LIST_SUIT",
+            "listSeq": 13,
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "L_EYE_C",
+            "profileCode": "BLUE",
+            "profileDescription": "YzYz",
+            "listSeq": 4,
+            "comments": "VhmToVhmTo",
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "MARITAL",
+            "profileCode": "S",
+            "profileDescription": "sjedbztIaJRRzRZVIYadsjedbztIaJRRzRZVIYa",
+            "listSeq": 3,
+            "comments": "EXevoEXevo",
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "NAT",
+            "profileCode": "BRIT",
+            "profileDescription": "sxiVsxi",
+            "listSeq": 17,
+            "comments": "OPXNEOPXNE",
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "NATIO",
+            "listSeq": 18,
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "RELF",
+            "profileCode": "NIL",
+            "profileDescription": "EfJSmIEfJSm",
+            "listSeq": 16,
+            "comments": "SeiXjSeiXj",
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "R_EYE_C",
+            "profileCode": "BLUE",
+            "profileDescription": "AIAI",
+            "listSeq": 3,
+            "comments": "knskjknskj",
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "SEXO",
+            "listSeq": 15,
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "SHOESIZE",
+            "listSeq": 19,
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "SMOKE",
+            "listSeq": 7,
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "TAT",
+            "listSeq": 8,
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "TRAVEL",
+            "listSeq": 20,
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "YOUTH",
+            "profileCode": "N",
+            "profileDescription": "ZZ",
+            "listSeq": 2,
+            "comments": "AcuiZAcuiZ",
+            "caseloadType": "INST"
+          }
+        ]
+      },
+      {
+        "bookingId": 1048600,
+        "identifyingMarks": [
+          {
+            "idMarkSeq": 1,
+            "bodyPartCode": "TORSO",
+            "markType": "OTH",
+            "comments": "xQBjFrlQHxQBjFrlQH"
+          }
+        ],
+        "physicalAttributes": [
+          {
+            "attributeSeq": 1,
+            "heightFeet": 6,
+            "heightInches": 2,
+            "heightCm": 188,
+            "weightLbs": 168,
+            "weightKg": 76
+          }
+        ],
+        "profileDetails": [
+          {
+            "profileSeq": 1,
+            "profileType": "APPEAR",
+            "profileCode": "Y",
+            "profileDescription": "YzY",
+            "listSeq": 9,
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "BUILD",
+            "profileCode": "SLIGHT",
+            "profileDescription": "cUWcUW",
+            "listSeq": 7,
+            "comments": "rHjmvrHjmv",
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "CHILD",
+            "profileCode": "3",
+            "listSeq": 4,
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "DIET",
+            "listSeq": 12,
+            "comments": "cqNUrcqNUr",
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "DISABILITY",
+            "profileCode": "NO",
+            "profileDescription": "ll",
+            "listSeq": 4,
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "DNA",
+            "listSeq": 10,
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "DOMESTIC",
+            "listSeq": 5,
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "DOMVIC",
+            "listSeq": 6,
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "FACE",
+            "profileCode": "OVAL",
+            "profileDescription": "jiji",
+            "listSeq": 6,
+            "comments": "tOElNtOElN",
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "FACIAL_HAIR",
+            "profileCode": "CLEAN SHAVEN",
+            "profileDescription": "QSvTGNQSvTGN",
+            "listSeq": 5,
+            "comments": "FSFkrFSFkr",
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "HAIR",
+            "profileCode": "BLONDE",
+            "profileDescription": "URTURT",
+            "listSeq": 2,
+            "comments": "XMVCLXMVCL",
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "IMM",
+            "profileCode": "N",
+            "profileDescription": "XX",
+            "listSeq": 11,
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "LIST_REC",
+            "listSeq": 14,
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "LIST_SUIT",
+            "listSeq": 13,
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "L_EYE_C",
+            "profileCode": "BLUE",
+            "profileDescription": "YzYz",
+            "listSeq": 4,
+            "comments": "FApOPFApOP",
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "MARITAL",
+            "profileCode": "S",
+            "profileDescription": "sjedbztIaJRRzRZVIYadsjedbztIaJRRzRZVIYa",
+            "listSeq": 3,
+            "comments": "vpbYfvpbYf",
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "NAT",
+            "profileCode": "BRIT",
+            "profileDescription": "sxiVsxi",
+            "listSeq": 17,
+            "comments": "KEDzTKEDzT",
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "NATIO",
+            "listSeq": 18,
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "PERSC",
+            "listSeq": 21,
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "RELF",
+            "profileCode": "NIL",
+            "profileDescription": "EfJSmIEfJSm",
+            "listSeq": 16,
+            "comments": "yvfYRyvfYR",
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "R_EYE_C",
+            "profileCode": "BLUE",
+            "profileDescription": "AIAI",
+            "listSeq": 3,
+            "comments": "LtYZcLtYZc",
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "SEXO",
+            "profileCode": "HET",
+            "profileDescription": "TtKusbjVLhznTtKusbjVLhz",
+            "listSeq": 15,
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "SHOESIZE",
+            "listSeq": 19,
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "SMOKE",
+            "profileCode": "V",
+            "profileDescription": "BlSEvWPBlSEvWP",
+            "listSeq": 7,
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "TAT",
+            "profileCode": "Y",
+            "profileDescription": "aaa",
+            "listSeq": 8,
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "TRAVEL",
+            "listSeq": 20,
+            "caseloadType": "INST"
+          },
+          {
+            "profileSeq": 1,
+            "profileType": "YOUTH",
+            "profileCode": "N",
+            "profileDescription": "ZZ",
+            "listSeq": 2,
+            "comments": "WmRISWmRIS",
+            "caseloadType": "INST"
+          }
+        ]
+      }
+    ],
+    "headers": {
+      "Content-Type": "application/json;charset=UTF-8"
+    },
+    "status": 200
+  }
+}

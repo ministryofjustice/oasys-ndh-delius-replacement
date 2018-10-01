@@ -1,0 +1,2872 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/custodyapi/offenders/offenderId/1376169/courtEvents"
+  },
+  "response": {
+    "jsonBody": [
+      {
+        "eventId": 306795679,
+        "caseId": 1345707,
+        "bookingId": 1048600,
+        "startDateTime": "2016-07-12T10:00:00",
+        "endDateTime": "2016-07-12T00:00:00",
+        "courtEventType": "CRT",
+        "eventStatus": "SCH",
+        "agencyLocation": {
+          "agencyLocationId": "SHEFCC",
+          "description": "Sheffield Crown Court",
+          "longDescription": "Sheffield Crown Court",
+          "agencyLocationType": "CRT",
+          "jurisdictionCode": "CC",
+          "bailOffice": false,
+          "serviceRequired": false,
+          "active": true,
+          "areaCode": "52",
+          "nomsRegionCode": "YOHUM",
+          "cjitCode": "C00SH00"
+        },
+        "outcomeReasonCode": "1002",
+        "outcomeReason": {
+          "code": "1002",
+          "description": "Imprisonment",
+          "active": false,
+          "chargeStatus": true,
+          "dispositionCode": "F",
+          "conviction": true
+        },
+        "comments": "42 Months",
+        "nextEventRequest": false,
+        "orderRequested": false,
+        "directionCode": "OUT",
+        "hold": false,
+        "courtEventCharges": [
+          {
+            "chargeId": 3300191,
+            "bookingId": 1048600,
+            "offenderId": 1376169,
+            "offenceCode": "MD71230",
+            "statuteCode": "MD71",
+            "offenceSeverityRanking": 35,
+            "offenceIndicatorCodes": [
+              "D",
+              "87"
+            ],
+            "offenceDate": "2015-09-16",
+            "chargeStatus": "A",
+            "resultCodes": [
+              {
+                "code": "1002",
+                "description": "Imprisonment",
+                "active": false,
+                "chargeStatus": true,
+                "dispositionCode": "F",
+                "conviction": true
+              }
+            ],
+            "case": {
+              "caseId": 1345707,
+              "caseInfoNumber": "T20151292",
+              "caseType": "A",
+              "caseStatus": "A",
+              "beginDate": "2015-11-26",
+              "agencyLocationId": "SHEFCC",
+              "lidsCaseNumber": 2,
+              "caseSequence": 2
+            },
+            "mostSeriousCharge": true,
+            "lidsOffenceNumber": 1,
+            "sentences": [
+              {
+                "offenderId": 1376169,
+                "bookingId": 1048600,
+                "sentenceSequenceNumber": 3,
+                "isActive": true,
+                "sentenceCategory": "2003",
+                "sentenceCalculationType": {
+                  "sentenceCategory": "2003",
+                  "sentenceCalculationType": "ADIMP",
+                  "sentenceType": "INST",
+                  "description": "CJA03 Standard Determinate Sentence",
+                  "active": false,
+                  "functionType": "OM"
+                },
+                "sentenceLevel": "IND",
+                "startDate": "2016-08-10",
+                "endDate": "2020-02-06",
+                "crdCalculatedDate": "2017-10-11",
+                "ledCalculatedDate": "2019-06-22",
+                "sedCalculatedDate": "2019-07-23",
+                "hdcedCalculatedDate": "2017-05-03",
+                "createdAt": "2016-07-13T09:21:42.958221",
+                "dischargeDate": "2020-01-29",
+                "hdcExclusion": false
+              }
+            ]
+          },
+          {
+            "chargeId": 3300192,
+            "bookingId": 1048600,
+            "offenderId": 1376169,
+            "offenceCode": "MD71231",
+            "statuteCode": "MD71",
+            "offenceSeverityRanking": 35,
+            "offenceIndicatorCodes": [
+              "D",
+              "87",
+              "S"
+            ],
+            "offenceDate": "2015-09-13",
+            "chargeStatus": "A",
+            "resultCodes": [
+              {
+                "code": "1002",
+                "description": "Imprisonment",
+                "active": false,
+                "chargeStatus": true,
+                "dispositionCode": "F",
+                "conviction": true
+              }
+            ],
+            "case": {
+              "caseId": 1345707,
+              "caseInfoNumber": "T20151292",
+              "caseType": "A",
+              "caseStatus": "A",
+              "beginDate": "2015-11-26",
+              "agencyLocationId": "SHEFCC",
+              "lidsCaseNumber": 2,
+              "caseSequence": 2
+            },
+            "mostSeriousCharge": false,
+            "lidsOffenceNumber": 2,
+            "sentences": [
+              {
+                "offenderId": 1376169,
+                "bookingId": 1048600,
+                "sentenceSequenceNumber": 3,
+                "isActive": true,
+                "sentenceCategory": "2003",
+                "sentenceCalculationType": {
+                  "sentenceCategory": "2003",
+                  "sentenceCalculationType": "ADIMP",
+                  "sentenceType": "INST",
+                  "description": "CJA03 Standard Determinate Sentence",
+                  "active": false,
+                  "functionType": "OM"
+                },
+                "sentenceLevel": "IND",
+                "startDate": "2016-08-10",
+                "endDate": "2020-02-06",
+                "crdCalculatedDate": "2017-10-11",
+                "ledCalculatedDate": "2019-06-22",
+                "sedCalculatedDate": "2019-07-23",
+                "hdcedCalculatedDate": "2017-05-03",
+                "createdAt": "2016-07-13T09:21:42.958221",
+                "dischargeDate": "2020-01-29",
+                "hdcExclusion": false
+              }
+            ]
+          },
+          {
+            "chargeId": 3600273,
+            "bookingId": 1048600,
+            "offenderId": 1376169,
+            "offenceCode": "CJ88116",
+            "statuteCode": "CJ88",
+            "offenceSeverityRanking": 60,
+            "offenceIndicatorCodes": [
+              "111",
+              "9"
+            ],
+            "offenceDate": "2014-11-14",
+            "chargeStatus": "A",
+            "resultCodes": [
+              {
+                "code": "1002",
+                "description": "Imprisonment",
+                "active": false,
+                "chargeStatus": true,
+                "dispositionCode": "F",
+                "conviction": true
+              }
+            ],
+            "case": {
+              "caseId": 1345707,
+              "caseInfoNumber": "T20151292",
+              "caseType": "A",
+              "caseStatus": "A",
+              "beginDate": "2015-11-26",
+              "agencyLocationId": "SHEFCC",
+              "lidsCaseNumber": 2,
+              "caseSequence": 2
+            },
+            "mostSeriousCharge": false,
+            "lidsOffenceNumber": 3,
+            "sentences": [
+              {
+                "offenderId": 1376169,
+                "bookingId": 1048600,
+                "sentenceSequenceNumber": 4,
+                "isActive": true,
+                "sentenceCategory": "2003",
+                "sentenceCalculationType": {
+                  "sentenceCategory": "2003",
+                  "sentenceCalculationType": "ADIMP",
+                  "sentenceType": "INST",
+                  "description": "CJA03 Standard Determinate Sentence",
+                  "active": false,
+                  "functionType": "OM"
+                },
+                "sentenceLevel": "IND",
+                "startDate": "2016-07-27",
+                "endDate": "2017-01-13",
+                "ardCalculatedDate": "2016-03-26",
+                "sedCalculatedDate": "2016-05-24",
+                "hdcedCalculatedDate": "2016-02-14",
+                "createdAt": "2016-08-01T14:10:24.733978",
+                "dischargeDate": "2017-01-20",
+                "hdcExclusion": false
+              }
+            ]
+          },
+          {
+            "chargeId": 3600274,
+            "bookingId": 1048600,
+            "offenderId": 1376169,
+            "offenceCode": "CJ88116",
+            "statuteCode": "CJ88",
+            "offenceSeverityRanking": 60,
+            "offenceIndicatorCodes": [
+              "111",
+              "9"
+            ],
+            "offenceDate": "2014-10-25",
+            "chargeStatus": "A",
+            "resultCodes": [
+              {
+                "code": "1002",
+                "description": "Imprisonment",
+                "active": false,
+                "chargeStatus": true,
+                "dispositionCode": "F",
+                "conviction": true
+              }
+            ],
+            "case": {
+              "caseId": 1345707,
+              "caseInfoNumber": "T20151292",
+              "caseType": "A",
+              "caseStatus": "A",
+              "beginDate": "2015-11-26",
+              "agencyLocationId": "SHEFCC",
+              "lidsCaseNumber": 2,
+              "caseSequence": 2
+            },
+            "mostSeriousCharge": false,
+            "lidsOffenceNumber": 4,
+            "sentences": [
+              {
+                "offenderId": 1376169,
+                "bookingId": 1048600,
+                "sentenceSequenceNumber": 4,
+                "isActive": true,
+                "sentenceCategory": "2003",
+                "sentenceCalculationType": {
+                  "sentenceCategory": "2003",
+                  "sentenceCalculationType": "ADIMP",
+                  "sentenceType": "INST",
+                  "description": "CJA03 Standard Determinate Sentence",
+                  "active": false,
+                  "functionType": "OM"
+                },
+                "sentenceLevel": "IND",
+                "startDate": "2016-07-27",
+                "endDate": "2017-01-13",
+                "ardCalculatedDate": "2016-03-26",
+                "sedCalculatedDate": "2016-05-24",
+                "hdcedCalculatedDate": "2016-02-14",
+                "createdAt": "2016-08-01T14:10:24.733978",
+                "dischargeDate": "2017-01-20",
+                "hdcExclusion": false
+              }
+            ]
+          },
+          {
+            "chargeId": 3600275,
+            "bookingId": 1048600,
+            "offenderId": 1376169,
+            "offenceCode": "CD71039",
+            "statuteCode": "CD71",
+            "offenceSeverityRanking": 93,
+            "offenceIndicatorCodes": [
+              "99",
+              "ERS",
+              "S15/CJIB",
+              "71"
+            ],
+            "offenceDate": "2014-11-05",
+            "chargeStatus": "A",
+            "resultCodes": [
+              {
+                "code": "1002",
+                "description": "Imprisonment",
+                "active": false,
+                "chargeStatus": true,
+                "dispositionCode": "F",
+                "conviction": true
+              }
+            ],
+            "case": {
+              "caseId": 1345707,
+              "caseInfoNumber": "T20151292",
+              "caseType": "A",
+              "caseStatus": "A",
+              "beginDate": "2015-11-26",
+              "agencyLocationId": "SHEFCC",
+              "lidsCaseNumber": 2,
+              "caseSequence": 2
+            },
+            "mostSeriousCharge": false,
+            "lidsOffenceNumber": 5,
+            "sentences": [
+              {
+                "offenderId": 1376169,
+                "bookingId": 1048600,
+                "sentenceSequenceNumber": 4,
+                "isActive": true,
+                "sentenceCategory": "2003",
+                "sentenceCalculationType": {
+                  "sentenceCategory": "2003",
+                  "sentenceCalculationType": "ADIMP",
+                  "sentenceType": "INST",
+                  "description": "CJA03 Standard Determinate Sentence",
+                  "active": false,
+                  "functionType": "OM"
+                },
+                "sentenceLevel": "IND",
+                "startDate": "2016-07-27",
+                "endDate": "2017-01-13",
+                "ardCalculatedDate": "2016-03-26",
+                "sedCalculatedDate": "2016-05-24",
+                "hdcedCalculatedDate": "2016-02-14",
+                "createdAt": "2016-08-01T14:10:24.733978",
+                "dischargeDate": "2017-01-20",
+                "hdcExclusion": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "eventId": 306480790,
+        "bookingId": 1048600,
+        "startDateTime": "2016-07-12T08:00:00",
+        "endDateTime": "2016-07-12T00:00:00",
+        "courtEventType": "VL",
+        "eventStatus": "EXP",
+        "agencyLocation": {
+          "agencyLocationId": "SHEFCC",
+          "description": "Sheffield Crown Court",
+          "longDescription": "Sheffield Crown Court",
+          "agencyLocationType": "CRT",
+          "jurisdictionCode": "CC",
+          "bailOffice": false,
+          "serviceRequired": false,
+          "active": true,
+          "areaCode": "52",
+          "nomsRegionCode": "YOHUM",
+          "cjitCode": "C00SH00"
+        },
+        "nextEventRequest": false,
+        "orderRequested": false,
+        "directionCode": "OUT",
+        "hold": false
+      },
+      {
+        "eventId": 302427312,
+        "bookingId": 1048600,
+        "startDateTime": "2016-06-07T17:00:00",
+        "endDateTime": "2016-06-07T00:00:00",
+        "courtEventType": "DC",
+        "eventStatus": "COMP",
+        "parentEventId": 302270156,
+        "agencyLocation": {
+          "agencyLocationId": "DNI",
+          "description": "DONCASTER (HMP)",
+          "longDescription": "HMP DONCASTER",
+          "agencyLocationType": "INST",
+          "districtCode": "YORK",
+          "bailOffice": false,
+          "housingLev1Code": "BLK",
+          "housingLev2Code": "WING",
+          "housingLev3Code": "CELL",
+          "housingLev4Code": "NULL",
+          "serviceRequired": false,
+          "active": true,
+          "areaCode": "YORK",
+          "nomsRegionCode": "YOHUM",
+          "geographicRegionCode": "YORK",
+          "cjitCode": "E00DN00"
+        },
+        "nextEventRequest": false,
+        "orderRequested": false,
+        "directionCode": "IN",
+        "hold": false
+      },
+      {
+        "eventId": 302594875,
+        "caseId": 1345707,
+        "bookingId": 1048600,
+        "startDateTime": "2016-06-07T10:00:00",
+        "endDateTime": "2016-06-07T00:00:00",
+        "courtEventType": "CRT",
+        "eventStatus": "COMP",
+        "agencyLocation": {
+          "agencyLocationId": "SHEFCC",
+          "description": "Sheffield Crown Court",
+          "longDescription": "Sheffield Crown Court",
+          "agencyLocationType": "CRT",
+          "jurisdictionCode": "CC",
+          "bailOffice": false,
+          "serviceRequired": false,
+          "active": true,
+          "areaCode": "52",
+          "nomsRegionCode": "YOHUM",
+          "cjitCode": "C00SH00"
+        },
+        "outcomeReasonCode": "4004",
+        "outcomeReason": {
+          "code": "4004",
+          "description": "Sentence Postponed",
+          "active": false,
+          "chargeStatus": true,
+          "dispositionCode": "I",
+          "conviction": true
+        },
+        "comments": "JR",
+        "nextEventRequest": false,
+        "orderRequested": false,
+        "directionCode": "OUT",
+        "hold": false,
+        "courtEventCharges": [
+          {
+            "chargeId": 3300191,
+            "bookingId": 1048600,
+            "offenderId": 1376169,
+            "offenceCode": "MD71230",
+            "statuteCode": "MD71",
+            "offenceSeverityRanking": 35,
+            "offenceIndicatorCodes": [
+              "D",
+              "87"
+            ],
+            "offenceDate": "2015-09-16",
+            "chargeStatus": "A",
+            "resultCodes": [
+              {
+                "code": "1002",
+                "description": "Imprisonment",
+                "active": false,
+                "chargeStatus": true,
+                "dispositionCode": "F",
+                "conviction": true
+              }
+            ],
+            "case": {
+              "caseId": 1345707,
+              "caseInfoNumber": "T20151292",
+              "caseType": "A",
+              "caseStatus": "A",
+              "beginDate": "2015-11-26",
+              "agencyLocationId": "SHEFCC",
+              "lidsCaseNumber": 2,
+              "caseSequence": 2
+            },
+            "mostSeriousCharge": true,
+            "lidsOffenceNumber": 1,
+            "sentences": [
+              {
+                "offenderId": 1376169,
+                "bookingId": 1048600,
+                "sentenceSequenceNumber": 3,
+                "isActive": true,
+                "sentenceCategory": "2003",
+                "sentenceCalculationType": {
+                  "sentenceCategory": "2003",
+                  "sentenceCalculationType": "ADIMP",
+                  "sentenceType": "INST",
+                  "description": "CJA03 Standard Determinate Sentence",
+                  "active": false,
+                  "functionType": "OM"
+                },
+                "sentenceLevel": "IND",
+                "startDate": "2016-08-10",
+                "endDate": "2020-02-06",
+                "crdCalculatedDate": "2017-10-11",
+                "ledCalculatedDate": "2019-06-22",
+                "sedCalculatedDate": "2019-07-23",
+                "hdcedCalculatedDate": "2017-05-03",
+                "createdAt": "2016-07-13T09:21:42.958221",
+                "dischargeDate": "2020-01-29",
+                "hdcExclusion": false
+              }
+            ]
+          },
+          {
+            "chargeId": 3300192,
+            "bookingId": 1048600,
+            "offenderId": 1376169,
+            "offenceCode": "MD71231",
+            "statuteCode": "MD71",
+            "offenceSeverityRanking": 35,
+            "offenceIndicatorCodes": [
+              "D",
+              "87",
+              "S"
+            ],
+            "offenceDate": "2015-09-13",
+            "chargeStatus": "A",
+            "resultCodes": [
+              {
+                "code": "1002",
+                "description": "Imprisonment",
+                "active": false,
+                "chargeStatus": true,
+                "dispositionCode": "F",
+                "conviction": true
+              }
+            ],
+            "case": {
+              "caseId": 1345707,
+              "caseInfoNumber": "T20151292",
+              "caseType": "A",
+              "caseStatus": "A",
+              "beginDate": "2015-11-26",
+              "agencyLocationId": "SHEFCC",
+              "lidsCaseNumber": 2,
+              "caseSequence": 2
+            },
+            "mostSeriousCharge": false,
+            "lidsOffenceNumber": 2,
+            "sentences": [
+              {
+                "offenderId": 1376169,
+                "bookingId": 1048600,
+                "sentenceSequenceNumber": 3,
+                "isActive": true,
+                "sentenceCategory": "2003",
+                "sentenceCalculationType": {
+                  "sentenceCategory": "2003",
+                  "sentenceCalculationType": "ADIMP",
+                  "sentenceType": "INST",
+                  "description": "CJA03 Standard Determinate Sentence",
+                  "active": false,
+                  "functionType": "OM"
+                },
+                "sentenceLevel": "IND",
+                "startDate": "2016-08-10",
+                "endDate": "2020-02-06",
+                "crdCalculatedDate": "2017-10-11",
+                "ledCalculatedDate": "2019-06-22",
+                "sedCalculatedDate": "2019-07-23",
+                "hdcedCalculatedDate": "2017-05-03",
+                "createdAt": "2016-07-13T09:21:42.958221",
+                "dischargeDate": "2020-01-29",
+                "hdcExclusion": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "eventId": 302270156,
+        "bookingId": 1048600,
+        "startDateTime": "2016-06-07T08:00:00",
+        "endDateTime": "2016-06-07T00:00:00",
+        "courtEventType": "DC",
+        "eventStatus": "COMP",
+        "agencyLocation": {
+          "agencyLocationId": "SHEFCC",
+          "description": "Sheffield Crown Court",
+          "longDescription": "Sheffield Crown Court",
+          "agencyLocationType": "CRT",
+          "jurisdictionCode": "CC",
+          "bailOffice": false,
+          "serviceRequired": false,
+          "active": true,
+          "areaCode": "52",
+          "nomsRegionCode": "YOHUM",
+          "cjitCode": "C00SH00"
+        },
+        "nextEventRequest": false,
+        "orderRequested": false,
+        "directionCode": "OUT",
+        "hold": false
+      },
+      {
+        "eventId": 290314374,
+        "bookingId": 1048600,
+        "startDateTime": "2016-02-26T17:00:00",
+        "endDateTime": "2016-02-26T00:00:00",
+        "courtEventType": "19",
+        "eventStatus": "COMP",
+        "parentEventId": 289356410,
+        "agencyLocation": {
+          "agencyLocationId": "DNI",
+          "description": "DONCASTER (HMP)",
+          "longDescription": "HMP DONCASTER",
+          "agencyLocationType": "INST",
+          "districtCode": "YORK",
+          "bailOffice": false,
+          "housingLev1Code": "BLK",
+          "housingLev2Code": "WING",
+          "housingLev3Code": "CELL",
+          "housingLev4Code": "NULL",
+          "serviceRequired": false,
+          "active": true,
+          "areaCode": "YORK",
+          "nomsRegionCode": "YOHUM",
+          "geographicRegionCode": "YORK",
+          "cjitCode": "E00DN00"
+        },
+        "nextEventRequest": false,
+        "orderRequested": false,
+        "directionCode": "IN",
+        "hold": false
+      },
+      {
+        "eventId": 289356410,
+        "bookingId": 1048600,
+        "startDateTime": "2016-02-26T08:00:00",
+        "endDateTime": "2016-02-26T00:00:00",
+        "courtEventType": "19",
+        "eventStatus": "COMP",
+        "agencyLocation": {
+          "agencyLocationId": "ROTHMC",
+          "description": "Rotherham MC",
+          "longDescription": "Rotherham Magistrates' Court",
+          "agencyLocationType": "CRT",
+          "jurisdictionCode": "MC",
+          "bailOffice": false,
+          "serviceRequired": false,
+          "active": true,
+          "areaCode": "52",
+          "nomsRegionCode": "YOHUM",
+          "cjitCode": "B14LC00"
+        },
+        "nextEventRequest": false,
+        "orderRequested": false,
+        "directionCode": "OUT",
+        "hold": false
+      },
+      {
+        "eventId": 287647077,
+        "bookingId": 1048600,
+        "startDateTime": "2016-02-04T17:00:00",
+        "endDateTime": "2016-02-04T00:00:00",
+        "courtEventType": "DC",
+        "eventStatus": "COMP",
+        "parentEventId": 287496013,
+        "agencyLocation": {
+          "agencyLocationId": "DNI",
+          "description": "DONCASTER (HMP)",
+          "longDescription": "HMP DONCASTER",
+          "agencyLocationType": "INST",
+          "districtCode": "YORK",
+          "bailOffice": false,
+          "housingLev1Code": "BLK",
+          "housingLev2Code": "WING",
+          "housingLev3Code": "CELL",
+          "housingLev4Code": "NULL",
+          "serviceRequired": false,
+          "active": true,
+          "areaCode": "YORK",
+          "nomsRegionCode": "YOHUM",
+          "geographicRegionCode": "YORK",
+          "cjitCode": "E00DN00"
+        },
+        "nextEventRequest": false,
+        "orderRequested": false,
+        "directionCode": "IN",
+        "hold": false
+      },
+      {
+        "eventId": 287775672,
+        "caseId": 1345707,
+        "bookingId": 1048600,
+        "startDateTime": "2016-02-04T10:00:00",
+        "endDateTime": "2016-02-04T00:00:00",
+        "courtEventType": "CRT",
+        "eventStatus": "COMP",
+        "agencyLocation": {
+          "agencyLocationId": "SHEFCC",
+          "description": "Sheffield Crown Court",
+          "longDescription": "Sheffield Crown Court",
+          "agencyLocationType": "CRT",
+          "jurisdictionCode": "CC",
+          "bailOffice": false,
+          "serviceRequired": false,
+          "active": true,
+          "areaCode": "52",
+          "nomsRegionCode": "YOHUM",
+          "cjitCode": "C00SH00"
+        },
+        "outcomeReasonCode": "4016",
+        "outcomeReason": {
+          "code": "4016",
+          "description": "Commit to Crown Court for Sentence in Custody",
+          "active": false,
+          "chargeStatus": true,
+          "dispositionCode": "I",
+          "conviction": true
+        },
+        "comments": "JR",
+        "nextEventRequest": false,
+        "orderRequested": false,
+        "directionCode": "OUT",
+        "hold": false,
+        "courtEventCharges": [
+          {
+            "chargeId": 3300191,
+            "bookingId": 1048600,
+            "offenderId": 1376169,
+            "offenceCode": "MD71230",
+            "statuteCode": "MD71",
+            "offenceSeverityRanking": 35,
+            "offenceIndicatorCodes": [
+              "D",
+              "87"
+            ],
+            "offenceDate": "2015-09-16",
+            "chargeStatus": "A",
+            "resultCodes": [
+              {
+                "code": "1002",
+                "description": "Imprisonment",
+                "active": false,
+                "chargeStatus": true,
+                "dispositionCode": "F",
+                "conviction": true
+              }
+            ],
+            "case": {
+              "caseId": 1345707,
+              "caseInfoNumber": "T20151292",
+              "caseType": "A",
+              "caseStatus": "A",
+              "beginDate": "2015-11-26",
+              "agencyLocationId": "SHEFCC",
+              "lidsCaseNumber": 2,
+              "caseSequence": 2
+            },
+            "mostSeriousCharge": true,
+            "lidsOffenceNumber": 1,
+            "sentences": [
+              {
+                "offenderId": 1376169,
+                "bookingId": 1048600,
+                "sentenceSequenceNumber": 3,
+                "isActive": true,
+                "sentenceCategory": "2003",
+                "sentenceCalculationType": {
+                  "sentenceCategory": "2003",
+                  "sentenceCalculationType": "ADIMP",
+                  "sentenceType": "INST",
+                  "description": "CJA03 Standard Determinate Sentence",
+                  "active": false,
+                  "functionType": "OM"
+                },
+                "sentenceLevel": "IND",
+                "startDate": "2016-08-10",
+                "endDate": "2020-02-06",
+                "crdCalculatedDate": "2017-10-11",
+                "ledCalculatedDate": "2019-06-22",
+                "sedCalculatedDate": "2019-07-23",
+                "hdcedCalculatedDate": "2017-05-03",
+                "createdAt": "2016-07-13T09:21:42.958221",
+                "dischargeDate": "2020-01-29",
+                "hdcExclusion": false
+              }
+            ]
+          },
+          {
+            "chargeId": 3300192,
+            "bookingId": 1048600,
+            "offenderId": 1376169,
+            "offenceCode": "MD71231",
+            "statuteCode": "MD71",
+            "offenceSeverityRanking": 35,
+            "offenceIndicatorCodes": [
+              "D",
+              "87",
+              "S"
+            ],
+            "offenceDate": "2015-09-13",
+            "chargeStatus": "A",
+            "resultCodes": [
+              {
+                "code": "1002",
+                "description": "Imprisonment",
+                "active": false,
+                "chargeStatus": true,
+                "dispositionCode": "F",
+                "conviction": true
+              }
+            ],
+            "case": {
+              "caseId": 1345707,
+              "caseInfoNumber": "T20151292",
+              "caseType": "A",
+              "caseStatus": "A",
+              "beginDate": "2015-11-26",
+              "agencyLocationId": "SHEFCC",
+              "lidsCaseNumber": 2,
+              "caseSequence": 2
+            },
+            "mostSeriousCharge": false,
+            "lidsOffenceNumber": 2,
+            "sentences": [
+              {
+                "offenderId": 1376169,
+                "bookingId": 1048600,
+                "sentenceSequenceNumber": 3,
+                "isActive": true,
+                "sentenceCategory": "2003",
+                "sentenceCalculationType": {
+                  "sentenceCategory": "2003",
+                  "sentenceCalculationType": "ADIMP",
+                  "sentenceType": "INST",
+                  "description": "CJA03 Standard Determinate Sentence",
+                  "active": false,
+                  "functionType": "OM"
+                },
+                "sentenceLevel": "IND",
+                "startDate": "2016-08-10",
+                "endDate": "2020-02-06",
+                "crdCalculatedDate": "2017-10-11",
+                "ledCalculatedDate": "2019-06-22",
+                "sedCalculatedDate": "2019-07-23",
+                "hdcedCalculatedDate": "2017-05-03",
+                "createdAt": "2016-07-13T09:21:42.958221",
+                "dischargeDate": "2020-01-29",
+                "hdcExclusion": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "eventId": 287496013,
+        "bookingId": 1048600,
+        "startDateTime": "2016-02-04T08:00:00",
+        "endDateTime": "2016-02-04T00:00:00",
+        "courtEventType": "DC",
+        "eventStatus": "COMP",
+        "agencyLocation": {
+          "agencyLocationId": "SHEFCC",
+          "description": "Sheffield Crown Court",
+          "longDescription": "Sheffield Crown Court",
+          "agencyLocationType": "CRT",
+          "jurisdictionCode": "CC",
+          "bailOffice": false,
+          "serviceRequired": false,
+          "active": true,
+          "areaCode": "52",
+          "nomsRegionCode": "YOHUM",
+          "cjitCode": "C00SH00"
+        },
+        "nextEventRequest": false,
+        "orderRequested": false,
+        "directionCode": "OUT",
+        "hold": false
+      },
+      {
+        "eventId": 285133858,
+        "caseId": 1345707,
+        "bookingId": 1048600,
+        "startDateTime": "2016-01-13T10:00:00",
+        "endDateTime": "2016-01-13T00:00:00",
+        "courtEventType": "CRT",
+        "eventStatus": "SCH",
+        "agencyLocation": {
+          "agencyLocationId": "SHEFCC",
+          "description": "Sheffield Crown Court",
+          "longDescription": "Sheffield Crown Court",
+          "agencyLocationType": "CRT",
+          "jurisdictionCode": "CC",
+          "bailOffice": false,
+          "serviceRequired": false,
+          "active": true,
+          "areaCode": "52",
+          "nomsRegionCode": "YOHUM",
+          "cjitCode": "C00SH00"
+        },
+        "outcomeReasonCode": "4004",
+        "outcomeReason": {
+          "code": "4004",
+          "description": "Sentence Postponed",
+          "active": false,
+          "chargeStatus": true,
+          "dispositionCode": "I",
+          "conviction": true
+        },
+        "comments": "JR",
+        "nextEventRequest": false,
+        "orderRequested": false,
+        "directionCode": "OUT",
+        "hold": false,
+        "courtEventCharges": [
+          {
+            "chargeId": 3300191,
+            "bookingId": 1048600,
+            "offenderId": 1376169,
+            "offenceCode": "MD71230",
+            "statuteCode": "MD71",
+            "offenceSeverityRanking": 35,
+            "offenceIndicatorCodes": [
+              "D",
+              "87"
+            ],
+            "offenceDate": "2015-09-16",
+            "chargeStatus": "A",
+            "resultCodes": [
+              {
+                "code": "1002",
+                "description": "Imprisonment",
+                "active": false,
+                "chargeStatus": true,
+                "dispositionCode": "F",
+                "conviction": true
+              }
+            ],
+            "case": {
+              "caseId": 1345707,
+              "caseInfoNumber": "T20151292",
+              "caseType": "A",
+              "caseStatus": "A",
+              "beginDate": "2015-11-26",
+              "agencyLocationId": "SHEFCC",
+              "lidsCaseNumber": 2,
+              "caseSequence": 2
+            },
+            "mostSeriousCharge": true,
+            "lidsOffenceNumber": 1,
+            "sentences": [
+              {
+                "offenderId": 1376169,
+                "bookingId": 1048600,
+                "sentenceSequenceNumber": 3,
+                "isActive": true,
+                "sentenceCategory": "2003",
+                "sentenceCalculationType": {
+                  "sentenceCategory": "2003",
+                  "sentenceCalculationType": "ADIMP",
+                  "sentenceType": "INST",
+                  "description": "CJA03 Standard Determinate Sentence",
+                  "active": false,
+                  "functionType": "OM"
+                },
+                "sentenceLevel": "IND",
+                "startDate": "2016-08-10",
+                "endDate": "2020-02-06",
+                "crdCalculatedDate": "2017-10-11",
+                "ledCalculatedDate": "2019-06-22",
+                "sedCalculatedDate": "2019-07-23",
+                "hdcedCalculatedDate": "2017-05-03",
+                "createdAt": "2016-07-13T09:21:42.958221",
+                "dischargeDate": "2020-01-29",
+                "hdcExclusion": false
+              }
+            ]
+          },
+          {
+            "chargeId": 3300192,
+            "bookingId": 1048600,
+            "offenderId": 1376169,
+            "offenceCode": "MD71231",
+            "statuteCode": "MD71",
+            "offenceSeverityRanking": 35,
+            "offenceIndicatorCodes": [
+              "D",
+              "87",
+              "S"
+            ],
+            "offenceDate": "2015-09-13",
+            "chargeStatus": "A",
+            "resultCodes": [
+              {
+                "code": "1002",
+                "description": "Imprisonment",
+                "active": false,
+                "chargeStatus": true,
+                "dispositionCode": "F",
+                "conviction": true
+              }
+            ],
+            "case": {
+              "caseId": 1345707,
+              "caseInfoNumber": "T20151292",
+              "caseType": "A",
+              "caseStatus": "A",
+              "beginDate": "2015-11-26",
+              "agencyLocationId": "SHEFCC",
+              "lidsCaseNumber": 2,
+              "caseSequence": 2
+            },
+            "mostSeriousCharge": false,
+            "lidsOffenceNumber": 2,
+            "sentences": [
+              {
+                "offenderId": 1376169,
+                "bookingId": 1048600,
+                "sentenceSequenceNumber": 3,
+                "isActive": true,
+                "sentenceCategory": "2003",
+                "sentenceCalculationType": {
+                  "sentenceCategory": "2003",
+                  "sentenceCalculationType": "ADIMP",
+                  "sentenceType": "INST",
+                  "description": "CJA03 Standard Determinate Sentence",
+                  "active": false,
+                  "functionType": "OM"
+                },
+                "sentenceLevel": "IND",
+                "startDate": "2016-08-10",
+                "endDate": "2020-02-06",
+                "crdCalculatedDate": "2017-10-11",
+                "ledCalculatedDate": "2019-06-22",
+                "sedCalculatedDate": "2019-07-23",
+                "hdcedCalculatedDate": "2017-05-03",
+                "createdAt": "2016-07-13T09:21:42.958221",
+                "dischargeDate": "2020-01-29",
+                "hdcExclusion": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "eventId": 284782383,
+        "bookingId": 1048600,
+        "startDateTime": "2016-01-13T08:00:00",
+        "endDateTime": "2016-01-13T00:00:00",
+        "courtEventType": "VL",
+        "eventStatus": "EXP",
+        "agencyLocation": {
+          "agencyLocationId": "SHEFCC",
+          "description": "Sheffield Crown Court",
+          "longDescription": "Sheffield Crown Court",
+          "agencyLocationType": "CRT",
+          "jurisdictionCode": "CC",
+          "bailOffice": false,
+          "serviceRequired": false,
+          "active": true,
+          "areaCode": "52",
+          "nomsRegionCode": "YOHUM",
+          "cjitCode": "C00SH00"
+        },
+        "nextEventRequest": false,
+        "orderRequested": false,
+        "directionCode": "OUT",
+        "hold": false
+      },
+      {
+        "eventId": 283444053,
+        "caseId": 1345707,
+        "bookingId": 1048600,
+        "startDateTime": "2015-12-30T10:00:00",
+        "endDateTime": "2015-12-30T00:00:00",
+        "courtEventType": "VL",
+        "eventStatus": "SCH",
+        "agencyLocation": {
+          "agencyLocationId": "SHEFCC",
+          "description": "Sheffield Crown Court",
+          "longDescription": "Sheffield Crown Court",
+          "agencyLocationType": "CRT",
+          "jurisdictionCode": "CC",
+          "bailOffice": false,
+          "serviceRequired": false,
+          "active": true,
+          "areaCode": "52",
+          "nomsRegionCode": "YOHUM",
+          "cjitCode": "C00SH00"
+        },
+        "outcomeReasonCode": "4560",
+        "outcomeReason": {
+          "code": "4560",
+          "description": "Commit/Transfer/Send to Crown Court for Trial in Custody",
+          "active": false,
+          "chargeStatus": true,
+          "dispositionCode": "I",
+          "conviction": false
+        },
+        "comments": "TRL",
+        "nextEventRequest": false,
+        "orderRequested": false,
+        "directionCode": "OUT",
+        "hold": false,
+        "courtEventCharges": [
+          {
+            "chargeId": 3300191,
+            "bookingId": 1048600,
+            "offenderId": 1376169,
+            "offenceCode": "MD71230",
+            "statuteCode": "MD71",
+            "offenceSeverityRanking": 35,
+            "offenceIndicatorCodes": [
+              "D",
+              "87"
+            ],
+            "offenceDate": "2015-09-16",
+            "chargeStatus": "A",
+            "resultCodes": [
+              {
+                "code": "1002",
+                "description": "Imprisonment",
+                "active": false,
+                "chargeStatus": true,
+                "dispositionCode": "F",
+                "conviction": true
+              }
+            ],
+            "case": {
+              "caseId": 1345707,
+              "caseInfoNumber": "T20151292",
+              "caseType": "A",
+              "caseStatus": "A",
+              "beginDate": "2015-11-26",
+              "agencyLocationId": "SHEFCC",
+              "lidsCaseNumber": 2,
+              "caseSequence": 2
+            },
+            "mostSeriousCharge": true,
+            "lidsOffenceNumber": 1,
+            "sentences": [
+              {
+                "offenderId": 1376169,
+                "bookingId": 1048600,
+                "sentenceSequenceNumber": 3,
+                "isActive": true,
+                "sentenceCategory": "2003",
+                "sentenceCalculationType": {
+                  "sentenceCategory": "2003",
+                  "sentenceCalculationType": "ADIMP",
+                  "sentenceType": "INST",
+                  "description": "CJA03 Standard Determinate Sentence",
+                  "active": false,
+                  "functionType": "OM"
+                },
+                "sentenceLevel": "IND",
+                "startDate": "2016-08-10",
+                "endDate": "2020-02-06",
+                "crdCalculatedDate": "2017-10-11",
+                "ledCalculatedDate": "2019-06-22",
+                "sedCalculatedDate": "2019-07-23",
+                "hdcedCalculatedDate": "2017-05-03",
+                "createdAt": "2016-07-13T09:21:42.958221",
+                "dischargeDate": "2020-01-29",
+                "hdcExclusion": false
+              }
+            ]
+          },
+          {
+            "chargeId": 3300192,
+            "bookingId": 1048600,
+            "offenderId": 1376169,
+            "offenceCode": "MD71231",
+            "statuteCode": "MD71",
+            "offenceSeverityRanking": 35,
+            "offenceIndicatorCodes": [
+              "D",
+              "87",
+              "S"
+            ],
+            "offenceDate": "2015-09-13",
+            "chargeStatus": "A",
+            "resultCodes": [
+              {
+                "code": "1002",
+                "description": "Imprisonment",
+                "active": false,
+                "chargeStatus": true,
+                "dispositionCode": "F",
+                "conviction": true
+              }
+            ],
+            "case": {
+              "caseId": 1345707,
+              "caseInfoNumber": "T20151292",
+              "caseType": "A",
+              "caseStatus": "A",
+              "beginDate": "2015-11-26",
+              "agencyLocationId": "SHEFCC",
+              "lidsCaseNumber": 2,
+              "caseSequence": 2
+            },
+            "mostSeriousCharge": false,
+            "lidsOffenceNumber": 2,
+            "sentences": [
+              {
+                "offenderId": 1376169,
+                "bookingId": 1048600,
+                "sentenceSequenceNumber": 3,
+                "isActive": true,
+                "sentenceCategory": "2003",
+                "sentenceCalculationType": {
+                  "sentenceCategory": "2003",
+                  "sentenceCalculationType": "ADIMP",
+                  "sentenceType": "INST",
+                  "description": "CJA03 Standard Determinate Sentence",
+                  "active": false,
+                  "functionType": "OM"
+                },
+                "sentenceLevel": "IND",
+                "startDate": "2016-08-10",
+                "endDate": "2020-02-06",
+                "crdCalculatedDate": "2017-10-11",
+                "ledCalculatedDate": "2019-06-22",
+                "sedCalculatedDate": "2019-07-23",
+                "hdcedCalculatedDate": "2017-05-03",
+                "createdAt": "2016-07-13T09:21:42.958221",
+                "dischargeDate": "2020-01-29",
+                "hdcExclusion": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "eventId": 280350247,
+        "bookingId": 1048600,
+        "startDateTime": "2015-12-30T08:00:00",
+        "endDateTime": "2015-12-30T00:00:00",
+        "courtEventType": "VL",
+        "eventStatus": "EXP",
+        "agencyLocation": {
+          "agencyLocationId": "SHEFCC",
+          "description": "Sheffield Crown Court",
+          "longDescription": "Sheffield Crown Court",
+          "agencyLocationType": "CRT",
+          "jurisdictionCode": "CC",
+          "bailOffice": false,
+          "serviceRequired": false,
+          "active": true,
+          "areaCode": "52",
+          "nomsRegionCode": "YOHUM",
+          "cjitCode": "C00SH00"
+        },
+        "nextEventRequest": false,
+        "orderRequested": false,
+        "directionCode": "OUT",
+        "hold": false
+      },
+      {
+        "eventId": 280196311,
+        "bookingId": 1048600,
+        "startDateTime": "2015-12-03T17:00:00",
+        "endDateTime": "2015-12-03T00:00:00",
+        "courtEventType": "DC",
+        "eventStatus": "COMP",
+        "parentEventId": 279469633,
+        "agencyLocation": {
+          "agencyLocationId": "DNI",
+          "description": "DONCASTER (HMP)",
+          "longDescription": "HMP DONCASTER",
+          "agencyLocationType": "INST",
+          "districtCode": "YORK",
+          "bailOffice": false,
+          "housingLev1Code": "BLK",
+          "housingLev2Code": "WING",
+          "housingLev3Code": "CELL",
+          "housingLev4Code": "NULL",
+          "serviceRequired": false,
+          "active": true,
+          "areaCode": "YORK",
+          "nomsRegionCode": "YOHUM",
+          "geographicRegionCode": "YORK",
+          "cjitCode": "E00DN00"
+        },
+        "nextEventRequest": false,
+        "orderRequested": false,
+        "directionCode": "IN",
+        "hold": false
+      },
+      {
+        "eventId": 280349743,
+        "caseId": 1342326,
+        "bookingId": 1048600,
+        "startDateTime": "2015-12-03T10:00:00",
+        "endDateTime": "2015-12-03T00:00:00",
+        "courtEventType": "CRT",
+        "eventStatus": "COMP",
+        "agencyLocation": {
+          "agencyLocationId": "ROTHMC",
+          "description": "Rotherham MC",
+          "longDescription": "Rotherham Magistrates' Court",
+          "agencyLocationType": "CRT",
+          "jurisdictionCode": "MC",
+          "bailOffice": false,
+          "serviceRequired": false,
+          "active": true,
+          "areaCode": "52",
+          "nomsRegionCode": "YOHUM",
+          "cjitCode": "B14LC00"
+        },
+        "outcomeReasonCode": "1002",
+        "outcomeReason": {
+          "code": "1002",
+          "description": "Imprisonment",
+          "active": false,
+          "chargeStatus": true,
+          "dispositionCode": "F",
+          "conviction": true
+        },
+        "comments": "7 days",
+        "nextEventRequest": false,
+        "orderRequested": false,
+        "directionCode": "OUT",
+        "hold": false,
+        "courtEventCharges": [
+          {
+            "chargeId": 3290147,
+            "bookingId": 1048600,
+            "offenderId": 1376169,
+            "offenceCode": "BA76001",
+            "statuteCode": "BA76",
+            "offenceSeverityRanking": 116,
+            "offenceIndicatorCodes": [
+              "95"
+            ],
+            "offenceDate": "2015-12-01",
+            "chargeStatus": "A",
+            "resultCodes": [
+              {
+                "code": "1002",
+                "description": "Imprisonment",
+                "active": false,
+                "chargeStatus": true,
+                "dispositionCode": "F",
+                "conviction": true
+              }
+            ],
+            "case": {
+              "caseId": 1342326,
+              "caseType": "A",
+              "caseStatus": "I",
+              "beginDate": "2015-11-26",
+              "agencyLocationId": "ROTHMC",
+              "lidsCaseNumber": 1,
+              "caseSequence": 1
+            },
+            "mostSeriousCharge": false,
+            "lidsOffenceNumber": 3,
+            "sentences": [
+              {
+                "offenderId": 1376169,
+                "bookingId": 1048600,
+                "sentenceSequenceNumber": 1,
+                "isActive": false,
+                "sentenceCategory": "2003",
+                "sentenceCalculationType": {
+                  "sentenceCategory": "2003",
+                  "sentenceCalculationType": "ADIMP_ORA",
+                  "sentenceType": "INST",
+                  "description": "ORA CJA03 Standard Determinate Sentence",
+                  "active": false
+                },
+                "sentenceLevel": "IND",
+                "startDate": "2016-01-07",
+                "endDate": "2016-01-12",
+                "crdCalculatedDate": "2016-01-21",
+                "ledCalculatedDate": "2015-12-23",
+                "sedCalculatedDate": "2016-01-01",
+                "createdAt": "2015-12-04T14:33:14.472194",
+                "dischargeDate": "2016-01-28",
+                "tusedCalculatedDate": "2017-01-18",
+                "hdcExclusion": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "eventId": 279469633,
+        "bookingId": 1048600,
+        "startDateTime": "2015-12-03T08:00:00",
+        "endDateTime": "2015-12-03T00:00:00",
+        "courtEventType": "DC",
+        "eventStatus": "COMP",
+        "agencyLocation": {
+          "agencyLocationId": "ROTHMC",
+          "description": "Rotherham MC",
+          "longDescription": "Rotherham Magistrates' Court",
+          "agencyLocationType": "CRT",
+          "jurisdictionCode": "MC",
+          "bailOffice": false,
+          "serviceRequired": false,
+          "active": true,
+          "areaCode": "52",
+          "nomsRegionCode": "YOHUM",
+          "cjitCode": "B14LC00"
+        },
+        "nextEventRequest": false,
+        "orderRequested": false,
+        "directionCode": "OUT",
+        "hold": false
+      },
+      {
+        "eventId": 280350131,
+        "caseId": 1345707,
+        "bookingId": 1048600,
+        "startDateTime": "2015-11-26T10:00:00",
+        "endDateTime": "2015-11-26T00:00:00",
+        "courtEventType": "CRT",
+        "eventStatus": "COMP",
+        "agencyLocation": {
+          "agencyLocationId": "ROTHMC",
+          "description": "Rotherham MC",
+          "longDescription": "Rotherham Magistrates' Court",
+          "agencyLocationType": "CRT",
+          "jurisdictionCode": "MC",
+          "bailOffice": false,
+          "serviceRequired": false,
+          "active": true,
+          "areaCode": "52",
+          "nomsRegionCode": "YOHUM",
+          "cjitCode": "B14LC00"
+        },
+        "outcomeReasonCode": "4560",
+        "outcomeReason": {
+          "code": "4560",
+          "description": "Commit/Transfer/Send to Crown Court for Trial in Custody",
+          "active": false,
+          "chargeStatus": true,
+          "dispositionCode": "I",
+          "conviction": false
+        },
+        "comments": "30/12 TRL",
+        "nextEventRequest": false,
+        "orderRequested": false,
+        "directionCode": "OUT",
+        "hold": false,
+        "courtEventCharges": [
+          {
+            "chargeId": 3300191,
+            "bookingId": 1048600,
+            "offenderId": 1376169,
+            "offenceCode": "MD71230",
+            "statuteCode": "MD71",
+            "offenceSeverityRanking": 35,
+            "offenceIndicatorCodes": [
+              "D",
+              "87"
+            ],
+            "offenceDate": "2015-09-16",
+            "chargeStatus": "A",
+            "resultCodes": [
+              {
+                "code": "1002",
+                "description": "Imprisonment",
+                "active": false,
+                "chargeStatus": true,
+                "dispositionCode": "F",
+                "conviction": true
+              }
+            ],
+            "case": {
+              "caseId": 1345707,
+              "caseInfoNumber": "T20151292",
+              "caseType": "A",
+              "caseStatus": "A",
+              "beginDate": "2015-11-26",
+              "agencyLocationId": "SHEFCC",
+              "lidsCaseNumber": 2,
+              "caseSequence": 2
+            },
+            "mostSeriousCharge": true,
+            "lidsOffenceNumber": 1,
+            "sentences": [
+              {
+                "offenderId": 1376169,
+                "bookingId": 1048600,
+                "sentenceSequenceNumber": 3,
+                "isActive": true,
+                "sentenceCategory": "2003",
+                "sentenceCalculationType": {
+                  "sentenceCategory": "2003",
+                  "sentenceCalculationType": "ADIMP",
+                  "sentenceType": "INST",
+                  "description": "CJA03 Standard Determinate Sentence",
+                  "active": false,
+                  "functionType": "OM"
+                },
+                "sentenceLevel": "IND",
+                "startDate": "2016-08-10",
+                "endDate": "2020-02-06",
+                "crdCalculatedDate": "2017-10-11",
+                "ledCalculatedDate": "2019-06-22",
+                "sedCalculatedDate": "2019-07-23",
+                "hdcedCalculatedDate": "2017-05-03",
+                "createdAt": "2016-07-13T09:21:42.958221",
+                "dischargeDate": "2020-01-29",
+                "hdcExclusion": false
+              }
+            ]
+          },
+          {
+            "chargeId": 3300192,
+            "bookingId": 1048600,
+            "offenderId": 1376169,
+            "offenceCode": "MD71231",
+            "statuteCode": "MD71",
+            "offenceSeverityRanking": 35,
+            "offenceIndicatorCodes": [
+              "D",
+              "87",
+              "S"
+            ],
+            "offenceDate": "2015-09-13",
+            "chargeStatus": "A",
+            "resultCodes": [
+              {
+                "code": "1002",
+                "description": "Imprisonment",
+                "active": false,
+                "chargeStatus": true,
+                "dispositionCode": "F",
+                "conviction": true
+              }
+            ],
+            "case": {
+              "caseId": 1345707,
+              "caseInfoNumber": "T20151292",
+              "caseType": "A",
+              "caseStatus": "A",
+              "beginDate": "2015-11-26",
+              "agencyLocationId": "SHEFCC",
+              "lidsCaseNumber": 2,
+              "caseSequence": 2
+            },
+            "mostSeriousCharge": false,
+            "lidsOffenceNumber": 2,
+            "sentences": [
+              {
+                "offenderId": 1376169,
+                "bookingId": 1048600,
+                "sentenceSequenceNumber": 3,
+                "isActive": true,
+                "sentenceCategory": "2003",
+                "sentenceCalculationType": {
+                  "sentenceCategory": "2003",
+                  "sentenceCalculationType": "ADIMP",
+                  "sentenceType": "INST",
+                  "description": "CJA03 Standard Determinate Sentence",
+                  "active": false,
+                  "functionType": "OM"
+                },
+                "sentenceLevel": "IND",
+                "startDate": "2016-08-10",
+                "endDate": "2020-02-06",
+                "crdCalculatedDate": "2017-10-11",
+                "ledCalculatedDate": "2019-06-22",
+                "sedCalculatedDate": "2019-07-23",
+                "hdcedCalculatedDate": "2017-05-03",
+                "createdAt": "2016-07-13T09:21:42.958221",
+                "dischargeDate": "2020-01-29",
+                "hdcExclusion": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "eventId": 279469316,
+        "caseId": 1342326,
+        "bookingId": 1048600,
+        "startDateTime": "2015-11-26T10:00:00",
+        "endDateTime": "2015-11-26T00:00:00",
+        "courtEventType": "CRT",
+        "eventStatus": "COMP",
+        "agencyLocation": {
+          "agencyLocationId": "ROTHMC",
+          "description": "Rotherham MC",
+          "longDescription": "Rotherham Magistrates' Court",
+          "agencyLocationType": "CRT",
+          "jurisdictionCode": "MC",
+          "bailOffice": false,
+          "serviceRequired": false,
+          "active": true,
+          "areaCode": "52",
+          "nomsRegionCode": "YOHUM",
+          "cjitCode": "B14LC00"
+        },
+        "outcomeReasonCode": "4531",
+        "outcomeReason": {
+          "code": "4531",
+          "description": "Remand in Custody (Bail Refused)",
+          "active": false,
+          "chargeStatus": true,
+          "dispositionCode": "I",
+          "conviction": false
+        },
+        "comments": "RX 03/12",
+        "nextEventRequest": false,
+        "orderRequested": false,
+        "directionCode": "OUT",
+        "hold": false,
+        "courtEventCharges": [
+          {
+            "chargeId": 3290145,
+            "bookingId": 1048600,
+            "offenderId": 1376169,
+            "offenceCode": "MD71234",
+            "statuteCode": "MD71",
+            "offenceSeverityRanking": 35,
+            "offenceIndicatorCodes": [
+              "D",
+              "87"
+            ],
+            "offenceDate": "2015-09-18",
+            "chargeStatus": "I",
+            "resultCodes": [
+              {
+                "code": "2008",
+                "description": "Lie on File",
+                "active": false,
+                "chargeStatus": false,
+                "dispositionCode": "I",
+                "conviction": false
+              }
+            ],
+            "case": {
+              "caseId": 1342326,
+              "caseType": "A",
+              "caseStatus": "I",
+              "beginDate": "2015-11-26",
+              "agencyLocationId": "ROTHMC",
+              "lidsCaseNumber": 1,
+              "caseSequence": 1
+            },
+            "mostSeriousCharge": false,
+            "lidsOffenceNumber": 1
+          },
+          {
+            "chargeId": 3290146,
+            "bookingId": 1048600,
+            "offenderId": 1376169,
+            "offenceCode": "MD71239",
+            "statuteCode": "MD71",
+            "offenceSeverityRanking": 35,
+            "offenceIndicatorCodes": [
+              "D",
+              "87"
+            ],
+            "offenceDate": "2015-09-18",
+            "chargeStatus": "I",
+            "resultCodes": [
+              {
+                "code": "2008",
+                "description": "Lie on File",
+                "active": false,
+                "chargeStatus": false,
+                "dispositionCode": "I",
+                "conviction": false
+              }
+            ],
+            "case": {
+              "caseId": 1342326,
+              "caseType": "A",
+              "caseStatus": "I",
+              "beginDate": "2015-11-26",
+              "agencyLocationId": "ROTHMC",
+              "lidsCaseNumber": 1,
+              "caseSequence": 1
+            },
+            "mostSeriousCharge": false,
+            "lidsOffenceNumber": 2
+          },
+          {
+            "chargeId": 3290147,
+            "bookingId": 1048600,
+            "offenderId": 1376169,
+            "offenceCode": "BA76001",
+            "statuteCode": "BA76",
+            "offenceSeverityRanking": 116,
+            "offenceIndicatorCodes": [
+              "95"
+            ],
+            "offenceDate": "2015-12-01",
+            "chargeStatus": "A",
+            "resultCodes": [
+              {
+                "code": "1002",
+                "description": "Imprisonment",
+                "active": false,
+                "chargeStatus": true,
+                "dispositionCode": "F",
+                "conviction": true
+              }
+            ],
+            "case": {
+              "caseId": 1342326,
+              "caseType": "A",
+              "caseStatus": "I",
+              "beginDate": "2015-11-26",
+              "agencyLocationId": "ROTHMC",
+              "lidsCaseNumber": 1,
+              "caseSequence": 1
+            },
+            "mostSeriousCharge": false,
+            "lidsOffenceNumber": 3,
+            "sentences": [
+              {
+                "offenderId": 1376169,
+                "bookingId": 1048600,
+                "sentenceSequenceNumber": 1,
+                "isActive": false,
+                "sentenceCategory": "2003",
+                "sentenceCalculationType": {
+                  "sentenceCategory": "2003",
+                  "sentenceCalculationType": "ADIMP_ORA",
+                  "sentenceType": "INST",
+                  "description": "ORA CJA03 Standard Determinate Sentence",
+                  "active": false
+                },
+                "sentenceLevel": "IND",
+                "startDate": "2016-01-07",
+                "endDate": "2016-01-12",
+                "crdCalculatedDate": "2016-01-21",
+                "ledCalculatedDate": "2015-12-23",
+                "sedCalculatedDate": "2016-01-01",
+                "createdAt": "2015-12-04T14:33:14.472194",
+                "dischargeDate": "2016-01-28",
+                "tusedCalculatedDate": "2017-01-18",
+                "hdcExclusion": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "eventId": 24712181,
+        "caseId": 233885,
+        "bookingId": 165263,
+        "startDateTime": "2010-05-24T10:13:00",
+        "endDateTime": "2010-05-24T00:00:00",
+        "courtEventType": "CA",
+        "eventStatus": "SCH",
+        "agencyLocation": {
+          "agencyLocationId": "SHEFMC",
+          "description": "Sheffield MC",
+          "longDescription": "Sheffield Magistrates' Court",
+          "agencyLocationType": "CRT",
+          "jurisdictionCode": "MC",
+          "bailOffice": false,
+          "serviceRequired": false,
+          "active": true,
+          "areaCode": "52",
+          "nomsRegionCode": "YOHUM",
+          "cjitCode": "B14LO00"
+        },
+        "comments": "SENTENCE. ",
+        "nextEventRequest": false,
+        "orderRequested": false,
+        "hold": false,
+        "courtEventCharges": [
+          {
+            "chargeId": 568334,
+            "bookingId": 165263,
+            "offenderId": 1376169,
+            "offenceCode": "TH68054",
+            "statuteCode": "TH68",
+            "offenceSeverityRanking": 123,
+            "offenceIndicatorCodes": [
+              "D",
+              "101"
+            ],
+            "offenceDate": "2010-03-02",
+            "chargeStatus": "A",
+            "resultCodes": [
+              {
+                "code": "1002",
+                "description": "Imprisonment",
+                "active": false,
+                "chargeStatus": true,
+                "dispositionCode": "F",
+                "conviction": true
+              }
+            ],
+            "case": {
+              "caseId": 233885,
+              "caseType": "A",
+              "caseStatus": "I",
+              "beginDate": "2010-04-12",
+              "agencyLocationId": "SHEFMC",
+              "lidsCaseNumber": 2,
+              "nomLegalCaseRef": 1135,
+              "nomLegalCaseRefTransTo": 0,
+              "caseSequence": 1
+            },
+            "mostSeriousCharge": false,
+            "lidsOffenceNumber": 1,
+            "sentences": [
+              {
+                "offenderId": 1376169,
+                "bookingId": 165263,
+                "sentenceSequenceNumber": 1,
+                "isActive": false,
+                "sentenceCategory": "1991",
+                "sentenceCalculationType": {
+                  "sentenceCategory": "1991",
+                  "sentenceCalculationType": "AR",
+                  "sentenceType": "INST",
+                  "description": "Adult Imprisonment less than 12 months",
+                  "active": false
+                },
+                "fineAmount": 0,
+                "aggregateAdjustDays": 0,
+                "sentenceLevel": "IND",
+                "extendedDays": 0,
+                "startDate": "2010-06-09",
+                "endDate": "2010-10-15",
+                "ardCalculatedDate": "2010-08-24",
+                "sedCalculatedDate": "2010-10-22",
+                "hdcedCalculatedDate": "2010-08-18",
+                "createdAt": "2010-06-02T13:50:25.223604",
+                "dischargeDate": "2010-10-18",
+                "hdcExclusion": false
+              }
+            ]
+          },
+          {
+            "chargeId": 568335,
+            "bookingId": 165263,
+            "offenderId": 1376169,
+            "offenceCode": "OF61102",
+            "statuteCode": "OF61",
+            "offenceSeverityRanking": 84,
+            "offenceIndicatorCodes": [
+              "ERS",
+              "V",
+              "9",
+              "S15/CJIB",
+              "REA"
+            ],
+            "offenceDate": "2010-04-10",
+            "chargeStatus": "A",
+            "resultCodes": [
+              {
+                "code": "1002",
+                "description": "Imprisonment",
+                "active": false,
+                "chargeStatus": true,
+                "dispositionCode": "F",
+                "conviction": true
+              }
+            ],
+            "case": {
+              "caseId": 233885,
+              "caseType": "A",
+              "caseStatus": "I",
+              "beginDate": "2010-04-12",
+              "agencyLocationId": "SHEFMC",
+              "lidsCaseNumber": 2,
+              "nomLegalCaseRef": 1135,
+              "nomLegalCaseRefTransTo": 0,
+              "caseSequence": 1
+            },
+            "mostSeriousCharge": false,
+            "lidsOffenceNumber": 2,
+            "sentences": [
+              {
+                "offenderId": 1376169,
+                "bookingId": 165263,
+                "sentenceSequenceNumber": 2,
+                "isActive": false,
+                "sentenceCategory": "1991",
+                "sentenceCalculationType": {
+                  "sentenceCategory": "1991",
+                  "sentenceCalculationType": "AR",
+                  "sentenceType": "INST",
+                  "description": "Adult Imprisonment less than 12 months",
+                  "active": false
+                },
+                "fineAmount": 0,
+                "aggregateAdjustDays": 0,
+                "sentenceLevel": "IND",
+                "extendedDays": 0,
+                "startDate": "2010-07-13",
+                "endDate": "2010-10-10",
+                "ardCalculatedDate": "2010-08-31",
+                "sedCalculatedDate": "2010-11-11",
+                "hdcedCalculatedDate": "2010-07-20",
+                "createdAt": "2010-06-02T13:50:25.251946",
+                "dischargeDate": "2010-10-27",
+                "hdcExclusion": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "eventId": 24712185,
+        "caseId": 233886,
+        "bookingId": 165263,
+        "startDateTime": "2010-05-14T10:03:00",
+        "endDateTime": "2010-05-14T00:00:00",
+        "courtEventType": "CA",
+        "eventStatus": "SCH",
+        "agencyLocation": {
+          "agencyLocationId": "SHEFCC",
+          "description": "Sheffield Crown Court",
+          "longDescription": "Sheffield Crown Court",
+          "agencyLocationType": "CRT",
+          "jurisdictionCode": "CC",
+          "bailOffice": false,
+          "serviceRequired": false,
+          "active": true,
+          "areaCode": "52",
+          "nomsRegionCode": "YOHUM",
+          "cjitCode": "C00SH00"
+        },
+        "comments": "SENTENCE. ",
+        "nextEventRequest": false,
+        "orderRequested": false,
+        "hold": false,
+        "courtEventCharges": [
+          {
+            "chargeId": 568336,
+            "bookingId": 165263,
+            "offenderId": 1376169,
+            "offenceCode": "TH68036",
+            "statuteCode": "TH68",
+            "offenceSeverityRanking": 49,
+            "offenceIndicatorCodes": [
+              "D",
+              "40"
+            ],
+            "offenceDate": "2010-05-27",
+            "chargeStatus": "A",
+            "resultCodes": [
+              {
+                "code": "1002",
+                "description": "Imprisonment",
+                "active": false,
+                "chargeStatus": true,
+                "dispositionCode": "F",
+                "conviction": true
+              }
+            ],
+            "case": {
+              "caseId": 233886,
+              "caseType": "A",
+              "caseStatus": "A",
+              "beginDate": "2010-04-12",
+              "agencyLocationId": "SHEFCC",
+              "lidsCaseNumber": 1,
+              "nomLegalCaseRef": 1132,
+              "nomLegalCaseRefTransTo": 0,
+              "caseSequence": 2
+            },
+            "mostSeriousCharge": true,
+            "lidsOffenceNumber": 1,
+            "sentences": [
+              {
+                "offenderId": 1376169,
+                "bookingId": 165263,
+                "sentenceSequenceNumber": 3,
+                "isActive": false,
+                "sentenceCategory": "2003",
+                "sentenceCalculationType": {
+                  "sentenceCategory": "2003",
+                  "sentenceCalculationType": "ADIMP",
+                  "sentenceType": "INST",
+                  "description": "CJA03 Standard Determinate Sentence",
+                  "active": false,
+                  "functionType": "OM"
+                },
+                "fineAmount": 0,
+                "aggregateAdjustDays": 32,
+                "sentenceLevel": "IND",
+                "extendedDays": 0,
+                "startDate": "2010-06-15",
+                "endDate": "2013-06-11",
+                "crdCalculatedDate": "2011-10-27",
+                "sedCalculatedDate": "2013-04-28",
+                "hdcedCalculatedDate": "2011-06-30",
+                "createdAt": "2010-06-02T13:50:25.328435",
+                "dischargeDate": "2013-06-20",
+                "hdcExclusion": false
+              }
+            ]
+          },
+          {
+            "chargeId": 568337,
+            "bookingId": 165263,
+            "offenderId": 1376169,
+            "offenceCode": "XX00000-022N",
+            "statuteCode": "ZZ",
+            "offenceSeverityRanking": 74,
+            "offenceIndicatorCodes": [
+              "62"
+            ],
+            "offenceDate": "2010-05-31",
+            "chargeStatus": "A",
+            "resultCodes": [
+              {
+                "code": "1002",
+                "description": "Imprisonment",
+                "active": false,
+                "chargeStatus": true,
+                "dispositionCode": "F",
+                "conviction": true
+              }
+            ],
+            "case": {
+              "caseId": 233886,
+              "caseType": "A",
+              "caseStatus": "A",
+              "beginDate": "2010-04-12",
+              "agencyLocationId": "SHEFCC",
+              "lidsCaseNumber": 1,
+              "nomLegalCaseRef": 1132,
+              "nomLegalCaseRefTransTo": 0,
+              "caseSequence": 2
+            },
+            "mostSeriousCharge": false,
+            "lidsOffenceNumber": 2,
+            "sentences": [
+              {
+                "offenderId": 1376169,
+                "bookingId": 165263,
+                "sentenceSequenceNumber": 4,
+                "isActive": false,
+                "sentenceCategory": "1991",
+                "sentenceCalculationType": {
+                  "sentenceCategory": "1991",
+                  "sentenceCalculationType": "AR",
+                  "sentenceType": "INST",
+                  "description": "Adult Imprisonment less than 12 months",
+                  "active": false
+                },
+                "fineAmount": 0,
+                "aggregateAdjustDays": 32,
+                "sentenceLevel": "IND",
+                "extendedDays": 0,
+                "startDate": "2010-06-02",
+                "endDate": "2011-01-04",
+                "ardCalculatedDate": "2010-09-04",
+                "sedCalculatedDate": "2010-11-18",
+                "hdcedCalculatedDate": "2010-07-01",
+                "createdAt": "2010-06-02T13:50:25.376678",
+                "dischargeDate": "2010-12-21",
+                "hdcExclusion": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "eventId": 24712184,
+        "caseId": 233886,
+        "bookingId": 165263,
+        "startDateTime": "2010-04-30T10:01:00",
+        "endDateTime": "2010-04-30T00:00:00",
+        "courtEventType": "CA",
+        "eventStatus": "SCH",
+        "agencyLocation": {
+          "agencyLocationId": "SHEFCC",
+          "description": "Sheffield Crown Court",
+          "longDescription": "Sheffield Crown Court",
+          "agencyLocationType": "CRT",
+          "jurisdictionCode": "CC",
+          "bailOffice": false,
+          "serviceRequired": false,
+          "active": true,
+          "areaCode": "52",
+          "nomsRegionCode": "YOHUM",
+          "cjitCode": "C00SH00"
+        },
+        "comments": "CONVICTD. ",
+        "nextEventRequest": false,
+        "orderRequested": false,
+        "hold": false,
+        "courtEventCharges": [
+          {
+            "chargeId": 568336,
+            "bookingId": 165263,
+            "offenderId": 1376169,
+            "offenceCode": "TH68036",
+            "statuteCode": "TH68",
+            "offenceSeverityRanking": 49,
+            "offenceIndicatorCodes": [
+              "D",
+              "40"
+            ],
+            "offenceDate": "2010-05-27",
+            "chargeStatus": "A",
+            "resultCodes": [
+              {
+                "code": "1002",
+                "description": "Imprisonment",
+                "active": false,
+                "chargeStatus": true,
+                "dispositionCode": "F",
+                "conviction": true
+              }
+            ],
+            "case": {
+              "caseId": 233886,
+              "caseType": "A",
+              "caseStatus": "A",
+              "beginDate": "2010-04-12",
+              "agencyLocationId": "SHEFCC",
+              "lidsCaseNumber": 1,
+              "nomLegalCaseRef": 1132,
+              "nomLegalCaseRefTransTo": 0,
+              "caseSequence": 2
+            },
+            "mostSeriousCharge": true,
+            "lidsOffenceNumber": 1,
+            "sentences": [
+              {
+                "offenderId": 1376169,
+                "bookingId": 165263,
+                "sentenceSequenceNumber": 3,
+                "isActive": false,
+                "sentenceCategory": "2003",
+                "sentenceCalculationType": {
+                  "sentenceCategory": "2003",
+                  "sentenceCalculationType": "ADIMP",
+                  "sentenceType": "INST",
+                  "description": "CJA03 Standard Determinate Sentence",
+                  "active": false,
+                  "functionType": "OM"
+                },
+                "fineAmount": 0,
+                "aggregateAdjustDays": 32,
+                "sentenceLevel": "IND",
+                "extendedDays": 0,
+                "startDate": "2010-06-15",
+                "endDate": "2013-06-11",
+                "crdCalculatedDate": "2011-10-27",
+                "sedCalculatedDate": "2013-04-28",
+                "hdcedCalculatedDate": "2011-06-30",
+                "createdAt": "2010-06-02T13:50:25.328435",
+                "dischargeDate": "2013-06-20",
+                "hdcExclusion": false
+              }
+            ]
+          },
+          {
+            "chargeId": 568337,
+            "bookingId": 165263,
+            "offenderId": 1376169,
+            "offenceCode": "XX00000-022N",
+            "statuteCode": "ZZ",
+            "offenceSeverityRanking": 74,
+            "offenceIndicatorCodes": [
+              "62"
+            ],
+            "offenceDate": "2010-05-31",
+            "chargeStatus": "A",
+            "resultCodes": [
+              {
+                "code": "1002",
+                "description": "Imprisonment",
+                "active": false,
+                "chargeStatus": true,
+                "dispositionCode": "F",
+                "conviction": true
+              }
+            ],
+            "case": {
+              "caseId": 233886,
+              "caseType": "A",
+              "caseStatus": "A",
+              "beginDate": "2010-04-12",
+              "agencyLocationId": "SHEFCC",
+              "lidsCaseNumber": 1,
+              "nomLegalCaseRef": 1132,
+              "nomLegalCaseRefTransTo": 0,
+              "caseSequence": 2
+            },
+            "mostSeriousCharge": false,
+            "lidsOffenceNumber": 2,
+            "sentences": [
+              {
+                "offenderId": 1376169,
+                "bookingId": 165263,
+                "sentenceSequenceNumber": 4,
+                "isActive": false,
+                "sentenceCategory": "1991",
+                "sentenceCalculationType": {
+                  "sentenceCategory": "1991",
+                  "sentenceCalculationType": "AR",
+                  "sentenceType": "INST",
+                  "description": "Adult Imprisonment less than 12 months",
+                  "active": false
+                },
+                "fineAmount": 0,
+                "aggregateAdjustDays": 32,
+                "sentenceLevel": "IND",
+                "extendedDays": 0,
+                "startDate": "2010-06-02",
+                "endDate": "2011-01-04",
+                "ardCalculatedDate": "2010-09-04",
+                "sedCalculatedDate": "2010-11-18",
+                "hdcedCalculatedDate": "2010-07-01",
+                "createdAt": "2010-06-02T13:50:25.376678",
+                "dischargeDate": "2010-12-21",
+                "hdcExclusion": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "eventId": 24712180,
+        "caseId": 233885,
+        "bookingId": 165263,
+        "startDateTime": "2010-04-12T10:11:00",
+        "endDateTime": "2010-04-12T00:00:00",
+        "courtEventType": "CA",
+        "eventStatus": "SCH",
+        "agencyLocation": {
+          "agencyLocationId": "SHEFMC",
+          "description": "Sheffield MC",
+          "longDescription": "Sheffield Magistrates' Court",
+          "agencyLocationType": "CRT",
+          "jurisdictionCode": "MC",
+          "bailOffice": false,
+          "serviceRequired": false,
+          "active": true,
+          "areaCode": "52",
+          "nomsRegionCode": "YOHUM",
+          "cjitCode": "B14LO00"
+        },
+        "comments": "CONVICTD. ",
+        "nextEventRequest": false,
+        "orderRequested": false,
+        "hold": false,
+        "courtEventCharges": [
+          {
+            "chargeId": 568334,
+            "bookingId": 165263,
+            "offenderId": 1376169,
+            "offenceCode": "TH68054",
+            "statuteCode": "TH68",
+            "offenceSeverityRanking": 123,
+            "offenceIndicatorCodes": [
+              "D",
+              "101"
+            ],
+            "offenceDate": "2010-03-02",
+            "chargeStatus": "A",
+            "resultCodes": [
+              {
+                "code": "1002",
+                "description": "Imprisonment",
+                "active": false,
+                "chargeStatus": true,
+                "dispositionCode": "F",
+                "conviction": true
+              }
+            ],
+            "case": {
+              "caseId": 233885,
+              "caseType": "A",
+              "caseStatus": "I",
+              "beginDate": "2010-04-12",
+              "agencyLocationId": "SHEFMC",
+              "lidsCaseNumber": 2,
+              "nomLegalCaseRef": 1135,
+              "nomLegalCaseRefTransTo": 0,
+              "caseSequence": 1
+            },
+            "mostSeriousCharge": false,
+            "lidsOffenceNumber": 1,
+            "sentences": [
+              {
+                "offenderId": 1376169,
+                "bookingId": 165263,
+                "sentenceSequenceNumber": 1,
+                "isActive": false,
+                "sentenceCategory": "1991",
+                "sentenceCalculationType": {
+                  "sentenceCategory": "1991",
+                  "sentenceCalculationType": "AR",
+                  "sentenceType": "INST",
+                  "description": "Adult Imprisonment less than 12 months",
+                  "active": false
+                },
+                "fineAmount": 0,
+                "aggregateAdjustDays": 0,
+                "sentenceLevel": "IND",
+                "extendedDays": 0,
+                "startDate": "2010-06-09",
+                "endDate": "2010-10-15",
+                "ardCalculatedDate": "2010-08-24",
+                "sedCalculatedDate": "2010-10-22",
+                "hdcedCalculatedDate": "2010-08-18",
+                "createdAt": "2010-06-02T13:50:25.223604",
+                "dischargeDate": "2010-10-18",
+                "hdcExclusion": false
+              }
+            ]
+          },
+          {
+            "chargeId": 568335,
+            "bookingId": 165263,
+            "offenderId": 1376169,
+            "offenceCode": "OF61102",
+            "statuteCode": "OF61",
+            "offenceSeverityRanking": 84,
+            "offenceIndicatorCodes": [
+              "ERS",
+              "V",
+              "9",
+              "S15/CJIB",
+              "REA"
+            ],
+            "offenceDate": "2010-04-10",
+            "chargeStatus": "A",
+            "resultCodes": [
+              {
+                "code": "1002",
+                "description": "Imprisonment",
+                "active": false,
+                "chargeStatus": true,
+                "dispositionCode": "F",
+                "conviction": true
+              }
+            ],
+            "case": {
+              "caseId": 233885,
+              "caseType": "A",
+              "caseStatus": "I",
+              "beginDate": "2010-04-12",
+              "agencyLocationId": "SHEFMC",
+              "lidsCaseNumber": 2,
+              "nomLegalCaseRef": 1135,
+              "nomLegalCaseRefTransTo": 0,
+              "caseSequence": 1
+            },
+            "mostSeriousCharge": false,
+            "lidsOffenceNumber": 2,
+            "sentences": [
+              {
+                "offenderId": 1376169,
+                "bookingId": 165263,
+                "sentenceSequenceNumber": 2,
+                "isActive": false,
+                "sentenceCategory": "1991",
+                "sentenceCalculationType": {
+                  "sentenceCategory": "1991",
+                  "sentenceCalculationType": "AR",
+                  "sentenceType": "INST",
+                  "description": "Adult Imprisonment less than 12 months",
+                  "active": false
+                },
+                "fineAmount": 0,
+                "aggregateAdjustDays": 0,
+                "sentenceLevel": "IND",
+                "extendedDays": 0,
+                "startDate": "2010-07-13",
+                "endDate": "2010-10-10",
+                "ardCalculatedDate": "2010-08-31",
+                "sedCalculatedDate": "2010-11-11",
+                "hdcedCalculatedDate": "2010-07-20",
+                "createdAt": "2010-06-02T13:50:25.251946",
+                "dischargeDate": "2010-10-27",
+                "hdcExclusion": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "eventId": 24712179,
+        "caseId": 233885,
+        "bookingId": 165263,
+        "startDateTime": "2010-04-12T10:10:00",
+        "endDateTime": "2010-04-12T00:00:00",
+        "courtEventType": "CA",
+        "eventStatus": "SCH",
+        "agencyLocation": {
+          "agencyLocationId": "SHEFMC",
+          "description": "Sheffield MC",
+          "longDescription": "Sheffield Magistrates' Court",
+          "agencyLocationType": "CRT",
+          "jurisdictionCode": "MC",
+          "bailOffice": false,
+          "serviceRequired": false,
+          "active": true,
+          "areaCode": "52",
+          "nomsRegionCode": "YOHUM",
+          "cjitCode": "B14LO00"
+        },
+        "comments": "REMANDED. ",
+        "nextEventRequest": false,
+        "orderRequested": false,
+        "hold": false,
+        "courtEventCharges": [
+          {
+            "chargeId": 568334,
+            "bookingId": 165263,
+            "offenderId": 1376169,
+            "offenceCode": "TH68054",
+            "statuteCode": "TH68",
+            "offenceSeverityRanking": 123,
+            "offenceIndicatorCodes": [
+              "D",
+              "101"
+            ],
+            "offenceDate": "2010-03-02",
+            "chargeStatus": "A",
+            "resultCodes": [
+              {
+                "code": "1002",
+                "description": "Imprisonment",
+                "active": false,
+                "chargeStatus": true,
+                "dispositionCode": "F",
+                "conviction": true
+              }
+            ],
+            "case": {
+              "caseId": 233885,
+              "caseType": "A",
+              "caseStatus": "I",
+              "beginDate": "2010-04-12",
+              "agencyLocationId": "SHEFMC",
+              "lidsCaseNumber": 2,
+              "nomLegalCaseRef": 1135,
+              "nomLegalCaseRefTransTo": 0,
+              "caseSequence": 1
+            },
+            "mostSeriousCharge": false,
+            "lidsOffenceNumber": 1,
+            "sentences": [
+              {
+                "offenderId": 1376169,
+                "bookingId": 165263,
+                "sentenceSequenceNumber": 1,
+                "isActive": false,
+                "sentenceCategory": "1991",
+                "sentenceCalculationType": {
+                  "sentenceCategory": "1991",
+                  "sentenceCalculationType": "AR",
+                  "sentenceType": "INST",
+                  "description": "Adult Imprisonment less than 12 months",
+                  "active": false
+                },
+                "fineAmount": 0,
+                "aggregateAdjustDays": 0,
+                "sentenceLevel": "IND",
+                "extendedDays": 0,
+                "startDate": "2010-06-09",
+                "endDate": "2010-10-15",
+                "ardCalculatedDate": "2010-08-24",
+                "sedCalculatedDate": "2010-10-22",
+                "hdcedCalculatedDate": "2010-08-18",
+                "createdAt": "2010-06-02T13:50:25.223604",
+                "dischargeDate": "2010-10-18",
+                "hdcExclusion": false
+              }
+            ]
+          },
+          {
+            "chargeId": 568335,
+            "bookingId": 165263,
+            "offenderId": 1376169,
+            "offenceCode": "OF61102",
+            "statuteCode": "OF61",
+            "offenceSeverityRanking": 84,
+            "offenceIndicatorCodes": [
+              "ERS",
+              "V",
+              "9",
+              "S15/CJIB",
+              "REA"
+            ],
+            "offenceDate": "2010-04-10",
+            "chargeStatus": "A",
+            "resultCodes": [
+              {
+                "code": "1002",
+                "description": "Imprisonment",
+                "active": false,
+                "chargeStatus": true,
+                "dispositionCode": "F",
+                "conviction": true
+              }
+            ],
+            "case": {
+              "caseId": 233885,
+              "caseType": "A",
+              "caseStatus": "I",
+              "beginDate": "2010-04-12",
+              "agencyLocationId": "SHEFMC",
+              "lidsCaseNumber": 2,
+              "nomLegalCaseRef": 1135,
+              "nomLegalCaseRefTransTo": 0,
+              "caseSequence": 1
+            },
+            "mostSeriousCharge": false,
+            "lidsOffenceNumber": 2,
+            "sentences": [
+              {
+                "offenderId": 1376169,
+                "bookingId": 165263,
+                "sentenceSequenceNumber": 2,
+                "isActive": false,
+                "sentenceCategory": "1991",
+                "sentenceCalculationType": {
+                  "sentenceCategory": "1991",
+                  "sentenceCalculationType": "AR",
+                  "sentenceType": "INST",
+                  "description": "Adult Imprisonment less than 12 months",
+                  "active": false
+                },
+                "fineAmount": 0,
+                "aggregateAdjustDays": 0,
+                "sentenceLevel": "IND",
+                "extendedDays": 0,
+                "startDate": "2010-07-13",
+                "endDate": "2010-10-10",
+                "ardCalculatedDate": "2010-08-31",
+                "sedCalculatedDate": "2010-11-11",
+                "hdcedCalculatedDate": "2010-07-20",
+                "createdAt": "2010-06-02T13:50:25.251946",
+                "dischargeDate": "2010-10-27",
+                "hdcExclusion": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "eventId": 24712183,
+        "caseId": 233886,
+        "bookingId": 165263,
+        "startDateTime": "2010-04-12T10:02:00",
+        "endDateTime": "2010-04-12T00:00:00",
+        "courtEventType": "CA",
+        "eventStatus": "SCH",
+        "agencyLocation": {
+          "agencyLocationId": "SHEFMC",
+          "description": "Sheffield MC",
+          "longDescription": "Sheffield Magistrates' Court",
+          "agencyLocationType": "CRT",
+          "jurisdictionCode": "MC",
+          "bailOffice": false,
+          "serviceRequired": false,
+          "active": true,
+          "areaCode": "52",
+          "nomsRegionCode": "YOHUM",
+          "cjitCode": "B14LO00"
+        },
+        "comments": "COMMITTL. ",
+        "nextEventRequest": false,
+        "orderRequested": false,
+        "hold": false,
+        "courtEventCharges": [
+          {
+            "chargeId": 568336,
+            "bookingId": 165263,
+            "offenderId": 1376169,
+            "offenceCode": "TH68036",
+            "statuteCode": "TH68",
+            "offenceSeverityRanking": 49,
+            "offenceIndicatorCodes": [
+              "D",
+              "40"
+            ],
+            "offenceDate": "2010-05-27",
+            "chargeStatus": "A",
+            "resultCodes": [
+              {
+                "code": "1002",
+                "description": "Imprisonment",
+                "active": false,
+                "chargeStatus": true,
+                "dispositionCode": "F",
+                "conviction": true
+              }
+            ],
+            "case": {
+              "caseId": 233886,
+              "caseType": "A",
+              "caseStatus": "A",
+              "beginDate": "2010-04-12",
+              "agencyLocationId": "SHEFCC",
+              "lidsCaseNumber": 1,
+              "nomLegalCaseRef": 1132,
+              "nomLegalCaseRefTransTo": 0,
+              "caseSequence": 2
+            },
+            "mostSeriousCharge": true,
+            "lidsOffenceNumber": 1,
+            "sentences": [
+              {
+                "offenderId": 1376169,
+                "bookingId": 165263,
+                "sentenceSequenceNumber": 3,
+                "isActive": false,
+                "sentenceCategory": "2003",
+                "sentenceCalculationType": {
+                  "sentenceCategory": "2003",
+                  "sentenceCalculationType": "ADIMP",
+                  "sentenceType": "INST",
+                  "description": "CJA03 Standard Determinate Sentence",
+                  "active": false,
+                  "functionType": "OM"
+                },
+                "fineAmount": 0,
+                "aggregateAdjustDays": 32,
+                "sentenceLevel": "IND",
+                "extendedDays": 0,
+                "startDate": "2010-06-15",
+                "endDate": "2013-06-11",
+                "crdCalculatedDate": "2011-10-27",
+                "sedCalculatedDate": "2013-04-28",
+                "hdcedCalculatedDate": "2011-06-30",
+                "createdAt": "2010-06-02T13:50:25.328435",
+                "dischargeDate": "2013-06-20",
+                "hdcExclusion": false
+              }
+            ]
+          },
+          {
+            "chargeId": 568337,
+            "bookingId": 165263,
+            "offenderId": 1376169,
+            "offenceCode": "XX00000-022N",
+            "statuteCode": "ZZ",
+            "offenceSeverityRanking": 74,
+            "offenceIndicatorCodes": [
+              "62"
+            ],
+            "offenceDate": "2010-05-31",
+            "chargeStatus": "A",
+            "resultCodes": [
+              {
+                "code": "1002",
+                "description": "Imprisonment",
+                "active": false,
+                "chargeStatus": true,
+                "dispositionCode": "F",
+                "conviction": true
+              }
+            ],
+            "case": {
+              "caseId": 233886,
+              "caseType": "A",
+              "caseStatus": "A",
+              "beginDate": "2010-04-12",
+              "agencyLocationId": "SHEFCC",
+              "lidsCaseNumber": 1,
+              "nomLegalCaseRef": 1132,
+              "nomLegalCaseRefTransTo": 0,
+              "caseSequence": 2
+            },
+            "mostSeriousCharge": false,
+            "lidsOffenceNumber": 2,
+            "sentences": [
+              {
+                "offenderId": 1376169,
+                "bookingId": 165263,
+                "sentenceSequenceNumber": 4,
+                "isActive": false,
+                "sentenceCategory": "1991",
+                "sentenceCalculationType": {
+                  "sentenceCategory": "1991",
+                  "sentenceCalculationType": "AR",
+                  "sentenceType": "INST",
+                  "description": "Adult Imprisonment less than 12 months",
+                  "active": false
+                },
+                "fineAmount": 0,
+                "aggregateAdjustDays": 32,
+                "sentenceLevel": "IND",
+                "extendedDays": 0,
+                "startDate": "2010-06-02",
+                "endDate": "2011-01-04",
+                "ardCalculatedDate": "2010-09-04",
+                "sedCalculatedDate": "2010-11-18",
+                "hdcedCalculatedDate": "2010-07-01",
+                "createdAt": "2010-06-02T13:50:25.376678",
+                "dischargeDate": "2010-12-21",
+                "hdcExclusion": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "eventId": 24712182,
+        "caseId": 233886,
+        "bookingId": 165263,
+        "startDateTime": "2010-04-12T10:00:00",
+        "endDateTime": "2010-04-12T00:00:00",
+        "courtEventType": "CA",
+        "eventStatus": "SCH",
+        "agencyLocation": {
+          "agencyLocationId": "SHEFMC",
+          "description": "Sheffield MC",
+          "longDescription": "Sheffield Magistrates' Court",
+          "agencyLocationType": "CRT",
+          "jurisdictionCode": "MC",
+          "bailOffice": false,
+          "serviceRequired": false,
+          "active": true,
+          "areaCode": "52",
+          "nomsRegionCode": "YOHUM",
+          "cjitCode": "B14LO00"
+        },
+        "comments": "REMANDED. ",
+        "nextEventRequest": false,
+        "orderRequested": false,
+        "hold": false,
+        "courtEventCharges": [
+          {
+            "chargeId": 568336,
+            "bookingId": 165263,
+            "offenderId": 1376169,
+            "offenceCode": "TH68036",
+            "statuteCode": "TH68",
+            "offenceSeverityRanking": 49,
+            "offenceIndicatorCodes": [
+              "D",
+              "40"
+            ],
+            "offenceDate": "2010-05-27",
+            "chargeStatus": "A",
+            "resultCodes": [
+              {
+                "code": "1002",
+                "description": "Imprisonment",
+                "active": false,
+                "chargeStatus": true,
+                "dispositionCode": "F",
+                "conviction": true
+              }
+            ],
+            "case": {
+              "caseId": 233886,
+              "caseType": "A",
+              "caseStatus": "A",
+              "beginDate": "2010-04-12",
+              "agencyLocationId": "SHEFCC",
+              "lidsCaseNumber": 1,
+              "nomLegalCaseRef": 1132,
+              "nomLegalCaseRefTransTo": 0,
+              "caseSequence": 2
+            },
+            "mostSeriousCharge": true,
+            "lidsOffenceNumber": 1,
+            "sentences": [
+              {
+                "offenderId": 1376169,
+                "bookingId": 165263,
+                "sentenceSequenceNumber": 3,
+                "isActive": false,
+                "sentenceCategory": "2003",
+                "sentenceCalculationType": {
+                  "sentenceCategory": "2003",
+                  "sentenceCalculationType": "ADIMP",
+                  "sentenceType": "INST",
+                  "description": "CJA03 Standard Determinate Sentence",
+                  "active": false,
+                  "functionType": "OM"
+                },
+                "fineAmount": 0,
+                "aggregateAdjustDays": 32,
+                "sentenceLevel": "IND",
+                "extendedDays": 0,
+                "startDate": "2010-06-15",
+                "endDate": "2013-06-11",
+                "crdCalculatedDate": "2011-10-27",
+                "sedCalculatedDate": "2013-04-28",
+                "hdcedCalculatedDate": "2011-06-30",
+                "createdAt": "2010-06-02T13:50:25.328435",
+                "dischargeDate": "2013-06-20",
+                "hdcExclusion": false
+              }
+            ]
+          },
+          {
+            "chargeId": 568337,
+            "bookingId": 165263,
+            "offenderId": 1376169,
+            "offenceCode": "XX00000-022N",
+            "statuteCode": "ZZ",
+            "offenceSeverityRanking": 74,
+            "offenceIndicatorCodes": [
+              "62"
+            ],
+            "offenceDate": "2010-05-31",
+            "chargeStatus": "A",
+            "resultCodes": [
+              {
+                "code": "1002",
+                "description": "Imprisonment",
+                "active": false,
+                "chargeStatus": true,
+                "dispositionCode": "F",
+                "conviction": true
+              }
+            ],
+            "case": {
+              "caseId": 233886,
+              "caseType": "A",
+              "caseStatus": "A",
+              "beginDate": "2010-04-12",
+              "agencyLocationId": "SHEFCC",
+              "lidsCaseNumber": 1,
+              "nomLegalCaseRef": 1132,
+              "nomLegalCaseRefTransTo": 0,
+              "caseSequence": 2
+            },
+            "mostSeriousCharge": false,
+            "lidsOffenceNumber": 2,
+            "sentences": [
+              {
+                "offenderId": 1376169,
+                "bookingId": 165263,
+                "sentenceSequenceNumber": 4,
+                "isActive": false,
+                "sentenceCategory": "1991",
+                "sentenceCalculationType": {
+                  "sentenceCategory": "1991",
+                  "sentenceCalculationType": "AR",
+                  "sentenceType": "INST",
+                  "description": "Adult Imprisonment less than 12 months",
+                  "active": false
+                },
+                "fineAmount": 0,
+                "aggregateAdjustDays": 32,
+                "sentenceLevel": "IND",
+                "extendedDays": 0,
+                "startDate": "2010-06-02",
+                "endDate": "2011-01-04",
+                "ardCalculatedDate": "2010-09-04",
+                "sedCalculatedDate": "2010-11-18",
+                "hdcedCalculatedDate": "2010-07-01",
+                "createdAt": "2010-06-02T13:50:25.376678",
+                "dischargeDate": "2010-12-21",
+                "hdcExclusion": false
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "headers": {
+      "Content-Type": "application/json;charset=UTF-8"
+    },
+    "status": 200
+  }
+}

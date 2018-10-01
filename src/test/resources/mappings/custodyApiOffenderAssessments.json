@@ -1,0 +1,393 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/custodyapi/offenders/offenderId/1376169/assessments"
+  },
+  "response": {
+    "jsonBody": [
+      {
+        "bookingId": 1048600,
+        "assessmentSequence": 7,
+        "offenderId": 1376169,
+        "assessmentDate": "2017-01-06",
+        "assessmentType": {
+          "assessmentId": 9688,
+          "assessmentClass": "TYPE",
+          "assessmentCode": "CATEGORY",
+          "cellSharingAlertFlag": false,
+          "determineSupLevelFlag": true
+        },
+        "score": 1005,
+        "assessStatus": "A",
+        "calcSupLevelType": "C",
+        "assessStaffId": 47402,
+        "evaluationDate": "2017-01-12",
+        "nextReviewDate": "2017-07-05",
+        "evaluationResultCode": "APP",
+        "reviewSupLevelType": {
+          "code": "C",
+          "description": "Cat C"
+        },
+        "reviewCommitteeCode": "REVIEW",
+        "committeeComments": "NQHgMvdteMbdeagSTwewEByVcNFMiNQHgMvdteMbdeagSTwewEByVcNFM",
+        "assessCommitteeCode": "REVIEW",
+        "creationDate": "2017-01-06",
+        "assessmentCreateLocationId": "RNI",
+        "assessorStaffId": 47402,
+        "createDateTime": "2017-01-06T12:36:07.17632",
+        "createUserId": "BQN11V"
+      },
+      {
+        "bookingId": 165263,
+        "assessmentSequence": 6,
+        "offenderId": 1376169,
+        "assessmentDate": "2011-08-17",
+        "assessmentType": {
+          "assessmentId": 9682,
+          "assessmentClass": "TYPE",
+          "assessmentCode": "CSRREV",
+          "cellSharingAlertFlag": true,
+          "determineSupLevelFlag": false
+        },
+        "score": 1000,
+        "assessStatus": "A",
+        "calcSupLevelType": "PEND",
+        "assessStaffId": 16728,
+        "overridedSupLevelType": "STANDARD",
+        "evaluationDate": "2011-08-17",
+        "nextReviewDate": "2012-08-17",
+        "evaluationResultCode": "APP",
+        "reviewSupLevelType": {
+          "code": "STANDARD",
+          "description": "Standard"
+        },
+        "reviewCommitteeCode": "REVIEW",
+        "reviewPlaceAgencyLocationId": "LHI",
+        "creationDate": "2011-08-17",
+        "overrideUserId": "BQW30Y",
+        "createDateTime": "2011-08-17T09:37:59.562312",
+        "createUserId": "BQW30Y"
+      },
+      {
+        "bookingId": 1048600,
+        "assessmentSequence": 6,
+        "offenderId": 1376169,
+        "assessmentDate": "2016-11-29",
+        "assessmentType": {
+          "assessmentId": 9682,
+          "assessmentClass": "TYPE",
+          "assessmentCode": "CSRREV",
+          "cellSharingAlertFlag": true,
+          "determineSupLevelFlag": false
+        },
+        "score": 1002,
+        "assessStatus": "A",
+        "calcSupLevelType": "STANDARD",
+        "assessStaffId": 17613,
+        "assessComments": "BFdWqEvTIfjDqWHxSTJrryecyoaKIJPBFdWqEvTIfjDqWHxSTJrryecyoaKIJ",
+        "overridedSupLevelType": "HI",
+        "evaluationDate": "2016-12-01",
+        "nextReviewDate": "2017-11-27",
+        "evaluationResultCode": "APP",
+        "reviewSupLevelType": {
+          "code": "HI",
+          "description": "High"
+        },
+        "reviewCommitteeCode": "REVIEW",
+        "reviewPlaceAgencyLocationId": "MDI",
+        "assessCommitteeCode": "REVIEW",
+        "creationDate": "2016-11-29",
+        "assessmentCreateLocationId": "MDI",
+        "assessorStaffId": 17613,
+        "overrideUserId": "ZQF80T",
+        "overrideReason": "PREVIOUS",
+        "createDateTime": "2016-11-29T16:45:13.993452",
+        "createUserId": "ZQF80T"
+      },
+      {
+        "bookingId": 165263,
+        "assessmentSequence": 5,
+        "offenderId": 1376169,
+        "assessmentDate": "2011-06-20",
+        "assessmentType": {
+          "assessmentId": 9687,
+          "assessmentClass": "TYPE",
+          "assessmentCode": "CSR",
+          "cellSharingAlertFlag": true,
+          "determineSupLevelFlag": false
+        },
+        "score": 1001,
+        "assessStatus": "A",
+        "calcSupLevelType": "LOW",
+        "assessStaffId": 17246,
+        "nextReviewDate": "2011-06-21",
+        "assessCommitteeCode": "RECP",
+        "creationDate": "2011-06-20",
+        "assessmentCreateLocationId": "LHI",
+        "assessorStaffId": 17181,
+        "createDateTime": "2011-06-20T07:51:41.234256",
+        "createUserId": "JQW64A"
+      },
+      {
+        "bookingId": 165263,
+        "assessmentSequence": 2,
+        "offenderId": 1376169,
+        "assessmentDate": "2010-06-02",
+        "assessmentType": {
+          "assessmentId": 9687,
+          "assessmentClass": "TYPE",
+          "assessmentCode": "CSR",
+          "cellSharingAlertFlag": true,
+          "determineSupLevelFlag": false
+        },
+        "score": 1001,
+        "assessStatus": "A",
+        "calcSupLevelType": "LOW",
+        "assessStaffId": 47547,
+        "nextReviewDate": "2010-06-03",
+        "assessCommitteeCode": "RECP",
+        "creationDate": "2010-06-02",
+        "assessmentCreateLocationId": "RNI",
+        "assessorStaffId": 47270,
+        "createDateTime": "2010-06-02T16:32:49.207513",
+        "createUserId": "BQA30U"
+      },
+      {
+        "bookingId": 165263,
+        "assessmentSequence": 1,
+        "offenderId": 1376169,
+        "assessmentDate": "2010-06-02",
+        "assessmentType": {
+          "assessmentId": 9688,
+          "assessmentClass": "TYPE",
+          "assessmentCode": "CATEGORY",
+          "cellSharingAlertFlag": false,
+          "determineSupLevelFlag": true
+        },
+        "score": 1005,
+        "assessStatus": "A",
+        "calcSupLevelType": "C",
+        "assessStaffId": 5669,
+        "evaluationDate": "2010-06-02",
+        "nextReviewDate": "2010-11-29",
+        "evaluationResultCode": "APP",
+        "reviewSupLevelType": {
+          "code": "C",
+          "description": "Cat C"
+        },
+        "reviewCommitteeCode": "RECP",
+        "creationDate": "2010-06-02",
+        "createDateTime": "2010-06-02T13:49:48.405913",
+        "createUserId": "XTAG"
+      },
+      {
+        "bookingId": 1048600,
+        "assessmentSequence": 1,
+        "offenderId": 1376169,
+        "assessmentDate": "2015-11-27",
+        "assessmentType": {
+          "assessmentId": 9687,
+          "assessmentClass": "TYPE",
+          "assessmentCode": "CSR",
+          "cellSharingAlertFlag": true,
+          "determineSupLevelFlag": false
+        },
+        "score": 1003,
+        "assessStatus": "A",
+        "calcSupLevelType": "HI",
+        "assessStaffId": 397309,
+        "assessComments": "zSeDnBzSeDnB",
+        "evaluationDate": "2015-12-13",
+        "nextReviewDate": "2016-11-28",
+        "evaluationResultCode": "APP",
+        "reviewSupLevelType": {
+          "code": "HI",
+          "description": "High"
+        },
+        "reviewCommitteeCode": "RECP",
+        "committeeComments": "sTjsTj",
+        "assessCommitteeCode": "RECP",
+        "creationDate": "2015-11-27",
+        "createDateTime": "2015-11-27T06:15:43.466714",
+        "createUserId": "NQE90W"
+      },
+      {
+        "bookingId": 1048600,
+        "assessmentSequence": 5,
+        "offenderId": 1376169,
+        "assessmentDate": "2016-07-13",
+        "assessmentType": {
+          "assessmentId": 9688,
+          "assessmentClass": "TYPE",
+          "assessmentCode": "CATEGORY",
+          "cellSharingAlertFlag": false,
+          "determineSupLevelFlag": true
+        },
+        "score": 1005,
+        "assessStatus": "I",
+        "calcSupLevelType": "C",
+        "assessStaffId": 397173,
+        "evaluationDate": "2016-07-13",
+        "nextReviewDate": "2017-01-09",
+        "evaluationResultCode": "APP",
+        "reviewSupLevelType": {
+          "code": "C",
+          "description": "Cat C"
+        },
+        "reviewCommitteeCode": "OCA",
+        "assessCommitteeCode": "OCA",
+        "creationDate": "2016-07-13",
+        "assessmentCreateLocationId": "DNI",
+        "assessorStaffId": 397173,
+        "createDateTime": "2016-07-13T14:28:19.682093",
+        "createUserId": "EQY35A"
+      },
+      {
+        "bookingId": 1048600,
+        "assessmentSequence": 4,
+        "offenderId": 1376169,
+        "assessmentDate": "2016-06-01",
+        "assessmentType": {
+          "assessmentId": 9688,
+          "assessmentClass": "TYPE",
+          "assessmentCode": "CATEGORY",
+          "cellSharingAlertFlag": false,
+          "determineSupLevelFlag": true
+        },
+        "score": 1007,
+        "assessStatus": "I",
+        "calcSupLevelType": "U",
+        "assessStaffId": 397174,
+        "evaluationDate": "2016-06-02",
+        "nextReviewDate": "2017-06-01",
+        "evaluationResultCode": "APP",
+        "reviewSupLevelType": {
+          "code": "U",
+          "description": "Unsentenced"
+        },
+        "reviewCommitteeCode": "OCA",
+        "assessCommitteeCode": "OCA",
+        "creationDate": "2016-06-01",
+        "assessmentCreateLocationId": "DNI",
+        "assessorStaffId": 397174,
+        "createDateTime": "2016-06-01T11:00:11.222591",
+        "createUserId": "CQX40D"
+      },
+      {
+        "bookingId": 1048600,
+        "assessmentSequence": 3,
+        "offenderId": 1376169,
+        "assessmentDate": "2015-12-04",
+        "assessmentType": {
+          "assessmentId": 9688,
+          "assessmentClass": "TYPE",
+          "assessmentCode": "CATEGORY",
+          "cellSharingAlertFlag": false,
+          "determineSupLevelFlag": true
+        },
+        "score": 1005,
+        "assessStatus": "I",
+        "calcSupLevelType": "C",
+        "assessStaffId": 397174,
+        "evaluationDate": "2015-12-04",
+        "nextReviewDate": "2016-06-01",
+        "evaluationResultCode": "APP",
+        "reviewSupLevelType": {
+          "code": "C",
+          "description": "Cat C"
+        },
+        "reviewCommitteeCode": "OCA",
+        "assessCommitteeCode": "OCA",
+        "creationDate": "2015-12-04",
+        "assessmentCreateLocationId": "DNI",
+        "assessorStaffId": 397174,
+        "createDateTime": "2015-12-04T13:06:09.135873",
+        "createUserId": "CQX40D"
+      },
+      {
+        "bookingId": 1048600,
+        "assessmentSequence": 2,
+        "offenderId": 1376169,
+        "assessmentDate": "2015-11-27",
+        "assessmentType": {
+          "assessmentId": 9688,
+          "assessmentClass": "TYPE",
+          "assessmentCode": "CATEGORY",
+          "cellSharingAlertFlag": false,
+          "determineSupLevelFlag": true
+        },
+        "score": 1007,
+        "assessStatus": "I",
+        "calcSupLevelType": "U",
+        "assessStaffId": 397173,
+        "evaluationDate": "2015-11-27",
+        "nextReviewDate": "2016-11-27",
+        "evaluationResultCode": "APP",
+        "reviewSupLevelType": {
+          "code": "U",
+          "description": "Unsentenced"
+        },
+        "reviewCommitteeCode": "OCA",
+        "assessCommitteeCode": "OCA",
+        "creationDate": "2015-11-27",
+        "assessmentCreateLocationId": "DNI",
+        "assessorStaffId": 397173,
+        "createDateTime": "2015-11-27T11:28:56.355619",
+        "createUserId": "EQY35A"
+      },
+      {
+        "bookingId": 165263,
+        "assessmentSequence": 4,
+        "offenderId": 1376169,
+        "assessmentDate": "2011-05-10",
+        "assessmentType": {
+          "assessmentId": 9688,
+          "assessmentClass": "TYPE",
+          "assessmentCode": "CATEGORY",
+          "cellSharingAlertFlag": false,
+          "determineSupLevelFlag": true
+        },
+        "score": 1005,
+        "assessStatus": "P",
+        "calcSupLevelType": "C",
+        "assessStaffId": 139891,
+        "nextReviewDate": "2011-11-06",
+        "assessCommitteeCode": "REVIEW",
+        "creationDate": "2011-05-10",
+        "assessmentCreateLocationId": "RNI",
+        "assessorStaffId": 139891,
+        "createDateTime": "2011-05-10T13:30:08.792502",
+        "createUserId": "BQA29U"
+      },
+      {
+        "bookingId": 165263,
+        "assessmentSequence": 3,
+        "offenderId": 1376169,
+        "assessmentDate": "2010-11-03",
+        "assessmentType": {
+          "assessmentId": 9688,
+          "assessmentClass": "TYPE",
+          "assessmentCode": "CATEGORY",
+          "cellSharingAlertFlag": false,
+          "determineSupLevelFlag": true
+        },
+        "score": 1005,
+        "assessStatus": "P",
+        "calcSupLevelType": "C",
+        "assessStaffId": 47242,
+        "assessComments": "dBuzHrtbQlajpbFZMXuAyxsKlbthnETdBuzHrtbQlajpbFZMXuAyxsKlbthnET",
+        "nextReviewDate": "2011-05-02",
+        "assessCommitteeCode": "REVIEW",
+        "creationDate": "2010-11-03",
+        "assessmentCreateLocationId": "RNI",
+        "assessorStaffId": 47242,
+        "createDateTime": "2010-11-03T10:20:56.985193",
+        "createUserId": "BQX29N"
+      }
+    ],
+    "headers": {
+      "Content-Type": "application/json;charset=UTF-8"
+    },
+    "status": 200
+  }
+}

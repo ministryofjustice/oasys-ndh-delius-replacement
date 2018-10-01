@@ -1,0 +1,107 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/custodyapi/offenders/offenderId/1376169/imprisonmentStatuses"
+  },
+  "response": {
+    "jsonBody": [
+      {
+        "bookingId": 1048600,
+        "imprisonStatusSeq": 5,
+        "imprisonmentStatus": {
+          "imprisonmentStatusId": 26,
+          "imprisonmentStatus": "SENT03",
+          "description": "Adult Imprisonment Without Option CJA03",
+          "bandCode": "2",
+          "rankValue": 110
+        },
+        "effectiveDateTime": "2016-07-13T09:21:47",
+        "agencyLocationId": "DNI",
+        "commentText": "mJBXvCHFEDuKtRQmerqwDexhuKWNjgIoVTAmJBXvCHFEDuKtRQmerqwDexhuKWNjgIoVT",
+        "latestStatus": true
+      },
+      {
+        "bookingId": 165263,
+        "imprisonStatusSeq": 1,
+        "imprisonmentStatus": {
+          "imprisonmentStatusId": 26,
+          "imprisonmentStatus": "SENT03",
+          "description": "Adult Imprisonment Without Option CJA03",
+          "bandCode": "2",
+          "rankValue": 110
+        },
+        "effectiveDateTime": "2010-06-02T13:50:25",
+        "agencyLocationId": "TRN",
+        "latestStatus": true
+      },
+      {
+        "bookingId": 1048600,
+        "imprisonStatusSeq": 4,
+        "imprisonmentStatus": {
+          "imprisonmentStatusId": 40,
+          "imprisonmentStatus": "UNK_SENT",
+          "description": "Unknown Sentenced",
+          "bandCode": "2",
+          "rankValue": 205
+        },
+        "effectiveDateTime": "2016-05-11T09:13:15",
+        "expiryDate": "2016-07-13",
+        "agencyLocationId": "DNI",
+        "commentText": "mGYTuSiChLhWPRgvoTNAkmGYTuSiChLhWPRgvoTNA",
+        "latestStatus": false
+      },
+      {
+        "bookingId": 1048600,
+        "imprisonStatusSeq": 3,
+        "imprisonmentStatus": {
+          "imprisonmentStatusId": 1220,
+          "imprisonmentStatus": "ADIMP_ORA",
+          "description": "ORA CJA03 Standard Determinate Sentence",
+          "bandCode": "2",
+          "rankValue": 110,
+          "imprisonmentStatusSeq": 99
+        },
+        "effectiveDateTime": "2015-12-04T14:33:20",
+        "expiryDate": "2016-05-11",
+        "agencyLocationId": "DNI",
+        "commentText": "RJTjXHkzKJwBMeePfVuKEVLhdrhDKSqPmENRJTjXHkzKJwBMeePfVuKEVLhdrhDKSqPmE",
+        "latestStatus": false
+      },
+      {
+        "bookingId": 1048600,
+        "imprisonStatusSeq": 2,
+        "imprisonmentStatus": {
+          "imprisonmentStatusId": 40,
+          "imprisonmentStatus": "UNK_SENT",
+          "description": "Unknown Sentenced",
+          "bandCode": "2",
+          "rankValue": 205
+        },
+        "effectiveDateTime": "2015-12-04T14:31:26",
+        "expiryDate": "2015-12-04",
+        "agencyLocationId": "DNI",
+        "commentText": "ckeqHRPPpwmnbdzJxHLSYMyckeqHRPPpwmnbdzJxHLSYMy",
+        "latestStatus": false
+      },
+      {
+        "bookingId": 1048600,
+        "imprisonStatusSeq": 1,
+        "imprisonmentStatus": {
+          "imprisonmentStatusId": 86,
+          "imprisonmentStatus": "RX",
+          "description": "Remanded to Magistrates Court",
+          "bandCode": "14",
+          "rankValue": 590
+        },
+        "effectiveDateTime": "2015-11-26T15:38:00",
+        "expiryDate": "2015-12-04",
+        "agencyLocationId": "DNI",
+        "latestStatus": false
+      }
+    ],
+    "headers": {
+      "Content-Type": "application/json;charset=UTF-8"
+    },
+    "status": 200
+  }
+}

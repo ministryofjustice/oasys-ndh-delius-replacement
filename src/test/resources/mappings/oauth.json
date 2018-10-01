@@ -1,0 +1,20 @@
+{
+  "request": {
+    "method": "POST",
+    "urlPath": "/oauth/token"
+  },
+  "response": {
+    "jsonBody": {
+      "access_token": "A.B.C",
+      "token_type": "bearer",
+      "expires_in": 43199,
+      "scope": "reporting",
+      "internalUser": false,
+      "jti": "5f8f325f-72f7-4f78-92cd-fde46e611993"
+    },
+    "headers": {
+      "Content-Type": "application/json;charset=UTF-8"
+    },
+    "status": 200
+  }
+}

@@ -53,7 +53,7 @@ public abstract class RequestResponseService {
 
     public String handleOkResponse(String correlationId, SoapEnvelope oasysResponse) {
         try {
-            return commonTransformer.transformedResponseXmlOf(oasysResponse);
+            return commonTransformer.asString(oasysResponse);
         } catch (JsonProcessingException e) {
             log.error(e.getMessage());
             exceptionLogService.logFault(oasysResponse.toString(), correlationId, "Can't serialize transformed risk update response: " + e.getMessage());
