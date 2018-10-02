@@ -1,8 +1,11 @@
 package uk.gov.justice.digital.ndh.controller;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.github.tomakehurst.wiremock.client.BasicCredentials;
+import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.common.ClasspathFileSource;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.github.tomakehurst.wiremock.matching.EqualToPattern;
 import com.github.tomakehurst.wiremock.standalone.JsonFileMappingsSource;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -33,9 +36,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -269,6 +275,28 @@ public class OasysOffenderControllerTest {
 
         assertThat(actual).isEqualTo(expected);
 
+    }
+
+    @Test
+    public void callsToCustodyAPIWillObtainToken() {
+        wm.loadMappingsUsing(new JsonFileMappingsSource(new ClasspathFileSource("mappings")));
+
+        assertThat(wm.getStubMappings().size()).isGreaterThan(0);
+
+        final String requestXml = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/OffenderDetails/realOffenderDetailsRequestFromOasysToNomis.xml")))
+                .lines().collect(Collectors.joining("\n"));
+
+        given()
+                .when()
+                .contentType(ContentType.XML)
+                .body(requestXml)
+                .post("/offenderDetails")
+                .then()
+                .statusCode(200);
+
+
+        WireMock.verify(1, postRequestedFor(urlPathEqualTo("/oauth/token")).withBasicAuth(new BasicCredentials("none","none")));
+        WireMock.verify(1, getRequestedFor(urlPathEqualTo("/custodyapi/offenders/nomsId/G8696GH")).withHeader("Authorization", new EqualToPattern("Bearer A.B.C")));
     }
 
 }

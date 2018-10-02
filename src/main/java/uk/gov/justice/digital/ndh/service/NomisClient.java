@@ -41,7 +41,7 @@ public class NomisClient {
         val token = oauthTokenProvider.get(OAUTH_TOKEN);
 
         final HttpResponse<String> response = Unirest.get(custodyApiBaseUrl + relativeUrl)
-                .header("Authorization", token.orElse(""))
+                .header("Authorization", "Bearer " + token.orElse(""))
                 .queryString(params)
                 .asString();
 
