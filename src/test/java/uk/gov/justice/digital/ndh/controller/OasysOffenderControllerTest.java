@@ -36,6 +36,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
@@ -69,11 +70,10 @@ public class OasysOffenderControllerTest {
 
     public static final String GOOD_DELIUS_INITIAL_SEARCH_RESPONSE = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/InitialSearch/realInitialSearchResponseFromDelius.xml")))
             .lines().collect(Collectors.joining("\n"));
-    private static final String REAL_DELIUS_RISK_FAULT_RESPONSE = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/RiskUpdate/realFaultResponseFromDelius.xml")))
-            .lines().collect(Collectors.joining("\n"));
     public static final String GOOD_DELIUS_OFFENDER_DETAILS_RESPONSE = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/OffenderDetails/realOffenderDetailsResponseFromDelius.xml")))
             .lines().collect(Collectors.joining("\n"));
-
+    private static final String REAL_DELIUS_RISK_FAULT_RESPONSE = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/RiskUpdate/realFaultResponseFromDelius.xml")))
+            .lines().collect(Collectors.joining("\n"));
     @Rule
     public WireMockRule wm = new WireMockRule(options().port(8090));
 
@@ -142,7 +142,7 @@ public class OasysOffenderControllerTest {
 
         when(mappingService.targetValueOf("MAG", COURT_CODE_TYPE)).thenReturn("MC");
         when(mappingService.targetValueOf("201", SENTENCE_CODE_TYPE)).thenReturn("910");
-        when(requirementLookupRepository.findByReqTypeAndReqCodeAndSubCode("N", "X","X02")).thenReturn(
+        when(requirementLookupRepository.findByReqTypeAndReqCodeAndSubCode("N", "X", "X02")).thenReturn(
                 Optional.of(RequirementLookup.builder()
                         .activityDesc("Named Licenced Premises")
                         .reqType("N")
@@ -297,8 +297,43 @@ public class OasysOffenderControllerTest {
                 .then()
                 .statusCode(200);
 
-        WireMock.verify(1, postRequestedFor(urlPathEqualTo("/oauth/token")).withBasicAuth(new BasicCredentials("none","none")));
+        WireMock.verify(1, postRequestedFor(urlPathEqualTo("/oauth/token")).withBasicAuth(new BasicCredentials("none", "none")));
         WireMock.verify(1, getRequestedFor(urlPathEqualTo("/custodyapi/offenders/nomsId/G8696GH")).withHeader("Authorization", new EqualToPattern("Bearer A.B.C")));
+    }
+
+    @Test
+    @DirtiesContext
+    public void callsToCustodyAPIWillReAuthenticate() {
+        wm.loadMappingsUsing(new JsonFileMappingsSource(new ClasspathFileSource("mappings")));
+
+        assertThat(wm.getStubMappings().size()).isGreaterThan(0);
+
+        stubFor(get(urlPathEqualTo("/custodyapi/offenders/nomsId/Z0000ZZ"))
+                .inScenario("expired_auth")
+                .willReturn(aResponse().withStatus(401))
+                .willSetStateTo("reauth"));
+
+        final String requestXml = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/OffenderDetails/realOffenderDetailsRequestFromOasysToNomis.xml")))
+                .lines().collect(Collectors.joining("\n")).replace("G8696GH","Z0000ZZ");
+
+        final String offenderJson = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("__files/offenderZ0000ZZ.json")))
+                .lines().collect(Collectors.joining("\n"));
+
+        stubFor(get(urlPathEqualTo("/custodyapi/offenders/nomsId/Z0000ZZ"))
+                .inScenario("expired_auth")
+                .whenScenarioStateIs("reauth")
+                .willReturn(aResponse().withStatus(200).withBody(offenderJson)));
+
+        given()
+                .when()
+                .contentType(ContentType.XML)
+                .body(requestXml)
+                .post("/offenderDetails")
+                .then()
+                .statusCode(200);
+
+        WireMock.verify(2, postRequestedFor(urlPathEqualTo("/oauth/token")).withBasicAuth(new BasicCredentials("none", "none")));
+        WireMock.verify(2, getRequestedFor(urlPathEqualTo("/custodyapi/offenders/nomsId/Z0000ZZ")).withHeader("Authorization", new EqualToPattern("Bearer A.B.C")));
     }
 
 }
