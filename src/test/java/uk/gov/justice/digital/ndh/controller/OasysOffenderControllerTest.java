@@ -226,6 +226,7 @@ public class OasysOffenderControllerTest {
     }
 
     @Test
+    @DirtiesContext
     public void postedOffenderDetailsMessageIsSentToCustodyAPIAndHandledAppropriately() throws IOException {
         wm.loadMappingsUsing(new JsonFileMappingsSource(new ClasspathFileSource("mappings")));
 
@@ -253,6 +254,7 @@ public class OasysOffenderControllerTest {
     }
 
     @Test
+    @DirtiesContext
     public void offenderNotFoundInNomisRespondsAppropriately() throws IOException {
         wm.loadMappingsUsing(new JsonFileMappingsSource(new ClasspathFileSource("mappings")));
 
@@ -278,7 +280,8 @@ public class OasysOffenderControllerTest {
     }
 
     @Test
-    public void callsToCustodyAPIWillObtainToken() {
+    @DirtiesContext
+    public void callsToCustodyAPIWillObtainToken() throws InterruptedException {
         wm.loadMappingsUsing(new JsonFileMappingsSource(new ClasspathFileSource("mappings")));
 
         assertThat(wm.getStubMappings().size()).isGreaterThan(0);
@@ -293,7 +296,6 @@ public class OasysOffenderControllerTest {
                 .post("/offenderDetails")
                 .then()
                 .statusCode(200);
-
 
         WireMock.verify(1, postRequestedFor(urlPathEqualTo("/oauth/token")).withBasicAuth(new BasicCredentials("none","none")));
         WireMock.verify(1, getRequestedFor(urlPathEqualTo("/custodyapi/offenders/nomsId/G8696GH")).withHeader("Authorization", new EqualToPattern("Bearer A.B.C")));
