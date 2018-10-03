@@ -171,7 +171,7 @@ public class OasysOffenderService extends RequestResponseService {
 
         final Optional<List<Alert>> maybeAlerts = maybeF2052AlertsOf(maybeOffender, latestBooking);
 
-        final Optional<SoapEnvelope> oasysOffenderDetailsResponse = maybeOffender.map(offender -> offenderTransformer.oasysOffenderDetailResponseOf(maybeOffender, latestBooking, maybeSentenceCalc, maybeSentence, maybeImprisonmentStatus, maybeCourtEvents, sentencingCourtAgencyLocation, maybeHomeAddress, maybeDischargeAddress, maybePhysicals, maybeAssessments, maybeAlerts, offender));
+        final Optional<SoapEnvelope> oasysOffenderDetailsResponse = maybeOffender.map(offender -> offenderTransformer.oasysOffenderDetailResponseOf(maybeOasysOffenderDetailsRequest, maybeOffender, latestBooking, maybeSentenceCalc, maybeSentence, maybeImprisonmentStatus, maybeCourtEvents, sentencingCourtAgencyLocation, maybeHomeAddress, maybeDischargeAddress, maybePhysicals, maybeAssessments, maybeAlerts, offender));
 
         Optional<String> response;
 

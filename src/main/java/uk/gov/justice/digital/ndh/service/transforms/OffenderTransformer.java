@@ -415,7 +415,7 @@ public class OffenderTransformer {
                 .build();
     }
 
-    public SoapEnvelope oasysOffenderDetailResponseOf(Optional<Offender> maybeOffender, Booking latestBooking, Optional<SentenceCalculation> maybeSentenceCalc, Optional<Sentence> maybeSentence, Optional<OffenderImprisonmentStatus> maybeImprisonmentStatus, Optional<List<CourtEvent>> maybeCourtEvents, Optional<AgencyLocation> sentencingCourtAgencyLocation, Optional<Address> maybeHomeAddress, Optional<Address> maybeDischargeAddress, Optional<List<Physicals>> maybePhysicals, Optional<List<OffenderAssessment>> maybeAssessments, Optional<List<Alert>> maybeF2052Alerts, Offender offender) {
+    public SoapEnvelope oasysOffenderDetailResponseOf(Optional<SoapEnvelope> maybeOasysOffenderDetailsRequest, Optional<Offender> maybeOffender, Booking latestBooking, Optional<SentenceCalculation> maybeSentenceCalc, Optional<Sentence> maybeSentence, Optional<OffenderImprisonmentStatus> maybeImprisonmentStatus, Optional<List<CourtEvent>> maybeCourtEvents, Optional<AgencyLocation> sentencingCourtAgencyLocation, Optional<Address> maybeHomeAddress, Optional<Address> maybeDischargeAddress, Optional<List<Physicals>> maybePhysicals, Optional<List<OffenderAssessment>> maybeAssessments, Optional<List<Alert>> maybeF2052Alerts, Offender offender) {
         return SoapEnvelope
                 .builder()
                 .header(SoapHeader.builder().build())
@@ -423,6 +423,7 @@ public class OffenderTransformer {
                         .builder()
                         .offenderDetailsResponse(OffenderDetailsResponse
                                 .builder()
+                                .header(maybeOasysOffenderDetailsRequest.map(rq -> commonTransformer.oasysHeaderOf(rq.getBody().getOffenderDetailsRequest().getHeader())).orElse(null))
                                 .offenderDetail(
                                         OffenderDetail
                                                 .builder()
