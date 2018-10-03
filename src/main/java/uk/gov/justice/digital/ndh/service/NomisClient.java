@@ -48,6 +48,7 @@ public class NomisClient {
                 .asString();
 
         if (isUnauthorised(response)) {
+            log.warn("Response unauthorised...");
             oauthTokenProvider.invalidate(OAUTH_TOKEN);
         }
 

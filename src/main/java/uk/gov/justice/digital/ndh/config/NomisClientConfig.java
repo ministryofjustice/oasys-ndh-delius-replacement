@@ -6,6 +6,7 @@ import com.google.common.cache.LoadingCache;
 import com.mashape.unirest.http.Unirest;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,7 +19,7 @@ public class NomisClientConfig {
 
     @Bean
     public LoadingCache<String, Optional<String>> oauthTokenProvider(@Value("${custody.api.user:none}") String custodyApiUser,
-                                                                     @Value("${custody.ai.password:none}") String custodyApiPassword,
+                                                                     @Value("${custody.api.password:none}") String custodyApiPassword,
                                                                      @Value("${oauth.url}") String oauthUrl) {
         return CacheBuilder.newBuilder().build(new CacheLoader<String, Optional<String>>() {
             @Override
@@ -30,7 +31,17 @@ public class NomisClientConfig {
                             .body("grant_type=client_credentials")
                             .asJson().getBody();
 
-                    return Optional.ofNullable(body.getObject().get("access_token").toString());
+                    final JSONObject object = body.getObject();
+
+                    final Optional<String> maybeToken = Optional.ofNullable(object.get("access_token")).map(Object::toString);
+
+                    if (maybeToken.isPresent()) {
+                        log.info("Obtained oauth token.");
+                    } else {
+                        log.error("Could not obtain oauth token.");
+                    }
+
+                    return maybeToken;
                 } catch (Exception e) {
                     log.error(e.getMessage());
                     return Optional.empty();
