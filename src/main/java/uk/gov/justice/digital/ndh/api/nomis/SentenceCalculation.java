@@ -1,12 +1,12 @@
 package uk.gov.justice.digital.ndh.api.nomis;
 
 import lombok.Builder;
-import lombok.Value;
+import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Value
+@Data
 @Builder
 public class SentenceCalculation {
     private Long sentenceCalculationId;
@@ -58,7 +58,9 @@ public class SentenceCalculation {
     private LocalDate releaseDate;
     private String releaseType;
     private LocalDate confirmedReleaseDate;
+    private String confirmedReleaseType;
     private LocalDate nonDtoReleaseDate;
+    private String nonDtoReleaseType;
     private LocalDate midTermDate;
-
+    private String midTermType;
 }

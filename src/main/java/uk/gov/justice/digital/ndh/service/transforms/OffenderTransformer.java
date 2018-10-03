@@ -487,7 +487,7 @@ public class OffenderTransformer {
     }
 
     private String releaseTypeOf(Optional<SentenceCalculation> maybeSentenceCalc) {
-        return maybeSentenceCalc.map(SentenceCalculation::getReleaseType)
+        return maybeSentenceCalc.flatMap(sc -> Optional.ofNullable(sc.getNonDtoReleaseType()))
                 .map(rt -> mappingService.targetValueOf(rt, RELEASE_NAME_CODE_TYPE))
                 .orElse(null);
     }
