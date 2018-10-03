@@ -16,4 +16,4 @@ spring:
 
 oasys.assessment.updates.path: Business/Processes/NDH_Web_Service/NDH_Web_Service_CMS_Update
 oasys.risk.updates.path: Business/Processes/NDH_Web_Service/NDH_Web_Service_Risk_Update
-oasys.initial.search.path: Business/Processes/NDH_Web_Service/NDH_Web_Service_Risk_Update
+oasys.initial.search.path: Business/Processes/NDH_Web_Service/NDH_Web_Service_Initial_Search
