@@ -21,7 +21,8 @@
         "effectiveSentenceLength": "03/06/00",
         "judiciallyImposedSentenceLength": "03/06/00",
         "releaseDate": "2017-10-22",
-        "releaseType": "HDCAD"
+        "releaseType": "HDCAD",
+        "nonDtoReleaseType": "CRD"
       },
       {
         "sentenceCalculationId": 5057017,
