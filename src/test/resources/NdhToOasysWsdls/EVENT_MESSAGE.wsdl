@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://xmlns.oracle.com/orawsv/EOR/SERVICES_PKG/EVENT_MESSAGE" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" name="EVENT_MESSAGE" targetNamespace="http://xmlns.oracle.com/orawsv/EOR/SERVICES_PKG/EVENT_MESSAGE">
+    <types>
+        <xsd:schema elementFormDefault="qualified" targetNamespace="http://xmlns.oracle.com/orawsv/EOR/SERVICES_PKG/EVENT_MESSAGE">
+            <xsd:element name="EVENT_MESSAGEInput">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element maxOccurs="1" minOccurs="0" name="TIMESTAMP-VARCHAR2-IN" type="xsd:string"/>
+                        <xsd:element maxOccurs="1" minOccurs="0" name="SENTENCEYEARS-VARCHAR2-IN" type="xsd:string"/>
+                        <xsd:element maxOccurs="1" minOccurs="0" name="SENTENCEMONTHS-VARCHAR2-IN" type="xsd:string"/>
+                        <xsd:element maxOccurs="1" minOccurs="0" name="SENTENCEDAYS-VARCHAR2-IN" type="xsd:string"/>
+                        <xsd:element maxOccurs="1" minOccurs="0" name="SENTENCEDATE-VARCHAR2-IN" type="xsd:string"/>
+                        <xsd:element maxOccurs="1" minOccurs="0" name="RELEASEDATE-VARCHAR2-IN" type="xsd:string"/>
+                        <xsd:element maxOccurs="1" minOccurs="0" name="PRISONNUMBER-VARCHAR2-IN" type="xsd:string"/>
+                        <xsd:element maxOccurs="1" minOccurs="0" name="PNC-VARCHAR2-IN" type="xsd:string"/>
+                        <xsd:element maxOccurs="1" minOccurs="0" name="OLDPRISONNUMBER-VARCHAR2-IN" type="xsd:string"/>
+                        <xsd:element maxOccurs="1" minOccurs="0" name="NOMISID-VARCHAR2-IN" type="xsd:string"/>
+                        <xsd:element maxOccurs="1" minOccurs="0" name="MOVEMENTFROMORTO-VARCHAR2-IN" type="xsd:string"/>
+                        <xsd:element maxOccurs="1" minOccurs="0" name="MOVEMENTDELETE-VARCHAR2-IN" type="xsd:string"/>
+                        <xsd:element maxOccurs="1" minOccurs="0" name="MOVEMENTCOURTCODE-VARCHAR2-IN" type="xsd:string"/>
+                        <xsd:element maxOccurs="1" minOccurs="0" name="MOVEMENTCODE-VARCHAR2-IN" type="xsd:string"/>
+                        <xsd:element maxOccurs="1" minOccurs="0" name="FORENAME2-VARCHAR2-IN" type="xsd:string"/>
+                        <xsd:element maxOccurs="1" minOccurs="0" name="FORENAME1-VARCHAR2-IN" type="xsd:string"/>
+                        <xsd:element maxOccurs="1" minOccurs="0" name="FAMILYNAME-VARCHAR2-IN" type="xsd:string"/>
+                        <xsd:element maxOccurs="1" minOccurs="0" name="EVENT_TYPE-VARCHAR2-IN" type="xsd:string"/>
+                        <xsd:element maxOccurs="1" minOccurs="0" name="ESTABLISHMENTCODE-VARCHAR2-IN" type="xsd:string"/>
+                        <xsd:element maxOccurs="1" minOccurs="0" name="EFFECTIVESENTENCELENGTH-VARCHAR2-IN" type="xsd:string"/>
+                        <xsd:element maxOccurs="1" minOccurs="0" name="DATEOFBIRTH-VARCHAR2-IN" type="xsd:string"/>
+                        <xsd:element maxOccurs="1" minOccurs="0" name="CORRELATIONID-VARCHAR2-IN" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="EVENT_MESSAGEOutput">
+                <xsd:complexType>
+                    <xsd:sequence>            </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+        </xsd:schema>
+    </types>
+    <message name="EVENT_MESSAGEInputMessage">
+        <part element="tns:EVENT_MESSAGEInput" name="parameters"/>
+    </message>
+    <message name="EVENT_MESSAGEOutputMessage">
+        <part element="tns:EVENT_MESSAGEOutput" name="parameters"/>
+    </message>
+    <portType name="EVENT_MESSAGEPortType">
+        <operation name="EVENT_MESSAGE">
+            <input message="tns:EVENT_MESSAGEInputMessage"/>
+            <output message="tns:EVENT_MESSAGEOutputMessage"/>
+        </operation>
+    </portType>
+    <binding name="EVENT_MESSAGEBinding" type="tns:EVENT_MESSAGEPortType">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="EVENT_MESSAGE">
+            <soap:operation soapAction="/Business/UnitTestProcesses/OASys-R_Web_Service/EVENT_MESSAGE"/>
+            <input>
+                <soap:body parts="parameters" use="literal"/>
+            </input>
+            <output>
+                <soap:body parts="parameters" use="literal"/>
+            </output>
+        </operation>
+    </binding>
+    <service name="EVENT_MESSAGEService">
+        <documentation>Oracle Web Service</documentation>
+        <port binding="tns:EVENT_MESSAGEBinding" name="EVENT_MESSAGEPort">
+            <soap:address location="http://10.96.130.204:8666/Business/UnitTestProcesses/OASys-R_Web_Service/EVENT_MESSAGE"/>
+        </port>
+    </service>
+</definitions>

@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.xml.sax.InputSource;
 import uk.gov.justice.digital.ndh.api.delius.request.Header;
-import uk.gov.justice.digital.ndh.api.soap.SoapEnvelope;
+import uk.gov.justice.digital.ndh.api.soap.SoapEnvelopeSpec1_2;
 import uk.gov.justice.digital.ndh.api.soap.SoapHeader;
 import uk.gov.justice.digital.ndh.service.ExceptionLogService;
 
@@ -56,16 +56,16 @@ public class CommonTransformer {
                 .build();
     }
 
-    public Optional<SoapEnvelope> asSoapEnvelope(String updateXml) {
+    public Optional<SoapEnvelopeSpec1_2> asSoapEnvelope(String updateXml) {
         try {
-            return Optional.of(xmlMapper.readValue(updateXml, SoapEnvelope.class));
+            return Optional.of(xmlMapper.readValue(updateXml, SoapEnvelopeSpec1_2.class));
         } catch (IOException e) {
             exceptionLogService.logFault(updateXml, null, "Can't asSoapEnvelope xml soap message from Oasys: " + e.getMessage());
         }
         return Optional.empty();
     }
 
-    public String asString(SoapEnvelope soapEnvelope) throws JsonProcessingException {
+    public String asString(SoapEnvelopeSpec1_2 soapEnvelope) throws JsonProcessingException {
         return xmlMapper.writeValueAsString(soapEnvelope);
     }
 

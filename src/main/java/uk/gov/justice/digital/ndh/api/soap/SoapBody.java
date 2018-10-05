@@ -19,6 +19,7 @@ import uk.gov.justice.digital.ndh.api.oasys.request.SubmitRiskDataRequest;
 import uk.gov.justice.digital.ndh.api.oasys.response.InitialSearchResponse;
 import uk.gov.justice.digital.ndh.api.oasys.response.OffenderDetailsResponse;
 import uk.gov.justice.digital.ndh.api.oasys.response.RiskUpdateResponse;
+import uk.gov.justice.digital.ndh.api.oasys.xtag.EventMessage;
 
 @Value
 @EqualsAndHashCode(exclude = "fault") //Compare "null" nodes returns false, so exclude
@@ -78,6 +79,10 @@ public class SoapBody {
     // From NDelius (offender details response)
     @JsonProperty("GetOffenderDetailsResponse")
     private DeliusOffenderDetailsResponse deliusOffenderDetailsResponse;
+
+    // To Oasys, XTAG push message from NOMIS
+    @JacksonXmlProperty(namespace = "http://xmlns.oracle.com/orawsv/EOR/SERVICES_PKG/EVENT_MESSAGE", localName = "EVENT_MESSAGEInput")
+    private EventMessage eventMessage;
 
     @JsonProperty(value = "Fault", access = JsonProperty.Access.WRITE_ONLY)
     private JsonNode fault;

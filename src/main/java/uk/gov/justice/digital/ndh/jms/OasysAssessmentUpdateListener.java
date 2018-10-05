@@ -9,7 +9,7 @@ import org.dom4j.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
-import uk.gov.justice.digital.ndh.api.soap.SoapEnvelope;
+import uk.gov.justice.digital.ndh.api.soap.SoapEnvelopeSpec1_2;
 import uk.gov.justice.digital.ndh.service.ExceptionLogService;
 import uk.gov.justice.digital.ndh.service.MessageStoreService;
 import uk.gov.justice.digital.ndh.service.OasysAssessmentService;
@@ -48,7 +48,7 @@ public class OasysAssessmentUpdateListener {
         return ((TextMessage) message).getText();
     }
 
-    private Optional<SoapEnvelope> buildDeliusSoapEnvelope(Optional<SoapEnvelope> maybeNdhSoapMessage) {
+    private Optional<SoapEnvelopeSpec1_2> buildDeliusSoapEnvelope(Optional<SoapEnvelopeSpec1_2> maybeNdhSoapMessage) {
         return maybeNdhSoapMessage.map(oasysAssessmentUpdateTransformer::deliusAssessmentUpdateOf);
     }
 
@@ -63,9 +63,9 @@ public class OasysAssessmentUpdateListener {
 
         maybeSoapXmlFromOasys.ifPresent(xml -> logIdempotent(message, xml, correlationId, offenderId, MessageStoreService.ProcStates.GLB_ProcState_InboundBeforeTransformation));
 
-        Optional<SoapEnvelope> maybeInputSoapMessage = buildNdhSoapEnvelope(maybeSoapXmlFromOasys, correlationId, message);
+        Optional<SoapEnvelopeSpec1_2> maybeInputSoapMessage = buildNdhSoapEnvelope(maybeSoapXmlFromOasys, correlationId, message);
 
-        Optional<SoapEnvelope> maybeDeliusRequest = Optional.empty();
+        Optional<SoapEnvelopeSpec1_2> maybeDeliusRequest = Optional.empty();
 
         try {
             maybeDeliusRequest = buildDeliusSoapEnvelope(maybeInputSoapMessage);
@@ -97,15 +97,15 @@ public class OasysAssessmentUpdateListener {
         }
     }
 
-    private Optional<SoapEnvelope> handleDeliusResponse(Optional<String> maybeRawDeliusResponse, Optional<SoapEnvelope> maybeDeliusRequest) {
+    private Optional<SoapEnvelopeSpec1_2> handleDeliusResponse(Optional<String> maybeRawDeliusResponse, Optional<SoapEnvelopeSpec1_2> maybeDeliusRequest) {
 
         return maybeRawDeliusResponse.map(
                 rawDeliusResponse -> {
 
-                    SoapEnvelope deliusResponse = null;
+                    SoapEnvelopeSpec1_2 deliusResponse = null;
 
                     try {
-                        deliusResponse = xmlMapper.readValue(rawDeliusResponse, SoapEnvelope.class);
+                        deliusResponse = xmlMapper.readValue(rawDeliusResponse, SoapEnvelopeSpec1_2.class);
                         if (deliusResponse.getBody().isSoapFault()) {
                             exceptionLogService.logFault(rawDeliusResponse, maybeDeliusRequest.get().getHeader().getHeader().getMessageId(), "SOAP Fault from Delius");
                         }
@@ -118,7 +118,7 @@ public class OasysAssessmentUpdateListener {
         );
     }
 
-    private Optional<String> rawDeliusResponseOf(Optional<String> maybeRawDeliusRequest, Optional<SoapEnvelope> maybeDeliusRequest, Optional<String> maybeSoapXmlFromOasys, Message message) throws JMSException, UnirestException {
+    private Optional<String> rawDeliusResponseOf(Optional<String> maybeRawDeliusRequest, Optional<SoapEnvelopeSpec1_2> maybeDeliusRequest, Optional<String> maybeSoapXmlFromOasys, Message message) throws JMSException, UnirestException {
 
         if (maybeRawDeliusRequest.isPresent()) {
             try {
@@ -145,7 +145,7 @@ public class OasysAssessmentUpdateListener {
         }
     }
 
-    private Optional<String> rawDeliusRequestOf(Optional<SoapEnvelope> maybeDeliusRequest, Message message, String correlationId, String offenderId) throws JMSException {
+    private Optional<String> rawDeliusRequestOf(Optional<SoapEnvelopeSpec1_2> maybeDeliusRequest, Message message, String correlationId, String offenderId) throws JMSException {
 
         final Optional<String> maybeRawDeliusRequest = maybeDeliusRequest.map(deliusAssessmentUpdateSoapEnvelope -> {
 
@@ -167,11 +167,11 @@ public class OasysAssessmentUpdateListener {
         return maybeRawDeliusRequest;
     }
 
-    private Optional<SoapEnvelope> buildNdhSoapEnvelope(Optional<String> maybeSoapXmlFromOasys, String correlationId, Message message) {
+    private Optional<SoapEnvelopeSpec1_2> buildNdhSoapEnvelope(Optional<String> maybeSoapXmlFromOasys, String correlationId, Message message) {
 
-        final Optional<SoapEnvelope> maybeNdhAssessmentUpdateSoapEnvelope = maybeSoapXmlFromOasys.map(soapXmlFromOasys -> {
+        final Optional<SoapEnvelopeSpec1_2> maybeNdhAssessmentUpdateSoapEnvelope = maybeSoapXmlFromOasys.map(soapXmlFromOasys -> {
             try {
-                final SoapEnvelope soapEnvelope = xmlMapper.readValue(soapXmlFromOasys, SoapEnvelope.class);
+                final SoapEnvelopeSpec1_2 soapEnvelope = xmlMapper.readValue(soapXmlFromOasys, SoapEnvelopeSpec1_2.class);
 
                 if (soapEnvelope.getBody() == null) {
                     log.error("Input message has no SOAP body. Ignore and continue: {}", soapXmlFromOasys);

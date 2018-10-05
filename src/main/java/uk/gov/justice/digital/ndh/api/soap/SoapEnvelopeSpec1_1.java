@@ -8,14 +8,14 @@ import lombok.Value;
 
 @Value
 @Builder
-@JacksonXmlRootElement(localName = "Envelope", namespace = "http://www.w3.org/2003/05/soap-envelope")
-public class SoapEnvelope {
+@JacksonXmlRootElement(localName = "Envelope", namespace = "http://schemas.xmlsoap.org/soap/envelope/")
+public class SoapEnvelopeSpec1_1 {
 
-    @JacksonXmlProperty(localName = "Header", namespace = "http://www.w3.org/2003/05/soap-envelope")
+    @JacksonXmlProperty(localName = "Header", namespace = "http://schemas.xmlsoap.org/soap/envelope/")
     @JsonProperty("Header")
     private SoapHeader header;
 
-    @JacksonXmlProperty(localName = "Body", namespace = "http://www.w3.org/2003/05/soap-envelope")
+    @JacksonXmlProperty(localName = "Body", namespace = "http://schemas.xmlsoap.org/soap/envelope/")
     @JsonProperty("Body")
     private SoapBody body;
 }

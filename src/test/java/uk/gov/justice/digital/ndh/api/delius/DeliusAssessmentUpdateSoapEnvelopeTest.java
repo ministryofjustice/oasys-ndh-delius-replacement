@@ -13,7 +13,7 @@ import uk.gov.justice.digital.ndh.api.delius.request.OasysSupervisionPlan;
 import uk.gov.justice.digital.ndh.api.delius.request.RiskType;
 import uk.gov.justice.digital.ndh.api.delius.request.SubmitAssessmentSummaryRequest;
 import uk.gov.justice.digital.ndh.api.soap.SoapBody;
-import uk.gov.justice.digital.ndh.api.soap.SoapEnvelope;
+import uk.gov.justice.digital.ndh.api.soap.SoapEnvelopeSpec1_2;
 import uk.gov.justice.digital.ndh.api.soap.SoapHeader;
 
 import java.io.IOException;
@@ -25,7 +25,7 @@ public class DeliusAssessmentUpdateSoapEnvelopeTest {
     @Test
     public void builtMessageSerializesToValidSoapMessage() throws IOException {
 
-        final SoapEnvelope builtMessage = SoapEnvelope.builder()
+        final SoapEnvelopeSpec1_2 builtMessage = SoapEnvelopeSpec1_2.builder()
                 .header(SoapHeader
                         .builder()
                         .header(Header

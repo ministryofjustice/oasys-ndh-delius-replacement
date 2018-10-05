@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.junit.Test;
-import uk.gov.justice.digital.ndh.api.soap.SoapEnvelope;
+import uk.gov.justice.digital.ndh.api.soap.SoapEnvelopeSpec1_2;
 
 import java.io.IOException;
 
@@ -30,7 +30,7 @@ public class DeliusAssessmentSummaryResponseTest {
         XmlMapper xmlMapper = new XmlMapper();
         xmlMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-        final SoapEnvelope deliusResponse = xmlMapper.readValue(faulty, SoapEnvelope.class);
+        final SoapEnvelopeSpec1_2 deliusResponse = xmlMapper.readValue(faulty, SoapEnvelopeSpec1_2.class);
 
         final JsonNode fault = deliusResponse.getBody().getFault();
 
@@ -48,7 +48,7 @@ public class DeliusAssessmentSummaryResponseTest {
         XmlMapper xmlMapper = new XmlMapper();
         xmlMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-        final SoapEnvelope deliusResponse = xmlMapper.readValue(notFaulty, SoapEnvelope.class);
+        final SoapEnvelopeSpec1_2 deliusResponse = xmlMapper.readValue(notFaulty, SoapEnvelopeSpec1_2.class);
 
         assertThat(deliusResponse.getBody().isSoapFault()).isFalse();
     }

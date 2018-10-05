@@ -11,7 +11,7 @@ import org.xmlunit.diff.DifferenceEvaluators;
 import uk.gov.justice.digital.ndh.api.oasys.common.ICMSReference;
 import uk.gov.justice.digital.ndh.api.oasys.request.Header;
 import uk.gov.justice.digital.ndh.api.soap.SoapBody;
-import uk.gov.justice.digital.ndh.api.soap.SoapEnvelope;
+import uk.gov.justice.digital.ndh.api.soap.SoapEnvelopeSpec1_2;
 import uk.gov.justice.digital.ndh.api.soap.SoapHeader;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -196,7 +196,7 @@ public class OffenderDetailsResponseTest {
                 "   </soap:Body>\n" +
                 "</soap:Envelope>";
 
-        final SoapEnvelope oasysResponse = SoapEnvelope
+        final SoapEnvelopeSpec1_2 oasysResponse = SoapEnvelopeSpec1_2
                 .builder()
                 .header(SoapHeader
                         .builder()

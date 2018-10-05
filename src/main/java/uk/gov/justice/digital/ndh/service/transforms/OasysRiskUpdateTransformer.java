@@ -7,7 +7,7 @@ import uk.gov.justice.digital.ndh.api.delius.request.SubmitRiskDataRequest;
 import uk.gov.justice.digital.ndh.api.delius.response.DeliusRiskUpdateResponse;
 import uk.gov.justice.digital.ndh.api.oasys.response.RiskUpdateResponse;
 import uk.gov.justice.digital.ndh.api.soap.SoapBody;
-import uk.gov.justice.digital.ndh.api.soap.SoapEnvelope;
+import uk.gov.justice.digital.ndh.api.soap.SoapEnvelopeSpec1_2;
 
 import java.util.Optional;
 import java.util.function.Function;
@@ -23,10 +23,10 @@ public class OasysRiskUpdateTransformer {
         this.commonTransformer = commonTransformer;
     }
 
-    public SoapEnvelope deliusRiskUpdateRequestOf(SoapEnvelope oasysRiskUpdate) {
+    public SoapEnvelopeSpec1_2 deliusRiskUpdateRequestOf(SoapEnvelopeSpec1_2 oasysRiskUpdate) {
         final String correlationID = oasysRiskUpdate.getBody().getRiskUpdateRequest().getHeader().getCorrelationID();
 
-        return SoapEnvelope.builder()
+        return SoapEnvelopeSpec1_2.builder()
                 .header(commonTransformer.deliusSoapHeaderOf(correlationID))
                 .body(SoapBody
                         .builder()
@@ -42,9 +42,9 @@ public class OasysRiskUpdateTransformer {
                 .build();
     }
 
-    public Optional<SoapEnvelope> oasysRiskUpdateResponseOf(Optional<DeliusRiskUpdateResponse> maybeDeliusRiskUpdateResponse, Optional<SoapEnvelope> maybeOasysRiskUpdate) {
+    public Optional<SoapEnvelopeSpec1_2> oasysRiskUpdateResponseOf(Optional<DeliusRiskUpdateResponse> maybeDeliusRiskUpdateResponse, Optional<SoapEnvelopeSpec1_2> maybeOasysRiskUpdate) {
         return maybeDeliusRiskUpdateResponse.map(deliusRiskUpdateResponse ->
-                SoapEnvelope
+                SoapEnvelopeSpec1_2
                         .builder()
                         .body(SoapBody
                                 .builder()

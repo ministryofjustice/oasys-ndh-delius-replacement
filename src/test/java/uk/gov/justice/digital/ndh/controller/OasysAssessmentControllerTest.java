@@ -20,7 +20,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.justice.digital.ndh.api.oasys.request.Header;
 import uk.gov.justice.digital.ndh.api.oasys.response.RiskUpdateResponse;
 import uk.gov.justice.digital.ndh.api.soap.SoapBody;
-import uk.gov.justice.digital.ndh.api.soap.SoapEnvelope;
+import uk.gov.justice.digital.ndh.api.soap.SoapEnvelopeSpec1_2;
 import uk.gov.justice.digital.ndh.service.ExceptionLogService;
 import uk.gov.justice.digital.ndh.service.MappingService;
 import uk.gov.justice.digital.ndh.service.MessageStoreService;
@@ -193,9 +193,9 @@ public class OasysAssessmentControllerTest {
                 .then()
                 .statusCode(200).extract().body().asString();
 
-        final SoapEnvelope actual = xmlMapper.readValue(actualXml, SoapEnvelope.class);
+        final SoapEnvelopeSpec1_2 actual = xmlMapper.readValue(actualXml, SoapEnvelopeSpec1_2.class);
 
-        final SoapEnvelope expected = SoapEnvelope.builder()
+        final SoapEnvelopeSpec1_2 expected = SoapEnvelopeSpec1_2.builder()
                 .body(SoapBody.builder()
                         .riskUpdateResponse(RiskUpdateResponse.builder()
                                 .caseReferenceNumber("T123456")

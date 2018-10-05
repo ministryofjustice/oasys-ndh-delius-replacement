@@ -20,7 +20,7 @@ import uk.gov.justice.digital.ndh.api.oasys.request.Risk;
 import uk.gov.justice.digital.ndh.api.oasys.request.SubmitRiskDataRequest;
 import uk.gov.justice.digital.ndh.api.oasys.response.RiskUpdateResponse;
 import uk.gov.justice.digital.ndh.api.soap.SoapBody;
-import uk.gov.justice.digital.ndh.api.soap.SoapEnvelope;
+import uk.gov.justice.digital.ndh.api.soap.SoapEnvelopeSpec1_2;
 import uk.gov.justice.digital.ndh.api.soap.SoapHeader;
 import uk.gov.justice.digital.ndh.service.ExceptionLogService;
 
@@ -49,11 +49,11 @@ public class OasysRiskUpdateTransformerTest {
     @Test
     public void oasysRiskUpdateIsTransformedCorrectly() {
 
-        final SoapEnvelope oasysRequest = anOasysRiskUpdate();
+        final SoapEnvelopeSpec1_2 oasysRequest = anOasysRiskUpdate();
 
         OasysRiskUpdateTransformer transformer = new OasysRiskUpdateTransformer(new CommonTransformer(getXmlMapper(), mock(ObjectMapper.class), mock(ExceptionLogService.class)));
 
-        SoapEnvelope expected = SoapEnvelope
+        SoapEnvelopeSpec1_2 expected = SoapEnvelopeSpec1_2
                 .builder()
                 .header(SoapHeader
                         .builder()
@@ -76,15 +76,15 @@ public class OasysRiskUpdateTransformerTest {
                         .build())
                 .build();
 
-        SoapEnvelope actual = transformer.deliusRiskUpdateRequestOf(oasysRequest);
+        SoapEnvelopeSpec1_2 actual = transformer.deliusRiskUpdateRequestOf(oasysRequest);
 
         assertThat(actual).isEqualTo(expected);
 
 
     }
 
-    private SoapEnvelope anOasysRiskUpdate() {
-        return SoapEnvelope
+    private SoapEnvelopeSpec1_2 anOasysRiskUpdate() {
+        return SoapEnvelopeSpec1_2
                 .builder()
                 .header(SoapHeader.builder().build())
                 .body(SoapBody
@@ -129,16 +129,16 @@ public class OasysRiskUpdateTransformerTest {
 
         OasysRiskUpdateTransformer transformer = new OasysRiskUpdateTransformer(new CommonTransformer(getXmlMapper(), mock(ObjectMapper.class), mock(ExceptionLogService.class)));
 
-        SoapEnvelope expected = anOasysRiskUpdateResponse();
+        SoapEnvelopeSpec1_2 expected = anOasysRiskUpdateResponse();
 
-        final Optional<SoapEnvelope> actual = transformer.oasysRiskUpdateResponseOf(Optional.of(deliusResponse), Optional.of(anOasysRiskUpdate()));
+        final Optional<SoapEnvelopeSpec1_2> actual = transformer.oasysRiskUpdateResponseOf(Optional.of(deliusResponse), Optional.of(anOasysRiskUpdate()));
 
         assertThat(actual.isPresent()).isTrue();
         assertThat(actual.get()).isEqualTo(expected);
     }
 
-    private SoapEnvelope anOasysRiskUpdateResponse() {
-        return SoapEnvelope
+    private SoapEnvelopeSpec1_2 anOasysRiskUpdateResponse() {
+        return SoapEnvelopeSpec1_2
                 .builder()
                 .body(SoapBody
                         .builder()
@@ -164,7 +164,7 @@ public class OasysRiskUpdateTransformerTest {
 
         OasysRiskUpdateTransformer transformer = new OasysRiskUpdateTransformer(new CommonTransformer(xmlMapper, mock(ObjectMapper.class), mock(ExceptionLogService.class)));
 
-        final SoapEnvelope builtMessage = transformer.deliusRiskUpdateRequestOf(anOasysRiskUpdate());
+        final SoapEnvelopeSpec1_2 builtMessage = transformer.deliusRiskUpdateRequestOf(anOasysRiskUpdate());
 
         String serialized = xmlMapper.writeValueAsString(builtMessage);
 
@@ -185,7 +185,7 @@ public class OasysRiskUpdateTransformerTest {
     public void serializedOasysResponseIsSchemaCompliant() throws JsonProcessingException {
         final XmlMapper xmlMapper = getXmlMapper();
 
-        final SoapEnvelope builtMessage = anOasysRiskUpdateResponse();
+        final SoapEnvelopeSpec1_2 builtMessage = anOasysRiskUpdateResponse();
 
         String serialized = xmlMapper.writeValueAsString(builtMessage);
 

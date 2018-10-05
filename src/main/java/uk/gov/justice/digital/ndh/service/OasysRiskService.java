@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.digital.ndh.api.delius.response.DeliusRiskUpdateResponse;
-import uk.gov.justice.digital.ndh.api.soap.SoapEnvelope;
+import uk.gov.justice.digital.ndh.api.soap.SoapEnvelopeSpec1_2;
 import uk.gov.justice.digital.ndh.service.transforms.CommonTransformer;
 import uk.gov.justice.digital.ndh.service.transforms.FaultTransformer;
 import uk.gov.justice.digital.ndh.service.transforms.OasysRiskUpdateTransformer;
@@ -91,7 +91,7 @@ public class OasysRiskService extends RequestResponseService {
         return maybeTransformedXml.flatMap((String transformedXml) -> callDeliusRiskUpdate(transformedXml, correlationId));
     }
 
-    private Optional<SoapEnvelope> deliusRiskUpdateRequestOf(Optional<SoapEnvelope> maybeOasysRiskUpdate) {
+    private Optional<SoapEnvelopeSpec1_2> deliusRiskUpdateRequestOf(Optional<SoapEnvelopeSpec1_2> maybeOasysRiskUpdate) {
         return maybeOasysRiskUpdate.map(oasysRiskUpdateTransformer::deliusRiskUpdateRequestOf);
     }
 

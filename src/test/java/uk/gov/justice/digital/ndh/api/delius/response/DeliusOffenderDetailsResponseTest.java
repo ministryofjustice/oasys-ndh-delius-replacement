@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
-import uk.gov.justice.digital.ndh.api.soap.SoapEnvelope;
+import uk.gov.justice.digital.ndh.api.soap.SoapEnvelopeSpec1_2;
 
 import java.io.IOException;
 
@@ -210,7 +210,7 @@ public class DeliusOffenderDetailsResponseTest {
         XmlMapper xmlMapper = new XmlMapper();
         xmlMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
 
-        final SoapEnvelope soapEnvelope = xmlMapper.readValue(soap, SoapEnvelope.class);
+        final SoapEnvelopeSpec1_2 soapEnvelope = xmlMapper.readValue(soap, SoapEnvelopeSpec1_2.class);
 
         final DeliusOffenderDetailsResponse actual = soapEnvelope.getBody().getDeliusOffenderDetailsResponse();
 

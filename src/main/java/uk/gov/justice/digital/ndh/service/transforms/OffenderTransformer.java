@@ -45,7 +45,7 @@ import uk.gov.justice.digital.ndh.api.oasys.response.SentenceDetail;
 import uk.gov.justice.digital.ndh.api.oasys.response.SubSetEvent;
 import uk.gov.justice.digital.ndh.api.oasys.response.SubSetOffender;
 import uk.gov.justice.digital.ndh.api.soap.SoapBody;
-import uk.gov.justice.digital.ndh.api.soap.SoapEnvelope;
+import uk.gov.justice.digital.ndh.api.soap.SoapEnvelopeSpec1_2;
 import uk.gov.justice.digital.ndh.api.soap.SoapHeader;
 import uk.gov.justice.digital.ndh.jpa.repository.RequirementLookup;
 import uk.gov.justice.digital.ndh.jpa.repository.RequirementLookupRepository;
@@ -81,8 +81,8 @@ public class OffenderTransformer {
     public static final long SECURITY_CATEGORY_CODE_TYPE = 13L;
     private static final String ADDITIONAL_SENTENCING_REQUIREMENTS = "ADDITIONAL_SENTENCING_REQUIREMENTS";
     public static final long RELEASE_NAME_CODE_TYPE = 34L;
-    public final BiFunction<Optional<SoapEnvelope>, Optional<SoapEnvelope>, Optional<SoapEnvelope>> initialSearchResponseTransform;
-    public final BiFunction<Optional<SoapEnvelope>, Optional<SoapEnvelope>, Optional<SoapEnvelope>> offenderDetailsResponseTransform;
+    public final BiFunction<Optional<SoapEnvelopeSpec1_2>, Optional<SoapEnvelopeSpec1_2>, Optional<SoapEnvelopeSpec1_2>> initialSearchResponseTransform;
+    public final BiFunction<Optional<SoapEnvelopeSpec1_2>, Optional<SoapEnvelopeSpec1_2>, Optional<SoapEnvelopeSpec1_2>> offenderDetailsResponseTransform;
     private final CommonTransformer commonTransformer;
     private final MappingService mappingService;
     private final RequirementLookupRepository requirementLookupRepository;
@@ -100,7 +100,7 @@ public class OffenderTransformer {
         this.requirementLookupRepository = requirementLookupRepository;
 
         initialSearchResponseTransform = (rq, rs) -> rs.map(deliusInitialSearchResponse ->
-                SoapEnvelope
+                SoapEnvelopeSpec1_2
                         .builder()
                         .body(
                                 SoapBody
@@ -116,7 +116,7 @@ public class OffenderTransformer {
                         .build());
 
         offenderDetailsResponseTransform = (rq, rs) -> rs.map(deliusOffenderDetailsResponse ->
-                SoapEnvelope
+                SoapEnvelopeSpec1_2
                         .builder()
                         .header(SoapHeader.builder().build())
                         .body(
@@ -321,10 +321,10 @@ public class OffenderTransformer {
                 .orElse(null);
     }
 
-    public SoapEnvelope deliusInitialSearchRequestOf(SoapEnvelope oasysInitialSearchRequest) {
+    public SoapEnvelopeSpec1_2 deliusInitialSearchRequestOf(SoapEnvelopeSpec1_2 oasysInitialSearchRequest) {
 
         final String correlationID = oasysInitialSearchRequest.getBody().getInitialSearchRequest().getHeader().getCorrelationID().trim();
-        return SoapEnvelope.builder()
+        return SoapEnvelopeSpec1_2.builder()
                 .header(commonTransformer.deliusSoapHeaderOf(correlationID))
                 .body(SoapBody
                         .builder()
@@ -392,10 +392,10 @@ public class OffenderTransformer {
                 .orElse(null);
     }
 
-    public SoapEnvelope deliusOffenderDetailsRequestOf(SoapEnvelope oasysOffenderDetailRequest) {
+    public SoapEnvelopeSpec1_2 deliusOffenderDetailsRequestOf(SoapEnvelopeSpec1_2 oasysOffenderDetailRequest) {
         final String correlationID = oasysOffenderDetailRequest.getBody().getOffenderDetailsRequest().getHeader().getCorrelationID().trim();
 
-        return SoapEnvelope
+        return SoapEnvelopeSpec1_2
                 .builder()
                 .header(commonTransformer.deliusSoapHeaderOf(correlationID))
                 .body(SoapBody
@@ -415,8 +415,8 @@ public class OffenderTransformer {
                 .build();
     }
 
-    public SoapEnvelope oasysOffenderDetailResponseOf(Optional<SoapEnvelope> maybeOasysOffenderDetailsRequest, Optional<Offender> maybeOffender, Booking latestBooking, Optional<SentenceCalculation> maybeSentenceCalc, Optional<Sentence> maybeSentence, Optional<OffenderImprisonmentStatus> maybeImprisonmentStatus, Optional<List<CourtEvent>> maybeCourtEvents, Optional<AgencyLocation> sentencingCourtAgencyLocation, Optional<Address> maybeHomeAddress, Optional<Address> maybeDischargeAddress, Optional<List<Physicals>> maybePhysicals, Optional<List<OffenderAssessment>> maybeAssessments, Optional<List<Alert>> maybeF2052Alerts, Offender offender) {
-        return SoapEnvelope
+    public SoapEnvelopeSpec1_2 oasysOffenderDetailResponseOf(Optional<SoapEnvelopeSpec1_2> maybeOasysOffenderDetailsRequest, Optional<Offender> maybeOffender, Booking latestBooking, Optional<SentenceCalculation> maybeSentenceCalc, Optional<Sentence> maybeSentence, Optional<OffenderImprisonmentStatus> maybeImprisonmentStatus, Optional<List<CourtEvent>> maybeCourtEvents, Optional<AgencyLocation> sentencingCourtAgencyLocation, Optional<Address> maybeHomeAddress, Optional<Address> maybeDischargeAddress, Optional<List<Physicals>> maybePhysicals, Optional<List<OffenderAssessment>> maybeAssessments, Optional<List<Alert>> maybeF2052Alerts, Offender offender) {
+        return SoapEnvelopeSpec1_2
                 .builder()
                 .header(SoapHeader.builder().build())
                 .body(SoapBody
