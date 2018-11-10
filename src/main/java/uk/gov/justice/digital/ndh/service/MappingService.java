@@ -57,4 +57,23 @@ public class MappingService {
                         .build());
 
     }
+
+    public Long numeric1Of(String sourceVal, Long codeType) throws NDHMappingException {
+        Optional<MappingCodeData> maybeMapped = Optional.ofNullable(sourceVal).flatMap(
+                sv -> Optional.ofNullable(mappingRepository.findOne(MappingCodeDataPK.builder()
+                        .codeType(codeType)
+                        .sourceValue(sourceVal)
+                        .build())));
+
+        if (!maybeMapped.isPresent()) {
+            log.error("Could not map source {} and code {} to targetValue.", sourceVal, codeType);
+        }
+
+        return maybeMapped.map(MappingCodeData::getNumeric1).orElseThrow(() ->
+                NDHMappingException.builder()
+                        .value(sourceVal)
+                        .code(codeType)
+                        .subject("targetValue")
+                        .build());
+    }
 }

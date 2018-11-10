@@ -21,10 +21,12 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 import org.springframework.jms.annotation.EnableJms;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @Slf4j
 @EnableJms
+@EnableScheduling
 public class ThatsNotMyNDH {
 
     public static final String ASSESSMENT_PROCESS = "NDH_CMS_Web_Client";

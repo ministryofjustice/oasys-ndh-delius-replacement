@@ -1,0 +1,182 @@
+CREATE OR REPLACE PACKAGE XML_BUILDER
+IS
+   --
+   --
+   FUNCTION Show_Version RETURN VARCHAR2;
+
+   --
+   FUNCTION get_start_tag ( p_tag_name IN VARCHAR2 )
+      RETURN VARCHAR2;
+
+   FUNCTION get_end_tag ( p_tag_name IN VARCHAR2 )
+      RETURN VARCHAR2;
+
+   FUNCTION get_tag_with_data ( p_tag_name IN VARCHAR2, p_data IN VARCHAR2 )
+      RETURN VARCHAR2;
+
+   FUNCTION get_tag_with_data (
+      p_tag_name   IN   VARCHAR2,
+      p_data       IN   VARCHAR2,
+      p_optional   IN   BOOLEAN,
+      p_nillable   IN   BOOLEAN
+   )
+      RETURN VARCHAR2;
+
+   PROCEDURE lob_append ( p_clob IN OUT NOCOPY CLOB, p_data IN VARCHAR2 );
+
+   PROCEDURE lob_append ( p_clob IN OUT NOCOPY CLOB, p_data IN CLOB );
+   
+   PROCEDURE init_outval;
+   
+   PROCEDURE outval_append (p_instr IN VARCHAR2);
+   
+   FUNCTION  ret_outval 
+      RETURN CLOB;
+--
+END xml_builder;
+/
+
+CREATE OR REPLACE PACKAGE BODY Xml_Builder
+IS
+-- ======================================================================================
+   v_version   CONSTANT VARCHAR2 (60) := '2.5    14-Aug-2007';
+-- ======================================================================================
+--
+-- Purpose: This package is used for building the xml tags and appending of data
+--          to clob.
+--
+-- MODIFICATION HISTORY
+-- Person    Date         Version    Comments
+-- --------- -----------  -------    ------------------------------------------
+-- Paul M    14-Aug-2008  2.5      QC#10164 - removed varchar2(4000) variables
+-- D Rice    28-Mar-2007  2.4	     Added new procedures: lob_append (overloaded), init_outval,
+--			    	     outval_append, ret_outval - This is because some data extractor routines
+--			    	     may generate xml that is larger than 4000 chars, causing oracle numeric error
+-- GJC       19-Aug-2006  2.3  	     Remove DBMS_OUTPUT calls 
+-- Laurence  28-JUN-2006  2.2	     Added call to dbms_xmlgen.convert to escape
+--                          	     XML data since this may have repercussions
+--                          	     on validation of XML at both our side and their
+--                          	     side.
+-- VIPUL     24-MAY-2006  2.1  	     Modified the package handle nillable and optional
+--                          	     data. Also added a new procedure lob_append to
+--                           	     handle appending of clob with null data/clob
+-- D Rice    26-Apr-2006  2.0  	     Initial Version - XML Interface for NOMS/Lids
+------------------------------------------------------------------------
+--
+
+   g_outval CLOB;
+   
+/***************************************************************************************/
+   FUNCTION Show_Version
+   RETURN VARCHAR2
+   IS
+   BEGIN
+      RETURN(v_version);
+   END Show_Version;
+
+/***************************************************************************************/
+   FUNCTION get_start_tag (p_tag_name IN VARCHAR2)
+      RETURN VARCHAR2
+   IS
+   --
+   BEGIN
+      RETURN '<' || p_tag_name || '>';
+   --
+   END get_start_tag;
+
+   --
+   --
+   --
+   FUNCTION get_end_tag (p_tag_name IN VARCHAR2)
+      RETURN VARCHAR2
+   IS
+   --
+   BEGIN
+      RETURN  '</' || p_tag_name || '>';
+   --
+   END get_end_tag;
+
+   --
+   --
+   --
+   FUNCTION get_tag_with_data (p_tag_name IN VARCHAR2, p_data IN VARCHAR2)
+      RETURN VARCHAR2
+   IS
+   BEGIN
+      RETURN get_tag_with_data (p_tag_name, p_data, FALSE, FALSE);
+   --
+   END get_tag_with_data;
+
+   --
+   --
+   --
+   FUNCTION get_tag_with_data (
+      p_tag_name   IN   VARCHAR2,
+      p_data       IN   VARCHAR2,
+      p_optional   IN   BOOLEAN,
+      p_nillable   IN   BOOLEAN
+   )
+      RETURN VARCHAR2
+   IS
+   --
+   BEGIN
+      IF p_optional AND p_data IS NULL THEN
+         RETURN NULL;
+      ELSE
+      
+         RETURN get_start_tag (p_tag_name||CASE 
+                                             WHEN p_nillable AND p_data IS NULL THEN ' xsi:nil="true"' 
+                                             ELSE NULL 
+                                          END)|| 
+                dbms_xmlgen.CONVERT(p_data, 0)||
+                get_end_tag (p_tag_name);
+      END IF;
+   --
+   END get_tag_with_data;
+--
+--
+   PROCEDURE lob_append (p_clob IN OUT NOCOPY CLOB, p_data IN VARCHAR2)
+   IS
+   BEGIN
+      IF p_data IS NOT NULL
+      THEN
+         DBMS_LOB.append (p_clob, p_data);
+      END IF;
+   END lob_append;
+--
+--
+   PROCEDURE lob_append (p_clob IN OUT NOCOPY CLOB, p_data IN CLOB)
+   IS
+   BEGIN
+      IF p_data IS NOT NULL
+      THEN
+         DBMS_LOB.append (p_clob, p_data);
+      END IF;
+   END lob_append;
+--
+--
+   PROCEDURE init_outval
+   IS
+   BEGIN
+      g_outval := NULL;
+   END init_outval;
+--
+--
+   PROCEDURE outval_append(p_instr IN VARCHAR2)
+   IS
+   BEGIN
+      g_outval := g_outval || p_instr;
+   END outval_append;
+--
+--
+   FUNCTION ret_outval 
+     RETURN CLOB
+   IS
+   BEGIN
+      return g_outval;
+   END ret_outval;
+--
+--
+END Xml_Builder;
+/
+

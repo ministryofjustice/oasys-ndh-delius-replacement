@@ -95,8 +95,6 @@ dependencies {
     compile group: 'jaxen', name: 'jaxen', version: '1.1.6'
     compile group: 'com.github.rholder', name: 'guava-retrying', version: '2.0.0'
 
-
-
     compileOnly 'org.projectlombok:lombok:1.16.18'
 
     testRuntime 'com.h2database:h2:1.4.196'
@@ -106,7 +104,7 @@ dependencies {
     testCompile 'org.springframework.boot:spring-boot-starter-test'
     testCompile 'junit:junit:4.12'
     testCompile 'io.rest-assured:rest-assured:3.0.3'
-    testCompile "com.github.tomakehurst:wiremock:2.19.0"
+    testCompile 'com.github.tomakehurst:wiremock:2.19.0'
     testCompile 'org.awaitility:awaitility:3.1.2'
     testCompile group: 'org.xmlunit', name: 'xmlunit-core', version: '2.6.0'
     testCompile group: 'org.xmlunit', name: 'xmlunit-matchers', version: '2.6.0'

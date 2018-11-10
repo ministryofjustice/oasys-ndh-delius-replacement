@@ -1,0 +1,2048 @@
+CREATE OR REPLACE PACKAGE Xtag_Oasys_Transactions
+IS
+   --
+-- Global Variables
+--
+   g_error_message         VARCHAR2 (500);
+   c_user_id               staff_members.user_id%TYPE                := USER;
+   g_date                  DATE                                    := SYSDATE;
+   g_root_offender_id      offender_bookings.root_offender_id%TYPE   := NULL;
+   g_offender_id           offender_bookings.offender_id%TYPE        := NULL;
+   g_offender_book_id      offender_bookings.offender_book_id%TYPE   := NULL;
+   g_living_unit_id        offender_bookings.living_unit_id%TYPE     := NULL;
+   g_agy_loc_id            offender_bookings.agy_loc_id%TYPE         := NULL;
+   g_booking_no            offender_bookings.booking_no%TYPE         := NULL;
+   g_last_name             offenders.last_name%TYPE                  := NULL;
+   g_first_name            offenders.first_name%TYPE                 := NULL;
+   g_middle_name           offenders.middle_name%TYPE                := NULL;
+   g_gender                offenders.sex_code%TYPE                   := NULL;
+   g_offender_id_display   offenders.offender_id_display%TYPE        := NULL;
+   g_birth_date            offenders.birth_date%TYPE                 := NULL;
+   g_birth_country         offenders.birth_country_code%TYPE         := NULL;
+   g_ethnicity             offenders.race_code%TYPE                  := NULL;
+   g_pnc_no                offender_identifiers.IDENTIFIER%TYPE      := NULL;
+   g_correlation_id        VARCHAR2 (31)                             := NULL;
+
+--
+   TYPE profile_typetab IS TABLE OF offender_profile_details.profile_type%TYPE;
+
+   TYPE profile_codetab IS TABLE OF offender_profile_details.profile_code%TYPE;
+
+   TYPE ext_move_rec IS RECORD (
+      offender_book_id       offender_external_movements.offender_book_id%TYPE,
+      movement_seq           offender_external_movements.movement_seq%TYPE,
+      movement_date          offender_external_movements.movement_date%TYPE,
+      movement_time          offender_external_movements.movement_time%TYPE,
+      movement_type          offender_external_movements.movement_type%TYPE,
+      movement_reason_code   offender_external_movements.movement_reason_code%TYPE,
+      direction_code         offender_external_movements.direction_code%TYPE,
+      from_agy_loc_id        offender_external_movements.from_agy_loc_id%TYPE,
+      to_agy_loc_id          offender_external_movements.to_agy_loc_id%TYPE,
+      active_flag            offender_external_movements.active_flag%TYPE,
+      to_city                offender_external_movements.to_city%TYPE,
+      from_city              offender_external_movements.from_city%TYPE,
+      create_datetime        offender_external_movements.create_datetime%TYPE,
+      modify_datetime        offender_external_movements.modify_datetime%TYPE,
+      event_id               offender_external_movements.event_id%TYPE,
+      parent_event_id        offender_external_movements.parent_event_id%TYPE,
+      audit_timestamp        offender_external_movements.audit_timestamp%TYPE
+   );
+
+   FUNCTION Show_Version RETURN VARCHAR2;
+
+   PROCEDURE offender_details (
+      p_offender_book_id   IN              offender_bookings.offender_book_id%TYPE
+            DEFAULT NULL,
+      p_root_offender_id   IN              offender_bookings.root_offender_id%TYPE
+            DEFAULT NULL,
+      p_offender_id        IN              offender_bookings.offender_id%TYPE
+            DEFAULT NULL,
+      p_old_prison_num     IN              offender_bookings.booking_no%TYPE
+            DEFAULT NULL,
+		p_nomis_timestamp		IN					 VARCHAR2,				
+      p_error_flag         OUT             PLS_INTEGER,
+      v_out                OUT NOCOPY      CLOB
+   );
+
+   PROCEDURE offender_prison_number (
+      p_offender_book_id   IN              offender_bookings.offender_book_id%TYPE
+            DEFAULT NULL,
+      p_root_offender_id   IN              offender_bookings.root_offender_id%TYPE
+            DEFAULT NULL,
+      p_offender_id        IN              offender_bookings.offender_id%TYPE
+            DEFAULT NULL,
+      p_old_prison_num     IN              offender_bookings.booking_no%TYPE
+            DEFAULT NULL,
+		p_nomis_timestamp		IN					 VARCHAR2,				
+      p_error_flag         OUT             PLS_INTEGER,
+      v_out                OUT NOCOPY      CLOB
+   );
+
+   PROCEDURE status_change (
+      p_offender_book_id   IN              offender_bookings.offender_book_id%TYPE
+            DEFAULT NULL,
+      p_root_offender_id   IN              offender_bookings.root_offender_id%TYPE
+            DEFAULT NULL,
+      p_offender_id        IN              offender_bookings.offender_id%TYPE
+            DEFAULT NULL,
+		p_nomis_timestamp		IN					 VARCHAR2,				
+      p_error_flag         OUT             PLS_INTEGER,
+      v_out                OUT NOCOPY      CLOB
+   );
+
+   PROCEDURE offender_reception (
+      p_offender_book_id   IN              offender_bookings.offender_book_id%TYPE
+            DEFAULT NULL,
+      p_root_offender_id   IN              offender_bookings.root_offender_id%TYPE
+            DEFAULT NULL,
+      p_offender_id        IN              offender_bookings.offender_id%TYPE
+            DEFAULT NULL,
+      p_movement_seq       IN              offender_external_movements.movement_seq%TYPE
+            DEFAULT NULL,
+      p_record_deleted     IN              offender_external_movements.active_flag%TYPE
+            DEFAULT 'N',
+		p_nomis_timestamp		IN					 VARCHAR2,				
+      p_error_flag         OUT             PLS_INTEGER,
+      v_out                OUT NOCOPY      CLOB
+   );
+
+   PROCEDURE offender_sentence (
+      p_offender_book_id   IN              offender_bookings.offender_book_id%TYPE
+            DEFAULT NULL,
+      p_root_offender_id   IN              offender_bookings.root_offender_id%TYPE
+            DEFAULT NULL,
+      p_offender_id        IN              offender_bookings.offender_id%TYPE
+            DEFAULT NULL,
+		p_nomis_timestamp		IN					 VARCHAR2,				
+      p_error_flag         OUT             PLS_INTEGER,
+      v_out                OUT NOCOPY      CLOB
+   );
+
+   PROCEDURE offender_discharge (
+      p_offender_book_id   IN              offender_bookings.offender_book_id%TYPE
+            DEFAULT NULL,
+      p_root_offender_id   IN              offender_bookings.root_offender_id%TYPE
+            DEFAULT NULL,
+      p_offender_id        IN              offender_bookings.offender_id%TYPE
+            DEFAULT NULL,
+      p_movement_seq       IN              offender_external_movements.movement_seq%TYPE
+            DEFAULT NULL,
+      p_record_deleted     IN              offender_external_movements.active_flag%TYPE
+            DEFAULT 'N',
+		p_nomis_timestamp		IN					 VARCHAR2,				
+      p_error_flag         OUT             PLS_INTEGER,
+      v_out                OUT NOCOPY      CLOB
+   );
+END;                                                           -- Package spec
+/
+
+CREATE OR REPLACE PACKAGE BODY Xtag_Oasys_Transactions
+IS
+-- ======================================================================================
+   v_version   CONSTANT VARCHAR2 (60) := '2.15  10-Jul-2012';
+-- ======================================================================================
+/*
+  MODIFICATION HISTORY
+   --------------------------------------------------------------------------------------
+   Person      Date         Version   Comments
+   ---------   -----------  --------- ---------------------------------------------------
+   Paul M      10-Jul-2012  2.15      QC#18689 change get_booking_details and improve
+                                      error messages
+   Paul M      27-Nov-2009  2.14      CRL115 - implement peer review recommendations
+                                               call xtag_utils.get_imprisonment_status
+	Paul M      26-Nov-2009  2.13      CRL115 - utilise offender_imprison_statuses.latest_status
+	Paul M      27-Mar-2007  2.12      TD#6060 - Changed to standardise on xtag_utils.get_release_date
+	Paul M      26-Mar-2007  2.11      TD#6060 - Changed order of precedence for offender sentence
+                                      release date
+	GJC         19-Oct-2006  2.10      Remove DBMS_OUTPUT calls
+	Laurence    12-SEP-2006  2.9       Now populates the PNCid in offender_discharge.
+	Laurence    21-JUL-2006  2.8       Now uses p_nomis_timetamp passed in from trigger.
+	Laurence		11-JUL-2006  2.7       Modified offender_discharge to contain to_agy_loc_id
+	                                   in <MovementFromOrTo> as opposed to from_agy_loc_id
+												  as in offender_reception.
+	Laurence		11-JUL-2006	 2.6       Modified 2.5 change below to call xtag_utils procedure
+	                                   which already calculated minium start date.  Change
+												  coupled with overloading of get_sentence_length procedure
+												  in xtag_utils.
+   Vipul       05-JUL-2006  2.5       Modified offender_sentence procedure to pass the minimum sentence
+                                      start date. TD#3075
+   Laurnece    27-Jun-2006  2.4       Formatted release date in reception, sentence, discharge and
+                                      sentence_date in sentence.
+   Vipul       17-JUN-2006  2.3       Modified all the procedures to set the PNC
+   Vipul       02-JUN-2006  2.2       Modified all the procedures as part of final release
+                                      and added error handling functionality.
+   Vipul       24-MAY-2006  2.1       Modified all the procedures as part of release 1.
+   Vipul       21-MAY-2006  1.1       Modified all the procedures as per updated Schema
+                                      and changed the code to use the xml_builder package.
+   Vipul       06-Mar-2006  1.0       Initial Draft.
+   Abu         14-Mar-2006
+*/
+/***************************************************************************************/
+   FUNCTION Show_Version
+   RETURN VARCHAR2
+   IS
+   BEGIN
+      RETURN(v_version);
+   END Show_Version;
+
+/***************************************************************************************/
+   PROCEDURE get_booking_details (
+      p_offender_book_id   IN OUT   offender_bookings.offender_book_id%TYPE,
+      p_root_offender_id   OUT      offender_bookings.root_offender_id%TYPE,
+      p_offender_id        IN OUT   offender_bookings.offender_id%TYPE,
+      p_living_unit_id     OUT      offender_bookings.living_unit_id%TYPE,
+      p_agy_loc_id         OUT      offender_bookings.agy_loc_id%TYPE,
+      p_booking_no         OUT      offender_bookings.booking_no%TYPE,
+      p_error_msg          OUT      VARCHAR2
+   )
+   IS
+   BEGIN
+      IF p_offender_book_id IS NOT NULL
+      THEN
+         SELECT offender_id, root_offender_id,
+                (DECODE (agy_loc_id,
+                         'OUT', (SELECT from_agy_loc_id
+                                   FROM offender_external_movements oem
+                                  WHERE oem.offender_book_id =
+                                                           ob.offender_book_id
+                                    AND oem.movement_seq =
+                                           (SELECT MAX (oem1.movement_seq)
+                                              FROM offender_external_movements oem1
+                                             WHERE oem1.offender_book_id =
+                                                           ob.offender_book_id
+                                               AND oem1.direction_code = 'OUT')),
+                         'TRN', (SELECT from_agy_loc_id
+                                   FROM offender_external_movements oem
+                                  WHERE oem.offender_book_id =
+                                                           ob.offender_book_id
+                                    AND oem.movement_seq =
+                                           (SELECT MAX (oem1.movement_seq)
+                                              FROM offender_external_movements oem1
+                                             WHERE oem1.offender_book_id =
+                                                           ob.offender_book_id
+                                               AND oem1.direction_code = 'OUT')),
+                         agy_loc_id
+                        )
+                ) agy_loc_id,
+                living_unit_id, booking_no
+           INTO p_offender_id, p_root_offender_id,
+                p_agy_loc_id,
+                p_living_unit_id, p_booking_no
+           FROM offender_bookings ob
+          WHERE ob.offender_book_id = p_offender_book_id;
+      ELSE
+         IF p_offender_id IS NOT NULL
+         THEN
+            -- QC#18689 - use booking_seq = 1 to identify latest booking
+            SELECT offender_id, root_offender_id, agy_loc_id,
+                   living_unit_id, booking_no
+              INTO p_offender_id, p_root_offender_id, p_agy_loc_id,
+                   p_living_unit_id, p_booking_no
+              FROM offender_bookings
+             WHERE booking_seq = 1
+               AND root_offender_id = (SELECT root_offender_id
+                                         FROM offenders
+                                        WHERE offender_id = p_offender_id);
+         ELSE
+            RAISE NO_DATA_FOUND;
+         END IF;
+      END IF;
+   EXCEPTION
+      WHEN NO_DATA_FOUND
+      THEN
+         p_offender_id := NULL;
+         p_root_offender_id := NULL;
+         p_agy_loc_id := NULL;
+         p_living_unit_id := NULL;
+         p_booking_no := NULL;
+         p_error_msg := 'NO DATA FOUND';
+      WHEN OTHERS
+      THEN
+         p_offender_id := NULL;
+         p_root_offender_id := NULL;
+         p_agy_loc_id := NULL;
+         p_living_unit_id := NULL;
+         p_booking_no := NULL;
+         p_error_msg := 'NO DATA FOUND';
+   END get_booking_details;
+
+   PROCEDURE get_offender_details (
+      p_offender_id           IN       offender_bookings.offender_id%TYPE
+            DEFAULT NULL,
+      p_last_name             OUT      offenders.last_name%TYPE,
+      p_first_name            OUT      offenders.first_name%TYPE,
+      p_middle_name           OUT      offenders.middle_name%TYPE,
+      p_gender                OUT      offenders.sex_code%TYPE,
+      p_offender_id_display   OUT      offenders.offender_id_display%TYPE,
+      p_birth_date            OUT      offenders.birth_date%TYPE,
+      p_birth_country         OUT      offenders.birth_country_code%TYPE,
+      p_ethnicity             OUT      offenders.race_code%TYPE
+   )
+   IS
+   BEGIN
+      SELECT offender_id_display, last_name, first_name,
+             middle_name, sex_code, birth_date, birth_country_code,
+             race_code
+        INTO p_offender_id_display, p_last_name, p_first_name,
+             p_middle_name, p_gender, p_birth_date, p_birth_country,
+             p_ethnicity
+        FROM offenders
+       WHERE offender_id = p_offender_id;
+   END get_offender_details;
+
+   PROCEDURE get_offender_profile_details (
+      p_offender_book_id   IN       offender_bookings.offender_book_id%TYPE
+            DEFAULT NULL,
+      p_prof_type          IN       offender_profile_details.profile_type%TYPE
+            DEFAULT NULL,
+      p_error_message      OUT      VARCHAR2,
+      p_profile_type       OUT      profile_typetab,
+      p_profile_code       OUT      profile_codetab
+   )
+   IS
+   BEGIN
+      IF p_prof_type IS NOT NULL
+      THEN
+         SELECT profile_type, profile_code
+         BULK COLLECT INTO p_profile_type, p_profile_code
+           FROM offender_profile_details
+          WHERE offender_book_id = p_offender_book_id
+            AND profile_type = p_prof_type;
+      ELSE
+         SELECT profile_type, profile_code
+         BULK COLLECT INTO p_profile_type, p_profile_code
+           FROM offender_profile_details
+          WHERE offender_book_id = p_offender_book_id;
+      END IF;
+   EXCEPTION
+      WHEN NO_DATA_FOUND
+      THEN
+         p_profile_type := NULL;
+         p_profile_code := NULL;
+         p_error_message := 'NO DATA';
+      WHEN OTHERS
+      THEN
+         p_profile_type := NULL;
+         p_profile_code := NULL;
+         p_error_message := SQLERRM;
+   END get_offender_profile_details;
+
+   PROCEDURE get_offender_identifiers (
+      p_offender_id       IN       offender_bookings.offender_id%TYPE
+            DEFAULT NULL,
+      p_identifier_type   IN       offender_identifiers.identifier_type%TYPE
+            DEFAULT NULL,
+      p_offender_id_seq   IN       offender_identifiers.offender_id_seq%TYPE
+            DEFAULT NULL,
+      p_identifier        OUT      offender_identifiers.IDENTIFIER%TYPE
+   )
+   IS
+   BEGIN
+      IF p_offender_id_seq IS NOT NULL
+      THEN
+         SELECT IDENTIFIER
+           INTO p_identifier
+           FROM offender_identifiers
+          WHERE offender_id = p_offender_id
+            AND identifier_type = p_identifier_type
+            AND offender_id_seq = p_offender_id_seq;
+      ELSE
+         SELECT IDENTIFIER
+           INTO p_identifier
+           FROM offender_identifiers
+          WHERE offender_id = p_offender_id
+            AND identifier_type = p_identifier_type
+            AND offender_id_seq =
+                   (SELECT MAX (offender_id_seq)
+                      FROM offender_identifiers
+                     WHERE offender_id = p_offender_id
+                       AND identifier_type = p_identifier_type);
+      END IF;
+   EXCEPTION
+      WHEN NO_DATA_FOUND
+      THEN
+         p_identifier := NULL;
+         g_error_message := 'NO DATA';
+      WHEN OTHERS
+      THEN
+         p_identifier := NULL;
+         g_error_message := 'NO DATA';
+   END get_offender_identifiers;
+
+-- ***********************
+   PROCEDURE get_movement_details (
+      p_offender_book_id   IN       offender_bookings.offender_book_id%TYPE
+            DEFAULT NULL,
+      p_movement_seq       IN       offender_external_movements.movement_seq%TYPE
+            DEFAULT NULL,
+      p_error_message      OUT      VARCHAR2,
+      p_movement_details   OUT      ext_move_rec
+   )
+   IS
+      -- cursor to retrieve Offender_external_movements record
+      CURSOR off_move1_cur (
+         p_book_id    offender_bookings.offender_book_id%TYPE,
+         p_move_seq   offender_external_movements.movement_seq%TYPE
+      )
+      IS
+         SELECT offender_book_id, movement_seq, movement_date, movement_time,
+                movement_type, movement_reason_code, direction_code,
+                from_agy_loc_id, to_agy_loc_id, active_flag, to_city,
+                from_city, create_datetime, modify_datetime, event_id,
+                parent_event_id, audit_timestamp
+           FROM offender_external_movements oem
+          WHERE oem.offender_book_id = p_book_id
+            AND oem.movement_seq = p_move_seq;
+
+      -- cursor to retrieve Offender_external_movements record
+      CURSOR off_move2_cur (p_book_id offender_bookings.offender_book_id%TYPE)
+      IS
+         SELECT offender_book_id, movement_seq, movement_date, movement_time,
+                movement_type, movement_reason_code, direction_code,
+                from_agy_loc_id, to_agy_loc_id, active_flag, to_city,
+                from_city, create_datetime, modify_datetime, event_id,
+                parent_event_id, audit_timestamp
+           FROM offender_external_movements
+          WHERE offender_book_id = p_book_id
+            AND movement_seq =
+                   (SELECT MAX (movement_seq)
+                      FROM offender_external_movements
+                     WHERE offender_book_id = p_book_id
+                       AND movement_type = 'ADM');
+   BEGIN
+      IF p_offender_book_id IS NOT NULL
+      THEN
+         IF p_movement_seq IS NOT NULL
+         THEN
+            OPEN off_move1_cur (p_offender_book_id, p_movement_seq);
+
+            FETCH off_move1_cur
+             INTO p_movement_details;
+
+            IF off_move1_cur%NOTFOUND
+            THEN
+               CLOSE off_move1_cur;
+
+               RAISE NO_DATA_FOUND;
+            END IF;
+
+            CLOSE off_move1_cur;
+         ELSE
+            OPEN off_move2_cur (p_offender_book_id);
+
+            FETCH off_move2_cur
+             INTO p_movement_details;
+
+            IF off_move2_cur%NOTFOUND
+            THEN
+               CLOSE off_move2_cur;
+
+               RAISE NO_DATA_FOUND;
+            END IF;
+
+            CLOSE off_move2_cur;
+         END IF;
+      ELSE
+         RAISE NO_DATA_FOUND;
+      END IF;
+   EXCEPTION
+      WHEN NO_DATA_FOUND
+      THEN
+         p_movement_details := NULL;
+         p_error_message := 'NO DATA';
+      WHEN OTHERS
+      THEN
+         p_movement_details := NULL;
+         p_error_message := SQLERRM;
+   END;
+
+/***************************************************************************************/
+
+   FUNCTION get_sentence_seq (
+      p_offender_book_id   offender_bookings.offender_book_id%TYPE
+   )
+      RETURN offender_sentences.sentence_seq%TYPE
+   IS
+      CURSOR sentences_cur
+      IS
+         SELECT DISTINCT sentence_calc_type, sentence_category, sentence_seq
+                    FROM offender_sentences
+                   WHERE offender_book_id = p_offender_book_id
+                     AND sentence_status = 'A'
+                ORDER BY sentence_seq ASC;
+
+      CURSOR populate_status_cur (
+         p_sentence_category    offender_sentences.sentence_category%TYPE,
+         p_sentence_calc_type   sentence_calc_types.sentence_calc_type%TYPE
+      )
+      IS
+         SELECT   header_seq
+             FROM sentence_calc_types
+            WHERE sentence_category = p_sentence_category
+              AND sentence_calc_type = p_sentence_calc_type
+         ORDER BY header_seq;
+
+      v_header_seq_curr   sentence_calc_types.header_seq%TYPE    := NULL;
+      v_header_seq_prev   sentence_calc_types.header_seq%TYPE    := NULL;
+      v_sentence_seq      offender_sentences.sentence_seq%TYPE   := NULL;
+   BEGIN
+      FOR sentence_rec IN sentences_cur
+      LOOP
+         v_header_seq_curr := NULL;
+
+         OPEN populate_status_cur (sentence_rec.sentence_category,
+                                   sentence_rec.sentence_calc_type
+                                  );
+
+         FETCH populate_status_cur
+          INTO v_header_seq_curr;
+
+         CLOSE populate_status_cur;
+
+         IF v_sentence_seq IS NULL
+         THEN
+            v_header_seq_prev := v_header_seq_curr;
+            v_sentence_seq := sentence_rec.sentence_seq;
+         ELSE
+            IF v_header_seq_curr <= v_header_seq_prev
+            THEN
+               v_header_seq_prev := v_header_seq_curr;
+               v_sentence_seq := sentence_rec.sentence_seq;
+            ELSE
+               v_sentence_seq := v_sentence_seq;
+               v_header_seq_prev := v_header_seq_prev;
+            END IF;
+         END IF;
+      END LOOP;
+
+      RETURN v_sentence_seq;
+   EXCEPTION
+      WHEN OTHERS
+      THEN
+         RETURN v_sentence_seq;
+   END get_sentence_seq;
+
+/* =======================
+   TRANSACTIONS
+   ======================= */
+   PROCEDURE offender_details (
+      p_offender_book_id   IN              offender_bookings.offender_book_id%TYPE
+            DEFAULT NULL,
+      p_root_offender_id   IN              offender_bookings.root_offender_id%TYPE
+            DEFAULT NULL,
+      p_offender_id        IN              offender_bookings.offender_id%TYPE
+            DEFAULT NULL,
+      p_old_prison_num     IN              offender_bookings.booking_no%TYPE
+            DEFAULT NULL,
+		p_nomis_timestamp		IN					 VARCHAR2,				
+      p_error_flag         OUT             PLS_INTEGER,
+      v_out                OUT NOCOPY      CLOB
+   )
+   IS
+   BEGIN
+--
+-- Initialize the variables
+--
+      p_error_flag := 0;
+      g_root_offender_id := p_root_offender_id;
+      g_offender_id := p_offender_id;
+      g_offender_book_id := p_offender_book_id;
+      g_living_unit_id := NULL;
+      g_agy_loc_id := NULL;
+      g_booking_no := NULL;
+      g_last_name := NULL;
+      g_first_name := NULL;
+      g_middle_name := NULL;
+      g_gender := NULL;
+      g_offender_id_display := NULL;
+      g_birth_date := NULL;
+      g_birth_country := NULL;
+      g_ethnicity := NULL;
+      g_pnc_no := NULL;
+      g_error_message := NULL;
+
+      IF (   g_offender_book_id IS NOT NULL
+          OR g_offender_id IS NOT NULL
+          OR g_root_offender_id IS NOT NULL
+         )
+      THEN
+         get_booking_details (g_offender_book_id,
+                              g_root_offender_id,
+                              g_offender_id,
+                              g_living_unit_id,
+                              g_agy_loc_id,
+                              g_booking_no,
+                              g_error_message
+                             );
+
+         IF g_error_message IS NOT NULL
+         THEN
+            RAISE NO_DATA_FOUND;
+         END IF;
+
+         IF g_offender_id IS NOT NULL
+         THEN
+            get_offender_details (g_offender_id,
+                                  g_last_name,
+                                  g_first_name,
+                                  g_middle_name,
+                                  g_gender,
+                                  g_offender_id_display,
+                                  g_birth_date,
+                                  g_birth_country,
+                                  g_ethnicity
+                                 );
+         END IF;
+
+         -- get pnc_no
+         get_offender_identifiers (g_offender_id, 'PNC', NULL, g_pnc_no);
+
+         IF g_last_name IS NOT NULL AND g_agy_loc_id IS NOT NULL
+         THEN
+            Get_Xtag_Correlation_Id ('OffenderDetails', g_correlation_id);
+            v_out :=
+               TO_CLOB
+                  (   Xml_Builder.get_start_tag ('OffenderDetails')
+                   || Xml_Builder.get_tag_with_data ('CorrelationId',
+                                                     g_correlation_id
+                                                    )
+                   || Xml_Builder.get_tag_with_data
+                                              ('NOMISTimestamp',
+                                               p_nomis_timestamp
+                                              )
+                   || Xml_Builder.get_tag_with_data ('PNCID',
+                                                     g_pnc_no,
+                                                     TRUE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('PrisonNumber',
+                                                     g_booking_no,
+                                                     FALSE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('FamilyName',
+                                                     g_last_name,
+                                                     FALSE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('Forename1',
+                                                     g_first_name,
+                                                     TRUE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('Forename2',
+                                                     g_middle_name,
+                                                     TRUE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('DateOfBirth',
+                                                     TO_CHAR (g_birth_date,
+                                                              'YYYY-MM-DD'
+                                                             ),
+                                                     FALSE,
+                                                     TRUE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('OldPrisonNumber',
+                                                     p_old_prison_num,
+                                                     TRUE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('EstabCode',
+                                                     g_agy_loc_id,
+                                                     FALSE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('NOMISId',
+                                                     g_offender_id_display,
+                                                     FALSE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_end_tag ('OffenderDetails')
+                  );
+         ELSE
+            RAISE NO_DATA_FOUND;
+         END IF;
+      ELSE
+         RAISE NO_DATA_FOUND;
+      END IF;
+   EXCEPTION
+      WHEN NO_DATA_FOUND
+      THEN
+         p_error_flag := 1;
+         g_error_message := NVL (g_error_message, 'No Data Found.');
+         v_out :=
+            TO_CLOB
+               (   Xml_Builder.get_start_tag ('OffenderDetails')
+                || Xml_Builder.get_tag_with_data
+                                              ('NOMISTimestamp',
+                                               p_nomis_timestamp
+                                              )
+                || Xml_Builder.get_tag_with_data ('ERROR', g_error_message||
+                                                          ' p_offender_book_id='||p_offender_book_id   ||
+                                                          ',p_root_offender_id='||p_root_offender_id   ||
+                                                          ',p_offender_id='||p_offender_id        ||
+                                                          ',p_old_prison_num='||p_old_prison_num   ) 
+                || Xml_Builder.get_end_tag ('OffenderDetails')
+               );
+         g_error_message := NULL;
+      WHEN OTHERS
+      THEN
+         p_error_flag := 1;
+         g_error_message := SUBSTR (SQLERRM, 1, 200);
+         v_out :=
+            TO_CLOB
+               (   Xml_Builder.get_start_tag ('OffenderDetails')
+                || Xml_Builder.get_tag_with_data
+                                              ('NOMISTimestamp',
+                                               p_nomis_timestamp
+                                              )
+                || Xml_Builder.get_tag_with_data ('ERROR', g_error_message||
+                                                          ' p_offender_book_id='||p_offender_book_id   ||
+                                                          ',p_root_offender_id='||p_root_offender_id   ||
+                                                          ',p_offender_id='||p_offender_id        ||
+                                                          ',p_old_prison_num='||p_old_prison_num   ) 
+                || Xml_Builder.get_end_tag ('OffenderDetails')
+               );
+         g_error_message := NULL;
+   END offender_details;
+
+----------
+   PROCEDURE offender_prison_number (
+      p_offender_book_id   IN              offender_bookings.offender_book_id%TYPE
+            DEFAULT NULL,
+      p_root_offender_id   IN              offender_bookings.root_offender_id%TYPE
+            DEFAULT NULL,
+      p_offender_id        IN              offender_bookings.offender_id%TYPE
+            DEFAULT NULL,
+      p_old_prison_num     IN              offender_bookings.booking_no%TYPE
+            DEFAULT NULL,
+		p_nomis_timestamp		IN					 VARCHAR2,				
+      p_error_flag         OUT             PLS_INTEGER,
+      v_out                OUT NOCOPY      CLOB
+   )
+   IS
+   BEGIN
+--
+-- Initialize the variables
+--
+      p_error_flag := 0;
+      g_root_offender_id := p_root_offender_id;
+      g_offender_id := p_offender_id;
+      g_offender_book_id := p_offender_book_id;
+      g_living_unit_id := NULL;
+      g_agy_loc_id := NULL;
+      g_booking_no := NULL;
+      g_last_name := NULL;
+      g_first_name := NULL;
+      g_middle_name := NULL;
+      g_gender := NULL;
+      g_offender_id_display := NULL;
+      g_birth_date := NULL;
+      g_birth_country := NULL;
+      g_ethnicity := NULL;
+      g_pnc_no := NULL;
+      g_error_message := NULL;
+
+      IF (   g_offender_book_id IS NOT NULL
+          OR g_offender_id IS NOT NULL
+          OR g_root_offender_id IS NOT NULL
+         )
+      THEN
+         get_booking_details (g_offender_book_id,
+                              g_root_offender_id,
+                              g_offender_id,
+                              g_living_unit_id,
+                              g_agy_loc_id,
+                              g_booking_no,
+                              g_error_message
+                             );
+
+         IF g_error_message IS NOT NULL
+         THEN
+            RAISE NO_DATA_FOUND;
+         END IF;
+
+         IF g_offender_id IS NOT NULL
+         THEN
+            get_offender_details (g_offender_id,
+                                  g_last_name,
+                                  g_first_name,
+                                  g_middle_name,
+                                  g_gender,
+                                  g_offender_id_display,
+                                  g_birth_date,
+                                  g_birth_country,
+                                  g_ethnicity
+                                 );
+         END IF;
+
+         -- get pnc_no
+         get_offender_identifiers (g_offender_id, 'PNC', NULL, g_pnc_no);
+
+         IF g_last_name IS NOT NULL AND g_agy_loc_id IS NOT NULL
+         THEN
+            Get_Xtag_Correlation_Id ('OffenderPrisonNumber',
+                                     g_correlation_id);
+            v_out :=
+               TO_CLOB
+                  (   Xml_Builder.get_start_tag ('OffenderPrisonNumber')
+                   || Xml_Builder.get_tag_with_data ('CorrelationId',
+                                                     g_correlation_id
+                                                    )
+                   || Xml_Builder.get_tag_with_data
+                                              ('NOMISTimestamp',
+                                               p_nomis_timestamp
+                                              )
+                   || Xml_Builder.get_tag_with_data ('PNCID',
+                                                     g_pnc_no,
+                                                     TRUE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('PrisonNumber',
+                                                     g_booking_no,
+                                                     FALSE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('FamilyName',
+                                                     g_last_name,
+                                                     FALSE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('Forename1',
+                                                     g_first_name,
+                                                     TRUE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('Forename2',
+                                                     g_middle_name,
+                                                     TRUE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('DateOfBirth',
+                                                     TO_CHAR (g_birth_date,
+                                                              'YYYY-MM-DD'
+                                                             ),
+                                                     FALSE,
+                                                     TRUE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('OldPrisonNumber',
+                                                     p_old_prison_num,
+                                                     TRUE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('EstabCode',
+                                                     g_agy_loc_id,
+                                                     FALSE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('NOMISId',
+                                                     g_offender_id_display,
+                                                     FALSE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_end_tag ('OffenderPrisonNumber')
+                  );
+         ELSE
+            RAISE NO_DATA_FOUND;
+         END IF;
+      ELSE
+         RAISE NO_DATA_FOUND;
+      END IF;
+   EXCEPTION
+      WHEN NO_DATA_FOUND
+      THEN
+         p_error_flag := 1;
+         g_error_message := NVL (g_error_message, 'No Data Found.');
+         v_out :=
+            TO_CLOB
+               (   Xml_Builder.get_start_tag ('OffenderPrisonNumber')
+                || Xml_Builder.get_tag_with_data
+                                              ('NOMISTimestamp',
+                                               p_nomis_timestamp
+                                              )
+                || Xml_Builder.get_tag_with_data ('ERROR', g_error_message||
+                                                          ' p_offender_book_id='||p_offender_book_id   ||
+                                                          ',p_root_offender_id='||p_root_offender_id   ||
+                                                          ',p_offender_id='||p_offender_id        ||
+                                                          ',p_old_prison_num='||p_old_prison_num   ) 
+                || Xml_Builder.get_end_tag ('OffenderPrisonNumber')
+               );
+         g_error_message := NULL;
+      WHEN OTHERS
+      THEN
+         p_error_flag := 1;
+         g_error_message := SUBSTR (SQLERRM, 1, 200);
+         v_out :=
+            TO_CLOB
+               (   Xml_Builder.get_start_tag ('OffenderPrisonNumber')
+                || Xml_Builder.get_tag_with_data
+                                              ('NOMISTimestamp',
+                                               p_nomis_timestamp
+                                              )
+                || Xml_Builder.get_tag_with_data ('ERROR', g_error_message||
+                                                          ' p_offender_book_id='||p_offender_book_id   ||
+                                                          ',p_root_offender_id='||p_root_offender_id   ||
+                                                          ',p_offender_id='||p_offender_id        ||
+                                                          ',p_old_prison_num='||p_old_prison_num   ) 
+                || Xml_Builder.get_end_tag ('OffenderPrisonNumber')
+               );
+         g_error_message := NULL;
+   END offender_prison_number;
+
+----------
+   PROCEDURE status_change (
+      p_offender_book_id   IN              offender_bookings.offender_book_id%TYPE
+            DEFAULT NULL,
+      p_root_offender_id   IN              offender_bookings.root_offender_id%TYPE
+            DEFAULT NULL,
+      p_offender_id        IN              offender_bookings.offender_id%TYPE
+            DEFAULT NULL,
+		p_nomis_timestamp		IN					 VARCHAR2,				
+      p_error_flag         OUT             PLS_INTEGER,
+      v_out                OUT NOCOPY      CLOB
+   )
+   IS
+   BEGIN
+--
+-- Initialize the variables
+--
+      p_error_flag := 0;
+      g_root_offender_id := NULL;
+      g_offender_id := NULL;
+      g_offender_book_id := p_offender_book_id;
+      g_living_unit_id := NULL;
+      g_agy_loc_id := NULL;
+      g_booking_no := NULL;
+      g_last_name := NULL;
+      g_first_name := NULL;
+      g_middle_name := NULL;
+      g_gender := NULL;
+      g_offender_id_display := NULL;
+      g_birth_date := NULL;
+      g_birth_country := NULL;
+      g_ethnicity := NULL;
+      g_pnc_no := NULL;
+      g_error_message := NULL;
+
+      IF (   g_offender_book_id IS NOT NULL
+          OR g_offender_id IS NOT NULL
+          OR g_root_offender_id IS NOT NULL
+         )
+      THEN
+         get_booking_details (g_offender_book_id,
+                              g_root_offender_id,
+                              g_offender_id,
+                              g_living_unit_id,
+                              g_agy_loc_id,
+                              g_booking_no,
+                              g_error_message
+                             );
+
+         IF g_error_message IS NOT NULL
+         THEN
+            RAISE NO_DATA_FOUND;
+         END IF;
+
+         IF g_offender_id IS NOT NULL
+         THEN
+            get_offender_details (g_offender_id,
+                                  g_last_name,
+                                  g_first_name,
+                                  g_middle_name,
+                                  g_gender,
+                                  g_offender_id_display,
+                                  g_birth_date,
+                                  g_birth_country,
+                                  g_ethnicity
+                                 );
+         END IF;
+
+         -- get pnc_no
+         get_offender_identifiers (g_offender_id, 'PNC', NULL, g_pnc_no);
+
+         IF g_last_name IS NOT NULL AND g_agy_loc_id IS NOT NULL
+         THEN
+            Get_Xtag_Correlation_Id ('StatusChange', g_correlation_id);
+            v_out :=
+               TO_CLOB
+                  (   Xml_Builder.get_start_tag ('StatusChange')
+                   || Xml_Builder.get_tag_with_data ('CorrelationId',
+                                                     g_correlation_id
+                                                    )
+                   || Xml_Builder.get_tag_with_data
+                                              ('NOMISTimestamp',
+                                               p_nomis_timestamp
+                                              )
+                   || Xml_Builder.get_tag_with_data ('PrisonNumber',
+                                                     g_booking_no,
+                                                     FALSE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('FamilyName',
+                                                     g_last_name,
+                                                     FALSE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('Forename1',
+                                                     g_first_name,
+                                                     TRUE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('Forename2',
+                                                     g_middle_name,
+                                                     TRUE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('DateOfBirth',
+                                                     TO_CHAR (g_birth_date,
+                                                              'YYYY-MM-DD'
+                                                             ),
+                                                     FALSE,
+                                                     TRUE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('PNCID',
+                                                     g_pnc_no,
+                                                     TRUE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('EstabCode',
+                                                     g_agy_loc_id,
+                                                     FALSE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_tag_with_data
+                                 ('Status',
+                                  xtag_utils.get_imprisonment_status (p_offender_book_id),
+                                  FALSE,
+                                  FALSE
+                                 )
+                   || Xml_Builder.get_tag_with_data ('NOMISId',
+                                                     g_offender_id_display,
+                                                     FALSE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_end_tag ('StatusChange')
+                  );
+         ELSE
+            RAISE NO_DATA_FOUND;
+         END IF;
+      ELSE
+         RAISE NO_DATA_FOUND;
+      END IF;
+   EXCEPTION
+      WHEN NO_DATA_FOUND
+      THEN
+         p_error_flag := 1;
+         g_error_message := NVL (g_error_message, 'No Data Found.');
+         v_out :=
+            TO_CLOB
+               (   Xml_Builder.get_start_tag ('StatusChange')
+                || Xml_Builder.get_tag_with_data
+                                              ('NOMISTimestamp',
+                                               p_nomis_timestamp
+                                              )
+                || Xml_Builder.get_tag_with_data ('ERROR', g_error_message||
+                                                          ' p_offender_book_id='||p_offender_book_id   ||
+                                                          ',p_root_offender_id='||p_root_offender_id   ||
+                                                          ',p_offender_id='||p_offender_id)
+                || Xml_Builder.get_end_tag ('StatusChange')
+               );
+      WHEN OTHERS
+      THEN
+         p_error_flag := 1;
+         g_error_message := SUBSTR (SQLERRM, 1, 200);
+         v_out :=
+            TO_CLOB
+               (   Xml_Builder.get_start_tag ('StatusChange')
+                || Xml_Builder.get_tag_with_data
+                                              ('NOMISTimestamp',
+                                               p_nomis_timestamp
+                                              )
+                || Xml_Builder.get_tag_with_data ('ERROR', g_error_message||
+                                                          ' p_offender_book_id='||p_offender_book_id   ||
+                                                          ',p_root_offender_id='||p_root_offender_id   ||
+                                                          ',p_offender_id='||p_offender_id)
+                || Xml_Builder.get_end_tag ('StatusChange')
+               );
+   END status_change;
+
+--
+-- From External_movements where direction_code = 'IN'
+--
+   PROCEDURE offender_reception (
+      p_offender_book_id   IN              offender_bookings.offender_book_id%TYPE
+            DEFAULT NULL,
+      p_root_offender_id   IN              offender_bookings.root_offender_id%TYPE
+            DEFAULT NULL,
+      p_offender_id        IN              offender_bookings.offender_id%TYPE
+            DEFAULT NULL,
+      p_movement_seq       IN              offender_external_movements.movement_seq%TYPE
+            DEFAULT NULL,
+      p_record_deleted     IN              offender_external_movements.active_flag%TYPE
+            DEFAULT 'N',
+		p_nomis_timestamp		IN					 VARCHAR2,				
+      p_error_flag         OUT             PLS_INTEGER,
+      v_out                OUT NOCOPY      CLOB
+   )
+   IS
+      --  lv_start_date           offender_sentence_terms.start_date%TYPE := NULL;
+      --  lv_end_date             offender_sentence_terms.end_date%TYPE   := NULL;
+      lv_years                offender_sentence_terms.years%TYPE      := NULL;
+      lv_months               offender_sentence_terms.months%TYPE     := NULL;
+      lv_weeks                offender_sentence_terms.weeks%TYPE      := NULL;
+      lv_days                 offender_sentence_terms.days%TYPE       := NULL;
+      lv_total_days           NUMBER                                  := NULL;
+      lv_sentence_status      offender_sentences.sentence_status%TYPE;
+      lv_sentence_term_code   offender_sentence_terms.sentence_term_code%TYPE
+                                                                      := NULL;
+      lv_release_date         offender_sent_calculations.etd_calculated_date%TYPE
+                                                                      := NULL;
+      lv_movement_record      ext_move_rec                            := NULL;
+      lv_court_location       agency_locations.agy_loc_id%TYPE        := NULL;
+      lv_from_location        agency_locations.agy_loc_id%TYPE        := NULL;
+      lv_profile_code         offender_profile_details.profile_code%TYPE
+                                                                      := NULL;
+      p_sentence_seq          offender_sentences.sentence_seq%TYPE    := NULL;
+
+      --
+      -- Cursor to get youth Flag
+      --
+      CURSOR get_youth_flag_cur (
+         p_book_id     offender_bookings.offender_book_id%TYPE,
+         p_prof_type   offender_profile_details.profile_type%TYPE
+      )
+      IS
+         SELECT profile_code
+           FROM offender_profile_details
+          WHERE offender_book_id = p_book_id AND profile_type = p_prof_type;
+   BEGIN
+--
+-- Initialize the variables
+--
+      p_error_flag := 0;
+      g_root_offender_id := p_root_offender_id;
+      g_offender_id := p_offender_id;
+      g_offender_book_id := p_offender_book_id;
+      g_living_unit_id := NULL;
+      g_agy_loc_id := NULL;
+      g_booking_no := NULL;
+      g_last_name := NULL;
+      g_first_name := NULL;
+      g_middle_name := NULL;
+      g_gender := NULL;
+      g_offender_id_display := NULL;
+      g_birth_date := NULL;
+      g_birth_country := NULL;
+      g_ethnicity := NULL;
+      g_pnc_no := NULL;
+      g_error_message := NULL;
+      g_date := SYSDATE;
+
+      IF (   g_offender_book_id IS NOT NULL
+          OR g_offender_id IS NOT NULL
+          OR g_root_offender_id IS NOT NULL
+         )
+      THEN
+         get_booking_details (g_offender_book_id,
+                              g_root_offender_id,
+                              g_offender_id,
+                              g_living_unit_id,
+                              g_agy_loc_id,
+                              g_booking_no,
+                              g_error_message
+                             );
+
+         IF g_error_message IS NOT NULL
+         THEN
+            RAISE NO_DATA_FOUND;
+         END IF;
+
+         IF g_offender_id IS NOT NULL
+         THEN
+            get_offender_details (g_offender_id,
+                                  g_last_name,
+                                  g_first_name,
+                                  g_middle_name,
+                                  g_gender,
+                                  g_offender_id_display,
+                                  g_birth_date,
+                                  g_birth_country,
+                                  g_ethnicity
+                                 );
+         END IF;
+
+         -- get pnc_no
+         get_offender_identifiers (g_offender_id, 'PNC', NULL, g_pnc_no);
+
+         -- Get Youth Flag
+         OPEN get_youth_flag_cur (g_offender_book_id, 'YOUTH');
+
+         FETCH get_youth_flag_cur
+          INTO lv_profile_code;
+
+         IF get_youth_flag_cur%NOTFOUND
+         THEN
+            lv_profile_code := NULL;
+         END IF;
+
+         CLOSE get_youth_flag_cur;
+
+         -- retrieve movements record
+         get_movement_details (g_offender_book_id,
+                               p_movement_seq,
+                               g_error_message,
+                               lv_movement_record
+                              );
+
+         IF g_error_message IS NOT NULL
+         THEN
+            RAISE NO_DATA_FOUND;
+         END IF;
+
+         IF lv_movement_record.movement_type = 'CRT'
+         THEN
+            lv_court_location := lv_movement_record.from_agy_loc_id;
+            lv_from_location := NULL;
+         ELSE
+            lv_court_location := NULL;
+            lv_from_location := lv_movement_record.from_agy_loc_id;
+         END IF;
+
+           --
+           --   Retrieve Relesae Date - as per Darren it will be either of these 3
+         --   ARD, CRD or NPD for release 1.0 but would need to work on it as part
+         --   of release 1.1
+         --
+         lv_release_date := Xtag_Utils.get_release_date (g_offender_book_id);
+         --  get effective sentence length
+         Xtag_Utils.get_sentence_length (g_offender_book_id,
+                                         lv_total_days,
+                                         lv_years,
+                                         lv_months,
+                                         lv_days
+                                        );
+
+         IF g_last_name IS NOT NULL AND g_agy_loc_id IS NOT NULL
+         THEN
+            Get_Xtag_Correlation_Id ('OffenderReception', g_correlation_id);
+            v_out :=
+               TO_CLOB
+                  (   Xml_Builder.get_start_tag ('OffenderReception')
+                   || Xml_Builder.get_tag_with_data ('CorrelationId',
+                                                     g_correlation_id
+                                                    )
+                   || Xml_Builder.get_tag_with_data
+                                              ('NOMISTimestamp',
+                                               p_nomis_timestamp
+                                              )
+                   || Xml_Builder.get_tag_with_data ('Timestamp',
+                                                        TO_CHAR (g_date,
+                                                                 'YYYY-MM-DD'
+                                                                )
+                                                     || 'T'
+                                                     || TO_CHAR (g_date,
+                                                                 'HH24:MI:SS'
+                                                                )
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('PNCID',
+                                                     g_pnc_no,
+                                                     TRUE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('PrisonNumber',
+                                                     g_booking_no,
+                                                     FALSE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('FamilyName',
+                                                     g_last_name,
+                                                     FALSE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('Forename1',
+                                                     g_first_name,
+                                                     TRUE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('Forename2',
+                                                     g_middle_name,
+                                                     TRUE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('DateOfBirth',
+                                                     TO_CHAR (g_birth_date,
+                                                              'YYYY-MM-DD'
+                                                             ),
+                                                     FALSE,
+                                                     TRUE
+                                                    )
+                   || Xml_Builder.get_tag_with_data
+                                                   ('ReleaseDate',
+                                                    TO_CHAR (lv_release_date,
+                                                             'YYYY-MM-DD'
+                                                            ),
+                                                    FALSE,
+                                                    TRUE
+                                                   )
+                   || Xml_Builder.get_tag_with_data ('SentenceYears',
+                                                     lv_years,
+                                                     FALSE,
+                                                     TRUE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('SentenceMonths',
+                                                     lv_months,
+                                                     FALSE,
+                                                     TRUE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('SentenceDays',
+                                                     lv_days,
+                                                     FALSE,
+                                                     TRUE
+                                                    )
+                   || Xml_Builder.get_tag_with_data
+                                                   ('EffectiveSentenceLength',
+                                                    lv_total_days,
+                                                    FALSE,
+                                                    TRUE
+                                                   )
+                   || Xml_Builder.get_tag_with_data ('EstabCode',
+                                                     g_agy_loc_id,
+                                                     FALSE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('AdultOrYP',
+                                                     lv_profile_code,
+                                                     FALSE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_tag_with_data
+                                 ('Status',
+                                  xtag_utils.get_imprisonment_status (p_offender_book_id),
+                                  FALSE,
+                                  FALSE
+                                 )
+                   || Xml_Builder.get_tag_with_data
+                                  ('MovementDate',
+                                   TO_CHAR (lv_movement_record.movement_date,
+                                            'YYYY-MM-DD'
+                                           ),
+                                   FALSE,
+                                   TRUE
+                                  )
+                   || Xml_Builder.get_tag_with_data
+                                  ('MovementTime',
+                                   TO_CHAR (lv_movement_record.movement_time,
+                                            'HH24:MI:SS'
+                                           ),
+                                   FALSE,
+                                   TRUE
+                                  )
+                   || Xml_Builder.get_tag_with_data
+                                     ('MovementCode',
+                                      lv_movement_record.movement_reason_code,
+                                      FALSE,
+                                      FALSE
+                                     )
+                   || Xml_Builder.get_tag_with_data
+                                            ('MovementType',
+                                             lv_movement_record.movement_type,
+                                             FALSE,
+                                             FALSE
+                                            )
+                   || Xml_Builder.get_tag_with_data ('MovementFromOrTo',
+                                                     lv_from_location,
+                                                     FALSE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('MovementCourtCode',
+                                                     lv_court_location,
+                                                     TRUE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('MovementDelete',
+                                                     p_record_deleted,
+                                                     FALSE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('NOMISId',
+                                                     g_offender_id_display,
+                                                     FALSE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_end_tag ('OffenderReception')
+                  );
+         ELSE
+            RAISE NO_DATA_FOUND;
+         END IF;
+      ELSE
+         RAISE NO_DATA_FOUND;
+      END IF;
+   EXCEPTION
+      WHEN NO_DATA_FOUND
+      THEN
+         p_error_flag := 1;
+         g_error_message := NVL (g_error_message, 'No Data Found.');
+         v_out :=
+            TO_CLOB
+               (   Xml_Builder.get_start_tag ('OffenderReception')
+                || Xml_Builder.get_tag_with_data
+                                              ('NOMISTimestamp',
+                                               p_nomis_timestamp
+                                              )
+                || Xml_Builder.get_tag_with_data ('ERROR', g_error_message ||
+                                                          ' p_offender_book_id='||p_offender_book_id   ||
+                                                          ',p_root_offender_id='||p_root_offender_id   ||
+                                                          ',p_offender_id='||p_offender_id ||
+                                                          ',p_movement_seq='||p_movement_seq ||
+                                                          ',p_record_deleted='||p_record_deleted)
+                || Xml_Builder.get_end_tag ('OffenderReception')
+               );
+         g_error_message := NULL;
+      WHEN OTHERS
+      THEN
+         p_error_flag := 1;
+         g_error_message := SUBSTR (SQLERRM, 1, 200);
+         v_out :=
+            TO_CLOB
+               (   Xml_Builder.get_start_tag ('OffenderReception')
+                || Xml_Builder.get_tag_with_data
+                                              ('NOMISTimestamp',
+                                               p_nomis_timestamp
+                                              )
+                || Xml_Builder.get_tag_with_data ('ERROR', g_error_message||
+                                                          ' p_offender_book_id='||p_offender_book_id   ||
+                                                          ',p_root_offender_id='||p_root_offender_id   ||
+                                                          ',p_offender_id='||p_offender_id ||
+                                                          ',p_movement_seq='||p_movement_seq ||
+                                                          ',p_record_deleted='||p_record_deleted)
+                || Xml_Builder.get_end_tag ('OffenderReception')
+               );
+         g_error_message := NULL;
+   END offender_reception;
+
+-- ---------------------------------------------------
+   PROCEDURE offender_sentence (
+      p_offender_book_id   IN              offender_bookings.offender_book_id%TYPE
+            DEFAULT NULL,
+      p_root_offender_id   IN              offender_bookings.root_offender_id%TYPE
+            DEFAULT NULL,
+      p_offender_id        IN              offender_bookings.offender_id%TYPE
+            DEFAULT NULL,
+		p_nomis_timestamp		IN					 VARCHAR2,				
+      p_error_flag         OUT             PLS_INTEGER,
+      v_out                OUT NOCOPY      CLOB
+   )
+   IS
+      lv_start_date           offender_sentence_terms.start_date%TYPE := NULL;
+      lv_end_date             offender_sentence_terms.end_date%TYPE   := NULL;
+      lv_years                offender_sentence_terms.years%TYPE      := NULL;
+      lv_months               offender_sentence_terms.months%TYPE     := NULL;
+      lv_weeks                offender_sentence_terms.weeks%TYPE      := NULL;
+      lv_days                 offender_sentence_terms.days%TYPE       := NULL;
+      lv_total_days           NUMBER                                  := NULL;
+      lv_sentence_status      offender_sentences.sentence_status%TYPE;
+      lv_sentence_term_code   offender_sentence_terms.sentence_term_code%TYPE
+                                                                      := NULL;
+      lv_release_date         offender_sent_calculations.etd_calculated_date%TYPE
+                                                                      := NULL;
+
+
+   BEGIN
+--
+-- Initialize the variables
+--
+      p_error_flag := 0;
+      g_root_offender_id := p_root_offender_id;
+      g_offender_id := p_offender_id;
+      g_offender_book_id := p_offender_book_id;
+      g_living_unit_id := NULL;
+      g_agy_loc_id := NULL;
+      g_booking_no := NULL;
+      g_last_name := NULL;
+      g_first_name := NULL;
+      g_middle_name := NULL;
+      g_gender := NULL;
+      g_offender_id_display := NULL;
+      g_birth_date := NULL;
+      g_birth_country := NULL;
+      g_ethnicity := NULL;
+      g_pnc_no := NULL;
+      g_error_message := NULL;
+      g_date := SYSDATE;
+
+      IF (   g_offender_book_id IS NOT NULL
+          OR g_offender_id IS NOT NULL
+          OR g_root_offender_id IS NOT NULL
+         )
+      THEN
+         get_booking_details (g_offender_book_id,
+                              g_root_offender_id,
+                              g_offender_id,
+                              g_living_unit_id,
+                              g_agy_loc_id,
+                              g_booking_no,
+                              g_error_message
+                             );
+
+         IF g_error_message IS NOT NULL
+         THEN
+            RAISE NO_DATA_FOUND;
+         END IF;
+
+         IF g_offender_id IS NOT NULL
+         THEN
+            get_offender_details (g_offender_id,
+                                  g_last_name,
+                                  g_first_name,
+                                  g_middle_name,
+                                  g_gender,
+                                  g_offender_id_display,
+                                  g_birth_date,
+                                  g_birth_country,
+                                  g_ethnicity
+                                 );
+         END IF;
+
+         -- get pnc_no
+         get_offender_identifiers (g_offender_id, 'PNC', NULL, g_pnc_no);
+
+           --
+           --   Retrieve Relesae Date - as per Darren it will be either of these 3
+         --   ARD, CRD or NPD for release 1.0 but would need to work on it as part
+         --   of release 1.1
+         --
+         lv_release_date := Xtag_Utils.get_release_date (g_offender_book_id);
+
+         --  get effective sentence length
+         Xtag_Utils.get_sentence_length (g_offender_book_id,
+			                                lv_start_date,
+                                         lv_total_days,
+                                         lv_years,
+                                         lv_months,
+                                         lv_days
+                                        );
+
+         IF g_last_name IS NOT NULL AND g_agy_loc_id IS NOT NULL
+         THEN
+            Get_Xtag_Correlation_Id ('OffenderSentence', g_correlation_id);
+            v_out :=
+               TO_CLOB
+                  (   Xml_Builder.get_start_tag ('OffenderSentence')
+                   || Xml_Builder.get_tag_with_data ('CorrelationId',
+                                                     g_correlation_id
+                                                    )
+                   || Xml_Builder.get_tag_with_data
+                                              ('NOMISTimestamp',
+                                               p_nomis_timestamp
+                                              )
+                   || Xml_Builder.get_tag_with_data ('Timestamp',
+                                                        TO_CHAR (g_date,
+                                                                 'YYYY-MM-DD'
+                                                                )
+                                                     || 'T'
+                                                     || TO_CHAR (g_date,
+                                                                 'HH24:MI:SS'
+                                                                )
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('PNCID',
+                                                     g_pnc_no,
+                                                     TRUE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('PrisonNumber',
+                                                     g_booking_no,
+                                                     FALSE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('FamilyName',
+                                                     g_last_name,
+                                                     FALSE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('Forename1',
+                                                     g_first_name,
+                                                     TRUE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('Forename2',
+                                                     g_middle_name,
+                                                     TRUE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('DateOfBirth',
+                                                     TO_CHAR (g_birth_date,
+                                                              'YYYY-MM-DD'
+                                                             ),
+                                                     FALSE,
+                                                     TRUE
+                                                    )
+                   || Xml_Builder.get_tag_with_data
+                                                   ('ReleaseDate',
+                                                    TO_CHAR (lv_release_date,
+                                                             'YYYY-MM-DD'
+                                                            ),
+                                                    FALSE,
+                                                    TRUE
+                                                   )
+                   || Xml_Builder.get_tag_with_data ('SentenceYears',
+                                                     lv_years,
+                                                     FALSE,
+                                                     TRUE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('SentenceMonths',
+                                                     lv_months,
+                                                     FALSE,
+                                                     TRUE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('SentenceDays',
+                                                     lv_days,
+                                                     FALSE,
+                                                     TRUE
+                                                    )
+                   || Xml_Builder.get_tag_with_data
+                                                   ('EffectiveSentenceLength',
+                                                    lv_total_days,
+                                                    FALSE,
+                                                    TRUE
+                                                   )
+                   || Xml_Builder.get_tag_with_data ('EstabCode',
+                                                     g_agy_loc_id,
+                                                     FALSE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('SentenceDate',
+                                                     TO_CHAR (lv_start_date,
+                                                              'YYYY-MM-DD'
+                                                             ),
+                                                     FALSE,
+                                                     TRUE
+                                                    )
+                   || Xml_Builder.get_tag_with_data
+                                 ('Status',
+                                  xtag_utils.get_imprisonment_status (p_offender_book_id),
+                                  FALSE,
+                                  FALSE
+                                 )
+                   || Xml_Builder.get_tag_with_data ('NOMISId',
+                                                     g_offender_id_display,
+                                                     FALSE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_end_tag ('OffenderSentence')
+                  );
+         ELSE
+            RAISE NO_DATA_FOUND;
+         END IF;
+      ELSE
+         RAISE NO_DATA_FOUND;
+      END IF;
+   EXCEPTION
+      WHEN NO_DATA_FOUND
+      THEN
+         p_error_flag := 1;
+         g_error_message := NVL (g_error_message, 'No Data Found.');
+         v_out :=
+            TO_CLOB
+               (   Xml_Builder.get_start_tag ('OffenderSentence')
+                || Xml_Builder.get_tag_with_data
+                                              ('NOMISTimestamp',
+                                               p_nomis_timestamp
+                                              )
+                || Xml_Builder.get_tag_with_data ('ERROR', g_error_message||
+                                                          ' p_offender_book_id='||p_offender_book_id   ||
+                                                          ',p_root_offender_id='||p_root_offender_id   ||
+                                                          ',p_offender_id='||p_offender_id )
+                || Xml_Builder.get_end_tag ('OffenderSentence')
+               );
+         g_error_message := NULL;
+      WHEN OTHERS
+      THEN
+         p_error_flag := 1;
+         g_error_message := SUBSTR (SQLERRM, 1, 200);
+         v_out :=
+            TO_CLOB
+               (   Xml_Builder.get_start_tag ('OffenderSentence')
+                || Xml_Builder.get_tag_with_data
+                                              ('NOMISTimestamp',
+                                               p_nomis_timestamp
+                                              )
+                || Xml_Builder.get_tag_with_data ('ERROR', g_error_message||
+                                                          ' p_offender_book_id='||p_offender_book_id   ||
+                                                          ',p_root_offender_id='||p_root_offender_id   ||
+                                                          ',p_offender_id='||p_offender_id )
+                || Xml_Builder.get_end_tag ('OffenderSentence')
+               );
+         g_error_message := NULL;
+   END offender_sentence;
+
+-- ---------------------------------------------------
+   PROCEDURE offender_discharge (
+      p_offender_book_id   IN              offender_bookings.offender_book_id%TYPE
+            DEFAULT NULL,
+      p_root_offender_id   IN              offender_bookings.root_offender_id%TYPE
+            DEFAULT NULL,
+      p_offender_id        IN              offender_bookings.offender_id%TYPE
+            DEFAULT NULL,
+      p_movement_seq       IN              offender_external_movements.movement_seq%TYPE
+            DEFAULT NULL,
+      p_record_deleted     IN              offender_external_movements.active_flag%TYPE
+            DEFAULT 'N',
+		p_nomis_timestamp		IN					 VARCHAR2,				
+      p_error_flag         OUT             PLS_INTEGER,
+      v_out                OUT NOCOPY      CLOB
+   )
+   IS
+      --  lv_start_date           offender_sentence_terms.start_date%TYPE := NULL;
+       -- lv_end_date             offender_sentence_terms.end_date%TYPE   := NULL;
+      lv_years                offender_sentence_terms.years%TYPE      := NULL;
+      lv_months               offender_sentence_terms.months%TYPE     := NULL;
+      lv_weeks                offender_sentence_terms.weeks%TYPE      := NULL;
+      lv_days                 offender_sentence_terms.days%TYPE       := NULL;
+      lv_total_days           NUMBER                                  := NULL;
+      lv_sentence_status      offender_sentences.sentence_status%TYPE;
+      lv_sentence_term_code   offender_sentence_terms.sentence_term_code%TYPE
+                                                                      := NULL;
+      lv_release_date         offender_sent_calculations.etd_calculated_date%TYPE
+                                                                      := NULL;
+      lv_movement_record      ext_move_rec                            := NULL;
+      lv_court_location       agency_locations.agy_loc_id%TYPE        := NULL;
+      lv_to_location        agency_locations.agy_loc_id%TYPE        := NULL;
+      lv_profile_code         offender_profile_details.profile_code%TYPE
+                                                                      := NULL;
+      p_sentence_seq          offender_sentences.sentence_seq%TYPE    := NULL;
+
+      --
+      -- Cursor to get youth Flag
+      --
+      CURSOR get_youth_flag_cur (
+         p_book_id     offender_bookings.offender_book_id%TYPE,
+         p_prof_type   offender_profile_details.profile_type%TYPE
+      )
+      IS
+         SELECT profile_code
+           FROM offender_profile_details
+          WHERE offender_book_id = p_book_id AND profile_type = p_prof_type;
+   BEGIN
+--
+-- Initialize the variables
+--
+      p_error_flag := 0;
+      g_root_offender_id := p_root_offender_id;
+      g_offender_id := p_offender_id;
+      g_offender_book_id := p_offender_book_id;
+      g_living_unit_id := NULL;
+      g_agy_loc_id := NULL;
+      g_booking_no := NULL;
+      g_last_name := NULL;
+      g_first_name := NULL;
+      g_middle_name := NULL;
+      g_gender := NULL;
+      g_offender_id_display := NULL;
+      g_birth_date := NULL;
+      g_birth_country := NULL;
+      g_ethnicity := NULL;
+      g_pnc_no := NULL;
+      g_error_message := NULL;
+      g_date := SYSDATE;
+
+      IF (   g_offender_book_id IS NOT NULL
+          OR g_offender_id IS NOT NULL
+          OR g_root_offender_id IS NOT NULL
+         )
+      THEN
+         get_booking_details (g_offender_book_id,
+                              g_root_offender_id,
+                              g_offender_id,
+                              g_living_unit_id,
+                              g_agy_loc_id,
+                              g_booking_no,
+                              g_error_message
+                             );
+
+         IF g_error_message IS NOT NULL
+         THEN
+            RAISE NO_DATA_FOUND;
+         END IF;
+
+         IF g_offender_id IS NOT NULL
+         THEN
+            get_offender_details (g_offender_id,
+                                  g_last_name,
+                                  g_first_name,
+                                  g_middle_name,
+                                  g_gender,
+                                  g_offender_id_display,
+                                  g_birth_date,
+                                  g_birth_country,
+                                  g_ethnicity
+                                 );
+         END IF;
+			
+         -- get pnc_no
+         get_offender_identifiers (g_offender_id, 'PNC', NULL, g_pnc_no);			
+
+         -- Get Youth Flag
+         OPEN get_youth_flag_cur (g_offender_book_id, 'YOUTH');
+
+         FETCH get_youth_flag_cur
+          INTO lv_profile_code;
+
+         IF get_youth_flag_cur%NOTFOUND
+         THEN
+            lv_profile_code := NULL;
+         END IF;
+
+         CLOSE get_youth_flag_cur;
+
+         -- retrieve movements record
+         get_movement_details (g_offender_book_id,
+                               p_movement_seq,
+                               g_error_message,
+                               lv_movement_record
+                              );
+
+         IF g_error_message IS NOT NULL
+         THEN
+            RAISE NO_DATA_FOUND;
+         END IF;
+
+         IF lv_movement_record.movement_type = 'CRT'
+         THEN
+            lv_court_location := lv_movement_record.to_agy_loc_id;
+            lv_to_location := NULL;
+         ELSE
+            lv_court_location := NULL;
+            lv_to_location := lv_movement_record.to_agy_loc_id;
+         END IF;
+
+           --
+           --   Retrieve Relesae Date - as per Darren it will be either of these 3
+         --   ARD, CRD or NPD for release 1.0 but would need to work on it as part
+         --   of release 1.1
+         --
+         lv_release_date := Xtag_Utils.get_release_date (g_offender_book_id);
+         --  get effective sentence length
+         Xtag_Utils.get_sentence_length (g_offender_book_id,
+                                         lv_total_days,
+                                         lv_years,
+                                         lv_months,
+                                         lv_days
+                                        );
+
+         IF g_last_name IS NOT NULL AND g_agy_loc_id IS NOT NULL
+         THEN
+            Get_Xtag_Correlation_Id ('OffenderDischarge', g_correlation_id);
+            v_out :=
+               TO_CLOB
+                  (   Xml_Builder.get_start_tag ('OffenderDischarge')
+                   || Xml_Builder.get_tag_with_data ('CorrelationId',
+                                                     g_correlation_id
+                                                    )
+                   || Xml_Builder.get_tag_with_data
+                                              ('NOMISTimestamp',
+                                               p_nomis_timestamp
+                                              )
+                   || Xml_Builder.get_tag_with_data ('Timestamp',
+                                                        TO_CHAR (g_date,
+                                                                 'YYYY-MM-DD'
+                                                                )
+                                                     || 'T'
+                                                     || TO_CHAR (g_date,
+                                                                 'HH24:MI:SS'
+                                                                )
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('PNCID',
+                                                     g_pnc_no,
+                                                     TRUE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('PrisonNumber',
+                                                     g_booking_no,
+                                                     FALSE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('FamilyName',
+                                                     g_last_name,
+                                                     FALSE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('Forename1',
+                                                     g_first_name,
+                                                     TRUE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('Forename2',
+                                                     g_middle_name,
+                                                     TRUE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('DateOfBirth',
+                                                     TO_CHAR (g_birth_date,
+                                                              'YYYY-MM-DD'
+                                                             ),
+                                                     FALSE,
+                                                     TRUE
+                                                    )
+                   || Xml_Builder.get_tag_with_data
+                                                   ('ReleaseDate',
+                                                    TO_CHAR (lv_release_date,
+                                                             'YYYY-MM-DD'
+                                                            ),
+                                                    FALSE,
+                                                    TRUE
+                                                   )
+                   || Xml_Builder.get_tag_with_data ('SentenceYears',
+                                                     lv_years,
+                                                     FALSE,
+                                                     TRUE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('SentenceMonths',
+                                                     lv_months,
+                                                     FALSE,
+                                                     TRUE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('SentenceDays',
+                                                     lv_days,
+                                                     FALSE,
+                                                     TRUE
+                                                    )
+                   || Xml_Builder.get_tag_with_data
+                                                   ('EffectiveSentenceLength',
+                                                    lv_total_days,
+                                                    FALSE,
+                                                    TRUE
+                                                   )
+                   || Xml_Builder.get_tag_with_data ('EstabCode',
+                                                     g_agy_loc_id,
+                                                     FALSE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('AdultOrYP',
+                                                     lv_profile_code,
+                                                     FALSE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_tag_with_data
+                                 ('Status',
+                                  xtag_utils.get_imprisonment_status (p_offender_book_id),
+                                  FALSE,
+                                  FALSE
+                                 )
+                   || Xml_Builder.get_tag_with_data
+                                  ('MovementDate',
+                                   TO_CHAR (lv_movement_record.movement_date,
+                                            'YYYY-MM-DD'
+                                           ),
+                                   FALSE,
+                                   TRUE
+                                  )
+                   || Xml_Builder.get_tag_with_data
+                                  ('MovementTime',
+                                   TO_CHAR (lv_movement_record.movement_time,
+                                            'HH24:MI:SS'
+                                           ),
+                                   FALSE,
+                                   TRUE
+                                  )
+                   || Xml_Builder.get_tag_with_data
+                                     ('MovementCode',
+                                      lv_movement_record.movement_reason_code,
+                                      FALSE,
+                                      FALSE
+                                     )
+                   || Xml_Builder.get_tag_with_data
+                                            ('MovementType',
+                                             lv_movement_record.movement_type,
+                                             FALSE,
+                                             FALSE
+                                            )
+                   || Xml_Builder.get_tag_with_data ('MovementFromOrTo',
+                                                     lv_to_location,
+                                                     FALSE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('MovementCourtCode',
+                                                     lv_court_location,
+                                                     TRUE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('MovementDelete',
+                                                     p_record_deleted,
+                                                     FALSE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_tag_with_data ('NOMISId',
+                                                     g_offender_id_display,
+                                                     FALSE,
+                                                     FALSE
+                                                    )
+                   || Xml_Builder.get_end_tag ('OffenderDischarge')
+                  );
+         ELSE
+            RAISE NO_DATA_FOUND;
+         END IF;
+      ELSE
+         RAISE NO_DATA_FOUND;
+      END IF;
+   EXCEPTION
+      WHEN NO_DATA_FOUND
+      THEN
+         p_error_flag := 1;
+         g_error_message := NVL (g_error_message, 'No Data Found.');
+         v_out :=
+            TO_CLOB
+               (   Xml_Builder.get_start_tag ('OffenderDischarge')
+                || Xml_Builder.get_tag_with_data
+                                              ('NOMISTimestamp',
+                                               p_nomis_timestamp
+                                              )
+                || Xml_Builder.get_tag_with_data ('ERROR', g_error_message||
+                                                          ' p_offender_book_id='||p_offender_book_id   ||
+                                                          ',p_root_offender_id='||p_root_offender_id   ||
+                                                          ',p_offender_id='||p_offender_id ||
+                                                          ',p_movement_seq='||p_movement_seq ||
+                                                          ',p_record_deleted='||p_record_deleted)
+                || Xml_Builder.get_end_tag ('OffenderDischarge')
+               );
+         g_error_message := NULL;
+      WHEN OTHERS
+      THEN
+         p_error_flag := 1;
+         g_error_message := SUBSTR (SQLERRM, 1, 200);
+         v_out :=
+            TO_CLOB
+               (   Xml_Builder.get_start_tag ('OffenderDischarge')
+                || Xml_Builder.get_tag_with_data
+                                              ('NOMISTimestamp',
+                                               p_nomis_timestamp
+                                              )
+                || Xml_Builder.get_tag_with_data ('ERROR', g_error_message||
+                                                          ' p_offender_book_id='||p_offender_book_id   ||
+                                                          ',p_root_offender_id='||p_root_offender_id   ||
+                                                          ',p_offender_id='||p_offender_id ||
+                                                          ',p_movement_seq='||p_movement_seq ||
+                                                          ',p_record_deleted='||p_record_deleted)
+                || Xml_Builder.get_end_tag ('OffenderDischarge')
+               );
+         g_error_message := NULL;
+   END offender_discharge;
+--------------------
+/*FUNCTION xx1
+ RETURN clob
+   IS
+            v_err               PLS_INTEGER;
+            v_out   clob;
+   BEGIN
+      offender_details (7461, 1008795, 1008795, 'X00321', v_err ,v_out);
+
+      RETURN v_out;
+   EXCEPTION
+      WHEN OTHERS
+      THEN
+         RETURN null;
+   END xx1;
+   */
+-------------------
+END Xtag_Oasys_Transactions;
+/
+

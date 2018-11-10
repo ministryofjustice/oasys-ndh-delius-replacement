@@ -11,6 +11,7 @@ import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.ndh.api.soap.SoapEnvelopeSpec1_2;
 import uk.gov.justice.digital.ndh.service.ExceptionLogService;
+import uk.gov.justice.digital.ndh.service.IdempotentLogger;
 import uk.gov.justice.digital.ndh.service.MessageStoreService;
 import uk.gov.justice.digital.ndh.service.OasysAssessmentService;
 import uk.gov.justice.digital.ndh.service.exception.NDHMappingException;
@@ -34,14 +35,16 @@ public class OasysAssessmentUpdateListener {
     private final OasysAssessmentService oasysAssessmentService;
     private final MessageStoreService messageStoreService;
     private final ExceptionLogService exceptionLogService;
+    private final IdempotentLogger idempotentLogger;
 
     @Autowired
-    public OasysAssessmentUpdateListener(OasysAssessmentUpdateTransformer oasysAssessmentUpdateTransformer, XmlMapper xmlMapper, OasysAssessmentService oasysAssessmentService, MessageStoreService messageStoreService, ExceptionLogService exceptionLogService) {
+    public OasysAssessmentUpdateListener(OasysAssessmentUpdateTransformer oasysAssessmentUpdateTransformer, XmlMapper xmlMapper, OasysAssessmentService oasysAssessmentService, MessageStoreService messageStoreService, ExceptionLogService exceptionLogService, IdempotentLogger idempotentLogger) {
         this.oasysAssessmentUpdateTransformer = oasysAssessmentUpdateTransformer;
         this.xmlMapper = xmlMapper;
         this.oasysAssessmentService = oasysAssessmentService;
         this.messageStoreService = messageStoreService;
         this.exceptionLogService = exceptionLogService;
+        this.idempotentLogger = idempotentLogger;
     }
 
     private String readMessage(Message message) throws JMSException {
@@ -52,7 +55,7 @@ public class OasysAssessmentUpdateListener {
         return maybeNdhSoapMessage.map(oasysAssessmentUpdateTransformer::deliusAssessmentUpdateOf);
     }
 
-    @JmsListener(destination = OASYS_MESSAGES, concurrency = "1")
+    @JmsListener(destination = OASYS_MESSAGES, concurrency = "1", containerFactory = "jmsListenerContainerFactory")
     public void onMessage(Message message) throws UnirestException, JMSException, DocumentException {
         log.info("HANDLING MESSAGE {}", message.toString());
 
@@ -125,7 +128,7 @@ public class OasysAssessmentUpdateListener {
                 return Optional.of(oasysAssessmentService.deliusWebServiceResponseOf(maybeRawDeliusRequest.get()));
             } catch (UnirestException e) {
                 log.error("No response from Delius: {} Rejecting message {}", e.getMessage(), message);
-                errorIdempotent(maybeDeliusRequest.get().getHeader().getHeader().getMessageId(), maybeSoapXmlFromOasys, message, "No response from Delius");
+                idempotentLogger.errorIdempotent(maybeDeliusRequest.get().getHeader().getHeader().getMessageId(), maybeSoapXmlFromOasys, message, "No response from Delius");
                 throw e;
             }
         } else {
@@ -134,16 +137,7 @@ public class OasysAssessmentUpdateListener {
 
     }
 
-    private void errorIdempotent(String correlationId, Optional<String> maybeSoapXml, Message message, String description) {
-        try {
-            if (!message.getJMSRedelivered()) {
-                exceptionLogService.logFault(maybeSoapXml.get(), correlationId, description);
-            }
-        } catch (JMSException e) {
-            log.error(e.getMessage());
-            exceptionLogService.logFault(maybeSoapXml.get(), correlationId, e.getMessage());
-        }
-    }
+
 
     private Optional<String> rawDeliusRequestOf(Optional<SoapEnvelopeSpec1_2> maybeDeliusRequest, Message message, String correlationId, String offenderId) throws JMSException {
 
@@ -154,7 +148,7 @@ public class OasysAssessmentUpdateListener {
                 rawDeliusRequest = xmlMapper.writeValueAsString(deliusAssessmentUpdateSoapEnvelope);
             } catch (JsonProcessingException e) {
                 log.error("Can't serialize request to Delius. Ignore and continue: {}", e.getMessage());
-                errorIdempotent(correlationId, Optional.of(deliusAssessmentUpdateSoapEnvelope.toString()), message, "Can't serialize request to Delius.");
+                idempotentLogger.errorIdempotent(correlationId, Optional.of(deliusAssessmentUpdateSoapEnvelope.toString()), message, "Can't serialize request to Delius.");
             }
 
             return rawDeliusRequest;
@@ -175,14 +169,14 @@ public class OasysAssessmentUpdateListener {
 
                 if (soapEnvelope.getBody() == null) {
                     log.error("Input message has no SOAP body. Ignore and continue: {}", soapXmlFromOasys);
-                    errorIdempotent(correlationId, Optional.ofNullable(soapXmlFromOasys), message, "Input message has no SOAP body");
+                    idempotentLogger.errorIdempotent(correlationId, Optional.ofNullable(soapXmlFromOasys), message, "Input message has no SOAP body");
                     return null;
                 }
 
                 return soapEnvelope;
             } catch (IOException e) {
                 log.error("Can't parse input message. Ignore and continue: {}", e.getMessage());
-                errorIdempotent(correlationId, Optional.ofNullable(soapXmlFromOasys), message, "Can't parse input message");
+                idempotentLogger.errorIdempotent(correlationId, Optional.ofNullable(soapXmlFromOasys), message, "Can't parse input message");
                 return null;
             }
         });

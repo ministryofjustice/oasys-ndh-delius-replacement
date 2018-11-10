@@ -11,5 +11,5 @@ public class ImprisonmentStatus {
     private String description;
     private String bandCode;
     private Integer rankValue;
-    private Integer imprisonmentStatusSeq;
+    private Long imprisonmentStatusSeq;
 }

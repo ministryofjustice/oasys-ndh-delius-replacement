@@ -60,7 +60,8 @@ import static org.mockito.Mockito.when;
         "ndelius.initial.search.url=http://localhost:8090/delius/initialSearch",
         "ndelius.offender.details.url=http://localhost:8090/delius/offenderDetails",
         "custody.api.base.url=http://localhost:8090/custodyapi/",
-        "oauth.url=http://localhost:8090/oauth/token"
+        "elite2.api.base.url=http://localhost:8090/elite2api/",
+        "oasys.xtag.url=http://localhost:8090/oasys/",        "oauth.url=http://localhost:8090/oauth/token"
 })
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext

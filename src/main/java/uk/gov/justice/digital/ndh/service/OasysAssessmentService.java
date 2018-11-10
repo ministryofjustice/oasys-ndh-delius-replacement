@@ -19,7 +19,7 @@ public class OasysAssessmentService {
 
     @Autowired
     public OasysAssessmentService(JmsTemplate jmsTemplate,
-                                  Queue oasysMessagesQueue,
+                                  @Qualifier("oasysMessageQueue") Queue oasysMessagesQueue,
                                   @Qualifier("assessmentUpdateClient") DeliusSOAPClient deliusAssessmentUpdateClient) {
         this.jmsTemplate = jmsTemplate;
         this.oasysMessagesQueue = oasysMessagesQueue;

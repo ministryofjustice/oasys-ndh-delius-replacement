@@ -47,7 +47,7 @@ public class OasysOffenderService extends RequestResponseService {
     private final FaultTransformer faultTransformer;
     private final DeliusSOAPClient deliusInitialSearchClient;
     private final DeliusSOAPClient deliusOffenderDetailsClient;
-    private final NomisClient nomisClient;
+    private final NomisClient custodyApiClient;
     private final ObjectMapper objectMapper;
 
     @Autowired
@@ -57,7 +57,7 @@ public class OasysOffenderService extends RequestResponseService {
                                 MessageStoreService messageStoreService,
                                 @Qualifier("initialSearchClient") DeliusSOAPClient deliusInitialSearchClient,
                                 @Qualifier("offenderDetailsClient") DeliusSOAPClient deliusOffenderDetailsClient,
-                                NomisClient nomisClient,
+                                @Qualifier("custodyApiClient") NomisClient custodyApiClient,
                                 XmlMapper xmlMapper,
                                 @Qualifier("globalObjectMapper")
                                         ObjectMapper objectMapper) {
@@ -66,7 +66,7 @@ public class OasysOffenderService extends RequestResponseService {
         this.deliusInitialSearchClient = deliusInitialSearchClient;
         this.faultTransformer = faultTransformer;
         this.deliusOffenderDetailsClient = deliusOffenderDetailsClient;
-        this.nomisClient = nomisClient;
+        this.custodyApiClient = custodyApiClient;
         this.objectMapper = objectMapper;
     }
 
@@ -190,7 +190,7 @@ public class OasysOffenderService extends RequestResponseService {
         return maybeOffender.flatMap(
                 offender -> {
                     try {
-                        return nomisClient
+                        return custodyApiClient
                                 .doGetWithRetry("offenders/offenderId/" + offender.getOffenderId() + "/alerts",
                                         ImmutableMap.of("bookingId", latestBooking.getBookingId(),
                                                 "alertType", "H",
@@ -221,7 +221,7 @@ public class OasysOffenderService extends RequestResponseService {
         return maybeOffender.flatMap(
                 offender -> {
                     try {
-                        return nomisClient
+                        return custodyApiClient
                                 .doGetWithRetry("offenders/offenderId/" + offender.getOffenderId() + "/assessments",
                                         ImmutableMap.of("bookingId", latestBooking.getBookingId()))
                                 .filter(r -> r.getStatus() == HttpStatus.OK.value())
@@ -258,7 +258,7 @@ public class OasysOffenderService extends RequestResponseService {
         return maybeOffender.flatMap(
                 offender -> {
                     try {
-                        return nomisClient
+                        return custodyApiClient
                                 .doGetWithRetry("offenders/offenderId/" + offender.getOffenderId() + "/physicals",
                                         ImmutableMap.of("bookingId", latestBooking.getBookingId()))
                                 .filter(r -> r.getStatus() == HttpStatus.OK.value())
@@ -303,7 +303,7 @@ public class OasysOffenderService extends RequestResponseService {
         return maybeOffender.flatMap(
                 offender -> {
                     try {
-                        return nomisClient
+                        return custodyApiClient
                                 .doGetWithRetry("offenders/offenderId/" + offender.getOffenderId() + "/addresses",
                                         ImmutableMap.of("bookingId", latestBooking.getBookingId()))
                                 .filter(r -> r.getStatus() == HttpStatus.OK.value())
@@ -332,7 +332,7 @@ public class OasysOffenderService extends RequestResponseService {
         return maybeOffender.flatMap(
                 offender -> {
                     try {
-                        return nomisClient
+                        return custodyApiClient
                                 .doGetWithRetry("offenders/offenderId/" + offender.getOffenderId() + "/courtEvents",
                                         ImmutableMap.of("bookingId", latestBooking.getBookingId()))
                                 .filter(r -> r.getStatus() == HttpStatus.OK.value())
@@ -361,7 +361,7 @@ public class OasysOffenderService extends RequestResponseService {
         return maybeOffender.flatMap(
                 offender -> {
                     try {
-                        return nomisClient
+                        return custodyApiClient
                                 .doGetWithRetry("offenders/offenderId/" + offender.getOffenderId() + "/imprisonmentStatuses",
                                         ImmutableMap.of("bookingId", latestBooking.getBookingId()))
                                 .filter(r -> r.getStatus() == HttpStatus.OK.value())
@@ -383,7 +383,7 @@ public class OasysOffenderService extends RequestResponseService {
         return maybeOffender.flatMap(
                 offender -> {
                     try {
-                        return nomisClient
+                        return custodyApiClient
                                 .doGetWithRetry("offenders/offenderId/" + offender.getOffenderId() + "/sentences",
                                         ImmutableMap.of("bookingId", latestBooking.getBookingId()))
                                 .filter(r -> r.getStatus() == HttpStatus.OK.value())
@@ -410,7 +410,7 @@ public class OasysOffenderService extends RequestResponseService {
         return maybeOffender.flatMap(
                 offender -> {
                     try {
-                        return nomisClient
+                        return custodyApiClient
                                 .doGetWithRetry("offenders/offenderId/" + offender.getOffenderId() + "/sentenceCalculations",
                                         ImmutableMap.of("bookingId", latestBooking.getBookingId()))
                                 .filter(r -> r.getStatus() == HttpStatus.OK.value())
@@ -434,7 +434,7 @@ public class OasysOffenderService extends RequestResponseService {
         return maybeOasysOffenderDetailsRequest.flatMap(
                 rq -> {
                     try {
-                        return nomisClient.doGetWithRetry("offenders/nomsId/" + nomsId)
+                        return custodyApiClient.doGetWithRetry("offenders/nomsId/" + nomsId)
                                 .filter(r -> r.getStatus() == HttpStatus.OK.value())
                                 .map(HttpResponse::getBody)
                                 .map(offenderTransformer::asOffender);

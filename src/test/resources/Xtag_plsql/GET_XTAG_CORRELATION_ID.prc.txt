@@ -1,0 +1,146 @@
+CREATE OR REPLACE PROCEDURE GET_XTAG_CORRELATION_ID (
+   p_transaction_type   IN       VARCHAR2,
+   v_out                OUT      VARCHAR2
+)
+IS
+/* =========================================================
+|| Version Number = 2.3 Date Modified = 28-JAN-2008
+|| ========================================================= */
+/******************************************************************************
+   PURPOSE: This procedure is used as part of XTAG Notification
+
+   REVISIONS:
+   Ver        Date        Author           Description
+   ---------  ----------  ---------------  ------------------------------------
+   2.3        28-JAN-2008  Laurence        Added D1,D2,D4,D5,D6 transactions.
+   2.2        03-Apr-2007  Paul M          Added M3 IIs transaction
+   2.1        08-JUN-2006  Vipul           Modified the code to add the oasysdetail
+                                           sequence generation.
+   2.0        24-MAY-2006  Vipul           Created the procedure
+******************************************************************************/
+   lv_sequence   NUMBER := 0;
+
+   CURSOR iedt_seq_cur
+   IS
+      SELECT iedt_out_id.NEXTVAL
+        FROM DUAL;
+
+   CURSOR iis_seq_cur
+   IS
+      SELECT iis_out_id.NEXTVAL
+        FROM DUAL;
+
+   CURSOR oasys_seq_cur
+   IS
+      SELECT oasys_event_id.NEXTVAL
+        FROM DUAL;
+
+   CURSOR oasys_detail_seq_cur
+   IS
+      SELECT oasys_detail_id.NEXTVAL
+        FROM DUAL;
+BEGIN
+   IF p_transaction_type IN
+         ('P1',
+          'P2',
+          'P3',
+          'P4',
+          'P7',
+          'P8',
+          'M1',
+          'M3',
+          'C1',
+          'C2',
+          'C3',
+          'A2',
+          'A3',
+          'PR',
+          'S1',
+          'S2',
+          'PR',
+          'D1',
+          'D2',
+          'D4',
+          'D5',
+          'D6'
+         )
+   THEN
+      OPEN iis_seq_cur;
+
+      FETCH iis_seq_cur
+       INTO lv_sequence;
+
+      CLOSE iis_seq_cur;
+
+      IF lv_sequence IS NOT NULL
+      THEN
+         v_out :=
+               'IISUIDNOMIS'
+            || TO_CHAR (CURRENT_TIMESTAMP, 'YYYYMMDDHH24MISS')
+            || LPAD (TO_CHAR (lv_sequence), 6, '0');
+      END IF;
+   ELSIF p_transaction_type IN ('IEDT')
+   THEN
+      OPEN iedt_seq_cur;
+
+      FETCH iedt_seq_cur
+       INTO lv_sequence;
+
+      CLOSE iedt_seq_cur;
+
+      IF lv_sequence IS NOT NULL
+      THEN
+         v_out :=
+               'IEDTOUNOMIS'
+            || TO_CHAR (CURRENT_TIMESTAMP, 'YYYYMMDDHH24MISS')
+            || LPAD (TO_CHAR (lv_sequence), 6, '0');
+      END IF;
+   ELSIF p_transaction_type IN
+           ('OffenderDetails',
+            'OffenderDischarge',
+            'OffenderPrisonNumber',
+            'OffenderReception',
+            'OffenderSentence',
+            'StatusChange'
+           )
+   THEN
+      OPEN oasys_seq_cur;
+
+      FETCH oasys_seq_cur
+       INTO lv_sequence;
+
+      CLOSE oasys_seq_cur;
+
+      IF lv_sequence IS NOT NULL
+      THEN
+         v_out :=
+               'NOMISHNOMIS'
+            || TO_CHAR (CURRENT_TIMESTAMP, 'YYYYMMDDHH24MISS')
+            || LPAD (TO_CHAR (lv_sequence), 6, '0');
+      END IF;
+   ELSIF p_transaction_type IN ('OasysDetails')
+   THEN
+      OPEN oasys_detail_seq_cur;
+
+      FETCH oasys_detail_seq_cur
+       INTO lv_sequence;
+
+      CLOSE oasys_detail_seq_cur;
+
+      IF lv_sequence IS NOT NULL
+      THEN
+         v_out :=
+               'HOASYSNOMIS'
+            || TO_CHAR (CURRENT_TIMESTAMP, 'YYYYMMDDHH24MISS')
+            || LPAD (TO_CHAR (lv_sequence), 6, '0');
+      END IF;
+   ELSE
+      v_out := 0;
+   END IF;
+EXCEPTION
+   WHEN OTHERS
+   THEN
+      v_out := 0;
+END;
+/
+
