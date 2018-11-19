@@ -8,11 +8,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import uk.gov.justice.digital.ndh.api.nomis.Booking;
 import uk.gov.justice.digital.ndh.api.nomis.ExternalMovement;
 import uk.gov.justice.digital.ndh.api.nomis.Identifier;
 import uk.gov.justice.digital.ndh.api.nomis.Offender;
 import uk.gov.justice.digital.ndh.api.nomis.OffenderEvent;
 import uk.gov.justice.digital.ndh.api.nomis.OffenderImprisonmentStatus;
+import uk.gov.justice.digital.ndh.api.nomis.Sentence;
 import uk.gov.justice.digital.ndh.api.nomis.SentenceCalculation;
 import uk.gov.justice.digital.ndh.api.nomis.elite2.InmateDetail;
 import uk.gov.justice.digital.ndh.api.oasys.xtag.EventMessage;
@@ -21,13 +23,16 @@ import uk.gov.justice.digital.ndh.service.transforms.OffenderTransformer;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -42,51 +47,30 @@ public class XtagTransformer {
     private final ObjectMapper objectMapper;
     private final MappingService mappingService;
     private final OffenderTransformer offenderTransformer;
+    private final Sequence xtagSequence;
 
 
-    public XtagTransformer(NomisClient custodyApiClient, NomisClient elite2ApiClient, @Qualifier("globalObjectMapper") ObjectMapper objectMapper, MappingService mappingService, OffenderTransformer offenderTransformer) {
+    public XtagTransformer(NomisClient custodyApiClient, NomisClient elite2ApiClient, @Qualifier("globalObjectMapper") ObjectMapper objectMapper, MappingService mappingService, OffenderTransformer offenderTransformer, Sequence xtagSequence) {
         this.custodyApiClient = custodyApiClient;
         this.elite2ApiClient = elite2ApiClient;
         this.objectMapper = objectMapper;
         this.mappingService = mappingService;
         this.offenderTransformer = offenderTransformer;
+        this.xtagSequence = xtagSequence;
     }
 
     public Optional<EventMessage> offenderImprisonmentStatusUpdatedXtagOf(OffenderEvent event) throws ExecutionException, UnirestException, NomisAPIServiceError {
-        /*
-        source:
-                .eventType("IMPRISONMENT_STATUS-CHANGED")
-                .eventDatetime(xtag.getNomisTimestamp())
-                .bookingId(longOf(xtag.getContent().getP_offender_book_id()))
-                .imprisonmentStatusSeq(longOf(xtag.getContent().getP_imprison_status_seq()))
-                .nomisEventType(xtag.getEventType())
-         */
-
-        /*
-        target:
-            timestamp
-            prisonnumber
-            pnc
-            nomisId
-            forename1
-            forename2
-            familyName
-            eventTpe (1 or Lifer)
-            establishmentCode
-            dateOfBirth
-            correlationId
-         */
-
         final InmateDetail inmateDetail = getInmateDetail(event);
         final Offender offender = getOffender(inmateDetail);
 
-        Optional<OffenderImprisonmentStatus> maybeOffenderImprisonmentStatus = custodyApiClient
+        final Optional<OffenderImprisonmentStatus> maybeOffenderImprisonmentStatus = custodyApiClient
                 .doGetWithRetry("offenders/offenderId/" + offender.getOffenderId() + "/imprisonmentStatuses")
                 .filter(r -> r.getStatus() == HttpStatus.OK.value())
                 .map(HttpResponse::getBody)
                 .map(this::asImprisonmentStatuses)
                 .flatMap(imprisonmentStatuses -> imprisonmentStatuses.stream()
                         .filter(imprisonmentStatus -> imprisonmentStatus.getImprisonmentStatus().getImprisonmentStatusSeq().equals(event.getImprisonmentStatusSeq()))
+                        .filter(OffenderImprisonmentStatus::getLatestStatus)
                         .findFirst());
 
         final OffenderImprisonmentStatus offenderImprisonmentStatus = maybeOffenderImprisonmentStatus.orElseThrow(() -> new NomisAPIServiceError("Can't get offender imprisonment statuses."));
@@ -102,7 +86,7 @@ public class XtagTransformer {
                 .eventType(this.statusEventTypeOf(offenderImprisonmentStatus))
                 .establishmentCode(this.establishmentCodeOf(offenderImprisonmentStatus))
                 .dateOfBirth(offender.getDateOfBirth().toString())
-                .correlationId(randomUuid())
+                .correlationId(nextCorrelationId())
                 .build()).filter(eventMessage -> OFFENDER_LIFER.equals(eventMessage.getEventType()));
     }
 
@@ -183,7 +167,16 @@ public class XtagTransformer {
         return Optional.ofNullable(offender.getIdentifiers())
                 .flatMap(identifiers -> identifiers.stream()
                         .filter(identifier -> "PNC".equals(identifier.getIdentifierType()))
-                        .findFirst()).map(Identifier::getIdentifier).orElse(null);
+                        .findFirst()).map(Identifier::getIdentifier)
+                .map(this::normalisedPncOf)
+                .orElse(null);
+    }
+
+    public String normalisedPncOf(String pnc) {
+        return Optional.ofNullable(pnc)
+                .filter(s -> s.indexOf("/") == 5)
+                .map(s -> s.substring(2))
+                .orElse(pnc);
     }
 
     private InmateDetail asInmateDetail(String jsonStr) {
@@ -239,27 +232,89 @@ public class XtagTransformer {
 
         final InmateDetail inmateDetail = getInmateDetail(event);
         final Offender offender = getOffender(inmateDetail);
-        final SentenceCalculation sentence = getSentenceCalculation(offender, inmateDetail);
+        final List<Sentence> activeSentences = getActiveSentences(offender, inmateDetail);
+        final SentenceCalculation sentenceCalculation = getSentenceCalculation(offender, inmateDetail);
         final ExternalMovement offenderMovement = getMovement(offender, inmateDetail, event);
 
         return Optional.ofNullable(EventMessage.builder()
+                .eventType("OffenderDischarge")
                 .timestamp(oasysTimestampOf(event.getEventDatetime()))
-                .sentenceYears(yearsOf(sentence.getEffectiveSentenceLength()))
-                .sentenceMonths(monthsOf(sentence.getEffectiveSentenceLength()))
-                .sentenceDays(monthsOf(sentence.getEffectiveSentenceLength()))
-                .releaseDate(sentence.getReleaseDate().toString())
+                .sentenceYears(yearsOf(sentenceCalculation.getEffectiveSentenceLength()))
+                .sentenceMonths(monthsOf(sentenceCalculation.getEffectiveSentenceLength()))
+                .sentenceDays(monthsOf(sentenceCalculation.getEffectiveSentenceLength()))
+                .releaseDate(sentenceCalculation.getReleaseDate().toString())
                 .prisonNumber(inmateDetail.getBookingNo())
                 .pnc(pncOf(offender))
                 .nomisId(offender.getNomsId())
-                .movementFromTo("")
+                .movementFromTo(movementFromToOf(offenderMovement))
                 .movementDelete("N")
                 .movementCode(offenderMovement.getMovementReasonCode())
                 .forename1(offender.getFirstName())
                 .forename2(offender.getMiddleNames())
                 .familyName(offender.getSurname())
                 .dateOfBirth(offender.getDateOfBirth().toString())
-                .correlationId(randomUuid())
+                .establishmentCode(establishmentCodeOf(offenderMovement, offender))
+                .effectiveSentenceLength(effectiveSentenceLengthOf(activeSentences, sentenceCalculation))
+                .correlationId(nextCorrelationId())
                 .build());
+
+
+    }
+
+    private String nextCorrelationId() {
+        return "NOMISHNOMIS" +
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) +
+                xtagSequence.nextVal();
+    }
+
+
+    private String establishmentCodeOf(ExternalMovement offenderMovement, Offender offender) {
+        return mappingService.targetValueOf(Optional.ofNullable(offenderMovement)
+                .filter(om -> "OUT".equals(om.getMovementDirection()))
+                .map(ExternalMovement::getFromAgencyLocationId)
+                .orElse(activeBookingOf(offender).getAgencyLocation().getAgencyLocationId()), AGENCY_LOCATION_CODE_TYPE);
+    }
+
+    private Booking activeBookingOf(Offender offender) {
+        return offender.getBookings().stream()
+                .filter(Booking::getActiveFlag)
+                .findFirst()
+                .orElse(null);
+    }
+
+    private String effectiveSentenceLengthOf(List<Sentence> activeSentences, SentenceCalculation sentenceCalculation) {
+        return activeSentences.stream()
+                .min(Comparator.comparing(Sentence::getStartDate))
+                .map(Sentence::getStartDate)
+                .map(startDate -> Period.between(startDate, sentenceCalculation.getEffectiveSentenceEndDate().toLocalDate()).getDays() + 1)
+                .map(String::valueOf)
+                .orElse(null);
+    }
+
+    private List<Sentence> getActiveSentences(Offender offender, InmateDetail inmateDetail) throws ExecutionException, UnirestException, NomisAPIServiceError {
+        return custodyApiClient
+                .doGetWithRetry("offenders/offenderId/" + offender.getOffenderId() + "/sentences", ImmutableMap.of("bookingId", inmateDetail.getBookingId()))
+                .filter(r -> r.getStatus() == HttpStatus.OK.value())
+                .map(HttpResponse::getBody)
+                .map(this::asSentences)
+                .orElseThrow(() -> new NomisAPIServiceError("Can't get offender sentence calculations."));
+    }
+
+    private List<Sentence> asSentences(String jsonStr) {
+        try {
+            final Sentence[] sentences = objectMapper.readValue(jsonStr, Sentence[].class);
+            return Arrays.asList(sentences).stream()
+                    .filter(Sentence::getIsActive)
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            return Collections.emptyList();
+        }
+
+    }
+
+    private String movementFromToOf(ExternalMovement offenderMovement) {
+        return "CRT".equals(offenderMovement.getMovementTypeCode()) ? null : offenderMovement.getToAgencyLocationId();
 
     }
 

@@ -11,6 +11,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -22,6 +23,7 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import uk.gov.justice.digital.ndh.service.Sequence;
 
 @SpringBootApplication
 @Slf4j
@@ -83,5 +85,12 @@ public class ThatsNotMyNDH {
                 log.warn("No build info found! Is this a local build?");
             }
         };
+    }
+
+    @Bean
+    public Sequence xtagSequence(@Value("${xtag.sequence.initialVal:0}") Long initialValue,
+                                 @Value("${xtag.sequence.maxVal:999999}") Long maxValue) {
+        return new Sequence(initialValue, maxValue);
+
     }
 }

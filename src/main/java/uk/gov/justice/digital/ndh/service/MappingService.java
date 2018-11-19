@@ -66,14 +66,14 @@ public class MappingService {
                         .build())));
 
         if (!maybeMapped.isPresent()) {
-            log.error("Could not map source {} and code {} to targetValue.", sourceVal, codeType);
+            log.error("Could not map source {} and code {} to numeric1.", sourceVal, codeType);
         }
 
         return maybeMapped.map(MappingCodeData::getNumeric1).orElseThrow(() ->
                 NDHMappingException.builder()
                         .value(sourceVal)
                         .code(codeType)
-                        .subject("targetValue")
+                        .subject("numeric1")
                         .build());
     }
 }

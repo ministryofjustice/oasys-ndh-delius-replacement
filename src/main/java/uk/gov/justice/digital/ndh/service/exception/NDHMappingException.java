@@ -11,6 +11,7 @@ public class NDHMappingException extends RuntimeException {
     private String subject;
     private Long code;
     private String value;
+    private String correlationId;
 
     @Override
     public String getMessage() {
