@@ -30,7 +30,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -198,37 +197,6 @@ public class XtagTransformer {
     }
 
     public Optional<EventMessage> offenderDischargeXtagOf(OffenderEvent event) throws ExecutionException, UnirestException, NomisAPIServiceError {
-        /*
-        xtag:
-        .eventType("OFFENDER_MOVEMENT-DISCHARGE")
-                .eventDatetime(xtag.getNomisTimestamp())
-                .bookingId(longOf(xtag.getContent().getP_offender_book_id()))
-                .movementSeq(longOf(xtag.getContent().getP_movement_seq()))
-                .nomisEventType(xtag.getEventType())
-         */
-
-        /*
-        mapped:
-        <ns0:TIMESTAMP-VARCHAR2-IN>20181106080651.96358</ns0:TIMESTAMP-VARCHAR2-IN>
-   <ns0:SENTENCEYEARS-VARCHAR2-IN>9</ns0:SENTENCEYEARS-VARCHAR2-IN>
-   <ns0:SENTENCEMONTHS-VARCHAR2-IN>4</ns0:SENTENCEMONTHS-VARCHAR2-IN>
-   <ns0:SENTENCEDAYS-VARCHAR2-IN>0</ns0:SENTENCEDAYS-VARCHAR2-IN>
-   <ns0:RELEASEDATE-VARCHAR2-IN>2019-06-27</ns0:RELEASEDATE-VARCHAR2-IN>
-   <ns0:PRISONNUMBER-VARCHAR2-IN>N74862</ns0:PRISONNUMBER-VARCHAR2-IN>
-   <ns0:PNC-VARCHAR2-IN>11/504826Q</ns0:PNC-VARCHAR2-IN>
-   <ns0:NOMISID-VARCHAR2-IN>A6984DH</ns0:NOMISID-VARCHAR2-IN>
-   <ns0:MOVEMENTFROMORTO-VARCHAR2-IN />
-   <ns0:MOVEMENTDELETE-VARCHAR2-IN>N</ns0:MOVEMENTDELETE-VARCHAR2-IN>
-   <ns0:MOVEMENTCODE-VARCHAR2-IN>R2</ns0:MOVEMENTCODE-VARCHAR2-IN>
-   <ns0:FORENAME2-VARCHAR2-IN>TESTER</ns0:FORENAME2-VARCHAR2-IN>
-   <ns0:FORENAME1-VARCHAR2-IN>TESTING</ns0:FORENAME1-VARCHAR2-IN>
-   <ns0:FAMILYNAME-VARCHAR2-IN>TESTS</ns0:FAMILYNAME-VARCHAR2-IN>
-   <ns0:EVENT_TYPE-VARCHAR2-IN>OffenderDischarge</ns0:EVENT_TYPE-VARCHAR2-IN>
-   <ns0:ESTABLISHMENTCODE-VARCHAR2-IN>580</ns0:ESTABLISHMENTCODE-VARCHAR2-IN>
-   <ns0:EFFECTIVESENTENCELENGTH-VARCHAR2-IN>3410</ns0:EFFECTIVESENTENCELENGTH-VARCHAR2-IN>
-   <ns0:DATEOFBIRTH-VARCHAR2-IN>1979-02-18</ns0:DATEOFBIRTH-VARCHAR2-IN>
-   <ns0:CORRELATIONID-VARCHAR2-IN>NOMISHNOMIS20181106080653313013</ns0:CORRELATIONID-VARCHAR2-IN>
-         */
 
         final InmateDetail inmateDetail = getInmateDetail(event);
         final Offender offender = getOffender(inmateDetail);
@@ -241,7 +209,7 @@ public class XtagTransformer {
                 .timestamp(oasysTimestampOf(event.getEventDatetime()))
                 .sentenceYears(yearsOf(sentenceCalculation.getEffectiveSentenceLength()))
                 .sentenceMonths(monthsOf(sentenceCalculation.getEffectiveSentenceLength()))
-                .sentenceDays(monthsOf(sentenceCalculation.getEffectiveSentenceLength()))
+                .sentenceDays(daysOf(sentenceCalculation.getEffectiveSentenceLength()))
                 .releaseDate(sentenceCalculation.getReleaseDate().toString())
                 .prisonNumber(inmateDetail.getBookingNo())
                 .pnc(pncOf(offender))
@@ -335,10 +303,6 @@ public class XtagTransformer {
     private String daysOf(String effectiveSentenceLength) {
         return Optional.ofNullable(effectiveSentenceLength).map(
                 esl -> Integer.valueOf(esl.split("/")[2]).toString()).orElse(null);
-    }
-
-    public String randomUuid() {
-        return UUID.randomUUID().toString();
     }
 
     public Optional<EventMessage> offenderUpdatedXtagOf(OffenderEvent event) {
