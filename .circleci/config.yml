@@ -62,10 +62,10 @@ jobs:
 
       - deploy:
           name: Push to Docker Hub
-          command: |
-#            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+          command:
+            if [ true ]; then
               ./scripts/publishDockerImage.sh ndh_microservice "${BUILD_VERSION}" "${CIRCLE_BUILD_NUM}" "${CIRCLE_BUILD_URL}" "${CIRCLE_SHA1}" "${DOCKER_EMAIL}" "${DOCKER_USERNAME}" "${DOCKER_PASSWORD}"
-#            fi
+            fi
 #
 #      - deploy:
 #          name: Install elastic beanstalk CLI
