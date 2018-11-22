@@ -22,6 +22,7 @@ import uk.gov.justice.digital.ndh.service.exception.NomisAPIServiceError;
 import uk.gov.justice.digital.ndh.service.transforms.OffenderTransformer;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
@@ -41,6 +42,8 @@ public class XtagTransformer {
     public static final long AGENCY_LOCATION_CODE_TYPE = 2005L;
     public static final String OFFENDER_LIFER = "OffenderLifer";
     public static final String STATUS_CHANGE = "StatusChange";
+    public static final long OASYSR_RECEPTION_CODES = 2015L;
+    public static final long OASYSR_DISCHARGE_CODES = 2016L;
     private final NomisClient custodyApiClient;
     private final NomisClient elite2ApiClient;
     private final ObjectMapper objectMapper;
@@ -113,8 +116,8 @@ public class XtagTransformer {
                 .map(HttpResponse::getBody)
                 .map(this::asExternalMovements)
                 .flatMap(externalMovements -> externalMovements.stream()
-                .filter(movement -> movement.getSequenceNumber().equals(offenderEvent.getMovementSeq()))
-                .findFirst()).orElseThrow(() -> new NomisAPIServiceError("Can't get offender movements."));
+                        .filter(movement -> movement.getSequenceNumber().equals(offenderEvent.getMovementSeq()))
+                        .findFirst()).orElseThrow(() -> new NomisAPIServiceError("Can't get offender movements."));
     }
 
     private List<ExternalMovement> asExternalMovements(String jsonStr) {
@@ -187,13 +190,63 @@ public class XtagTransformer {
         }
     }
 
-    public Optional<EventMessage> offenderReceptionXtagOf(OffenderEvent event) {
-        return null;
+    public Optional<EventMessage> offenderReceptionXtagOf(OffenderEvent event) throws ExecutionException, UnirestException, NomisAPIServiceError {
+        final InmateDetail inmateDetail = getInmateDetail(event);
+        final Offender offender = getOffender(inmateDetail);
+        final List<Sentence> activeSentences = getActiveSentences(offender, inmateDetail);
+        final SentenceCalculation sentenceCalculation = getSentenceCalculation(offender, inmateDetail);
+        final ExternalMovement offenderMovement = getMovement(offender, inmateDetail, event);
+
+        return Optional.ofNullable(EventMessage.builder()
+                .timestamp(oasysTimestampOf(event.getEventDatetime()))
+                .sentenceYears(yearsOf(sentenceCalculation.getEffectiveSentenceLength()))
+                .sentenceMonths(monthsOf(sentenceCalculation.getEffectiveSentenceLength()))
+                .sentenceDays(daysOf(sentenceCalculation.getEffectiveSentenceLength()))
+                .releaseDate(sentenceCalculation.getReleaseDate().toString())
+                .prisonNumber(inmateDetail.getBookingNo())
+                .pnc(pncOf(offender))
+                .nomisId(offender.getNomsId())
+                .movementFromTo(receptionMovementFromToOf(offenderMovement))
+                .movementDelete("N")
+                .movementCourtCode(receptionMovementCourtCodeOf(offenderMovement))
+                .movementCode(receptionMovementCodeOf(offenderMovement.getMovementReasonCode()))
+                .forename1(offender.getFirstName())
+                .forename2(offender.getMiddleNames())
+                .familyName(offender.getSurname())
+                .eventType("OffenderReception")
+                .establishmentCode(establishmentCodeOf(offenderMovement, offender))
+                .effectiveSentenceLength(effectiveSentenceLengthOf(activeSentences, sentenceCalculation))
+                .dateOfBirth(offender.getDateOfBirth().toString())
+                .correlationId(nextCorrelationId())
+                .build());
+    }
+
+    private String receptionMovementCodeOf(String movementReasonCode) {
+        return mappingService.targetValueOf(movementReasonCode, OASYSR_RECEPTION_CODES);
+    }
+
+    private String receptionMovementCourtCodeOf(ExternalMovement offenderMovement) {
+        return ("CRT".equals(offenderMovement.getMovementTypeCode())) ? offenderMovement.getFromAgencyLocationId() : null;
     }
 
 
-    public Optional<EventMessage> bookingUpdatedXtagOf(OffenderEvent event) {
-        return null;
+    public Optional<EventMessage> bookingUpdatedXtagOf(OffenderEvent event) throws ExecutionException, UnirestException, NomisAPIServiceError {
+        final InmateDetail inmateDetail = getInmateDetail(event);
+        final Offender offender = getOffender(inmateDetail);
+
+        return Optional.ofNullable(EventMessage.builder()
+                .timestamp(oasysTimestampOf(event.getEventDatetime()))
+                .prisonNumber(inmateDetail.getBookingNo())
+                .pnc(pncOf(offender))
+                .oldPrisonNumber(event.getPreviousBookingNumber())
+                .nomisId(offender.getNomsId())
+                .forename1(offender.getFirstName())
+                .forename2(offender.getMiddleNames())
+                .familyName(offender.getSurname())
+                .establishmentCode(establishmentCodeOf(null, offender))
+                .eventType("OffenderPrisonNumber")
+                .correlationId(nextCorrelationId())
+                .build());
     }
 
     public Optional<EventMessage> offenderDischargeXtagOf(OffenderEvent event) throws ExecutionException, UnirestException, NomisAPIServiceError {
@@ -205,7 +258,6 @@ public class XtagTransformer {
         final ExternalMovement offenderMovement = getMovement(offender, inmateDetail, event);
 
         return Optional.ofNullable(EventMessage.builder()
-                .eventType("OffenderDischarge")
                 .timestamp(oasysTimestampOf(event.getEventDatetime()))
                 .sentenceYears(yearsOf(sentenceCalculation.getEffectiveSentenceLength()))
                 .sentenceMonths(monthsOf(sentenceCalculation.getEffectiveSentenceLength()))
@@ -214,19 +266,22 @@ public class XtagTransformer {
                 .prisonNumber(inmateDetail.getBookingNo())
                 .pnc(pncOf(offender))
                 .nomisId(offender.getNomsId())
-                .movementFromTo(movementFromToOf(offenderMovement))
+                .movementFromTo(dischargeMovementFromToOf(offenderMovement))
                 .movementDelete("N")
-                .movementCode(offenderMovement.getMovementReasonCode())
+                .movementCode(dischargeMovementCodeOf(offenderMovement.getMovementReasonCode()))
                 .forename1(offender.getFirstName())
                 .forename2(offender.getMiddleNames())
                 .familyName(offender.getSurname())
                 .dateOfBirth(offender.getDateOfBirth().toString())
                 .establishmentCode(establishmentCodeOf(offenderMovement, offender))
+                .eventType("OffenderDischarge")
                 .effectiveSentenceLength(effectiveSentenceLengthOf(activeSentences, sentenceCalculation))
                 .correlationId(nextCorrelationId())
                 .build());
+    }
 
-
+    private String dischargeMovementCodeOf(String movementReasonCode) {
+        return mappingService.targetValueOf(movementReasonCode, OASYSR_DISCHARGE_CODES);
     }
 
     private String nextCorrelationId() {
@@ -281,9 +336,13 @@ public class XtagTransformer {
 
     }
 
-    private String movementFromToOf(ExternalMovement offenderMovement) {
-        return "CRT".equals(offenderMovement.getMovementTypeCode()) ? null : offenderMovement.getToAgencyLocationId();
+    private String dischargeMovementFromToOf(ExternalMovement offenderMovement) {
+        return "CRT".equals(mappingService.targetValueOf(offenderMovement.getMovementTypeCode(), OASYSR_DISCHARGE_CODES)) ? null : offenderMovement.getToAgencyLocationId();
 
+    }
+
+    private String receptionMovementFromToOf(ExternalMovement offenderMovement) {
+        return "CRT".equals(mappingService.targetValueOf(offenderMovement.getMovementTypeCode(), OASYSR_RECEPTION_CODES)) ? null : offenderMovement.getFromAgencyLocationId();
     }
 
     private String oasysTimestampOf(LocalDateTime dateTime) {
@@ -305,11 +364,57 @@ public class XtagTransformer {
                 esl -> Integer.valueOf(esl.split("/")[2]).toString()).orElse(null);
     }
 
-    public Optional<EventMessage> offenderUpdatedXtagOf(OffenderEvent event) {
-        return null;
+    public Optional<EventMessage> offenderUpdatedXtagOf(OffenderEvent event) throws ExecutionException, UnirestException, NomisAPIServiceError {
+        final InmateDetail inmateDetail = getInmateDetail(event);
+        final Offender offender = getOffender(inmateDetail);
+
+        return Optional.ofNullable(EventMessage.builder()
+                .timestamp(oasysTimestampOf(event.getEventDatetime()))
+                .prisonNumber(inmateDetail.getBookingNo())
+                .pnc(pncOf(offender))
+                .oldPrisonNumber(event.getPreviousBookingNumber())
+                .nomisId(offender.getNomsId())
+                .forename1(offender.getFirstName())
+                .forename2(offender.getMiddleNames())
+                .familyName(offender.getSurname())
+                .eventType("OffenderDetails")
+                .establishmentCode(establishmentCodeOf(null, offender))
+                .dateOfBirth(offender.getDateOfBirth().toString())
+                .correlationId(nextCorrelationId())
+                .build());
     }
 
-    public Optional<EventMessage> offenderSentenceUpdatedXtagOf(OffenderEvent event) {
-        return null;
+    public Optional<EventMessage> offenderSentenceUpdatedXtagOf(OffenderEvent event) throws ExecutionException, UnirestException, NomisAPIServiceError {
+        final InmateDetail inmateDetail = getInmateDetail(event);
+        final Offender offender = getOffender(inmateDetail);
+        final List<Sentence> activeSentences = getActiveSentences(offender, inmateDetail);
+        final SentenceCalculation sentenceCalculation = getSentenceCalculation(offender, inmateDetail);
+
+        return Optional.ofNullable(EventMessage.builder()
+                .timestamp(oasysTimestampOf(event.getEventDatetime()))
+                .sentenceYears(yearsOf(sentenceCalculation.getEffectiveSentenceLength()))
+                .sentenceMonths(monthsOf(sentenceCalculation.getEffectiveSentenceLength()))
+                .sentenceDays(daysOf(sentenceCalculation.getEffectiveSentenceLength()))
+                .sentenceDate(sentenceStartDateOf(activeSentences))
+                .releaseDate(sentenceCalculation.getReleaseDate().toString())
+                .pnc(pncOf(offender))
+                .nomisId(offender.getNomsId())
+                .forename1(offender.getFirstName())
+                .forename2(offender.getMiddleNames())
+                .familyName(offender.getSurname())
+                .eventType("OffenderSentence")
+                .establishmentCode(establishmentCodeOf(null, offender))
+                .effectiveSentenceLength(effectiveSentenceLengthOf(activeSentences, sentenceCalculation))
+                .dateOfBirth(offender.getDateOfBirth().toString())
+                .correlationId(nextCorrelationId())
+                .build());
+    }
+
+    private String sentenceStartDateOf(List<Sentence> activeSentences) {
+        return activeSentences.stream()
+                .min(Comparator.comparing(Sentence::getStartDate))
+                .map(Sentence::getStartDate)
+                .map(LocalDate::toString)
+                .orElse(null);
     }
 }
