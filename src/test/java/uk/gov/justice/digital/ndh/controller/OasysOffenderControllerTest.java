@@ -96,22 +96,23 @@ public class OasysOffenderControllerTest {
     @Before
     public void setup() throws InterruptedException {
         RestAssured.port = port;
-        Thread.sleep(4000L);
+//        Thread.sleep(4000L);
     }
 
     @After
     public void tearDown() throws InterruptedException {
-        Thread.sleep(4000L);
+//        Thread.sleep(4000L);
     }
 
     @Test
-    public void postedInitialSearchMessageIsSentToDeliusAndHandledAppropriately() throws IOException {
+    public void postedInitialSearchMessageIsSentToDeliusAndHandledAppropriately() throws IOException, InterruptedException {
 
         stubFor(post(urlEqualTo("/delius/initialSearch")).willReturn(
                 aResponse()
                         .withBody(GOOD_DELIUS_INITIAL_SEARCH_RESPONSE)
                         .withStatus(200)));
 
+        Thread.sleep(2000L);
         Mockito.when(mappingService.descriptionOf("328", 3802L)).thenReturn("ORA Youth Custody (inc PSS)");
 
         final String requestXml = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/InitialSearch/realInitialSearchRequestFromOasys.xml")))
@@ -134,13 +135,14 @@ public class OasysOffenderControllerTest {
     }
 
     @Test
-    public void postedOffenderDetailsMessageIsSentToDeliusAndHandledAppropriately() throws IOException {
+    public void postedOffenderDetailsMessageIsSentToDeliusAndHandledAppropriately() throws IOException, InterruptedException {
 
         stubFor(post(urlEqualTo("/delius/offenderDetails")).willReturn(
                 aResponse()
                         .withBody(GOOD_DELIUS_OFFENDER_DETAILS_RESPONSE)
                         .withStatus(200)));
 
+        Thread.sleep(2000L);
         when(mappingService.targetValueOf("MAG", COURT_CODE_TYPE)).thenReturn("MC");
         when(mappingService.targetValueOf("201", SENTENCE_CODE_TYPE)).thenReturn("910");
         when(requirementLookupRepository.findByReqTypeAndReqCodeAndSubCode("N", "X", "X02")).thenReturn(
@@ -173,13 +175,15 @@ public class OasysOffenderControllerTest {
     }
 
     @Test
-    public void badRiskResponseFromDeliusIsLoggedAppropriately() {
+    public void badRiskResponseFromDeliusIsLoggedAppropriately() throws InterruptedException {
 
 
         stubFor(post(urlEqualTo("/delius/initialSearch")).willReturn(
                 aResponse()
                         .withBody(REAL_DELIUS_RISK_FAULT_RESPONSE)
                         .withStatus(200)));
+
+        Thread.sleep(2000L);
 
         final String requestXml = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/InitialSearch/realInitialSearchRequestFromOasys.xml")))
                 .lines().collect(Collectors.joining("\n"));
@@ -198,13 +202,15 @@ public class OasysOffenderControllerTest {
     }
 
     @Test
-    public void mappingFailureInitialSearchResponseFromDeliusIsLoggedAppropriately() {
+    public void mappingFailureInitialSearchResponseFromDeliusIsLoggedAppropriately() throws InterruptedException {
 
 
         stubFor(post(urlEqualTo("/delius/initialSearch")).willReturn(
                 aResponse()
                         .withBody(GOOD_DELIUS_INITIAL_SEARCH_RESPONSE)
                         .withStatus(200)));
+
+        Thread.sleep(2000L);
 
         Mockito.when(mappingService.descriptionOf(anyString(), anyLong())).thenThrow(NDHMappingException.builder().subject("description").value("sourceVal").code(0L).build());
         Mockito.when(mappingService.targetValueOf(anyString(), anyLong())).thenThrow(NDHMappingException.builder().subject("targetValue").value("sourceVal").code(0L).build());
@@ -228,8 +234,10 @@ public class OasysOffenderControllerTest {
 
     @Test
     @DirtiesContext
-    public void postedOffenderDetailsMessageIsSentToCustodyAPIAndHandledAppropriately() throws IOException {
+    public void postedOffenderDetailsMessageIsSentToCustodyAPIAndHandledAppropriately() throws IOException, InterruptedException {
         wm.loadMappingsUsing(new JsonFileMappingsSource(new ClasspathFileSource("mappings")));
+
+        Thread.sleep(2000L);
 
         assertThat(wm.getStubMappings().size()).isGreaterThan(0);
 
@@ -256,8 +264,10 @@ public class OasysOffenderControllerTest {
 
     @Test
     @DirtiesContext
-    public void offenderNotFoundInNomisRespondsAppropriately() throws IOException {
+    public void offenderNotFoundInNomisRespondsAppropriately() throws IOException, InterruptedException {
         wm.loadMappingsUsing(new JsonFileMappingsSource(new ClasspathFileSource("mappings")));
+
+        Thread.sleep(2000L);
 
         assertThat(wm.getStubMappings().size()).isGreaterThan(0);
 
@@ -285,6 +295,8 @@ public class OasysOffenderControllerTest {
     public void callsToCustodyAPIWillObtainToken() throws InterruptedException {
         wm.loadMappingsUsing(new JsonFileMappingsSource(new ClasspathFileSource("mappings")));
 
+        Thread.sleep(2000L);
+
         assertThat(wm.getStubMappings().size()).isGreaterThan(0);
 
         final String requestXml = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/OffenderDetails/realOffenderDetailsRequestFromOasysToNomis.xml")))
@@ -306,7 +318,6 @@ public class OasysOffenderControllerTest {
     @DirtiesContext
     public void callsToCustodyAPIWillReAuthenticate() throws InterruptedException {
 
-        Thread.sleep(2000);
         wm.loadMappingsUsing(new JsonFileMappingsSource(new ClasspathFileSource("mappings")));
 
         assertThat(wm.getStubMappings().size()).isGreaterThan(0);
@@ -327,6 +338,8 @@ public class OasysOffenderControllerTest {
                 .whenScenarioStateIs("reauth")
                 .willReturn(aResponse().withStatus(200).withBody(offenderJson)));
 
+        Thread.sleep(2000L);
+
         given()
                 .when()
                 .contentType(ContentType.XML)
@@ -334,6 +347,8 @@ public class OasysOffenderControllerTest {
                 .post("/offenderDetails")
                 .then()
                 .statusCode(200);
+
+        Thread.sleep(2000);
 
         WireMock.verify(2, postRequestedFor(urlPathEqualTo("/oauth/token")).withBasicAuth(new BasicCredentials("none", "none")));
         WireMock.verify(2, getRequestedFor(urlPathEqualTo("/custodyapi/offenders/nomsId/Z0000ZZ")).withHeader("Authorization", new EqualToPattern("Bearer A.B.C")));
