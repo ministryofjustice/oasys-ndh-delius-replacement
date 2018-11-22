@@ -54,7 +54,6 @@ import static org.mockito.Mockito.when;
 import static uk.gov.justice.digital.ndh.service.transforms.OffenderTransformer.COURT_CODE_TYPE;
 import static uk.gov.justice.digital.ndh.service.transforms.OffenderTransformer.SENTENCE_CODE_TYPE;
 
-
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
         "spring.jmx.enabled=true",
         "ndelius.assessment.update.url=http://localhost:8090/delius/assessmentUpdates",
@@ -305,7 +304,9 @@ public class OasysOffenderControllerTest {
 
     @Test
     @DirtiesContext
-    public void callsToCustodyAPIWillReAuthenticate() {
+    public void callsToCustodyAPIWillReAuthenticate() throws InterruptedException {
+
+        Thread.sleep(2000);
         wm.loadMappingsUsing(new JsonFileMappingsSource(new ClasspathFileSource("mappings")));
 
         assertThat(wm.getStubMappings().size()).isGreaterThan(0);
@@ -316,7 +317,7 @@ public class OasysOffenderControllerTest {
                 .willSetStateTo("reauth"));
 
         final String requestXml = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/OffenderDetails/realOffenderDetailsRequestFromOasysToNomis.xml")))
-                .lines().collect(Collectors.joining("\n")).replace("G8696GH","Z0000ZZ");
+                .lines().collect(Collectors.joining("\n")).replace("G8696GH", "Z0000ZZ");
 
         final String offenderJson = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("__files/offenderZ0000ZZ.json")))
                 .lines().collect(Collectors.joining("\n"));
