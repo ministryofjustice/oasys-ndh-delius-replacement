@@ -100,13 +100,14 @@ public class XtagTransformer {
                 .map(offenderTransformer::asOffender).orElseThrow(() -> new NomisAPIServiceError("Can't get offender detail."));
     }
 
-    public SentenceCalculation getSentenceCalculation(Offender offender, InmateDetail inmateDetail) throws NomisAPIServiceError, UnirestException, ExecutionException {
+    public Optional<SentenceCalculation> getSentenceCalculation(Offender offender, InmateDetail inmateDetail) throws NomisAPIServiceError, UnirestException, ExecutionException {
         return custodyApiClient
                 .doGetWithRetry("offenders/offenderId/" + offender.getOffenderId() + "/sentenceCalculations", ImmutableMap.of("bookingId", inmateDetail.getBookingId()))
                 .filter(r -> r.getStatus() == HttpStatus.OK.value())
                 .map(HttpResponse::getBody)
                 .map(this::asSentenceCalculations)
-                .flatMap(sentences -> sentences.stream().findFirst()).orElseThrow(() -> new NomisAPIServiceError("Can't get offender sentence calculations."));
+                .flatMap(sentences -> sentences.stream().findFirst());
+//        .orElseThrow(() -> new NomisAPIServiceError("Can't get offender sentence calculations."));
     }
 
     public ExternalMovement getMovement(Offender offender, InmateDetail inmateDetail, OffenderEvent offenderEvent) throws NomisAPIServiceError, UnirestException, ExecutionException {
@@ -194,15 +195,15 @@ public class XtagTransformer {
         final InmateDetail inmateDetail = getInmateDetail(event);
         final Offender offender = getOffender(inmateDetail);
         final List<Sentence> activeSentences = getActiveSentences(offender, inmateDetail);
-        final SentenceCalculation sentenceCalculation = getSentenceCalculation(offender, inmateDetail);
+        final Optional<SentenceCalculation> maybeSentenceCalculation = getSentenceCalculation(offender, inmateDetail);
         final ExternalMovement offenderMovement = getMovement(offender, inmateDetail, event);
 
         return Optional.ofNullable(EventMessage.builder()
                 .timestamp(oasysTimestampOf(event.getEventDatetime()))
-                .sentenceYears(yearsOf(sentenceCalculation.getEffectiveSentenceLength()))
-                .sentenceMonths(monthsOf(sentenceCalculation.getEffectiveSentenceLength()))
-                .sentenceDays(daysOf(sentenceCalculation.getEffectiveSentenceLength()))
-                .releaseDate(sentenceCalculation.getReleaseDate().toString())
+                .sentenceYears(yearsOf(maybeSentenceCalculation.map(SentenceCalculation::getEffectiveSentenceLength).orElse(null)))
+                .sentenceMonths(monthsOf(maybeSentenceCalculation.map(SentenceCalculation::getEffectiveSentenceLength).orElse(null)))
+                .sentenceDays(daysOf(maybeSentenceCalculation.map(SentenceCalculation::getEffectiveSentenceLength).orElse(null)))
+                .releaseDate(maybeSentenceCalculation.map(sc -> sc.getReleaseDate().toString()).orElse(null))
                 .prisonNumber(inmateDetail.getBookingNo())
                 .pnc(pncOf(offender))
                 .nomisId(offender.getNomsId())
@@ -215,7 +216,7 @@ public class XtagTransformer {
                 .familyName(offender.getSurname())
                 .eventType("OffenderReception")
                 .establishmentCode(establishmentCodeOf(offenderMovement, offender))
-                .effectiveSentenceLength(effectiveSentenceLengthOf(activeSentences, sentenceCalculation))
+                .effectiveSentenceLength(effectiveSentenceLengthOf(activeSentences, maybeSentenceCalculation))
                 .dateOfBirth(offender.getDateOfBirth().toString())
                 .correlationId(nextCorrelationId())
                 .build());
@@ -254,15 +255,15 @@ public class XtagTransformer {
         final InmateDetail inmateDetail = getInmateDetail(event);
         final Offender offender = getOffender(inmateDetail);
         final List<Sentence> activeSentences = getActiveSentences(offender, inmateDetail);
-        final SentenceCalculation sentenceCalculation = getSentenceCalculation(offender, inmateDetail);
+        final Optional<SentenceCalculation> maybeSentenceCalculation = getSentenceCalculation(offender, inmateDetail);
         final ExternalMovement offenderMovement = getMovement(offender, inmateDetail, event);
 
         return Optional.ofNullable(EventMessage.builder()
                 .timestamp(oasysTimestampOf(event.getEventDatetime()))
-                .sentenceYears(yearsOf(sentenceCalculation.getEffectiveSentenceLength()))
-                .sentenceMonths(monthsOf(sentenceCalculation.getEffectiveSentenceLength()))
-                .sentenceDays(daysOf(sentenceCalculation.getEffectiveSentenceLength()))
-                .releaseDate(sentenceCalculation.getReleaseDate().toString())
+                .sentenceYears(yearsOf(maybeSentenceCalculation.map(SentenceCalculation::getEffectiveSentenceLength).orElse(null)))
+                .sentenceMonths(monthsOf(maybeSentenceCalculation.map(SentenceCalculation::getEffectiveSentenceLength).orElse(null)))
+                .sentenceDays(daysOf(maybeSentenceCalculation.map(SentenceCalculation::getEffectiveSentenceLength).orElse(null)))
+                .releaseDate(maybeSentenceCalculation.map(sc -> sc.getReleaseDate().toString()).orElse(null))
                 .prisonNumber(inmateDetail.getBookingNo())
                 .pnc(pncOf(offender))
                 .nomisId(offender.getNomsId())
@@ -275,7 +276,7 @@ public class XtagTransformer {
                 .dateOfBirth(offender.getDateOfBirth().toString())
                 .establishmentCode(establishmentCodeOf(offenderMovement, offender))
                 .eventType("OffenderDischarge")
-                .effectiveSentenceLength(effectiveSentenceLengthOf(activeSentences, sentenceCalculation))
+                .effectiveSentenceLength(effectiveSentenceLengthOf(activeSentences, maybeSentenceCalculation))
                 .correlationId(nextCorrelationId())
                 .build());
     }
@@ -305,13 +306,15 @@ public class XtagTransformer {
                 .orElse(null);
     }
 
-    private String effectiveSentenceLengthOf(List<Sentence> activeSentences, SentenceCalculation sentenceCalculation) {
-        return activeSentences.stream()
+    private String effectiveSentenceLengthOf(List<Sentence> activeSentences, Optional<SentenceCalculation> sentenceCalculation) {
+
+        return sentenceCalculation.map(sentenceCalculation1 -> activeSentences.stream()
                 .min(Comparator.comparing(Sentence::getStartDate))
                 .map(Sentence::getStartDate)
-                .map(startDate -> Period.between(startDate, sentenceCalculation.getEffectiveSentenceEndDate().toLocalDate()).getDays() + 1)
+                .map(startDate -> Period.between(startDate, sentenceCalculation1.getEffectiveSentenceEndDate().toLocalDate()).getDays() + 1)
                 .map(String::valueOf)
-                .orElse(null);
+                .orElse(null)).orElse(null);
+
     }
 
     private List<Sentence> getActiveSentences(Offender offender, InmateDetail inmateDetail) throws ExecutionException, UnirestException, NomisAPIServiceError {
@@ -388,15 +391,15 @@ public class XtagTransformer {
         final InmateDetail inmateDetail = getInmateDetail(event);
         final Offender offender = getOffender(inmateDetail);
         final List<Sentence> activeSentences = getActiveSentences(offender, inmateDetail);
-        final SentenceCalculation sentenceCalculation = getSentenceCalculation(offender, inmateDetail);
+        final Optional<SentenceCalculation> maybeSentenceCalculation = getSentenceCalculation(offender, inmateDetail);
 
         return Optional.ofNullable(EventMessage.builder()
                 .timestamp(oasysTimestampOf(event.getEventDatetime()))
-                .sentenceYears(yearsOf(sentenceCalculation.getEffectiveSentenceLength()))
-                .sentenceMonths(monthsOf(sentenceCalculation.getEffectiveSentenceLength()))
-                .sentenceDays(daysOf(sentenceCalculation.getEffectiveSentenceLength()))
+                .sentenceYears(yearsOf(maybeSentenceCalculation.map(SentenceCalculation::getEffectiveSentenceLength).orElse(null)))
+                .sentenceMonths(monthsOf(maybeSentenceCalculation.map(SentenceCalculation::getEffectiveSentenceLength).orElse(null)))
+                .sentenceDays(daysOf(maybeSentenceCalculation.map(SentenceCalculation::getEffectiveSentenceLength).orElse(null)))
                 .sentenceDate(sentenceStartDateOf(activeSentences))
-                .releaseDate(sentenceCalculation.getReleaseDate().toString())
+                .releaseDate(maybeSentenceCalculation.map(sc -> sc.getReleaseDate().toString()).orElse(null))
                 .pnc(pncOf(offender))
                 .nomisId(offender.getNomsId())
                 .forename1(offender.getFirstName())
@@ -404,7 +407,7 @@ public class XtagTransformer {
                 .familyName(offender.getSurname())
                 .eventType("OffenderSentence")
                 .establishmentCode(establishmentCodeOf(null, offender))
-                .effectiveSentenceLength(effectiveSentenceLengthOf(activeSentences, sentenceCalculation))
+                .effectiveSentenceLength(effectiveSentenceLengthOf(activeSentences, maybeSentenceCalculation))
                 .dateOfBirth(offender.getDateOfBirth().toString())
                 .correlationId(nextCorrelationId())
                 .build());
