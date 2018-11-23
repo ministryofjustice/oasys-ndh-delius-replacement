@@ -181,7 +181,7 @@ public class EventsPullerService {
     private Optional<ZonedDateTime> getPullFromDateTime() {
 
         if (pollFromOverride.isPresent()) {
-            log.info("Overriding with user supplied datetime: {}", pollFromOverride);
+            log.info("Overriding with user supplied datetime: {}", pollFromOverride.toString());
             return pollFromOverride;
         }
 

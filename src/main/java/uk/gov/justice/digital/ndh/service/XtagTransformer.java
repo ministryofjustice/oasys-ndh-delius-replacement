@@ -71,7 +71,7 @@ public class XtagTransformer {
                 .map(HttpResponse::getBody)
                 .map(this::asImprisonmentStatuses)
                 .flatMap(imprisonmentStatuses -> imprisonmentStatuses.stream()
-                        .filter(imprisonmentStatus -> imprisonmentStatus.getImprisonmentStatus().getImprisonmentStatusSeq().equals(event.getImprisonmentStatusSeq()))
+                        .filter(imprisonmentStatus -> (event.getImprisonmentStatusSeq() == null) || event.getImprisonmentStatusSeq().equals(imprisonmentStatus.getImprisonmentStatus().getImprisonmentStatusSeq()))
                         .filter(OffenderImprisonmentStatus::getLatestStatus)
                         .findFirst());
 
@@ -326,7 +326,7 @@ public class XtagTransformer {
     private List<Sentence> asSentences(String jsonStr) {
         try {
             final Sentence[] sentences = objectMapper.readValue(jsonStr, Sentence[].class);
-            return Arrays.asList(sentences).stream()
+            return Arrays.stream(sentences)
                     .filter(Sentence::getIsActive)
                     .collect(Collectors.toList());
         } catch (IOException e) {
