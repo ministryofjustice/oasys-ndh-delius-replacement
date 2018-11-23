@@ -31,11 +31,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class EventsPullerService {
 
+    public static final String OASYS = "OASYS";
     private final NomisClient custodyApiClient;
     private final JmsTemplate jmsTemplate;
     private final ObjectMapper objectMapper;
@@ -80,7 +82,10 @@ public class EventsPullerService {
                         "type", "BOOKING_NUMBER-CHANGED,OFFENDER_MOVEMENT-RECEPTION,OFFENDER_MOVEMENT-DISCHARGE,OFFENDER_BOOKING-CHANGED,OFFENDER_DETAILS-CHANGED,IMPRISONMENT_STATUS-CHANGED,SENTENCE_CALCULATION_DATES-CHANGED"))
                 .filter(r -> r.getStatus() == HttpStatus.OK.value())
                 .map(HttpResponse::getBody)
-                .map(this::asEvents);
+                .map(this::asEvents)
+                .map(offenderEvents -> offenderEvents.stream()
+                        .filter(offenderEvent -> offenderEvent.getNomisEventType().endsWith(OASYS))
+                        .collect(Collectors.toList()));
 
         try {
             if (maybeOffenderEvents.isPresent()) {
