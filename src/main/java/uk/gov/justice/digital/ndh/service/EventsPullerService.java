@@ -44,7 +44,7 @@ public class EventsPullerService {
     private final OasysSOAPClient oasysSOAPClient;
     private final ExceptionLogService exceptionLogService;
     private final MessageStoreService messageStoreService;
-    private final Optional<LocalDateTime> pollFrom;
+    private final Optional<String> pollFromOverride;
 
     public EventsPullerService(NomisClient custodyApiClient,
                                JmsTemplate jmsTemplate,
@@ -54,7 +54,7 @@ public class EventsPullerService {
                                OasysSOAPClient oasysSOAPClient,
                                ExceptionLogService exceptionLogService,
                                MessageStoreService messageStoreService,
-                               @Value("${xtag.poll.from.isodatetime:#{T(java.util.Optional).empty()}}") Optional<LocalDateTime> pollFrom) {
+                               @Value("${xtag.poll.from.isolocaldatetime:#{T(java.util.Optional).empty()}}") Optional<String> pollFromOverride) {
         this.custodyApiClient = custodyApiClient;
         this.jmsTemplate = jmsTemplate;
         this.objectMapper = objectMapper;
@@ -63,7 +63,7 @@ public class EventsPullerService {
         this.oasysSOAPClient = oasysSOAPClient;
         this.exceptionLogService = exceptionLogService;
         this.messageStoreService = messageStoreService;
-        this.pollFrom = pollFrom;
+        this.pollFromOverride = pollFromOverride;
     }
 
     @Scheduled(fixedDelayString = "${xtag.poll.period:10000}")
@@ -176,9 +176,9 @@ public class EventsPullerService {
 
     private Optional<LocalDateTime> getPullFromDateTime() {
 
-        if (pollFrom.isPresent()) {
-            log.info("Overriding with user supplied datetime: {}", pollFrom);
-            return pollFrom;
+        if (pollFromOverride.isPresent()) {
+            log.info("Overriding with user supplied datetime: {}", pollFromOverride);
+            return Optional.of(LocalDateTime.parse(pollFromOverride.get()));
         }
 
         Optional<String> maybeLastPolled;
