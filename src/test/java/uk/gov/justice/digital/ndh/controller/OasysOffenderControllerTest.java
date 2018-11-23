@@ -142,7 +142,7 @@ public class OasysOffenderControllerTest {
                         .withBody(GOOD_DELIUS_OFFENDER_DETAILS_RESPONSE)
                         .withStatus(200)));
 
-        Thread.sleep(2000L);
+        Thread.sleep(4000L);
         when(mappingService.targetValueOf("MAG", COURT_CODE_TYPE)).thenReturn("MC");
         when(mappingService.targetValueOf("201", SENTENCE_CODE_TYPE)).thenReturn("910");
         when(requirementLookupRepository.findByReqTypeAndReqCodeAndSubCode("N", "X", "X02")).thenReturn(

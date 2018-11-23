@@ -24,7 +24,6 @@ import uk.gov.justice.digital.ndh.service.exception.OasysAPIServiceError;
 import javax.jms.JMSException;
 import javax.jms.TextMessage;
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
@@ -46,7 +45,7 @@ public class EventsPullerService {
     private final OasysSOAPClient oasysSOAPClient;
     private final ExceptionLogService exceptionLogService;
     private final MessageStoreService messageStoreService;
-    private final Optional<String> pollFromOverride;
+    private final Optional<ZonedDateTime> pollFromOverride;
 
     public EventsPullerService(NomisClient custodyApiClient,
                                JmsTemplate jmsTemplate,
@@ -56,7 +55,7 @@ public class EventsPullerService {
                                OasysSOAPClient oasysSOAPClient,
                                ExceptionLogService exceptionLogService,
                                MessageStoreService messageStoreService,
-                               @Value("${xtag.poll.from.isolocaldatetime:#{T(java.util.Optional).empty()}}") Optional<String> pollFromOverride) {
+                               @Value("${xtag.poll.from.isodatetime:}") String pollFromOverride) {
         this.custodyApiClient = custodyApiClient;
         this.jmsTemplate = jmsTemplate;
         this.objectMapper = objectMapper;
@@ -65,16 +64,16 @@ public class EventsPullerService {
         this.oasysSOAPClient = oasysSOAPClient;
         this.exceptionLogService = exceptionLogService;
         this.messageStoreService = messageStoreService;
-        this.pollFromOverride = pollFromOverride;
+        this.pollFromOverride = Optional.ofNullable(pollFromOverride).filter(s -> !s.isEmpty()).map(ZonedDateTime::parse);
     }
 
     @Scheduled(fixedDelayString = "${xtag.poll.period:10000}")
     public void pullEvents() throws ExecutionException, UnirestException {
-        final Optional<LocalDateTime> maybePullFrom = getPullFromDateTime();
+        final Optional<ZonedDateTime> maybePullFrom = getPullFromDateTime();
 
-        final LocalDateTime pullFrom = maybePullFrom.orElse(LocalDateTime.now());
+        final ZonedDateTime pullFrom = maybePullFrom.orElse(ZonedDateTime.now());
 
-        final LocalDateTime to = LocalDateTime.now();
+        final ZonedDateTime to = ZonedDateTime.now();
 
         Optional<List<OffenderEvent>> maybeOffenderEvents = custodyApiClient
                 .doGetWithRetry("events", ImmutableMap.of("from", pullFrom.toString(),
@@ -91,10 +90,10 @@ public class EventsPullerService {
             if (maybeOffenderEvents.isPresent()) {
                 handleEvents(maybeOffenderEvents.get());
             }
-            setPullFromDateTime(ZonedDateTime.now().toString());
+            setPullFromDateTime(ZonedDateTime.now());
         } catch (Exception e) {
             log.error(e.getMessage());
-            setPullFromDateTime(pullFrom.toString());
+            setPullFromDateTime(pullFrom);
         }
 
 
@@ -179,11 +178,11 @@ public class EventsPullerService {
         }
     }
 
-    private Optional<LocalDateTime> getPullFromDateTime() {
+    private Optional<ZonedDateTime> getPullFromDateTime() {
 
         if (pollFromOverride.isPresent()) {
             log.info("Overriding with user supplied datetime: {}", pollFromOverride);
-            return Optional.of(LocalDateTime.parse(pollFromOverride.get()));
+            return pollFromOverride;
         }
 
         Optional<String> maybeLastPolled;
@@ -205,10 +204,10 @@ public class EventsPullerService {
 
         log.info("Last polled date retrieved : {}", maybeLastPolled.orElse("empty"));
 
-        return maybeLastPolled.map(LocalDateTime::parse);
+        return maybeLastPolled.map(ZonedDateTime::parse);
     }
 
-    private void setPullFromDateTime(String time) {
-        jmsTemplate.convertAndSend("LAST_POLLED", time);
+    private void setPullFromDateTime(ZonedDateTime time) {
+        jmsTemplate.convertAndSend("LAST_POLLED", time.toString());
     }
 }
