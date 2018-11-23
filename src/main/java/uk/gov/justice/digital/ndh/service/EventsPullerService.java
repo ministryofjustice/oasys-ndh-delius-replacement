@@ -9,6 +9,7 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.jms.JmsException;
 import org.springframework.jms.core.JmsTemplate;
@@ -19,7 +20,6 @@ import uk.gov.justice.digital.ndh.api.oasys.xtag.EventMessage;
 import uk.gov.justice.digital.ndh.service.exception.NDHMappingException;
 import uk.gov.justice.digital.ndh.service.exception.NomisAPIServiceError;
 import uk.gov.justice.digital.ndh.service.exception.OasysAPIServiceError;
-import uk.gov.justice.digital.ndh.service.transforms.OffenderTransformer;
 
 import javax.jms.JMSException;
 import javax.jms.TextMessage;
@@ -44,8 +44,17 @@ public class EventsPullerService {
     private final OasysSOAPClient oasysSOAPClient;
     private final ExceptionLogService exceptionLogService;
     private final MessageStoreService messageStoreService;
+    private final Optional<LocalDateTime> pollFrom;
 
-    public EventsPullerService(NomisClient custodyApiClient, JmsTemplate jmsTemplate, @Qualifier("globalObjectMapper") ObjectMapper objectMapper, OffenderTransformer offenderTransformer, MappingService mappingService, XmlMapper xmlMapper, XtagTransformer xtagTransformer, OasysSOAPClient oasysSOAPClient, ExceptionLogService exceptionLogService, MessageStoreService messageStoreService) {
+    public EventsPullerService(NomisClient custodyApiClient,
+                               JmsTemplate jmsTemplate,
+                               @Qualifier("globalObjectMapper") ObjectMapper objectMapper,
+                               XmlMapper xmlMapper,
+                               XtagTransformer xtagTransformer,
+                               OasysSOAPClient oasysSOAPClient,
+                               ExceptionLogService exceptionLogService,
+                               MessageStoreService messageStoreService,
+                               @Value("${xtag.poll.from.isodatetime:#{T(java.util.Optional).empty()}}") Optional<LocalDateTime> pollFrom) {
         this.custodyApiClient = custodyApiClient;
         this.jmsTemplate = jmsTemplate;
         this.objectMapper = objectMapper;
@@ -54,20 +63,21 @@ public class EventsPullerService {
         this.oasysSOAPClient = oasysSOAPClient;
         this.exceptionLogService = exceptionLogService;
         this.messageStoreService = messageStoreService;
+        this.pollFrom = pollFrom;
     }
 
     @Scheduled(fixedDelayString = "${xtag.poll.period:10000}")
     public void pullEvents() throws ExecutionException, UnirestException {
-        final Optional<String> maybePullFrom = getPullFromDateTime();
+        final Optional<LocalDateTime> maybePullFrom = getPullFromDateTime();
 
-        final String pullFrom = maybePullFrom.orElse(ZonedDateTime.now().toString());
+        final LocalDateTime pullFrom = maybePullFrom.orElse(LocalDateTime.now());
 
         final LocalDateTime to = LocalDateTime.now();
 
         Optional<List<OffenderEvent>> maybeOffenderEvents = custodyApiClient
-                .doGetWithRetry("events", ImmutableMap.of("from", pullFrom,
+                .doGetWithRetry("events", ImmutableMap.of("from", pullFrom.toString(),
                         "to", to.toString(),
-                        "type", "OFFENDER_BOOKING_UPDATE,BASIC_OFFENDER_DETAILS_UPDATE,ESTABLISHMENT_RECEPTION,ESTABLISHMENT_DISCHARGE,SENTENCE_UPDATE,IMPRISONMENT_STATUS_UPDATE"))
+                        "type", "BOOKING_NUMBER-CHANGED,OFFENDER_MOVEMENT-RECEPTION,OFFENDER_MOVEMENT-DISCHARGE,OFFENDER_BOOKING-CHANGED,OFFENDER_DETAILS-CHANGED,IMPRISONMENT_STATUS-CHANGED,SENTENCE_CALCULATION_DATES-CHANGED"))
                 .filter(r -> r.getStatus() == HttpStatus.OK.value())
                 .map(HttpResponse::getBody)
                 .map(this::asEvents);
@@ -79,7 +89,7 @@ public class EventsPullerService {
             setPullFromDateTime(ZonedDateTime.now().toString());
         } catch (Exception e) {
             log.error(e.getMessage());
-            setPullFromDateTime(pullFrom);
+            setPullFromDateTime(pullFrom.toString());
         }
 
 
@@ -164,7 +174,12 @@ public class EventsPullerService {
         }
     }
 
-    private Optional<String> getPullFromDateTime() {
+    private Optional<LocalDateTime> getPullFromDateTime() {
+
+        if (pollFrom.isPresent()) {
+            log.info("Overriding with user supplied datetime: {}", pollFrom);
+            return pollFrom;
+        }
 
         Optional<String> maybeLastPolled;
 
@@ -185,7 +200,7 @@ public class EventsPullerService {
 
         log.info("Last polled date retrieved : {}", maybeLastPolled.orElse("empty"));
 
-        return maybeLastPolled;
+        return maybeLastPolled.map(LocalDateTime::parse);
     }
 
     private void setPullFromDateTime(String time) {
