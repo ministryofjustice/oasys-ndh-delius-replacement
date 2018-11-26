@@ -120,7 +120,8 @@ public class XtagTransformer {
                 .map(HttpResponse::getBody)
                 .map(this::asExternalMovements)
                 .flatMap(externalMovements -> externalMovements.stream()
-                        .filter(movement -> movement.getSequenceNumber().equals(offenderEvent.getMovementSeq()))
+                        .filter(movement -> offenderEvent.getMovementSeq().equals(movement.getSequenceNumber()) ||
+                                "ADM".equals(movement.getMovementTypeCode()))
                         .findFirst()).orElseThrow(() -> new NomisAPIServiceError("Can't get offender movements."));
     }
 
