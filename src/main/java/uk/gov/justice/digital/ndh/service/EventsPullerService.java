@@ -113,7 +113,7 @@ public class EventsPullerService {
             messageStoreService.writeMessage(
                     oasysSoapXml,
                     eventMessage.getCorrelationId(),
-                    eventMessage.getPnc(),
+                    eventMessage.getNomisId(),
                     "XTAG",
                     MessageStoreService.ProcStates.GLB_ProcState_OutboundAfterTransformation);
 
