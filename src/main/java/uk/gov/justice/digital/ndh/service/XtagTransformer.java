@@ -18,6 +18,7 @@ import uk.gov.justice.digital.ndh.api.nomis.Sentence;
 import uk.gov.justice.digital.ndh.api.nomis.SentenceCalculation;
 import uk.gov.justice.digital.ndh.api.nomis.elite2.InmateDetail;
 import uk.gov.justice.digital.ndh.api.oasys.xtag.EventMessage;
+import uk.gov.justice.digital.ndh.service.exception.NDHMappingException;
 import uk.gov.justice.digital.ndh.service.exception.NomisAPIServiceError;
 import uk.gov.justice.digital.ndh.service.transforms.OffenderTransformer;
 
@@ -62,6 +63,8 @@ public class XtagTransformer {
     }
 
     public Optional<EventMessage> offenderImprisonmentStatusUpdatedXtagOf(OffenderEvent event) throws ExecutionException, UnirestException, NomisAPIServiceError {
+
+        log.info("Handling offenderImprisonmentStatusUpdated event {}", event);
         final InmateDetail inmateDetail = getInmateDetail(event);
         final Offender offender = getOffender(inmateDetail);
 
@@ -192,6 +195,7 @@ public class XtagTransformer {
     }
 
     public Optional<EventMessage> offenderReceptionXtagOf(OffenderEvent event) throws ExecutionException, UnirestException, NomisAPIServiceError {
+        log.info("Handling offenderReception event {}", event);
         final InmateDetail inmateDetail = getInmateDetail(event);
         final Offender offender = getOffender(inmateDetail);
         final List<Sentence> activeSentences = getActiveSentences(offender, inmateDetail);
@@ -223,7 +227,13 @@ public class XtagTransformer {
     }
 
     private String receptionMovementCodeOf(String movementReasonCode) {
-        return mappingService.targetValueOf(movementReasonCode, OASYSR_RECEPTION_CODES);
+        try {
+            return mappingService.targetValueOf(movementReasonCode, OASYSR_RECEPTION_CODES);
+        } catch (NDHMappingException ndhme) {
+            log.warn("Failed to lookup reception movement code {} in group {}. Trying discharge code instead...", movementReasonCode, OASYSR_RECEPTION_CODES);
+        }
+
+        return dischargeMovementCodeOf(movementReasonCode);
     }
 
     private String receptionMovementCourtCodeOf(ExternalMovement offenderMovement) {
@@ -232,6 +242,7 @@ public class XtagTransformer {
 
 
     public Optional<EventMessage> bookingUpdatedXtagOf(OffenderEvent event) throws ExecutionException, UnirestException, NomisAPIServiceError {
+        log.info("Handling bookingUpdated event {}", event);
         final InmateDetail inmateDetail = getInmateDetail(event);
         final Offender offender = getOffender(inmateDetail);
 
@@ -251,7 +262,7 @@ public class XtagTransformer {
     }
 
     public Optional<EventMessage> offenderDischargeXtagOf(OffenderEvent event) throws ExecutionException, UnirestException, NomisAPIServiceError {
-
+        log.info("Handling offenderDischarge event {}", event);
         final InmateDetail inmateDetail = getInmateDetail(event);
         final Offender offender = getOffender(inmateDetail);
         final List<Sentence> activeSentences = getActiveSentences(offender, inmateDetail);
@@ -340,12 +351,12 @@ public class XtagTransformer {
     }
 
     private String dischargeMovementFromToOf(ExternalMovement offenderMovement) {
-        return "CRT".equals(mappingService.targetValueOf(offenderMovement.getMovementTypeCode(), OASYSR_DISCHARGE_CODES)) ? null : offenderMovement.getToAgencyLocationId();
+        return "CRT".equals(offenderMovement.getMovementTypeCode()) ? null : offenderMovement.getToAgencyLocationId();
 
     }
 
     private String receptionMovementFromToOf(ExternalMovement offenderMovement) {
-        return "CRT".equals(mappingService.targetValueOf(offenderMovement.getMovementTypeCode(), OASYSR_RECEPTION_CODES)) ? null : offenderMovement.getFromAgencyLocationId();
+        return "CRT".equals(offenderMovement.getMovementTypeCode()) ? null : offenderMovement.getFromAgencyLocationId();
     }
 
     private String oasysTimestampOf(LocalDateTime dateTime) {
@@ -368,6 +379,7 @@ public class XtagTransformer {
     }
 
     public Optional<EventMessage> offenderUpdatedXtagOf(OffenderEvent event) throws ExecutionException, UnirestException, NomisAPIServiceError {
+        log.info("Handling offenderUpdated event {}", event);
         final InmateDetail inmateDetail = getInmateDetail(event);
         final Offender offender = getOffender(inmateDetail);
 
@@ -388,6 +400,7 @@ public class XtagTransformer {
     }
 
     public Optional<EventMessage> offenderSentenceUpdatedXtagOf(OffenderEvent event) throws ExecutionException, UnirestException, NomisAPIServiceError {
+        log.info("Handling offenderSentenceUpdated event {}", event);
         final InmateDetail inmateDetail = getInmateDetail(event);
         final Offender offender = getOffender(inmateDetail);
         final List<Sentence> activeSentences = getActiveSentences(offender, inmateDetail);
