@@ -95,8 +95,7 @@ dependencies {
     compile group: 'jaxen', name: 'jaxen', version: '1.1.6'
     compile group: 'com.github.rholder', name: 'guava-retrying', version: '2.0.0'
 
-
-
+    annotationProcessor 'org.projectlombok:lombok:1.16.18'
     compileOnly 'org.projectlombok:lombok:1.16.18'
 
     testRuntime 'com.h2database:h2:1.4.196'
