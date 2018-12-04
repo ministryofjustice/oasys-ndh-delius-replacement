@@ -96,12 +96,12 @@ public class OasysOffenderControllerTest {
     @Before
     public void setup() throws InterruptedException {
         RestAssured.port = port;
-//        Thread.sleep(4000L);
+        Thread.sleep(2000L);
     }
 
     @After
     public void tearDown() throws InterruptedException {
-//        Thread.sleep(4000L);
+        Thread.sleep(2000L);
     }
 
     @Test
@@ -210,7 +210,7 @@ public class OasysOffenderControllerTest {
                         .withBody(GOOD_DELIUS_INITIAL_SEARCH_RESPONSE)
                         .withStatus(200)));
 
-        Thread.sleep(2000L);
+        Thread.sleep(3000L);
 
         Mockito.when(mappingService.descriptionOf(anyString(), anyLong())).thenThrow(NDHMappingException.builder().subject("description").value("sourceVal").code(0L).build());
         Mockito.when(mappingService.targetValueOf(anyString(), anyLong())).thenThrow(NDHMappingException.builder().subject("targetValue").value("sourceVal").code(0L).build());
@@ -338,7 +338,7 @@ public class OasysOffenderControllerTest {
                 .whenScenarioStateIs("reauth")
                 .willReturn(aResponse().withStatus(200).withBody(offenderJson)));
 
-        Thread.sleep(2000L);
+        Thread.sleep(3000L);
 
         given()
                 .when()
@@ -348,7 +348,7 @@ public class OasysOffenderControllerTest {
                 .then()
                 .statusCode(200);
 
-        Thread.sleep(2000);
+        Thread.sleep(3000);
 
         WireMock.verify(2, postRequestedFor(urlPathEqualTo("/oauth/token")).withBasicAuth(new BasicCredentials("none", "none")));
         WireMock.verify(2, getRequestedFor(urlPathEqualTo("/custodyapi/offenders/nomsId/Z0000ZZ")).withHeader("Authorization", new EqualToPattern("Bearer A.B.C")));

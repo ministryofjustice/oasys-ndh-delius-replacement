@@ -99,7 +99,7 @@ public class OasysAssessmentControllerTest {
         when(mappingService.descriptionOf(anyString(), anyLong())).thenReturn("description");
         when(mappingService.targetValueOf(anyString(), anyLong())).thenReturn("targetValue");
 
-//        Thread.sleep(5000);
+        Thread.sleep(2000);
 
     }
 
@@ -109,7 +109,7 @@ public class OasysAssessmentControllerTest {
 
     @After
     public void tearDown() throws InterruptedException {
-//        Thread.sleep(5000);
+        Thread.sleep(2000);
     }
 
     @Test
@@ -121,7 +121,7 @@ public class OasysAssessmentControllerTest {
                         .withBody(NON_FAULT_GENERIC_RESPONSE)
                         .withStatus(200)));
 
-        Thread.sleep(1000);
+        Thread.sleep(3000);
 
         final String requestXml = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/AssessmentUpdates/OasysToNDHSoapEnvelope.xml")))
                 .lines().collect(Collectors.joining("\n"));
@@ -136,7 +136,7 @@ public class OasysAssessmentControllerTest {
                 .then()
                 .statusCode(200);
 
-        Thread.sleep(2000);
+        Thread.sleep(3000);
 
         WireMock.verify(1, postRequestedFor(urlMatching("/delius/assessmentUpdates")));
 

@@ -45,7 +45,7 @@ public class EventsPullerService {
     private final OasysSOAPClient oasysSOAPClient;
     private final ExceptionLogService exceptionLogService;
     private final MessageStoreService messageStoreService;
-    private final Optional<ZonedDateTime> pollFromOverride;
+    private Optional<ZonedDateTime> pollFromOverride;
 
     public EventsPullerService(NomisClient custodyApiClient,
                                JmsTemplate jmsTemplate,
@@ -70,7 +70,6 @@ public class EventsPullerService {
     @Scheduled(fixedDelayString = "${xtag.poll.period:10000}")
     public void pullEvents() throws ExecutionException, UnirestException {
         final Optional<ZonedDateTime> maybePullFrom = getPullFromDateTime();
-
         final ZonedDateTime pullFrom = maybePullFrom.orElse(ZonedDateTime.now());
 
         final ZonedDateTime to = ZonedDateTime.now();
@@ -88,9 +87,13 @@ public class EventsPullerService {
 
         try {
             if (maybeOffenderEvents.isPresent()) {
-                handleEvents(maybeOffenderEvents.get());
+                final List<OffenderEvent> events = maybeOffenderEvents.get();
+                log.info("Pulling {} events...", events.size());
+                handleEvents(events);
             }
+            log.info("No events to pull...");
             setPullFromDateTime(ZonedDateTime.now());
+            pollFromOverride = Optional.empty();
         } catch (Exception e) {
             log.error(e.getMessage());
             setPullFromDateTime(pullFrom);
