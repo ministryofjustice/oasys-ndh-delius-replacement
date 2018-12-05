@@ -96,12 +96,12 @@ public class OasysOffenderControllerTest {
     @Before
     public void setup() throws InterruptedException {
         RestAssured.port = port;
-        Thread.sleep(2000L);
+        Thread.sleep(5000L);
     }
 
     @After
     public void tearDown() throws InterruptedException {
-        Thread.sleep(2000L);
+        Thread.sleep(5000L);
     }
 
     @Test

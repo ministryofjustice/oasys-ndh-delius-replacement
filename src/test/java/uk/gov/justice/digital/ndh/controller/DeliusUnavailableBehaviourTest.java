@@ -73,7 +73,8 @@ public class DeliusUnavailableBehaviourTest {
     }
 
     @After
-    public void tearDown() {
+    public void tearDown() throws InterruptedException {
+        Thread.sleep(5000L);
     }
 
     @Test

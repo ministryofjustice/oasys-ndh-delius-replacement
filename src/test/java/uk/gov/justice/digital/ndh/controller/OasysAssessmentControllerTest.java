@@ -99,7 +99,7 @@ public class OasysAssessmentControllerTest {
         when(mappingService.descriptionOf(anyString(), anyLong())).thenReturn("description");
         when(mappingService.targetValueOf(anyString(), anyLong())).thenReturn("targetValue");
 
-        Thread.sleep(2000);
+        Thread.sleep(5000);
 
     }
 
@@ -109,7 +109,7 @@ public class OasysAssessmentControllerTest {
 
     @After
     public void tearDown() throws InterruptedException {
-        Thread.sleep(2000);
+        Thread.sleep(5000);
     }
 
     @Test
