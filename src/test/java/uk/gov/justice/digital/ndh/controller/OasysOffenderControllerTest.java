@@ -22,7 +22,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.justice.digital.ndh.api.soap.SoapEnvelopeSpec1_2;
-import uk.gov.justice.digital.ndh.jpa.repository.RequirementLookup;
 import uk.gov.justice.digital.ndh.jpa.repository.RequirementLookupRepository;
 import uk.gov.justice.digital.ndh.service.ExceptionLogService;
 import uk.gov.justice.digital.ndh.service.MappingService;
@@ -32,7 +31,6 @@ import uk.gov.justice.digital.ndh.service.exception.NDHMappingException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -50,9 +48,6 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.when;
-import static uk.gov.justice.digital.ndh.service.transforms.OffenderTransformer.COURT_CODE_TYPE;
-import static uk.gov.justice.digital.ndh.service.transforms.OffenderTransformer.SENTENCE_CODE_TYPE;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
         "spring.jmx.enabled=true",
@@ -69,15 +64,14 @@ import static uk.gov.justice.digital.ndh.service.transforms.OffenderTransformer.
 @DirtiesContext
 public class OasysOffenderControllerTest {
 
-    public static final String GOOD_DELIUS_INITIAL_SEARCH_RESPONSE = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/InitialSearch/realInitialSearchResponseFromDelius.xml")))
-            .lines().collect(Collectors.joining("\n"));
-    public static final String GOOD_DELIUS_OFFENDER_DETAILS_RESPONSE = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/OffenderDetails/realOffenderDetailsResponseFromDelius.xml")))
-            .lines().collect(Collectors.joining("\n"));
+//    public static final String GOOD_DELIUS_INITIAL_SEARCH_RESPONSE = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/InitialSearch/realInitialSearchResponseFromDelius.xml")))
+//            .lines().collect(Collectors.joining("\n"));
+//    public static final String GOOD_DELIUS_OFFENDER_DETAILS_RESPONSE = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/OffenderDetails/realOffenderDetailsResponseFromDelius.xml")))
+//            .lines().collect(Collectors.joining("\n"));
     private static final String REAL_DELIUS_RISK_FAULT_RESPONSE = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/RiskUpdate/realFaultResponseFromDelius.xml")))
             .lines().collect(Collectors.joining("\n"));
     @Rule
-    public WireMockRule wm = new WireMockRule(options().port(8090));
-
+    public WireMockRule wm = new WireMockRule(options().port(8090).asynchronousResponseEnabled(false).mappingSource(new JsonFileMappingsSource(new ClasspathFileSource("mappings"))).jettyStopTimeout(10000L));
     @LocalServerPort
     int port;
     @MockBean
@@ -94,84 +88,13 @@ public class OasysOffenderControllerTest {
     private XmlMapper xmlMapper;
 
     @Before
-    public void setup() throws InterruptedException {
+    public void setup() {
         RestAssured.port = port;
-        Thread.sleep(5000L);
     }
 
     @After
     public void tearDown() throws InterruptedException {
-        Thread.sleep(5000L);
-    }
-
-    @Test
-    public void postedInitialSearchMessageIsSentToDeliusAndHandledAppropriately() throws IOException, InterruptedException {
-
-        stubFor(post(urlEqualTo("/delius/initialSearch")).willReturn(
-                aResponse()
-                        .withBody(GOOD_DELIUS_INITIAL_SEARCH_RESPONSE)
-                        .withStatus(200)));
-
-        Thread.sleep(2000L);
-        Mockito.when(mappingService.descriptionOf("328", 3802L)).thenReturn("ORA Youth Custody (inc PSS)");
-
-        final String requestXml = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/InitialSearch/realInitialSearchRequestFromOasys.xml")))
-                .lines().collect(Collectors.joining("\n"));
-
-        final String actualXml = given()
-                .when()
-                .contentType(ContentType.XML)
-                .body(requestXml)
-                .post("/initialSearch")
-                .then()
-                .statusCode(200).extract().body().asString();
-
-        final SoapEnvelopeSpec1_2 actual = xmlMapper.readValue(actualXml, SoapEnvelopeSpec1_2.class);
-
-        final SoapEnvelopeSpec1_2 expected = xmlMapper.readValue(new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/InitialSearch/realNdhInitialSearchResponseToOasys.xml")))
-                .lines().collect(Collectors.joining("\n")), SoapEnvelopeSpec1_2.class);
-
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    public void postedOffenderDetailsMessageIsSentToDeliusAndHandledAppropriately() throws IOException, InterruptedException {
-
-        stubFor(post(urlEqualTo("/delius/offenderDetails")).willReturn(
-                aResponse()
-                        .withBody(GOOD_DELIUS_OFFENDER_DETAILS_RESPONSE)
-                        .withStatus(200)));
-
-        Thread.sleep(4000L);
-        when(mappingService.targetValueOf("MAG", COURT_CODE_TYPE)).thenReturn("MC");
-        when(mappingService.targetValueOf("201", SENTENCE_CODE_TYPE)).thenReturn("910");
-        when(requirementLookupRepository.findByReqTypeAndReqCodeAndSubCode("N", "X", "X02")).thenReturn(
-                Optional.of(RequirementLookup.builder()
-                        .activityDesc("Named Licenced Premises")
-                        .reqType("N")
-                        .reqCode("X")
-                        .subCode("X02")
-                        .sentenceAttributeCat("CJA_REQUIREMENT")
-                        .sentenceAttributeElm("EXCLUSION")
-                        .build()));
-
-        final String requestXml = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/OffenderDetails/realOffenderDetailsRequestFromOasys.xml")))
-                .lines().collect(Collectors.joining("\n"));
-
-        final String actualXml = given()
-                .when()
-                .contentType(ContentType.XML)
-                .body(requestXml)
-                .post("/offenderDetails")
-                .then()
-                .statusCode(200).extract().body().asString();
-
-        final SoapEnvelopeSpec1_2 actual = xmlMapper.readValue(actualXml, SoapEnvelopeSpec1_2.class);
-
-        final SoapEnvelopeSpec1_2 expected = xmlMapper.readValue(new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/OffenderDetails/realOffenderDetailsResponseToOasys.xml")))
-                .lines().collect(Collectors.joining("\n")), SoapEnvelopeSpec1_2.class);
-
-        assertThat(actual).isEqualTo(expected);
+        Thread.sleep(1000L);
     }
 
     @Test
@@ -202,15 +125,15 @@ public class OasysOffenderControllerTest {
     }
 
     @Test
-    public void mappingFailureInitialSearchResponseFromDeliusIsLoggedAppropriately() throws InterruptedException {
+    public void mappingFailureInitialSearchResponseFromDeliusIsLoggedAppropriately() {
 
 
-        stubFor(post(urlEqualTo("/delius/initialSearch")).willReturn(
-                aResponse()
-                        .withBody(GOOD_DELIUS_INITIAL_SEARCH_RESPONSE)
-                        .withStatus(200)));
-
-        Thread.sleep(3000L);
+//        stubFor(post(urlEqualTo("/delius/initialSearch")).willReturn(
+//                aResponse()
+//                        .withBody(GOOD_DELIUS_INITIAL_SEARCH_RESPONSE)
+//                        .withStatus(200)));
+//
+//        Thread.sleep(3000L);
 
         Mockito.when(mappingService.descriptionOf(anyString(), anyLong())).thenThrow(NDHMappingException.builder().subject("description").value("sourceVal").code(0L).build());
         Mockito.when(mappingService.targetValueOf(anyString(), anyLong())).thenThrow(NDHMappingException.builder().subject("targetValue").value("sourceVal").code(0L).build());
@@ -233,14 +156,7 @@ public class OasysOffenderControllerTest {
     }
 
     @Test
-    @DirtiesContext
-    public void postedOffenderDetailsMessageIsSentToCustodyAPIAndHandledAppropriately() throws IOException, InterruptedException {
-        wm.loadMappingsUsing(new JsonFileMappingsSource(new ClasspathFileSource("mappings")));
-
-        Thread.sleep(2000L);
-
-        assertThat(wm.getStubMappings().size()).isGreaterThan(0);
-
+    public void postedOffenderDetailsMessageIsSentToCustodyAPIAndHandledAppropriately() throws IOException {
         Mockito.when(mappingService.targetValueOf("CRD", 34L)).thenReturn("CRD");
         Mockito.when(mappingService.targetValueOf("C", 13L)).thenReturn("CAT-C");
 
@@ -264,13 +180,7 @@ public class OasysOffenderControllerTest {
 
     @Test
     @DirtiesContext
-    public void offenderNotFoundInNomisRespondsAppropriately() throws IOException, InterruptedException {
-        wm.loadMappingsUsing(new JsonFileMappingsSource(new ClasspathFileSource("mappings")));
-
-        Thread.sleep(2000L);
-
-        assertThat(wm.getStubMappings().size()).isGreaterThan(0);
-
+    public void offenderNotFoundInNomisRespondsAppropriately() throws IOException {
         final String requestXml = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/OffenderDetails/realOffenderDetailsRequestFromOasysToNomis.xml")))
                 .lines().collect(Collectors.joining("\n"));
 
@@ -293,11 +203,6 @@ public class OasysOffenderControllerTest {
     @Test
     @DirtiesContext
     public void callsToCustodyAPIWillObtainToken() throws InterruptedException {
-        wm.loadMappingsUsing(new JsonFileMappingsSource(new ClasspathFileSource("mappings")));
-
-        Thread.sleep(2000L);
-
-        assertThat(wm.getStubMappings().size()).isGreaterThan(0);
 
         final String requestXml = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/OffenderDetails/realOffenderDetailsRequestFromOasysToNomis.xml")))
                 .lines().collect(Collectors.joining("\n"));
@@ -310,6 +215,8 @@ public class OasysOffenderControllerTest {
                 .then()
                 .statusCode(200);
 
+        Thread.sleep(1000);
+
         WireMock.verify(1, postRequestedFor(urlPathEqualTo("/oauth/token")).withBasicAuth(new BasicCredentials("none", "none")));
         WireMock.verify(1, getRequestedFor(urlPathEqualTo("/custodyapi/offenders/nomsId/G8696GH")).withHeader("Authorization", new EqualToPattern("Bearer A.B.C")));
     }
@@ -317,10 +224,6 @@ public class OasysOffenderControllerTest {
     @Test
     @DirtiesContext
     public void callsToCustodyAPIWillReAuthenticate() throws InterruptedException {
-
-        wm.loadMappingsUsing(new JsonFileMappingsSource(new ClasspathFileSource("mappings")));
-
-        assertThat(wm.getStubMappings().size()).isGreaterThan(0);
 
         stubFor(get(urlPathEqualTo("/custodyapi/offenders/nomsId/Z0000ZZ"))
                 .inScenario("expired_auth")

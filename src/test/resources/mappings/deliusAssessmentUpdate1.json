@@ -1,0 +1,10 @@
+{
+  "request": {
+    "method": "POST",
+    "urlPath": "/delius/assessmentUpdates"
+  },
+  "response": {
+    "bodyFileName" : "GoodDeliusResponse.xml",
+    "status": 200
+  }
+}

@@ -1,0 +1,48 @@
+<soap:Envelope
+        xmlns:soap="http://www.w3.org/2003/05/soap-envelope"
+        xmlns:com="http://www.bconline.co.uk/oasys/common"
+>
+    <soap:Header>
+        <com:Header>
+            <com:Version>?</com:Version>
+            <com:MessageID>?</com:MessageID>
+        </com:Header>
+    </soap:Header>
+    <soap:Body>
+        <ns4:GetOffenderDetailsResponse
+                xmlns:ns4="http://www.bconline.co.uk/oasys/messages"
+                xmlns:ns2="http://www.bconline.co.uk/oasys/event"
+                xmlns:ns5="http://www.bconline.co.uk/oasys/offender"
+        >
+            <ns4:Offender>
+                <ns5:LAOIndicator>N</ns5:LAOIndicator>
+                <ns5:CaseReferenceNumber>H923526</ns5:CaseReferenceNumber>
+                <ns5:LastName>ServiceReleaseTwelveSurThree</ns5:LastName>
+                <ns5:Forename1>ServiceReleaseTwelveForThree</ns5:Forename1>
+                <ns5:Gender>M</ns5:Gender>
+                <ns5:DateOfBirth>1982-07-19</ns5:DateOfBirth>
+                <ns5:Telephone />
+            </ns4:Offender>
+            <ns4:Event>
+                <ns2:EventNumber>1</ns2:EventNumber>
+                <ns2:OffenceCode>03700</ns2:OffenceCode>
+                <ns2:OffenceDate>2017-07-19</ns2:OffenceDate>
+                <ns2:CommencementDate>2017-07-19</ns2:CommencementDate>
+                <ns2:OrderType>201</ns2:OrderType>
+                <ns2:OrderLength>14</ns2:OrderLength>
+                <ns2:Court>THMSMC</ns2:Court>
+                <ns2:CourtType>MAG</ns2:CourtType>
+                <ns2:Requirements>
+                    <ns2:Requirement>
+                        <ns2:Code />
+                        <ns2:MainCategory>X</ns2:MainCategory>
+                        <ns2:SubCategory>X02</ns2:SubCategory>
+                        <ns2:RequirementDetails>
+                            <ns2:Length>12</ns2:Length>
+                        </ns2:RequirementDetails>
+                    </ns2:Requirement>
+                </ns2:Requirements>
+            </ns4:Event>
+        </ns4:GetOffenderDetailsResponse>
+    </soap:Body>
+</soap:Envelope>

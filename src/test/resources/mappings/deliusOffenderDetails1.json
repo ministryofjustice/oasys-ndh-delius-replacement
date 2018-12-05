@@ -1,0 +1,10 @@
+{
+  "request": {
+    "method": "POST",
+    "urlPath": "/delius/offenderDetails"
+  },
+  "response": {
+    "bodyFileName" : "realOffenderDetailsResponseFromDelius.xml",
+    "status": 200
+  }
+}

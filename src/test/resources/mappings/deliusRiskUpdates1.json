@@ -1,0 +1,10 @@
+{
+  "request": {
+    "method": "POST",
+    "urlPath": "/delius/riskUpdates"
+  },
+  "response": {
+    "bodyFileName" : "goodDeliusRiskResponse.xml",
+    "status": 200
+  }
+}

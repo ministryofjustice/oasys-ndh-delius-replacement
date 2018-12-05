@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:com="http://www.bconline.co.uk/oasys/common">
+    <soap:Header>
+        <com:Header>
+            <com:Version>?</com:Version>
+            <com:MessageID>?</com:MessageID>
+        </com:Header>
+    </soap:Header>
+    <soap:Body>
+        <ns3:GetSubSetOffenderDetailsResponse xmlns:ns2="http://www.bconline.co.uk/oasys/event"
+                                              xmlns:ns4="http://www.bconline.co.uk/oasys/offender"
+                                              xmlns:ns3="http://www.bconline.co.uk/oasys/messages">
+            <ns3:SubSetOffender>
+                <ns4:LAOIndicator>N</ns4:LAOIndicator>
+                <ns4:CaseReferenceNumber>E123456</ns4:CaseReferenceNumber>
+                <ns4:LastName>Testing</ns4:LastName>
+                <ns4:Forename1>Tester</ns4:Forename1>
+                <ns4:DateOfBirth>1998-01-01</ns4:DateOfBirth>
+                <ns4:Gender>M</ns4:Gender>
+            </ns3:SubSetOffender>
+            <ns3:SubSetEvent>
+                <ns2:EventNumber>1</ns2:EventNumber>
+                <ns2:CommencementDate>2016-04-21</ns2:CommencementDate>
+                <ns2:OrderType>328</ns2:OrderType>
+            </ns3:SubSetEvent>
+        </ns3:GetSubSetOffenderDetailsResponse>
+    </soap:Body>
+</soap:Envelope>
