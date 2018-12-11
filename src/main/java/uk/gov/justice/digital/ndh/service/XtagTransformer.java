@@ -25,8 +25,8 @@ import uk.gov.justice.digital.ndh.service.transforms.OffenderTransformer;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Period;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -323,7 +323,7 @@ public class XtagTransformer {
         return sentenceCalculation.map(sentenceCalculation1 -> activeSentences.stream()
                 .min(Comparator.comparing(Sentence::getStartDate))
                 .map(Sentence::getStartDate)
-                .map(startDate -> Period.between(startDate, sentenceCalculation1.getEffectiveSentenceEndDate().toLocalDate()).getDays() + 1)
+                .map(startDate -> ChronoUnit.DAYS.between(startDate, sentenceCalculation1.getEffectiveSentenceEndDate().toLocalDate()) + 1)
                 .map(String::valueOf)
                 .orElse(null)).orElse(null);
 
@@ -385,6 +385,9 @@ public class XtagTransformer {
 
     public Optional<EventMessage> offenderUpdatedXtagOf(OffenderEvent event) throws ExecutionException, UnirestException, NomisAPIServiceError {
         log.info("Handling offenderUpdated event {}", event);
+
+        final Long bookingId = Optional.ofNullable(event.getBookingId()).orElse(bookingIdOf(event.getRootOffenderId()));
+        event.setBookingId(bookingId);
         final InmateDetail inmateDetail = getInmateDetail(event);
         final Offender offender = getOffender(inmateDetail);
 
@@ -402,6 +405,17 @@ public class XtagTransformer {
                 .dateOfBirth(offender.getDateOfBirth().toString())
                 .correlationId(nextCorrelationId())
                 .build());
+    }
+
+    private Long bookingIdOf(Long rootOffenderId) throws ExecutionException, UnirestException, NomisAPIServiceError {
+        final Offender offender = custodyApiClient
+                .doGetWithRetry("offenders/offenderId/" + rootOffenderId)
+                .filter(r -> r.getStatus() == HttpStatus.OK.value())
+                .map(HttpResponse::getBody)
+                .map(offenderTransformer::asOffender)
+                .orElseThrow(() -> new NomisAPIServiceError("Can't get offender " + rootOffenderId));
+
+        return offender.getBookings().stream().findFirst().map(b -> b.getBookingId()).orElse(null);
     }
 
     public Optional<EventMessage> offenderSentenceUpdatedXtagOf(OffenderEvent event) throws ExecutionException, UnirestException, NomisAPIServiceError {
