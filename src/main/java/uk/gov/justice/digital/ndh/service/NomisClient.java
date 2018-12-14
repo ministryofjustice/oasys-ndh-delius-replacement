@@ -50,7 +50,7 @@ public class NomisClient {
         return response.getStatus() == HttpStatus.SC_UNAUTHORIZED || response.getStatus() == HttpStatus.SC_FORBIDDEN;
     }
 
-    public Optional<HttpResponse<String>> doGetWithRetry(String relativeUrl, Map<String, Object> params) throws UnirestException, ExecutionException {
+    public Optional<HttpResponse<String>> doGetWithRetry(String relativeUrl, Map<String, Object> params) throws ExecutionException, RetryException {
 
         Retryer<HttpResponse<String>> retryer = RetryerBuilder.<HttpResponse<String>>newBuilder()
                 .retryIfResult(this::isUnauthorised)
@@ -62,12 +62,11 @@ public class NomisClient {
             return Optional.ofNullable(retryer.call(() -> doGet(relativeUrl, params)));
         } catch (RetryException | ExecutionException e) {
             log.error(e.getMessage());
+            throw e;
         }
-
-        return Optional.empty();
     }
 
-    public Optional<HttpResponse<String>> doGetWithRetry(String relativeUrl) throws UnirestException, ExecutionException {
+    public Optional<HttpResponse<String>> doGetWithRetry(String relativeUrl) throws UnirestException, ExecutionException, RetryException {
         return doGetWithRetry(relativeUrl, null);
     }
 }

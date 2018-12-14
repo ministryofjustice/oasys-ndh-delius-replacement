@@ -3,6 +3,7 @@ package uk.gov.justice.digital.ndh.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.github.rholder.retry.RetryException;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.mashape.unirest.http.HttpResponse;
@@ -68,24 +69,24 @@ public class EventsPullerService {
     }
 
     @Scheduled(fixedDelayString = "${xtag.poll.period:10000}")
-    public void pullEvents() throws ExecutionException, UnirestException {
+    public void pullEvents() {
         final Optional<ZonedDateTime> maybePullFrom = getPullFromDateTime();
         final ZonedDateTime pullFrom = maybePullFrom.orElse(ZonedDateTime.now());
 
         final ZonedDateTime to = ZonedDateTime.now();
 
-        Optional<List<OffenderEvent>> maybeOffenderEvents = custodyApiClient
-                .doGetWithRetry("events", ImmutableMap.of("from", pullFrom.toString(),
-                        "to", to.toString(),
-                        "type", "BOOKING_NUMBER-CHANGED,OFFENDER_MOVEMENT-RECEPTION,OFFENDER_MOVEMENT-DISCHARGE,OFFENDER_BOOKING-CHANGED,OFFENDER_DETAILS-CHANGED,IMPRISONMENT_STATUS-CHANGED,SENTENCE_CALCULATION_DATES-CHANGED"))
-                .filter(r -> r.getStatus() == HttpStatus.OK.value())
-                .map(HttpResponse::getBody)
-                .map(this::asEvents)
-                .map(offenderEvents -> offenderEvents.stream()
-                        .filter(offenderEvent -> offenderEvent.getNomisEventType().endsWith(OASYS))
-                        .collect(Collectors.toList()));
-
         try {
+            Optional<List<OffenderEvent>> maybeOffenderEvents = custodyApiClient
+                    .doGetWithRetry("events", ImmutableMap.of("from", pullFrom.toString(),
+                            "to", to.toString(),
+                            "type", "BOOKING_NUMBER-CHANGED,OFFENDER_MOVEMENT-RECEPTION,OFFENDER_MOVEMENT-DISCHARGE,OFFENDER_BOOKING-CHANGED,OFFENDER_DETAILS-CHANGED,IMPRISONMENT_STATUS-CHANGED,SENTENCE_CALCULATION_DATES-CHANGED"))
+                    .filter(r -> r.getStatus() == HttpStatus.OK.value())
+                    .map(HttpResponse::getBody)
+                    .map(this::asEvents)
+                    .map(offenderEvents -> offenderEvents.stream()
+                            .filter(offenderEvent -> offenderEvent.getNomisEventType().endsWith(OASYS))
+                            .collect(Collectors.toList()));
+
             if (maybeOffenderEvents.isPresent()) {
                 final List<OffenderEvent> events = maybeOffenderEvents.get();
                 log.info("Pulling {} events...", events.size());
@@ -102,7 +103,7 @@ public class EventsPullerService {
 
     }
 
-    private void handleEvents(List<OffenderEvent> events) throws ExecutionException, UnirestException, NomisAPIServiceError, JsonProcessingException, OasysAPIServiceError {
+    private void handleEvents(List<OffenderEvent> events) throws ExecutionException, UnirestException, NomisAPIServiceError, JsonProcessingException, OasysAPIServiceError, RetryException {
         for (OffenderEvent offenderEvent : events) {
             sendToOAsys(xtagEventMessageOf(offenderEvent));
         }
@@ -131,7 +132,7 @@ public class EventsPullerService {
         }
     }
 
-    private Optional<EventMessage> xtagEventMessageOf(OffenderEvent event) throws ExecutionException, UnirestException, NomisAPIServiceError {
+    private Optional<EventMessage> xtagEventMessageOf(OffenderEvent event) throws ExecutionException, UnirestException, NomisAPIServiceError, RetryException {
 
         try {
             switch (event.getNomisEventType()) {
