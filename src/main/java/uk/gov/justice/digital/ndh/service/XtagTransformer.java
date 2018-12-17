@@ -107,7 +107,7 @@ public class XtagTransformer {
                 .map(offenderTransformer::asOffender).orElseThrow(() -> new NomisAPIServiceError("Can't get offender detail."));
     }
 
-    public Optional<SentenceCalculation> getSentenceCalculation(Offender offender, Long bookingId) throws UnirestException, ExecutionException, RetryException {
+    public Optional<SentenceCalculation> getSentenceCalculation(Offender offender, Long bookingId) throws ExecutionException, RetryException {
         return custodyApiClient
                 .doGetWithRetry("offenders/offenderId/" + offender.getOffenderId() + "/sentenceCalculations", ImmutableMap.of("bookingId", bookingId))
                 .filter(r -> r.getStatus() == HttpStatus.OK.value())
@@ -126,7 +126,7 @@ public class XtagTransformer {
     }
 
 
-    public Optional<List<ExternalMovement>> getExternalMovements(Offender offender, InmateDetail inmateDetail) throws UnirestException, ExecutionException, RetryException {
+    public Optional<List<ExternalMovement>> getExternalMovements(Offender offender, InmateDetail inmateDetail) throws ExecutionException, RetryException {
         return custodyApiClient
                 .doGetWithRetry("offenders/offenderId/" + offender.getOffenderId() + "/movements", ImmutableMap.of("bookingId", inmateDetail.getBookingId()))
                 .filter(r -> r.getStatus() == HttpStatus.OK.value())
@@ -314,7 +314,7 @@ public class XtagTransformer {
                 .map(offenderTransformer::asOffender).orElseThrow(() -> new NomisAPIServiceError("Can't get offender detail."));
     }
 
-    private ExternalMovement getDischargeMovement(OffenderEvent event) throws ExecutionException, UnirestException, RetryException, NomisAPIServiceError {
+    private ExternalMovement getDischargeMovement(OffenderEvent event) throws ExecutionException, RetryException, NomisAPIServiceError {
         return custodyApiClient
                 .doGetWithRetry("movements", ImmutableMap.of("bookingId", event.getBookingId()))
                 .filter(r -> r.getStatus() == HttpStatus.OK.value())
@@ -379,7 +379,7 @@ public class XtagTransformer {
 
     }
 
-    private List<Sentence> getActiveSentences(Offender offender, Long bookingId) throws ExecutionException, UnirestException, NomisAPIServiceError, RetryException {
+    private List<Sentence> getActiveSentences(Offender offender, Long bookingId) throws ExecutionException, NomisAPIServiceError, RetryException {
         return custodyApiClient
                 .doGetWithRetry("offenders/offenderId/" + offender.getOffenderId() + "/sentences", ImmutableMap.of("bookingId", bookingId))
                 .filter(r -> r.getStatus() == HttpStatus.OK.value())
@@ -436,9 +436,8 @@ public class XtagTransformer {
     public Optional<EventMessage> offenderUpdatedXtagOf(OffenderEvent event) throws ExecutionException, UnirestException, NomisAPIServiceError, RetryException {
         log.info("Handling offenderUpdated event {}", event);
 
-        final Long bookingId = Optional.ofNullable(event.getBookingId()).orElse(bookingIdOf(event.getRootOffenderId()));
-        event.setBookingId(bookingId);
-        final InmateDetail inmateDetail = getInmateDetail(event);
+        final OffenderEvent eventWithBookingId = eventWithBookingIdOf(event);
+        final InmateDetail inmateDetail = getInmateDetail(eventWithBookingId);
         final Offender offender = getOffender(inmateDetail);
 
         return Optional.ofNullable(EventMessage.builder()
@@ -457,15 +456,21 @@ public class XtagTransformer {
                 .build());
     }
 
-    private Long bookingIdOf(Long rootOffenderId) throws ExecutionException, UnirestException, NomisAPIServiceError, RetryException {
-        final Offender offender = custodyApiClient
-                .doGetWithRetry("offenders/offenderId/" + rootOffenderId)
-                .filter(r -> r.getStatus() == HttpStatus.OK.value())
-                .map(HttpResponse::getBody)
-                .map(offenderTransformer::asOffender)
-                .orElseThrow(() -> new NomisAPIServiceError("Can't get offender " + rootOffenderId));
+    private OffenderEvent eventWithBookingIdOf(OffenderEvent event) throws ExecutionException, UnirestException, NomisAPIServiceError, RetryException {
 
-        return offender.getBookings().stream().findFirst().map(Booking::getBookingId).orElse(null);
+        if (event.getBookingId() == null) {
+            final Offender offender = custodyApiClient
+                    .doGetWithRetry("offenders/offenderId/" + event.getRootOffenderId())
+                    .filter(r -> r.getStatus() == HttpStatus.OK.value())
+                    .map(HttpResponse::getBody)
+                    .map(offenderTransformer::asOffender)
+                    .orElseThrow(() -> new NomisAPIServiceError("Can't get offender " + event.getRootOffenderId()));
+
+            final Long bookingId = offender.getBookings().stream().findFirst().map(Booking::getBookingId).orElse(null);
+            return event.toBuilder().bookingId(bookingId).build();
+        }
+
+        return event;
     }
 
     public Optional<EventMessage> offenderSentenceUpdatedXtagOf(OffenderEvent event) throws ExecutionException, UnirestException, NomisAPIServiceError, RetryException {
