@@ -117,7 +117,7 @@ public class XtagTransformer {
 //        .orElseThrow(() -> new NomisAPIServiceError("Can't get offender sentence calculations."));
     }
 
-    public ExternalMovement getAdmissionMovement(Offender offender, InmateDetail inmateDetail, OffenderEvent offenderEvent) throws NomisAPIServiceError, UnirestException, ExecutionException, RetryException {
+    public ExternalMovement getAdmissionMovement(Offender offender, InmateDetail inmateDetail, OffenderEvent offenderEvent) throws NomisAPIServiceError, ExecutionException, RetryException {
         return getExternalMovements(offender, inmateDetail)
                 .flatMap(externalMovements -> externalMovements.stream()
                         .filter(movement -> offenderEvent.getMovementSeq().equals(movement.getSequenceNumber()) ||
@@ -402,16 +402,16 @@ public class XtagTransformer {
     }
 
     private String dischargeMovementFromToOf(ExternalMovement offenderMovement) {
-        return "CRT".equals(offenderMovement.getMovementTypeCode()) ? null : trnOrOutOf(offenderMovement.getToAgencyLocation().getAgencyLocationId());
+        return "CRT".equals(offenderMovement.getMovementTypeCode()) ? null : agencyOrOutOf(offenderMovement.getToAgencyLocation().getAgencyLocationId());
 
     }
 
     private String receptionMovementFromToOf(ExternalMovement offenderMovement) {
-        return "CRT".equals(offenderMovement.getMovementTypeCode()) ? null : trnOrOutOf(offenderMovement.getFromAgencyLocation().getAgencyLocationId());
+        return "CRT".equals(offenderMovement.getMovementTypeCode()) ? null : agencyOrOutOf(offenderMovement.getFromAgencyLocation().getAgencyLocationId());
     }
 
-    private String trnOrOutOf(String anAgencyLocationId) {
-        return Optional.ofNullable(anAgencyLocationId).map(loc -> "TRN").orElse("OUT");
+    private String agencyOrOutOf(String anAgencyLocationId) {
+        return Optional.ofNullable(anAgencyLocationId).orElse("OUT");
     }
 
     private String oasysTimestampOf(LocalDateTime dateTime) {
