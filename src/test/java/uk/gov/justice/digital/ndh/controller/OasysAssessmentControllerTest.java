@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.ndh.controller;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.common.ClasspathFileSource;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.github.tomakehurst.wiremock.standalone.JsonFileMappingsSource;
@@ -38,14 +39,17 @@ import java.util.stream.Collectors;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
@@ -58,7 +62,8 @@ import static org.mockito.Mockito.when;
         "ndelius.offender.details.url=http://localhost:8090/delius/offenderDetails",
         "custody.api.base.url=http://localhost:8090/custodyapi/",
         "elite2.api.base.url=http://localhost:8090/elite2api/",
-        "oasys.xtag.url=http://localhost:8090/oasys/",        "oauth.url=http://localhost:8090/oauth/token"
+        "oasys.xtag.url=http://localhost:8090/oasys/",
+        "oauth.url=http://localhost:8090/oauth/token"
 })
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext
@@ -189,6 +194,32 @@ public class OasysAssessmentControllerTest {
 
         Mockito.verify(messageStoreService, times(2)).writeMessage(anyString(), anyString(), anyString(), anyString(), any(MessageStoreService.ProcStates.class));
         Mockito.verify(exceptionLogService, times(1)).logFault(anyString(), anyString(), anyString());
+
+    }
+
+    @Test
+    public void postedAssessmentMessageIsSentToDeliusAndHandledAppropriately() throws InterruptedException {
+        Thread.sleep(1000);
+        Mockito.reset(messageStoreService, exceptionLogService);
+
+        final String requestXml = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/AssessmentUpdates/OasysToNDHSoapEnvelope.xml")))
+                .lines().collect(Collectors.joining("\n"));
+
+        given()
+                .when()
+                .contentType(ContentType.XML)
+                .body(requestXml)
+                .post("/oasysAssessments")
+                .then()
+                .log().all()
+                .statusCode(200);
+
+        Thread.sleep(3000);
+
+        WireMock.verify(1, postRequestedFor(urlMatching("/delius/assessmentUpdates")));
+
+        Mockito.verify(messageStoreService, times(2)).writeMessage(anyString(), anyString(), anyString(), anyString(), any(MessageStoreService.ProcStates.class));
+        Mockito.verify(exceptionLogService, never()).logFault(anyString(), anyString(), anyString());
 
     }
 }

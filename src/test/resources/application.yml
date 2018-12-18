@@ -1,6 +1,6 @@
 spring:
   activemq:
-    broker-url: vm://localhost:61616
+    broker-url: vm://localhost:61616?broker.persistent=false
     in-memory: true
 
 custody.api.base.url:
