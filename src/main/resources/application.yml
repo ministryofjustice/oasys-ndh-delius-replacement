@@ -20,12 +20,14 @@ ndelius.assessment.update.url: https://httpbin.org/post
 ndelius.risk.update.url: https://httpbin.org/post
 ndelius.initial.search.url: https://httpbin.org/post
 ndelius.offender.details.url: https://httpbin.org/post
+oasys.xtag.url:  https://httpbin.org/post
 
 ndelius.webservice.user:
 ndelius.webservice.password:
 ndelius.hostname: hostname
 
 custody.api.base.url: https://httpbin.org/post
+elite2.api.base.url: https://httpbin.org/post
 
 # Disable security locally so that the health end point shows full
 # details and all Spring Boot Actuator end points are visible

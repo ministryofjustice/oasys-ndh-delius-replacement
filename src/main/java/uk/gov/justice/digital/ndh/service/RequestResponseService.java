@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.dom4j.DocumentException;
-import uk.gov.justice.digital.ndh.api.soap.SoapEnvelope;
+import uk.gov.justice.digital.ndh.api.soap.SoapEnvelopeSpec1_2;
 import uk.gov.justice.digital.ndh.service.transforms.CommonTransformer;
 import uk.gov.justice.digital.ndh.service.transforms.FaultTransformer;
 
@@ -27,7 +27,7 @@ public abstract class RequestResponseService {
         this.faultTransformer = faultTransformer;
     }
 
-    protected Optional<String> stringXmlOf(Optional<SoapEnvelope> maybeTransformed, String correlationId) {
+    protected Optional<String> stringXmlOf(Optional<SoapEnvelopeSpec1_2> maybeTransformed, String correlationId) {
         return maybeTransformed.flatMap(transformed -> {
             try {
                 final String transformedXml = xmlMapper.writeValueAsString(transformed);
@@ -51,7 +51,7 @@ public abstract class RequestResponseService {
         }
     }
 
-    public String handleOkResponse(String correlationId, SoapEnvelope oasysResponse) {
+    public String handleOkResponse(String correlationId, SoapEnvelopeSpec1_2 oasysResponse) {
         try {
             return commonTransformer.asString(oasysResponse);
         } catch (JsonProcessingException e) {

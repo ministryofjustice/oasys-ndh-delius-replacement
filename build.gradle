@@ -105,7 +105,7 @@ dependencies {
     testCompile 'org.springframework.boot:spring-boot-starter-test'
     testCompile 'junit:junit:4.12'
     testCompile 'io.rest-assured:rest-assured:3.0.3'
-    testCompile "com.github.tomakehurst:wiremock:2.19.0"
+    testCompile 'com.github.tomakehurst:wiremock:2.19.0'
     testCompile 'org.awaitility:awaitility:3.1.2'
     testCompile group: 'org.xmlunit', name: 'xmlunit-core', version: '2.6.0'
     testCompile group: 'org.xmlunit', name: 'xmlunit-matchers', version: '2.6.0'

@@ -11,7 +11,7 @@ import uk.gov.justice.digital.ndh.api.oasys.request.Assessment;
 import uk.gov.justice.digital.ndh.api.oasys.request.CmsUpdate;
 import uk.gov.justice.digital.ndh.api.oasys.request.Objective;
 import uk.gov.justice.digital.ndh.api.soap.SoapBody;
-import uk.gov.justice.digital.ndh.api.soap.SoapEnvelope;
+import uk.gov.justice.digital.ndh.api.soap.SoapEnvelopeSpec1_2;
 import uk.gov.justice.digital.ndh.service.MappingService;
 import uk.gov.justice.digital.ndh.service.exception.NDHMappingException;
 
@@ -59,11 +59,11 @@ public class OasysAssessmentUpdateTransformer {
         };
     }
 
-    public SoapEnvelope deliusAssessmentUpdateOf(SoapEnvelope ndhSoapEnvelope) {
+    public SoapEnvelopeSpec1_2 deliusAssessmentUpdateOf(SoapEnvelopeSpec1_2 ndhSoapEnvelope) {
 
         final String correlationID = ndhSoapEnvelope.getBody().getCmsUpdate().getHeader().getCorrelationID();
 
-        return SoapEnvelope.builder()
+        return SoapEnvelopeSpec1_2.builder()
                 .header(commonTransformer.deliusSoapHeaderOf(correlationID))
                 .body(SoapBody
                         .builder()

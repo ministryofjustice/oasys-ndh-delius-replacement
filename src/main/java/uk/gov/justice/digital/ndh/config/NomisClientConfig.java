@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import uk.gov.justice.digital.ndh.service.NomisClient;
 
 import java.util.Optional;
 
@@ -49,4 +50,23 @@ public class NomisClientConfig {
             }
         });
     }
+
+    @Bean
+    public NomisClient custodyApiClient(@Value("${custody.api.base.url}") String custodyBaseUrl,
+                                        LoadingCache<String, Optional<String>> oauthTokenProvider) {
+        return NomisClient.builder()
+                .baseUrl(custodyBaseUrl)
+                .oauthTokenProvider(oauthTokenProvider)
+                .build();
+    }
+
+    @Bean
+    public NomisClient elite2ApiClient(@Value("${elite2.api.base.url}") String elite2BaseUrl,
+                                        LoadingCache<String, Optional<String>> oauthTokenProvider) {
+        return NomisClient.builder()
+                .baseUrl(elite2BaseUrl)
+                .oauthTokenProvider(oauthTokenProvider)
+                .build();
+    }
+
 }

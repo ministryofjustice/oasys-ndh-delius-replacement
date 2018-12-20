@@ -9,38 +9,28 @@ import com.google.common.cache.LoadingCache;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.http.HttpStatus;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
-@Component
 @Slf4j
+@Builder
 public class NomisClient {
 
     public static final String OAUTH_TOKEN = "oauthToken";
-    private final String custodyApiBaseUrl;
+    private final String baseUrl;
     private final LoadingCache<String, Optional<String>> oauthTokenProvider;
-
-    @Autowired
-    public NomisClient(@Value("${custody.api.base.url}") String custodyApiBaseUrl,
-                       LoadingCache<String, Optional<String>> oauthTokenProvider) {
-        this.custodyApiBaseUrl = custodyApiBaseUrl;
-        this.oauthTokenProvider = oauthTokenProvider;
-    }
-
 
     public HttpResponse<String> doGet(String relativeUrl, Map<String, Object> params) throws UnirestException, ExecutionException {
 
         val token = oauthTokenProvider.get(OAUTH_TOKEN);
 
-        final String url = custodyApiBaseUrl + relativeUrl;
+        final String url = baseUrl + relativeUrl;
 
         final HttpResponse<String> response = Unirest.get(url)
                 .header("Authorization", "Bearer " + token.orElse(""))
@@ -60,7 +50,7 @@ public class NomisClient {
         return response.getStatus() == HttpStatus.SC_UNAUTHORIZED || response.getStatus() == HttpStatus.SC_FORBIDDEN;
     }
 
-    public Optional<HttpResponse<String>> doGetWithRetry(String relativeUrl, Map<String, Object> params) throws UnirestException, ExecutionException {
+    public Optional<HttpResponse<String>> doGetWithRetry(String relativeUrl, Map<String, Object> params) throws ExecutionException, RetryException {
 
         Retryer<HttpResponse<String>> retryer = RetryerBuilder.<HttpResponse<String>>newBuilder()
                 .retryIfResult(this::isUnauthorised)
@@ -72,12 +62,11 @@ public class NomisClient {
             return Optional.ofNullable(retryer.call(() -> doGet(relativeUrl, params)));
         } catch (RetryException | ExecutionException e) {
             log.error(e.getMessage());
+            throw e;
         }
-
-        return Optional.empty();
     }
 
-    public Optional<HttpResponse<String>> doGetWithRetry(String relativeUrl) throws UnirestException, ExecutionException {
+    public Optional<HttpResponse<String>> doGetWithRetry(String relativeUrl) throws UnirestException, ExecutionException, RetryException {
         return doGetWithRetry(relativeUrl, null);
     }
 }

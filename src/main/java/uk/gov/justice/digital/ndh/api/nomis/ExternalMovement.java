@@ -18,10 +18,14 @@ public class ExternalMovement {
     private String description;
     private String movementDirection;
     private Boolean active;
-    private String fromAgencyLocationId;
-    private String toAgencyLocationId;
+    private AgencyLocation fromAgencyLocation;
+    private AgencyLocation toAgencyLocation;
     private Long fromAddressId;
+    private String fromCityCode;
     private Long toAddressId;
+    private String toCityCode;
+    private String toCountryCode;
+    private String toProvStatCode;
     private String comments;
     private Boolean unemploymentPay;
     private Boolean escapeRecapture;
@@ -31,14 +35,10 @@ public class ExternalMovement {
     private String internalScheduleType;
     private String internalScheduleReasonCode;
     private String arrestAgencyLocationId;
-    private String toProvStatCode;
     private KeyValue escortCode;
     private String escortText;
     private LocalDateTime reportingDateTime;
     private LocalDateTime applicationDateTime;
-    private String toCityCode;
-    private String fromCityCode;
-    private String toCountryCode;
     private String ojLocationCode;
 
 }

@@ -25,7 +25,7 @@ import uk.gov.justice.digital.ndh.api.nomis.Physicals;
 import uk.gov.justice.digital.ndh.api.nomis.Sentence;
 import uk.gov.justice.digital.ndh.api.nomis.SentenceCalculation;
 import uk.gov.justice.digital.ndh.api.oasys.request.OffenderDetailsRequest;
-import uk.gov.justice.digital.ndh.api.soap.SoapEnvelope;
+import uk.gov.justice.digital.ndh.api.soap.SoapEnvelopeSpec1_2;
 import uk.gov.justice.digital.ndh.service.exception.NDHMappingException;
 import uk.gov.justice.digital.ndh.service.transforms.CommonTransformer;
 import uk.gov.justice.digital.ndh.service.transforms.FaultTransformer;
@@ -47,7 +47,7 @@ public class OasysOffenderService extends RequestResponseService {
     private final FaultTransformer faultTransformer;
     private final DeliusSOAPClient deliusInitialSearchClient;
     private final DeliusSOAPClient deliusOffenderDetailsClient;
-    private final NomisClient nomisClient;
+    private final NomisClient custodyApiClient;
     private final ObjectMapper objectMapper;
 
     @Autowired
@@ -57,7 +57,7 @@ public class OasysOffenderService extends RequestResponseService {
                                 MessageStoreService messageStoreService,
                                 @Qualifier("initialSearchClient") DeliusSOAPClient deliusInitialSearchClient,
                                 @Qualifier("offenderDetailsClient") DeliusSOAPClient deliusOffenderDetailsClient,
-                                NomisClient nomisClient,
+                                @Qualifier("custodyApiClient") NomisClient custodyApiClient,
                                 XmlMapper xmlMapper,
                                 @Qualifier("globalObjectMapper")
                                         ObjectMapper objectMapper) {
@@ -66,7 +66,7 @@ public class OasysOffenderService extends RequestResponseService {
         this.deliusInitialSearchClient = deliusInitialSearchClient;
         this.faultTransformer = faultTransformer;
         this.deliusOffenderDetailsClient = deliusOffenderDetailsClient;
-        this.nomisClient = nomisClient;
+        this.custodyApiClient = custodyApiClient;
         this.objectMapper = objectMapper;
     }
 
@@ -92,7 +92,7 @@ public class OasysOffenderService extends RequestResponseService {
     }
 
 
-    private Optional<SoapEnvelope> deliusInitialSearchResponseOf(Optional<String> maybeRawResponse, String correlationId) {
+    private Optional<SoapEnvelopeSpec1_2> deliusInitialSearchResponseOf(Optional<String> maybeRawResponse, String correlationId) {
         return getSoapEnvelope(maybeRawResponse, correlationId, "Can't deserialize delius initial search response: ");
     }
 
@@ -143,7 +143,7 @@ public class OasysOffenderService extends RequestResponseService {
                 .orElse(Optional.ofNullable(offenderDetailsRequest.getCmsProbNumber()).orElse(null));
     }
 
-    private Optional<String> nomisOffenderDetailsOf(Optional<SoapEnvelope> maybeOasysOffenderDetailsRequest, String correlationId, String nomsId) throws JsonProcessingException {
+    private Optional<String> nomisOffenderDetailsOf(Optional<SoapEnvelopeSpec1_2> maybeOasysOffenderDetailsRequest, String correlationId, String nomsId) throws JsonProcessingException {
 
         final Optional<Offender> maybeOffender = maybeOffenderOf(maybeOasysOffenderDetailsRequest, nomsId);
 
@@ -171,7 +171,7 @@ public class OasysOffenderService extends RequestResponseService {
 
         final Optional<List<Alert>> maybeAlerts = maybeF2052AlertsOf(maybeOffender, latestBooking);
 
-        final Optional<SoapEnvelope> oasysOffenderDetailsResponse = maybeOffender.map(offender -> offenderTransformer.oasysOffenderDetailResponseOf(maybeOasysOffenderDetailsRequest, maybeOffender, latestBooking, maybeSentenceCalc, maybeSentence, maybeImprisonmentStatus, maybeCourtEvents, sentencingCourtAgencyLocation, maybeHomeAddress, maybeDischargeAddress, maybePhysicals, maybeAssessments, maybeAlerts, offender));
+        final Optional<SoapEnvelopeSpec1_2> oasysOffenderDetailsResponse = maybeOffender.map(offender -> offenderTransformer.oasysOffenderDetailResponseOf(maybeOasysOffenderDetailsRequest, maybeOffender, latestBooking, maybeSentenceCalc, maybeSentence, maybeImprisonmentStatus, maybeCourtEvents, sentencingCourtAgencyLocation, maybeHomeAddress, maybeDischargeAddress, maybePhysicals, maybeAssessments, maybeAlerts, offender));
 
         Optional<String> response;
 
@@ -190,7 +190,7 @@ public class OasysOffenderService extends RequestResponseService {
         return maybeOffender.flatMap(
                 offender -> {
                     try {
-                        return nomisClient
+                        return custodyApiClient
                                 .doGetWithRetry("offenders/offenderId/" + offender.getOffenderId() + "/alerts",
                                         ImmutableMap.of("bookingId", latestBooking.getBookingId(),
                                                 "alertType", "H",
@@ -221,7 +221,7 @@ public class OasysOffenderService extends RequestResponseService {
         return maybeOffender.flatMap(
                 offender -> {
                     try {
-                        return nomisClient
+                        return custodyApiClient
                                 .doGetWithRetry("offenders/offenderId/" + offender.getOffenderId() + "/assessments",
                                         ImmutableMap.of("bookingId", latestBooking.getBookingId()))
                                 .filter(r -> r.getStatus() == HttpStatus.OK.value())
@@ -258,7 +258,7 @@ public class OasysOffenderService extends RequestResponseService {
         return maybeOffender.flatMap(
                 offender -> {
                     try {
-                        return nomisClient
+                        return custodyApiClient
                                 .doGetWithRetry("offenders/offenderId/" + offender.getOffenderId() + "/physicals",
                                         ImmutableMap.of("bookingId", latestBooking.getBookingId()))
                                 .filter(r -> r.getStatus() == HttpStatus.OK.value())
@@ -303,7 +303,7 @@ public class OasysOffenderService extends RequestResponseService {
         return maybeOffender.flatMap(
                 offender -> {
                     try {
-                        return nomisClient
+                        return custodyApiClient
                                 .doGetWithRetry("offenders/offenderId/" + offender.getOffenderId() + "/addresses",
                                         ImmutableMap.of("bookingId", latestBooking.getBookingId()))
                                 .filter(r -> r.getStatus() == HttpStatus.OK.value())
@@ -332,7 +332,7 @@ public class OasysOffenderService extends RequestResponseService {
         return maybeOffender.flatMap(
                 offender -> {
                     try {
-                        return nomisClient
+                        return custodyApiClient
                                 .doGetWithRetry("offenders/offenderId/" + offender.getOffenderId() + "/courtEvents",
                                         ImmutableMap.of("bookingId", latestBooking.getBookingId()))
                                 .filter(r -> r.getStatus() == HttpStatus.OK.value())
@@ -361,7 +361,7 @@ public class OasysOffenderService extends RequestResponseService {
         return maybeOffender.flatMap(
                 offender -> {
                     try {
-                        return nomisClient
+                        return custodyApiClient
                                 .doGetWithRetry("offenders/offenderId/" + offender.getOffenderId() + "/imprisonmentStatuses",
                                         ImmutableMap.of("bookingId", latestBooking.getBookingId()))
                                 .filter(r -> r.getStatus() == HttpStatus.OK.value())
@@ -383,7 +383,7 @@ public class OasysOffenderService extends RequestResponseService {
         return maybeOffender.flatMap(
                 offender -> {
                     try {
-                        return nomisClient
+                        return custodyApiClient
                                 .doGetWithRetry("offenders/offenderId/" + offender.getOffenderId() + "/sentences",
                                         ImmutableMap.of("bookingId", latestBooking.getBookingId()))
                                 .filter(r -> r.getStatus() == HttpStatus.OK.value())
@@ -410,7 +410,7 @@ public class OasysOffenderService extends RequestResponseService {
         return maybeOffender.flatMap(
                 offender -> {
                     try {
-                        return nomisClient
+                        return custodyApiClient
                                 .doGetWithRetry("offenders/offenderId/" + offender.getOffenderId() + "/sentenceCalculations",
                                         ImmutableMap.of("bookingId", latestBooking.getBookingId()))
                                 .filter(r -> r.getStatus() == HttpStatus.OK.value())
@@ -430,11 +430,11 @@ public class OasysOffenderService extends RequestResponseService {
         return maybeOffender.flatMap(offender -> offender.getBookings().stream().findFirst());
     }
 
-    private Optional<Offender> maybeOffenderOf(Optional<SoapEnvelope> maybeOasysOffenderDetailsRequest, String nomsId) {
+    private Optional<Offender> maybeOffenderOf(Optional<SoapEnvelopeSpec1_2> maybeOasysOffenderDetailsRequest, String nomsId) {
         return maybeOasysOffenderDetailsRequest.flatMap(
                 rq -> {
                     try {
-                        return nomisClient.doGetWithRetry("offenders/nomsId/" + nomsId)
+                        return custodyApiClient.doGetWithRetry("offenders/nomsId/" + nomsId)
                                 .filter(r -> r.getStatus() == HttpStatus.OK.value())
                                 .map(HttpResponse::getBody)
                                 .map(offenderTransformer::asOffender);
@@ -485,7 +485,7 @@ public class OasysOffenderService extends RequestResponseService {
     }
 
     public Optional<String> deliusOffenderDetailsOf
-            (Optional<SoapEnvelope> maybeOasysOffenderDetailsRequest, String correlationId, String offenderId) {
+            (Optional<SoapEnvelopeSpec1_2> maybeOasysOffenderDetailsRequest, String correlationId, String offenderId) {
         val maybeTransformed = maybeOasysOffenderDetailsRequest.map(offenderTransformer::deliusOffenderDetailsRequestOf);
 
         val maybeTransformedXml = stringXmlOf(maybeTransformed, correlationId);
@@ -499,12 +499,12 @@ public class OasysOffenderService extends RequestResponseService {
         return handleResponse(maybeOasysOffenderDetailsRequest, correlationId, offenderId, maybeRawResponse, maybeResponse, offenderTransformer.offenderDetailsResponseTransform);
     }
 
-    public Optional<String> handleResponse(Optional<SoapEnvelope> maybeOasysOffenderDetailsRequest,
+    public Optional<String> handleResponse(Optional<SoapEnvelopeSpec1_2> maybeOasysOffenderDetailsRequest,
                                            String correlationId,
                                            String offenderId,
                                            Optional<String> maybeRawResponse,
-                                           Optional<SoapEnvelope> maybeResponse,
-                                           BiFunction<Optional<SoapEnvelope>, Optional<SoapEnvelope>, Optional<SoapEnvelope>> transform) {
+                                           Optional<SoapEnvelopeSpec1_2> maybeResponse,
+                                           BiFunction<Optional<SoapEnvelopeSpec1_2>, Optional<SoapEnvelopeSpec1_2>, Optional<SoapEnvelopeSpec1_2>> transform) {
         if (maybeResponse.isPresent()) {
             if (maybeResponse.get().getBody().isSoapFault()) {
                 return handleSoapFault(correlationId, maybeRawResponse, maybeResponse.get().toString());
@@ -513,7 +513,7 @@ public class OasysOffenderService extends RequestResponseService {
 
         maybeRawResponse.ifPresent(xml -> logMessage(correlationId, xml, offenderId, MessageStoreService.ProcStates.GLB_ProcState_OutboundBeforeTransformation));
 
-        Optional<SoapEnvelope> maybeOasysSOAPResponse;
+        Optional<SoapEnvelopeSpec1_2> maybeOasysSOAPResponse;
         try {
             maybeOasysSOAPResponse = transform.apply(maybeOasysOffenderDetailsRequest, maybeResponse);
         } catch (NDHMappingException ndhme) {
@@ -528,16 +528,16 @@ public class OasysOffenderService extends RequestResponseService {
         return maybeXmlResponse;
     }
 
-    private Optional<SoapEnvelope> deliusOffenderDetailsResponseOf(Optional<String> maybeRawResponse, String
+    private Optional<SoapEnvelopeSpec1_2> deliusOffenderDetailsResponseOf(Optional<String> maybeRawResponse, String
             correlationId) {
         return getSoapEnvelope(maybeRawResponse, correlationId, "Can't deserialize delius offender details response: ");
     }
 
-    private Optional<SoapEnvelope> getSoapEnvelope(Optional<String> maybeRawResponse, String
+    private Optional<SoapEnvelopeSpec1_2> getSoapEnvelope(Optional<String> maybeRawResponse, String
             correlationId, String descriptionPreamble) {
         return maybeRawResponse.flatMap(rawResponse -> {
             try {
-                return Optional.of(xmlMapper.readValue(rawResponse, SoapEnvelope.class));
+                return Optional.of(xmlMapper.readValue(rawResponse, SoapEnvelopeSpec1_2.class));
             } catch (IOException e) {
                 log.error(e.getMessage());
                 exceptionLogService.logFault(rawResponse, correlationId, descriptionPreamble + e.getMessage());

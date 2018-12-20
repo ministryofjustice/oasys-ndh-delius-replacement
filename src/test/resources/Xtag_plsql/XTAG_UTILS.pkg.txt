@@ -1,0 +1,798 @@
+CREATE OR REPLACE PACKAGE Xtag_Utils
+IS
+   FUNCTION show_version return varchar2;
+
+   PROCEDURE insert_xtag_id_mappings (
+      p_client_id          IN       Xtag_Id_Mappings.client_id%TYPE,
+      p_transaction_type   IN       Xtag_Id_Mappings.transaction_type%TYPE,
+      p_source_id          IN       Xtag_Id_Mappings.source_id%TYPE,
+      p_id_type            IN       Xtag_Id_Mappings.id_type%TYPE,
+      p_tag_id             IN       Xtag_Id_Mappings.tag_id%TYPE,
+      p_error_msg          OUT      VARCHAR2,
+      p_id                 OUT      VARCHAR2
+   );
+
+   FUNCTION get_xtag_id (
+      p_client_id          IN       Xtag_Id_Mappings.client_id%TYPE,
+      p_transaction_type   IN       Xtag_Id_Mappings.transaction_type%TYPE,
+      p_source_id          IN       Xtag_Id_Mappings.source_id%TYPE,
+      p_id_type            IN       Xtag_Id_Mappings.id_type%TYPE,
+      p_tag_id             OUT      Xtag_Id_Mappings.tag_id%TYPE,
+      p_error_msg          OUT      VARCHAR2,
+      p_id                 OUT      VARCHAR2
+   )
+      RETURN BOOLEAN;
+
+   FUNCTION is_transaction_processed (
+      p_client_id          IN       Xtag_Id_Mappings.client_id%TYPE,
+      p_transaction_type   IN       Xtag_Id_Mappings.transaction_type%TYPE,
+      p_source_id          IN       Xtag_Id_Mappings.source_id%TYPE,
+      p_id_type            IN       Xtag_Id_Mappings.id_type%TYPE,
+      p_error_msg          OUT      VARCHAR2
+   )
+      RETURN BOOLEAN;
+
+   FUNCTION get_xtag_id (
+      p_transaction_type   IN       Xtag_Id_Mappings.transaction_type%TYPE,
+      p_source_id          IN       Xtag_Id_Mappings.source_id%TYPE,
+      p_id_type            IN       Xtag_Id_Mappings.id_type%TYPE,
+      p_tag_id             OUT      Xtag_Id_Mappings.tag_id%TYPE,
+      p_error_msg          OUT      VARCHAR2,
+      p_id                 OUT      VARCHAR2
+   )
+      RETURN BOOLEAN;
+
+   PROCEDURE get_sentence_length (
+      p_offender_book_id      IN       offender_bookings.offender_book_id%TYPE,
+      p_sentence_start_date   OUT      DATE,
+      p_length_in_days        OUT      PLS_INTEGER,
+      p_years                 OUT      PLS_INTEGER,
+      p_months                OUT      PLS_INTEGER,
+      p_days                  OUT      PLS_INTEGER
+   );
+
+   PROCEDURE get_sentence_length (
+      p_offender_book_id   IN       offender_bookings.offender_book_id%TYPE,
+      p_length_in_days     OUT      PLS_INTEGER,
+      p_years              OUT      PLS_INTEGER,
+      p_months             OUT      PLS_INTEGER,
+      p_days               OUT      PLS_INTEGER
+   );
+
+   FUNCTION get_sentence_length (
+      p_offender_book_id   offender_bookings.offender_book_id%TYPE
+   )
+      RETURN NUMBER;
+
+--
+-- Function for Release Date
+--
+   FUNCTION get_release_date (
+      p_offender_book_id   IN   offender_bookings.offender_book_id%TYPE
+            DEFAULT NULL
+   )
+      RETURN DATE;
+
+   FUNCTION is_offender_bkng_exist (
+      p_offender_id        IN   offenders.offender_id%TYPE DEFAULT NULL,
+      p_root_offender_id        offenders.root_offender_id%TYPE DEFAULT NULL
+   )
+      RETURN BOOLEAN;
+
+   PROCEDURE get_imprisonment_status (
+      p_offender_book_id      IN       offender_bookings.offender_book_id%TYPE,
+      p_imprisonment_status   OUT      offender_imprison_statuses.imprisonment_status%TYPE,
+      p_effective_date        OUT      offender_imprison_statuses.effective_date%TYPE,
+      p_expiry_date           OUT      offender_imprison_statuses.expiry_date%TYPE
+   );
+
+   FUNCTION get_imprisonment_status (
+      p_offender_book_id   IN   offender_bookings.offender_book_id%TYPE
+   )
+      RETURN offender_imprison_statuses.imprisonment_status%TYPE;
+
+   FUNCTION is_offender_lifer (
+      p_offender_book_id   IN   offender_sentences.offender_book_id%TYPE
+   )
+      RETURN BOOLEAN;
+
+   FUNCTION get_supervision_level (
+      p_offender_book_id   IN   offender_bookings.offender_book_id%TYPE
+   )
+      RETURN VARCHAR2;
+
+   FUNCTION get_internal_location_desc (
+      p_internal_location_id   IN   agency_internal_locations.internal_location_id%TYPE
+   )
+      RETURN agency_internal_locations.description%TYPE;
+		
+	FUNCTION get_ref_code_desc (
+		p_domain 	IN reference_codes.domain%TYPE,
+		p_code		IN reference_codes.code%TYPE
+	)
+		RETURN reference_codes.description%TYPE;
+      
+   --
+   --
+   function get_latest_offender_book_id (
+   	p_root_offender_id	in offenders.root_offender_id%type
+   ) return offender_bookings.offender_book_id%type;
+   
+   --
+   --
+   function get_latest_offender_book_id (
+   	p_offender_id_display	in offenders.offender_id_display%type
+   ) 	return offender_bookings.offender_book_id%type;      		
+
+END Xtag_Utils;
+/
+
+CREATE OR REPLACE PACKAGE BODY Xtag_Utils
+AS
+-- ======================================================================================
+   g_version   CONSTANT VARCHAR2 (60) := '2.22		16-Sep-2014';
+
+-- ======================================================================================
+/*
+  MODIFICATION HISTORY
+   --------------------------------------------------------------------------------------
+   Person      Date         Version   Comments
+   ---------   -----------  --------- ---------------------------------------------------
+   Paul M       16-Sep-2014  2.22     QC#18949 - Change function get_supervision_level  
+                                      so that the latest assessment_date is used instead of the highest 
+                                      assessment_seq to determine which is the latest assessment.
+   Paul M       26-Nov-2009  2.21     CRL115 - utilise offender_imprison_statuses.latest_status
+   Laurnece     28-FEB-2008  2.20     Missing return value in said function.
+   Laurnece     28-FEB-2008  2.19     Corrected too_many_rows bug in get_lastest_offender_book_id().
+   Laurence     15-FEB-2008  2.18     Added overloaded function get_latest_offender_book_id().
+                                      Changed show_version to a function.
+   Paul M       27-Mar-2007  2.17     TD#6060 changed get_release_date regarding precedence
+                                      for determining release date
+	Igor         24-JAN-2007  2.16     Function is_offender_lifer has modified according 
+	                                   to OFF_SENT_CALC_XTAG_EVENTS.offender_has_active_sentence trigger's function  
+	Laurence     16-OCT-2006  2.15     TD#3939.  get_sentence_length() now takes uses the new 
+	                                   column offender_sent_calculations.effective_sentence_end_date
+												  instead of sed date.  Also, in calculation of years, months
+												  and days, 1 is subtracted from the 'from date' to make sure the  
+												  result is inclusive.
+	Laurence     20-SEP-2006  2.14     Minor modification to get_ref_code_desc() function.
+	Laurence     12-SEP-2006  2.13     Added get_ref_code_desc() function.
+    Vipul       06-SEP-2006  2.12     Modified the get_sentence_length function to add 1 day
+                                      to the effective sentence length after discussing with Darren
+                                      as it should be all inclusive and in fact teh expiry date is
+                                      at 12 in the night for that day. (e.g. difference between
+                                      6-Sep-2006 and 2-Sep-2006 should be 4 + 1 = 5 days. TD#4409
+   Laurence    17-AUG-2006  2.11      Added get_internal_location_desc() function.
+   Laurence    16-AUG-2006  2.10      Added get_supervision_level() function.
+   Laurence    11-JUL-2006  2.9       Overloaded get_sentence_length procedure to return
+                                      sentence start date since this is required for OASys
+                                      Events sentence details.
+   Laurence    27-JUN-2006  2.8       Modified is_booking_exist since it was giving a
+                                      mutating table error when called from within
+                                      offenders table trigger.
+   Laurence    19-JUN-2006  2.7       Added function is_offender_lifer to return true
+                                      is an offender has a life sentence.
+   Laurence    18-JUN-2006  2.6       Added functions get_imprisonment_status to return the
+                                      latest offender imprisonment status.
+   Vipul       17-JUN-2006  2.5       Added one new function - is_offender_bkng_exist to check
+                                      for booking record based upon offender_id or root_offender_id
+   Surya       14-Jun-2006  2.4       Removed the OMS_OWNER preferences for xtag_id_mappings.
+   Vipul       06-JUN-2006  2.3       Added two new functions - get_sentence_length overloaded
+                                      to get the length and also the breakdown in year, months
+                                      and days plus get_release_date to derieve the release
+                                      date from sentence calc dates.
+   Surya       29-May-2006  2.2       Added get_sentence_length function.
+   Surya       20-May-2006  2.1       Added the get_xtag_id overloaded procedure.
+   Surya       12-May-2006  2.0       Initial Draft.
+*/
+/***************************************************************************************/
+	function show_version
+   	return varchar2
+   is
+   begin
+   	return g_version;
+   END show_version;                                               
+
+/***************************************************************************************/
+   PROCEDURE insert_xtag_id_mappings (
+      p_client_id          IN       XTAG_ID_MAPPINGS.client_id%TYPE,
+      p_transaction_type   IN       XTAG_ID_MAPPINGS.transaction_type%TYPE,
+      p_source_id          IN       XTAG_ID_MAPPINGS.source_id%TYPE,
+      p_id_type            IN       XTAG_ID_MAPPINGS.id_type%TYPE,
+      p_tag_id             IN       XTAG_ID_MAPPINGS.tag_id%TYPE,
+      p_error_msg          OUT      VARCHAR2,
+      p_id                 OUT      VARCHAR2
+   )
+   IS
+/**This procedure is created to insert a record into xtag_id_mappings table
+ * after completing a admission process successfully for the trasaction references
+ */
+      v_tmp_id   XTAG_ID_MAPPINGS.source_id%TYPE;
+
+      CURSOR checkid
+      IS
+         SELECT ID
+           FROM XTAG_ID_MAPPINGS
+          WHERE client_id = p_client_id
+            AND transaction_type = p_transaction_type
+            AND id_type = p_id_type
+            AND source_id = p_source_id;
+   BEGIN
+      OPEN checkid;
+
+      FETCH checkid
+       INTO v_tmp_id;
+
+      IF checkid%NOTFOUND
+      THEN
+         INSERT INTO XTAG_ID_MAPPINGS
+                     (ID, client_id, transaction_type,
+                      source_id, id_type, tag_id
+                     )
+              VALUES (xtag_id.NEXTVAL, p_client_id, p_transaction_type,
+                      p_source_id, p_id_type, p_tag_id
+                     );
+      ELSE
+         UPDATE XTAG_ID_MAPPINGS
+            SET tag_id = p_tag_id
+          WHERE ID = v_tmp_id;
+      END IF;
+
+      CLOSE checkid;
+   EXCEPTION
+      WHEN OTHERS
+      THEN
+         IF checkid%ISOPEN
+         THEN
+            CLOSE checkid;
+         END IF;
+
+         p_error_msg :=
+            'Error in Insert_Xtag_Id_Mappings ' || p_source_id || ' '
+            || SQLERRM;
+   END insert_xtag_id_mappings;                                    --Procedure
+
+/***************************************************************************************/
+   FUNCTION get_xtag_id (
+      p_client_id          IN       XTAG_ID_MAPPINGS.client_id%TYPE,
+      p_transaction_type   IN       XTAG_ID_MAPPINGS.transaction_type%TYPE,
+      p_source_id          IN       XTAG_ID_MAPPINGS.source_id%TYPE,
+      p_id_type            IN       XTAG_ID_MAPPINGS.id_type%TYPE,
+      p_tag_id             OUT      XTAG_ID_MAPPINGS.tag_id%TYPE,
+      p_error_msg          OUT      VARCHAR2,
+      p_id                 OUT      VARCHAR2
+   )
+      RETURN BOOLEAN
+   IS
+      /**This function checks the existance of source client id in the xtag_id_mappings table,
+         and returns tag_id which is generally offender_book_id
+       */
+      CURSOR tag_id_cur
+      IS
+         SELECT tag_id
+           FROM XTAG_ID_MAPPINGS
+          WHERE client_id = p_client_id
+            AND transaction_type = p_transaction_type
+            AND id_type = p_id_type
+            AND source_id = p_source_id;
+   BEGIN
+      OPEN tag_id_cur;
+
+      FETCH tag_id_cur
+       INTO p_tag_id;
+
+      IF tag_id_cur%NOTFOUND
+      THEN
+         CLOSE tag_id_cur;
+
+         RETURN (FALSE);
+      END IF;
+
+      CLOSE tag_id_cur;
+
+      RETURN (TRUE);
+   EXCEPTION
+      WHEN OTHERS
+      THEN
+         p_error_msg := 'Error in get_xtag_id ' || SQLERRM;
+         RETURN (FALSE);
+   END get_xtag_id;                                                 --Function
+
+/***************************************************************************************/
+   FUNCTION is_transaction_processed (
+      p_client_id          IN       XTAG_ID_MAPPINGS.client_id%TYPE,
+      p_transaction_type   IN       XTAG_ID_MAPPINGS.transaction_type%TYPE,
+      p_source_id          IN       XTAG_ID_MAPPINGS.source_id%TYPE,
+      p_id_type            IN       XTAG_ID_MAPPINGS.id_type%TYPE,
+      p_error_msg          OUT      VARCHAR2
+   )
+      RETURN BOOLEAN
+   IS
+      CURSOR exist_cur
+      IS
+         SELECT 'X'
+           FROM XTAG_ID_MAPPINGS
+          WHERE client_id = p_client_id
+            AND transaction_type = p_transaction_type
+            AND id_type = p_id_type
+            AND source_id = p_source_id;
+
+      v_exist   VARCHAR2 (1) := NULL;
+   BEGIN
+      OPEN exist_cur;
+
+      FETCH exist_cur
+       INTO v_exist;
+
+      IF exist_cur%NOTFOUND
+      THEN
+         CLOSE exist_cur;
+
+         RETURN (FALSE);
+      END IF;
+
+      CLOSE exist_cur;
+
+      RETURN (TRUE);
+   EXCEPTION
+      WHEN OTHERS
+      THEN
+         p_error_msg := 'Error in Is_Transaction_Processed ' || SQLERRM;
+   END is_transaction_processed;                                    --Function
+
+/***************************************************************************************/
+   FUNCTION get_xtag_id (
+      p_transaction_type   IN       XTAG_ID_MAPPINGS.transaction_type%TYPE,
+      p_source_id          IN       XTAG_ID_MAPPINGS.source_id%TYPE,
+      p_id_type            IN       XTAG_ID_MAPPINGS.id_type%TYPE,
+      p_tag_id             OUT      XTAG_ID_MAPPINGS.tag_id%TYPE,
+      p_error_msg          OUT      VARCHAR2,
+      p_id                 OUT      VARCHAR2
+   )
+      RETURN BOOLEAN
+   IS
+      /**This function checks the existance of source client id in the xtag_id_mappings table,
+         and returns tag_id which is generally offender_book_id
+       */
+      CURSOR tag_id_cur
+      IS
+         SELECT tag_id
+           FROM XTAG_ID_MAPPINGS
+          WHERE transaction_type = p_transaction_type
+            AND id_type = p_id_type
+            AND source_id = p_source_id;
+   BEGIN
+      OPEN tag_id_cur;
+
+      FETCH tag_id_cur
+       INTO p_tag_id;
+
+      IF tag_id_cur%NOTFOUND
+      THEN
+         CLOSE tag_id_cur;
+
+         RETURN (FALSE);
+      END IF;
+
+      CLOSE tag_id_cur;
+
+      RETURN (TRUE);
+   EXCEPTION
+      WHEN OTHERS
+      THEN
+         p_error_msg := 'Error in get_xtag_id ' || SQLERRM;
+         RETURN (FALSE);
+   END get_xtag_id;                                                 --Function
+
+/***************************************************************************************/
+   PROCEDURE get_sentence_length (
+      p_offender_book_id      IN       offender_bookings.offender_book_id%TYPE,
+      p_sentence_start_date   OUT      DATE,
+      p_length_in_days        OUT      PLS_INTEGER,
+      p_years                 OUT      PLS_INTEGER,
+      p_months                OUT      PLS_INTEGER,
+      p_days                  OUT      PLS_INTEGER
+   )
+   IS
+      v_eff_sent_end_date DATE := NULL;
+      l_from_date         DATE;
+      l_to_date           DATE;
+
+      CURSOR sent_cur
+      IS
+         SELECT MIN (start_date)
+           FROM offender_sentences
+          WHERE offender_book_id = p_offender_book_id
+            AND sentence_status = 'A';
+
+      CURSOR eff_sent_end_date_cur
+      IS
+         SELECT effective_sentence_end_date
+           FROM offender_sent_calculations osc
+          WHERE osc.offender_book_id = p_offender_book_id
+            AND osc.offender_sent_calculation_id =
+                           (SELECT MAX (osc1.offender_sent_calculation_id)
+                              FROM offender_sent_calculations osc1
+                             WHERE osc1.offender_book_id = p_offender_book_id);
+   BEGIN
+      OPEN sent_cur;
+
+      FETCH sent_cur
+       INTO p_sentence_start_date;
+
+      CLOSE sent_cur;
+
+      IF p_sentence_start_date IS NOT NULL
+      THEN
+         OPEN eff_sent_end_date_cur;
+
+         FETCH eff_sent_end_date_cur
+          INTO v_eff_sent_end_date;
+
+         CLOSE eff_sent_end_date_cur;
+      END IF;
+
+      IF v_eff_sent_end_date IS NOT NULL
+      THEN
+         p_length_in_days := ((v_eff_sent_end_date - p_sentence_start_date) + 1);
+         -- Now work out the Years, Months and Days.
+         l_from_date := p_sentence_start_date - 1;  -- TD#3939 (subtracted 1 to make inclusive)
+         l_to_date := v_eff_sent_end_date;
+         p_years := TRUNC (MONTHS_BETWEEN (l_to_date, l_from_date) / 12);
+         l_from_date := ADD_MONTHS (l_from_date, p_years * 12);
+         p_months := TRUNC (MONTHS_BETWEEN (l_to_date, l_from_date));
+         l_from_date := ADD_MONTHS (l_from_date, p_months);
+         p_days := l_to_date - l_from_date;
+      END IF;
+   EXCEPTION
+      WHEN OTHERS
+      THEN
+         NULL;
+   END get_sentence_length;                                      -- Procedure.
+
+   PROCEDURE get_sentence_length (
+      p_offender_book_id   IN       offender_bookings.offender_book_id%TYPE,
+      p_length_in_days     OUT      PLS_INTEGER,
+      p_years              OUT      PLS_INTEGER,
+      p_months             OUT      PLS_INTEGER,
+      p_days               OUT      PLS_INTEGER
+   )
+   IS
+      v_sentence_start_date   DATE := NULL;
+   BEGIN
+      get_sentence_length (p_offender_book_id,
+                           v_sentence_start_date,
+                           p_length_in_days,
+                           p_years,
+                           p_months,
+                           p_days
+                          );
+   EXCEPTION
+      WHEN OTHERS
+      THEN
+         NULL;
+   END get_sentence_length;
+
+   FUNCTION get_sentence_length (
+      p_offender_book_id   offender_bookings.offender_book_id%TYPE
+   )
+      RETURN NUMBER
+   IS
+      v_length_in_days   PLS_INTEGER;
+      v_years_dummy      PLS_INTEGER;
+      v_months_dummy     PLS_INTEGER;
+      v_days_dummy       PLS_INTEGER;
+   BEGIN
+      get_sentence_length (p_offender_book_id,
+                           v_length_in_days,
+                           v_years_dummy,
+                           v_months_dummy,
+                           v_days_dummy
+                          );
+      RETURN v_length_in_days;
+   EXCEPTION
+      WHEN OTHERS
+      THEN
+         RETURN v_length_in_days;
+   END get_sentence_length;
+
+/*************************************************************************************/
+
+   --
+-- Function for Release Date
+--
+   FUNCTION get_release_date (
+      p_offender_book_id   IN   offender_bookings.offender_book_id%TYPE
+            DEFAULT NULL
+   )
+      RETURN DATE
+   IS
+      lv_rel_date   DATE := NULL;
+
+      CURSOR release_date_cur (
+         p_offender_book_id   offender_bookings.offender_book_id%TYPE
+      )
+      IS
+         SELECT COALESCE(osc.npd_overrided_date,
+			                osc.ard_overrided_date,
+			                osc.crd_overrided_date, 
+								 osc.npd_calculated_date,
+                         osc.ard_calculated_date,
+								 osc.crd_calculated_date
+                    ) release_date
+           FROM offender_sent_calculations osc
+          WHERE osc.offender_book_id = p_offender_book_id
+            AND osc.offender_sent_calculation_id =
+                           (SELECT MAX (oscx.offender_sent_calculation_id)
+                              FROM offender_sent_calculations oscx
+                             WHERE oscx.offender_book_id = p_offender_book_id);
+   BEGIN
+        --
+        --   Retrieve Relesae Date - as per Darren it will be either of these 3
+      --   ARD, CRD or NPD for release 1.0 but would need to work on it as part
+      --   of release 1.1
+      --
+      OPEN release_date_cur (p_offender_book_id);
+
+      FETCH release_date_cur
+       INTO lv_rel_date;
+
+      IF release_date_cur%NOTFOUND
+      THEN
+         lv_rel_date := NULL;
+      END IF;
+
+      CLOSE release_date_cur;
+
+      RETURN lv_rel_date;
+   EXCEPTION
+      WHEN OTHERS
+      THEN
+         RETURN lv_rel_date;
+   END;
+
+-- **********************
+--
+-- Check if a booking record exists or not
+-- Split up query when p_root_offender_id or p_offender_id since
+-- the original query was giving a mutating table error in trigger
+-- where it was invoked.
+--
+   FUNCTION is_offender_bkng_exist (
+      p_offender_id        IN   offenders.offender_id%TYPE DEFAULT NULL,
+      p_root_offender_id        offenders.root_offender_id%TYPE DEFAULT NULL
+   )
+      RETURN BOOLEAN
+   IS
+      lv_booking_exists   BOOLEAN      := FALSE;
+      l_dummy             VARCHAR2 (1);
+   BEGIN
+      IF p_root_offender_id IS NOT NULL
+      THEN
+         SELECT 'x'
+           INTO l_dummy
+           FROM DUAL
+          WHERE EXISTS (SELECT NULL
+                          FROM offender_bookings ob
+                         WHERE ob.root_offender_id = p_root_offender_id);
+
+         lv_booking_exists := TRUE;
+      ELSIF p_offender_id IS NOT NULL
+      THEN
+         SELECT 'x'
+           INTO l_dummy
+           FROM DUAL
+          WHERE EXISTS (
+                   SELECT NULL
+                     FROM offender_bookings ob
+                    WHERE ob.root_offender_id =
+                                        (SELECT o.root_offender_id
+                                           FROM offenders o
+                                          WHERE o.offender_id = p_offender_id));
+
+         lv_booking_exists := TRUE;
+      END IF;
+
+      RETURN lv_booking_exists;
+   EXCEPTION
+      WHEN NO_DATA_FOUND
+      THEN
+         lv_booking_exists := FALSE;
+         RETURN lv_booking_exists;
+      WHEN OTHERS
+      THEN
+         lv_booking_exists := FALSE;
+         RETURN lv_booking_exists;
+   END is_offender_bkng_exist;
+
+   --
+   -- Get offenders current/latest imprisonment status
+   --
+   PROCEDURE get_imprisonment_status (
+      p_offender_book_id      IN       offender_bookings.offender_book_id%TYPE,
+      p_imprisonment_status   OUT      offender_imprison_statuses.imprisonment_status%TYPE,
+      p_effective_date        OUT      offender_imprison_statuses.effective_date%TYPE,
+      p_expiry_date           OUT      offender_imprison_statuses.expiry_date%TYPE
+   )
+   IS
+   BEGIN
+      -- Now utilises the new column added as part of CRL115 to 
+      -- identify the latest row on the offender_imprison_statuses table
+      SELECT ois.imprisonment_status, ois.effective_date, ois.expiry_date
+        INTO p_imprisonment_status, p_effective_date, p_expiry_date
+        FROM offender_imprison_statuses ois
+       WHERE ois.offender_book_id = p_offender_book_id
+         AND ois.latest_status = 'Y';
+   EXCEPTION
+      WHEN NO_DATA_FOUND 
+      THEN
+         NULL;
+   END get_imprisonment_status;
+
+   -- Overloaded
+   FUNCTION get_imprisonment_status (
+      p_offender_book_id   IN   offender_bookings.offender_book_id%TYPE
+   )
+      RETURN offender_imprison_statuses.imprisonment_status%TYPE
+   IS
+      lv_imprisonment_status   offender_imprison_statuses.imprisonment_status%TYPE;
+      lv_effective_date        offender_imprison_statuses.effective_date%TYPE;
+      lv_expiry_date           offender_imprison_statuses.expiry_date%TYPE;
+   BEGIN
+      get_imprisonment_status (p_offender_book_id,
+                               lv_imprisonment_status,
+                               lv_effective_date,
+                               lv_expiry_date
+                              );
+      RETURN lv_imprisonment_status;
+   END get_imprisonment_status;
+
+   --------
+   FUNCTION is_offender_lifer (
+		p_offender_book_id IN Offender_Sentences.offender_book_id%TYPE
+	)
+		RETURN BOOLEAN
+	IS
+		lv_dummy VARCHAR2(1);
+	BEGIN
+		SELECT 'x'
+		  INTO lv_dummy
+		  FROM dual
+		WHERE EXISTS ( SELECT NULL
+		                 FROM Offender_Sentences os,
+							       Offender_Sentence_Terms ost
+							 WHERE os.offender_book_id = p_offender_book_id
+							   AND os.sentence_status = 'A'
+								AND ost.offender_book_id = os.offender_book_id
+								AND ost.sentence_seq = os.sentence_seq
+								AND ost.life_sentence_flag = 'Y'
+						 );
+		RETURN TRUE;
+	EXCEPTION
+		WHEN NO_DATA_FOUND THEN
+			RETURN FALSE;
+	END is_offender_lifer;	   
+   
+   --
+   -- Functionality taken from tag_header.
+   --
+   FUNCTION get_supervision_level (
+      p_offender_book_id   IN   offender_bookings.offender_book_id%TYPE
+   )
+      RETURN VARCHAR2
+   IS
+      lv_suplevel         reference_codes.code%TYPE;
+   BEGIN
+      -- QC#18949 - The latest assessment_date is used instead of the highest 
+      -- assessment_seq to determine which is the latest assessment.
+      -- Only if there are two assessments with the same date then the one 
+      -- with the highest assessment_seq should be used
+      -- As per tag_header.get_offender_assessment 
+      BEGIN   
+         SELECT vass.review_sup_level_type
+           INTO lv_suplevel
+           FROM ( SELECT off_ass.offender_book_id,
+                         off_ass.review_sup_level_type,
+                         off_ass.assessment_date,
+                         off_ass.assessment_seq,
+                         MAX (off_ass.assessment_date) OVER (PARTITION BY off_ass.offender_book_id) max_date,
+                         MAX (off_ass.assessment_seq) OVER (PARTITION BY off_ass.offender_book_id,off_ass.assessment_date) max_seq
+                    FROM offender_assessments off_ass
+                    JOIN assessments ass
+                     ON off_ass.assessment_type_id = ass.assessment_id
+                   WHERE off_ass.offender_book_id = p_offender_book_id
+                     AND ass.caseload_type = 'INST'
+                     AND ass.determine_sup_level_flag = 'Y'
+                     AND off_ass.evaluation_result_code = 'APP'
+                     AND off_ass.assess_status = 'A'
+                ) vass
+          WHERE vass.assessment_date = vass.max_date
+            AND vass.assessment_seq = vass.max_seq;
+      EXCEPTION
+         WHEN no_data_found THEN
+            lv_suplevel := NULL;
+      END;
+
+      RETURN lv_suplevel;
+   END get_supervision_level;
+
+   ---
+   FUNCTION get_internal_location_desc (
+      p_internal_location_id   IN   agency_internal_locations.internal_location_id%TYPE
+   )
+      RETURN agency_internal_locations.description%TYPE
+   IS
+      l_description   agency_internal_locations.description%TYPE;
+   BEGIN
+      SELECT ail.description
+        INTO l_description
+        FROM agency_internal_locations ail
+       WHERE ail.internal_location_id = p_internal_location_id;
+
+      RETURN l_description;
+   END get_internal_location_desc;
+	
+	---
+	FUNCTION get_ref_code_desc (
+		p_domain 	IN reference_codes.domain%TYPE,
+		p_code		IN reference_codes.code%TYPE
+	)
+		RETURN reference_codes.description%TYPE
+	IS
+		l_description	reference_codes.description%TYPE;
+	BEGIN
+		SELECT rc.description
+		  INTO l_description
+		  FROM reference_codes rc
+		 WHERE rc.domain = p_domain
+		   AND rc.code = p_code;
+			
+		RETURN l_description;
+	EXCEPTION
+		WHEN NO_DATA_FOUND
+		THEN
+			RETURN NULL;		
+	END get_ref_code_desc;
+
+   --
+   --
+   function get_latest_offender_book_id (
+   	p_root_offender_id	in offenders.root_offender_id%type
+   )
+   	return offender_bookings.offender_book_id%type
+   is
+   begin
+   	return merge_booking_utils.get_latest_offender_book_id (p_root_offender_id);
+   exception
+   	when no_data_found
+      then
+      	raise;	-- for information.  exception raised in called function. 
+   end get_latest_offender_book_id;
+   
+   --
+   --
+   function get_latest_offender_book_id (
+   	p_offender_id_display	in offenders.offender_id_display%type
+   )
+   	return offender_bookings.offender_book_id%type
+   is
+   	l_offender_book_id	offender_bookings.offender_book_id%type;
+   begin
+   	select ob.offender_book_id
+      into l_offender_book_id
+      from offender_bookings ob,
+           offenders o
+      where ob.booking_seq = 1
+      and   ob.root_offender_id = o.root_offender_id
+      and   ob.offender_id = o.offender_id      
+      and   o.offender_id_display = p_offender_id_display; 
+      
+      return l_offender_book_id;
+   
+	end get_latest_offender_book_id;
+	
+/***************************************************************************************/
+END Xtag_Utils;
+/
+
+-- End of DDL Script for Package Body XTAG.XTAG_UTILS
