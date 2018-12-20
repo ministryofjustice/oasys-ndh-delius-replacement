@@ -14,6 +14,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.justice.digital.ndh.service.DeliusSOAPClient;
+import uk.gov.justice.digital.ndh.service.EventsPullerService;
 import uk.gov.justice.digital.ndh.service.ExceptionLogService;
 import uk.gov.justice.digital.ndh.service.MappingService;
 import uk.gov.justice.digital.ndh.service.MessageStoreService;
@@ -61,6 +62,9 @@ public class DeliusUnavailableBehaviourTest {
 
     @MockBean
     private ActiveMQAdminController activeMQAdminController;
+    @MockBean
+    private EventsPullerService eventsPullerService;
+
 
     @Before
     public void setup() throws InterruptedException, UnirestException {

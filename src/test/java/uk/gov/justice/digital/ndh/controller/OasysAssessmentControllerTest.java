@@ -22,6 +22,7 @@ import uk.gov.justice.digital.ndh.api.oasys.request.Header;
 import uk.gov.justice.digital.ndh.api.oasys.response.RiskUpdateResponse;
 import uk.gov.justice.digital.ndh.api.soap.SoapBody;
 import uk.gov.justice.digital.ndh.api.soap.SoapEnvelopeSpec1_2;
+import uk.gov.justice.digital.ndh.service.EventsPullerService;
 import uk.gov.justice.digital.ndh.service.ExceptionLogService;
 import uk.gov.justice.digital.ndh.service.MappingService;
 import uk.gov.justice.digital.ndh.service.MessageStoreService;
@@ -89,6 +90,9 @@ public class OasysAssessmentControllerTest {
     private XmlMapper xmlMapper;
     @Autowired
     private MBeanServer mBeanServer;
+    @MockBean
+    private EventsPullerService eventsPullerService;
+
 
     @Before
     public void setup() throws MalformedObjectNameException, MBeanException, ReflectionException {

@@ -24,6 +24,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.justice.digital.ndh.api.soap.SoapEnvelopeSpec1_2;
 import uk.gov.justice.digital.ndh.jpa.repository.RequirementLookup;
 import uk.gov.justice.digital.ndh.jpa.repository.RequirementLookupRepository;
+import uk.gov.justice.digital.ndh.service.EventsPullerService;
 import uk.gov.justice.digital.ndh.service.ExceptionLogService;
 import uk.gov.justice.digital.ndh.service.MappingService;
 import uk.gov.justice.digital.ndh.service.MessageStoreService;
@@ -83,6 +84,8 @@ public class OasysOffenderControllerTest {
     private MappingService mappingService;
     @MockBean
     private RequirementLookupRepository requirementLookupRepository;
+    @MockBean
+    private EventsPullerService eventsPullerService;
 
 
     @Autowired
@@ -94,20 +97,17 @@ public class OasysOffenderControllerTest {
     }
 
     @After
-    public void tearDown() throws InterruptedException {
-        Thread.sleep(1000L);
+    public void tearDown() {
     }
 
     @Test
-    public void badRiskResponseFromDeliusIsLoggedAppropriately() throws InterruptedException {
+    public void badRiskResponseFromDeliusIsLoggedAppropriately() {
 
 
         stubFor(post(urlEqualTo("/delius/initialSearch")).willReturn(
                 aResponse()
                         .withBody(REAL_DELIUS_RISK_FAULT_RESPONSE)
                         .withStatus(200)));
-
-        Thread.sleep(2000L);
 
         final String requestXml = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/InitialSearch/realInitialSearchRequestFromOasys.xml")))
                 .lines().collect(Collectors.joining("\n"));
@@ -126,10 +126,11 @@ public class OasysOffenderControllerTest {
     }
 
     @Test
-    public void mappingFailureInitialSearchResponseFromDeliusIsLoggedAppropriately() {
+    public void mappingFailureInitialSearchResponseFromDeliusIsLoggedAppropriately() throws InterruptedException {
         Mockito.when(mappingService.descriptionOf(anyString(), anyLong())).thenThrow(NDHMappingException.builder().subject("description").value("sourceVal").code(0L).build());
         Mockito.when(mappingService.targetValueOf(anyString(), anyLong())).thenThrow(NDHMappingException.builder().subject("targetValue").value("sourceVal").code(0L).build());
 
+        Thread.sleep(2000L);
         final String requestXml = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/InitialSearch/realInitialSearchRequestFromOasys.xml")))
                 .lines().collect(Collectors.joining("\n"));
 
@@ -148,9 +149,7 @@ public class OasysOffenderControllerTest {
     }
 
     @Test
-    public void postedOffenderDetailsMessageIsSentToCustodyAPIAndHandledAppropriately() throws IOException, InterruptedException {
-
-        Thread.sleep(1000);
+    public void postedOffenderDetailsMessageIsSentToCustodyAPIAndHandledAppropriately() throws IOException {
 
         Mockito.when(mappingService.targetValueOf("CRD", 34L)).thenReturn("CRD");
         Mockito.when(mappingService.targetValueOf("C", 13L)).thenReturn("CAT-C");
@@ -237,7 +236,7 @@ public class OasysOffenderControllerTest {
                 .whenScenarioStateIs("reauth")
                 .willReturn(aResponse().withStatus(200).withBody(offenderJson)));
 
-        Thread.sleep(3000L);
+        Thread.sleep(4000L);
 
         given()
                 .when()
@@ -258,7 +257,7 @@ public class OasysOffenderControllerTest {
 
         Mockito.when(mappingService.descriptionOf("328", 3802L)).thenReturn("ORA Youth Custody (inc PSS)");
 
-        Thread.sleep(1000);
+        Thread.sleep(2000);
         final String requestXml = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/InitialSearch/realInitialSearchRequestFromOasys.xml")))
                 .lines().collect(Collectors.joining("\n"));
 
@@ -293,7 +292,7 @@ public class OasysOffenderControllerTest {
                         .sentenceAttributeElm("EXCLUSION")
                         .build()));
 
-        Thread.sleep(1000);
+        Thread.sleep(2000);
         final String requestXml = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("xmls/OffenderDetails/realOffenderDetailsRequestFromOasys.xml")))
                 .lines().collect(Collectors.joining("\n"));
 
