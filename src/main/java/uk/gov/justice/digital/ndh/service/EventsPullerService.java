@@ -10,21 +10,20 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.jms.JmsException;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.digital.ndh.api.nomis.OffenderEvent;
 import uk.gov.justice.digital.ndh.api.oasys.xtag.EventMessage;
+import uk.gov.justice.digital.ndh.jpa.entity.MsgStore;
+import uk.gov.justice.digital.ndh.jpa.repository.MessageStoreRepository;
 import uk.gov.justice.digital.ndh.service.exception.NDHMappingException;
 import uk.gov.justice.digital.ndh.service.exception.NomisAPIServiceError;
 import uk.gov.justice.digital.ndh.service.exception.OasysAPIServiceError;
 
-import javax.jms.JMSException;
-import javax.jms.TextMessage;
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
@@ -39,46 +38,46 @@ public class EventsPullerService {
 
     public static final String OASYS = "OASYS";
     private final NomisClient custodyApiClient;
-    private final JmsTemplate jmsTemplate;
     private final ObjectMapper objectMapper;
     private final XmlMapper xmlMapper;
     private final XtagTransformer xtagTransformer;
     private final OasysSOAPClient oasysSOAPClient;
     private final ExceptionLogService exceptionLogService;
     private final MessageStoreService messageStoreService;
-    private Optional<ZonedDateTime> pollFromOverride;
+    private final MessageStoreRepository messageStoreRepository;
+    private final ZonedDateTime startupPullFromDateTime;
+    private ZonedDateTime lastPulled;
 
     public EventsPullerService(NomisClient custodyApiClient,
-                               JmsTemplate jmsTemplate,
                                @Qualifier("globalObjectMapper") ObjectMapper objectMapper,
                                XmlMapper xmlMapper,
                                XtagTransformer xtagTransformer,
                                OasysSOAPClient oasysSOAPClient,
                                ExceptionLogService exceptionLogService,
                                MessageStoreService messageStoreService,
-                               @Value("${xtag.poll.from.isodatetime:}") String pollFromOverride) {
+                               MessageStoreRepository messageStoreRepository) {
         this.custodyApiClient = custodyApiClient;
-        this.jmsTemplate = jmsTemplate;
         this.objectMapper = objectMapper;
         this.xmlMapper = xmlMapper;
         this.xtagTransformer = xtagTransformer;
         this.oasysSOAPClient = oasysSOAPClient;
         this.exceptionLogService = exceptionLogService;
         this.messageStoreService = messageStoreService;
-        this.pollFromOverride = Optional.ofNullable(pollFromOverride).filter(s -> !s.isEmpty()).map(ZonedDateTime::parse);
+        this.messageStoreRepository = messageStoreRepository;
+        startupPullFromDateTime = getInitialPullFromDateTime();
+        lastPulled = startupPullFromDateTime;
     }
 
     @Scheduled(fixedDelayString = "${xtag.poll.period:10000}")
     public void pullEvents() {
-        final Optional<ZonedDateTime> maybePullFrom = getPullFromDateTime();
-        final ZonedDateTime pullFrom = maybePullFrom.orElse(ZonedDateTime.now());
+        final ZonedDateTime now = ZonedDateTime.now();
 
-        final ZonedDateTime to = ZonedDateTime.now();
+        log.info("Pulling events from {} to {}", lastPulled, now);
 
         try {
             Optional<List<OffenderEvent>> maybeOffenderEvents = custodyApiClient
-                    .doGetWithRetry("events", ImmutableMap.of("from", pullFrom.toString(),
-                            "to", to.toString(),
+                    .doGetWithRetry("events", ImmutableMap.of("from", lastPulled.toString(),
+                            "to", now.toString(),
                             "type", "BOOKING_NUMBER-CHANGED,OFFENDER_MOVEMENT-RECEPTION,OFFENDER_MOVEMENT-DISCHARGE,OFFENDER_BOOKING-CHANGED,OFFENDER_DETAILS-CHANGED,IMPRISONMENT_STATUS-CHANGED,SENTENCE_CALCULATION_DATES-CHANGED"))
                     .filter(r -> r.getStatus() == HttpStatus.OK.value())
                     .map(HttpResponse::getBody)
@@ -89,18 +88,15 @@ public class EventsPullerService {
 
             if (maybeOffenderEvents.isPresent()) {
                 final List<OffenderEvent> events = maybeOffenderEvents.get();
-                log.info("Pulling {} events...", events.size());
+                log.info("Pulled {} events...", events.size());
                 handleEvents(events);
+            } else {
+                log.info("No events to pull...");
             }
-            log.info("No events to pull...");
-            setPullFromDateTime(ZonedDateTime.now());
-            pollFromOverride = Optional.empty();
+            lastPulled = now;
         } catch (Exception e) {
             log.error(e.getMessage());
-            setPullFromDateTime(pullFrom);
         }
-
-
     }
 
     private void handleEvents(List<OffenderEvent> events) throws ExecutionException, UnirestException, NomisAPIServiceError, JsonProcessingException, OasysAPIServiceError, RetryException {
@@ -182,36 +178,15 @@ public class EventsPullerService {
         }
     }
 
-    private Optional<ZonedDateTime> getPullFromDateTime() {
+    private ZonedDateTime getInitialPullFromDateTime() {
+        final Optional<MsgStore> maybeLatestMsg = Optional.ofNullable(messageStoreRepository.findFirstByProcessNameOrderByMsgStoreSeqDesc("XTAG").orElse(messageStoreRepository.findFirstByProcessNameOrderByMsgStoreSeqDesc("OASys-REvents").orElse(null)));
 
-        if (pollFromOverride.isPresent()) {
-            log.info("Overriding with user supplied datetime: {}", pollFromOverride.toString());
-            return pollFromOverride;
-        }
+        final ZonedDateTime z = maybeLatestMsg.map(MsgStore::getMsgTimestamp)
+                .map(Timestamp::toLocalDateTime)
+                .map(dt -> ZonedDateTime.of(dt, ZoneId.of("Z")))
+                .orElse(ZonedDateTime.now().minusDays(1L));
 
-        Optional<String> maybeLastPolled;
-
-        try {
-            maybeLastPolled = Optional.ofNullable(jmsTemplate.receive("LAST_POLLED")).flatMap(
-                    m -> {
-                        try {
-                            return Optional.ofNullable(((TextMessage) m).getText());
-                        } catch (JMSException e) {
-                            log.error(e.getMessage());
-                            return Optional.empty();
-                        }
-                    }
-            );
-        } catch (JmsException jmse) {
-            maybeLastPolled = Optional.empty();
-        }
-
-        log.info("Last polled date retrieved : {}", maybeLastPolled.orElse("empty"));
-
-        return maybeLastPolled.map(ZonedDateTime::parse);
-    }
-
-    private void setPullFromDateTime(ZonedDateTime time) {
-        jmsTemplate.convertAndSend("LAST_POLLED", time.toString());
+        log.info("Startup pulling from {} which was derived from {}", z.toString(), maybeLatestMsg.map(MsgStore::toString).orElse("time now minus one day"));
+        return z;
     }
 }

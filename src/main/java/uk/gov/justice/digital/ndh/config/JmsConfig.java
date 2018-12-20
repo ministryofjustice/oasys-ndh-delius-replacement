@@ -22,7 +22,6 @@ import static javax.jms.DeliveryMode.NON_PERSISTENT;
 public class JmsConfig implements BeanPostProcessor {
 
     public static final String OASYS_MESSAGES = "OASYS_MESSAGES";
-    public static final String LAST_POLLED = "LAST_POLLED";
 
     @Value("${activemq.delivery.mode:2}")
     private int amqDeliveryMode;
@@ -30,11 +29,6 @@ public class JmsConfig implements BeanPostProcessor {
     @Bean
     public Queue oasysMessageQueue() {
         return new ActiveMQQueue(OASYS_MESSAGES);
-    }
-
-    @Bean
-    public Queue lastPolledQueue() {
-        return new ActiveMQQueue(LAST_POLLED);
     }
 
     @Bean(name = "activeMqConnectionFactory")
