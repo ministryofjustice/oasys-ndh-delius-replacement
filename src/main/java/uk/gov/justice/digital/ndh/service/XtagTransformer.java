@@ -487,6 +487,7 @@ public class XtagTransformer {
                 .sentenceDays(daysOf(maybeSentenceCalculation.map(SentenceCalculation::getEffectiveSentenceLength).orElse(null)))
                 .sentenceDate(sentenceStartDateOf(activeSentences))
                 .releaseDate(maybeSentenceCalculation.map(sc -> sc.getReleaseDate().toString()).orElse(null))
+                .prisonNumber(inmateDetail.getBookingNo())
                 .pnc(pncOf(offender))
                 .nomisId(offender.getNomsId())
                 .forename1(offender.getFirstName())
