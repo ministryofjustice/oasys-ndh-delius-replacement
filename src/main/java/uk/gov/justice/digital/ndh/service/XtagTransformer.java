@@ -96,7 +96,12 @@ public class XtagTransformer {
                 .establishmentCode(this.establishmentCodeOf(offenderImprisonmentStatus))
                 .dateOfBirth(offender.getDateOfBirth().toString())
                 .correlationId(nextCorrelationId())
-                .build()).filter(eventMessage -> OFFENDER_LIFER.equals(eventMessage.getEventType()));
+                .build())
+                .filter(eventMessage -> {
+                    final boolean lifer = OFFENDER_LIFER.equals(eventMessage.getEventType());
+                    log.info("Is Lifer? {}", lifer);
+                    return lifer;
+                });
     }
 
     public Offender getOffender(InmateDetail inmateDetail) throws NomisAPIServiceError, UnirestException, ExecutionException, RetryException {
