@@ -22,10 +22,10 @@ public class MappingService {
 
     public String descriptionOf(String sourceVal, Long codeType) throws NDHMappingException {
         Optional<MappingCodeData> maybeMapped = Optional.ofNullable(sourceVal).flatMap(
-                sv -> Optional.ofNullable(mappingRepository.findOne(MappingCodeDataPK.builder()
+                sv -> mappingRepository.findById(MappingCodeDataPK.builder()
                         .codeType(codeType)
                         .sourceValue(sourceVal)
-                        .build())));
+                        .build()));
 
         if (!maybeMapped.isPresent()) {
             log.error("Could not map source {} and code {} to description.", sourceVal, codeType);
@@ -40,10 +40,10 @@ public class MappingService {
 
     public String targetValueOf(String sourceVal, Long codeType) throws NDHMappingException {
         Optional<MappingCodeData> maybeMapped = Optional.ofNullable(sourceVal).flatMap(
-                sv -> Optional.ofNullable(mappingRepository.findOne(MappingCodeDataPK.builder()
+                sv -> mappingRepository.findById(MappingCodeDataPK.builder()
                         .codeType(codeType)
                         .sourceValue(sourceVal)
-                        .build())));
+                        .build()));
 
         if (!maybeMapped.isPresent()) {
             log.error("Could not map source {} and code {} to targetValue.", sourceVal, codeType);
@@ -60,10 +60,10 @@ public class MappingService {
 
     public Long numeric1Of(String sourceVal, Long codeType) throws NDHMappingException {
         Optional<MappingCodeData> maybeMapped = Optional.ofNullable(sourceVal).flatMap(
-                sv -> Optional.ofNullable(mappingRepository.findOne(MappingCodeDataPK.builder()
+                sv -> mappingRepository.findById(MappingCodeDataPK.builder()
                         .codeType(codeType)
                         .sourceValue(sourceVal)
-                        .build())));
+                        .build()));
 
         if (!maybeMapped.isPresent()) {
             log.error("Could not map source {} and code {} to numeric1.", sourceVal, codeType);

@@ -32,6 +32,7 @@ public class NomisClient {
 
         final String url = baseUrl + relativeUrl;
 
+        log.info("Doing GET {} with params {}", relativeUrl, params);
         final HttpResponse<String> response = Unirest.get(url)
                 .header("Authorization", "Bearer " + token.orElse(""))
                 .queryString(params)

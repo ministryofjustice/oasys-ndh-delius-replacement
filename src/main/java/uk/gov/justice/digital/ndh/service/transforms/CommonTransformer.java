@@ -30,14 +30,12 @@ public class CommonTransformer {
     public static final String VERSION = "1.0";
 
     private final XmlMapper xmlMapper;
-    private final ObjectMapper objectMapper;
     private final ExceptionLogService exceptionLogService;
     public static final SAXReader READER = new SAXReader();
 
     @Autowired
     public CommonTransformer(XmlMapper xmlMapper, @Qualifier("globalObjectMapper") ObjectMapper objectMapper, ExceptionLogService exceptionLogService) {
         this.xmlMapper = xmlMapper;
-        this.objectMapper = objectMapper;
         this.exceptionLogService = exceptionLogService;
     }
 
