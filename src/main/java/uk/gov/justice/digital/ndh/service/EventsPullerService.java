@@ -23,10 +23,12 @@ import uk.gov.justice.digital.ndh.service.exception.OasysAPIServiceError;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
@@ -47,6 +49,7 @@ public class EventsPullerService {
     private final MessageStoreRepository messageStoreRepository;
     private final ZonedDateTime startupPullFromDateTime;
     private ZonedDateTime lastPulled;
+    public static final ZoneId LONDON = ZoneId.of("Europe/London");
 
     public EventsPullerService(NomisClient custodyApiClient,
                                @Qualifier("globalObjectMapper") ObjectMapper objectMapper,
@@ -90,13 +93,27 @@ public class EventsPullerService {
                 final List<OffenderEvent> events = maybeOffenderEvents.get();
                 log.info("Pulled {} events...", events.size());
                 handleEvents(events);
+                lastPulled = latestTimestampOf(events);
             } else {
                 log.info("No events to pull...");
             }
-            lastPulled = now;
         } catch (Exception e) {
             log.error(e.getMessage());
         }
+    }
+
+    private ZonedDateTime latestTimestampOf(List<OffenderEvent> offenderEvents) {
+        final LocalDateTime latestXtagEnqueueTime = offenderEvents.stream().max(Comparator.comparing(OffenderEvent::getEventDatetime)).map(OffenderEvent::getEventDatetime).orElse(null);
+
+        return xtagFudgedTimestampOf(latestXtagEnqueueTime).atZone(LONDON);
+    }
+
+    private static LocalDateTime xtagFudgedTimestampOf(LocalDateTime xtagEnqueueTime) {
+
+        if (LONDON.getRules().isDaylightSavings(xtagEnqueueTime.atZone(LONDON).toInstant())) {
+            return xtagEnqueueTime;
+        }
+        return xtagEnqueueTime.minusHours(1L);
     }
 
     private void handleEvents(List<OffenderEvent> events) throws ExecutionException, UnirestException, NomisAPIServiceError, JsonProcessingException, OasysAPIServiceError, RetryException {
