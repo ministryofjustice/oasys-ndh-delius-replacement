@@ -23,7 +23,7 @@ apply plugin: 'io.spring.dependency-management'
 project.sourceCompatibility = 11
 project.targetCompatibility = 11
 
-def applicationName = 'custody-api'
+def applicationName = 'oasys-ndh-delius-replacement'
 def today = java.time.Instant.now()
 def todayDate = java.time.LocalDate.now()
 def formatter = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -58,7 +58,7 @@ springBoot {
 // Apply application plugin for easy application start
 apply plugin: 'application'
 
-mainClassName = "uk.gov.justice.digital.nomis.CustodyApiApplication"
+mainClassName = "uk.gov.justice.digital.ndh.ThatsNotMyNDH"
 
 // Apply the groovy plugin to also add support for Groovy (needed for Spock)
 apply plugin: 'groovy'
