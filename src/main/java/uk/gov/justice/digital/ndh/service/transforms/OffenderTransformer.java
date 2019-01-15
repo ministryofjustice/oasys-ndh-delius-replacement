@@ -292,10 +292,10 @@ public class OffenderTransformer {
     }
 
     private String oasysLicenceStringOf(Category category) {
-        final String mainCategory = mappingService.targetValueOf(category.getMainCategory(), LICENCE_MAIN_CATEGORY);
+        final String mainCategory = mappingService.descriptionOf(category.getMainCategory(), LICENCE_MAIN_CATEGORY);
 
-        final Optional<String> maybeTargetSubCategory = Optional.ofNullable(category.getSubCategory()).filter(sc -> sc.equals("99"));
-        final Optional<String> maybeSourceSubcategory = maybeTargetSubCategory.map(tsc -> mappingService.targetValueOf(tsc, LICENCE_SUB_CATEGORY));
+        final Optional<String> maybeDescriptionSubCategory = Optional.ofNullable(category.getSubCategory()).filter(sc -> sc.equals("99"));
+        final Optional<String> maybeSourceSubcategory = maybeDescriptionSubCategory.map(tsc -> mappingService.descriptionOf(tsc, LICENCE_SUB_CATEGORY));
 
         return maybeSourceSubcategory
                 .map(sc -> Stream.of(mainCategory, sc).collect(Collectors.joining(":")))
