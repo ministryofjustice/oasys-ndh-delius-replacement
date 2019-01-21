@@ -71,17 +71,9 @@ public class EventsPullerService {
         lastPulled = startupPullFromDateTime;
     }
 
-    private static LocalDateTime xtagFudgedTimestampOf(LocalDateTime xtagEnqueueTime) {
-
-        if (LONDON.getRules().isDaylightSavings(xtagEnqueueTime.atZone(LONDON).toInstant())) {
-            return xtagEnqueueTime;
-        }
-        return xtagEnqueueTime.minusHours(1L);
-    }
-
     @Scheduled(fixedDelayString = "${xtag.poll.period:10000}")
     public void pullEvents() {
-        final ZonedDateTime now = ZonedDateTime.now();
+        final LocalDateTime now = LocalDateTime.now();
 
         log.info("Pulling events from {} to {}", lastPulled, now);
 
@@ -89,13 +81,14 @@ public class EventsPullerService {
             Optional<List<OffenderEvent>> maybeOffenderEvents = custodyApiClient
                     .doGetWithRetry("events", ImmutableMap.of("from", lastPulled.toString(),
                             "to", now.toString(),
-                            "type", "BOOKING_NUMBER-CHANGED,OFFENDER_MOVEMENT-RECEPTION,OFFENDER_MOVEMENT-DISCHARGE,OFFENDER_BOOKING-CHANGED,OFFENDER_DETAILS-CHANGED,IMPRISONMENT_STATUS-CHANGED,SENTENCE_CALCULATION_DATES-CHANGED"))
+                            "type", "BOOKING_NUMBER-CHANGED,OFFENDER_MOVEMENT-RECEPTION,OFFENDER_MOVEMENT-DISCHARGE,OFFENDER_BOOKING-CHANGED,OFFENDER_DETAILS-CHANGED,IMPRISONMENT_STATUS-CHANGED,SENTENCE_CALCULATION_DATES-CHANGED",
+                            "sortBy", "TIMESTAMP_ASC"))
                     .filter(r -> r.getStatus() == HttpStatus.OK.value())
                     .map(HttpResponse::getBody)
                     .map(this::asEvents)
                     .map(offenderEvents -> offenderEvents.stream()
                             .filter(offenderEvent -> offenderEvent.getNomisEventType().endsWith(OASYS))
-                            .filter(offenderEvent -> !lastPulled.toLocalDateTime().equals(xtagFudgedTimestampOf(offenderEvent.getEventDatetime())))
+                            .filter(offenderEvent -> !lastPulled.toLocalDateTime().equals(offenderEvent.getEventDatetime()))
                             .collect(Collectors.toList()));
 
             if (maybeOffenderEvents.isPresent()) {
@@ -116,7 +109,7 @@ public class EventsPullerService {
     private ZonedDateTime latestTimestampOf(List<OffenderEvent> offenderEvents) {
         final LocalDateTime latestXtagEnqueueTime = offenderEvents.stream().max(Comparator.comparing(OffenderEvent::getEventDatetime)).map(OffenderEvent::getEventDatetime).orElse(null);
 
-        return xtagFudgedTimestampOf(latestXtagEnqueueTime).atZone(LONDON);
+        return latestXtagEnqueueTime.atZone(LONDON);
     }
 
     private void handleEvents(List<OffenderEvent> events) throws ExecutionException, UnirestException, NomisAPIServiceError, JsonProcessingException, OasysAPIServiceError, RetryException {
