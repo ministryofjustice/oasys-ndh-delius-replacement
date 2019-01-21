@@ -95,7 +95,7 @@ public class EventsPullerService {
                     .map(this::asEvents)
                     .map(offenderEvents -> offenderEvents.stream()
                             .filter(offenderEvent -> offenderEvent.getNomisEventType().endsWith(OASYS))
-                            .filter(offenderEvent -> !xtagFudgedTimestampOf(offenderEvent.getEventDatetime()).equals(lastPulled.toLocalDateTime()))
+                            .filter(offenderEvent -> !lastPulled.toLocalDateTime().equals(xtagFudgedTimestampOf(offenderEvent.getEventDatetime())))
                             .collect(Collectors.toList()));
 
             if (maybeOffenderEvents.isPresent()) {
