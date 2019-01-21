@@ -102,7 +102,9 @@ public class EventsPullerService {
                 final List<OffenderEvent> events = maybeOffenderEvents.get();
                 log.info("Pulled {} events...", events.size());
                 handleEvents(events);
-                lastPulled = latestTimestampOf(maybeOffenderEvents.get());
+                if (!events.isEmpty()) {
+                    lastPulled = latestTimestampOf(maybeOffenderEvents.get());
+                }
             } else {
                 log.info("No events to pull...");
             }
