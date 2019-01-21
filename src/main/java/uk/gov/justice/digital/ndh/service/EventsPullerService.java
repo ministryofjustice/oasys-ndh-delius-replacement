@@ -39,6 +39,7 @@ import java.util.stream.Collectors;
 public class EventsPullerService {
 
     public static final String OASYS = "OASYS";
+    public static final ZoneId LONDON = ZoneId.of("Europe/London");
     private final NomisClient custodyApiClient;
     private final ObjectMapper objectMapper;
     private final XmlMapper xmlMapper;
@@ -49,7 +50,6 @@ public class EventsPullerService {
     private final MessageStoreRepository messageStoreRepository;
     private final ZonedDateTime startupPullFromDateTime;
     private ZonedDateTime lastPulled;
-    public static final ZoneId LONDON = ZoneId.of("Europe/London");
 
     public EventsPullerService(NomisClient custodyApiClient,
                                @Qualifier("globalObjectMapper") ObjectMapper objectMapper,
@@ -71,6 +71,14 @@ public class EventsPullerService {
         lastPulled = startupPullFromDateTime;
     }
 
+    private static LocalDateTime xtagFudgedTimestampOf(LocalDateTime xtagEnqueueTime) {
+
+        if (LONDON.getRules().isDaylightSavings(xtagEnqueueTime.atZone(LONDON).toInstant())) {
+            return xtagEnqueueTime;
+        }
+        return xtagEnqueueTime.minusHours(1L);
+    }
+
     @Scheduled(fixedDelayString = "${xtag.poll.period:10000}")
     public void pullEvents() {
         final ZonedDateTime now = ZonedDateTime.now();
@@ -87,18 +95,19 @@ public class EventsPullerService {
                     .map(this::asEvents)
                     .map(offenderEvents -> offenderEvents.stream()
                             .filter(offenderEvent -> offenderEvent.getNomisEventType().endsWith(OASYS))
+                            .filter(offenderEvent -> !xtagFudgedTimestampOf(offenderEvent.getEventDatetime()).equals(lastPulled.toLocalDateTime()))
                             .collect(Collectors.toList()));
 
             if (maybeOffenderEvents.isPresent()) {
                 final List<OffenderEvent> events = maybeOffenderEvents.get();
                 log.info("Pulled {} events...", events.size());
                 handleEvents(events);
-                lastPulled = latestTimestampOf(events);
+                lastPulled = latestTimestampOf(maybeOffenderEvents.get());
             } else {
                 log.info("No events to pull...");
             }
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.error("Caught error in processing loop: message is {}, class {}", e.getMessage(), e.getCause().getClass());
         }
     }
 
@@ -106,14 +115,6 @@ public class EventsPullerService {
         final LocalDateTime latestXtagEnqueueTime = offenderEvents.stream().max(Comparator.comparing(OffenderEvent::getEventDatetime)).map(OffenderEvent::getEventDatetime).orElse(null);
 
         return xtagFudgedTimestampOf(latestXtagEnqueueTime).atZone(LONDON);
-    }
-
-    private static LocalDateTime xtagFudgedTimestampOf(LocalDateTime xtagEnqueueTime) {
-
-        if (LONDON.getRules().isDaylightSavings(xtagEnqueueTime.atZone(LONDON).toInstant())) {
-            return xtagEnqueueTime;
-        }
-        return xtagEnqueueTime.minusHours(1L);
     }
 
     private void handleEvents(List<OffenderEvent> events) throws ExecutionException, UnirestException, NomisAPIServiceError, JsonProcessingException, OasysAPIServiceError, RetryException {
@@ -190,7 +191,7 @@ public class EventsPullerService {
         try {
             return Arrays.asList(objectMapper.readValue(jsonStr, OffenderEvent[].class));
         } catch (IOException e) {
-            log.error(e.getMessage());
+            log.error("Failed to turn json {} into OffenderEvent list.", e.getMessage());
             return Collections.emptyList();
         }
     }
