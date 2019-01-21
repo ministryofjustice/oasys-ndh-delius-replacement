@@ -107,7 +107,7 @@ public class EventsPullerService {
                 log.info("No events to pull...");
             }
         } catch (Exception e) {
-            log.error("Caught error in processing loop: message is {}, class {}", e.getMessage(), e.getCause().getClass());
+            log.error("Caught error in processing loop: message is {}, class {}", e.getMessage(), e.getClass());
         }
     }
 
