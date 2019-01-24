@@ -24,8 +24,6 @@ import uk.gov.justice.digital.ndh.service.exception.OasysAPIServiceError;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -39,7 +37,6 @@ import java.util.stream.Collectors;
 public class EventsPullerService {
 
     public static final String OASYS = "OASYS";
-    public static final ZoneId LONDON = ZoneId.of("Europe/London");
     private final NomisClient custodyApiClient;
     private final ObjectMapper objectMapper;
     private final XmlMapper xmlMapper;
@@ -48,8 +45,8 @@ public class EventsPullerService {
     private final ExceptionLogService exceptionLogService;
     private final MessageStoreService messageStoreService;
     private final MessageStoreRepository messageStoreRepository;
-    private final ZonedDateTime startupPullFromDateTime;
-    private ZonedDateTime lastPulled;
+    private final LocalDateTime startupPullFromDateTime;
+    private LocalDateTime lastPulled;
 
     public EventsPullerService(NomisClient custodyApiClient,
                                @Qualifier("globalObjectMapper") ObjectMapper objectMapper,
@@ -79,8 +76,8 @@ public class EventsPullerService {
 
         try {
             Optional<List<OffenderEvent>> maybeOffenderEvents = custodyApiClient
-                    .doGetWithRetry("events", ImmutableMap.of("from", lastPulled.toString(),
-                            "to", now.toString(),
+                    .doGetWithRetry("events", ImmutableMap.of(
+                            "from", lastPulled.toString(),
                             "type", "BOOKING_NUMBER-CHANGED,OFFENDER_MOVEMENT-RECEPTION,OFFENDER_MOVEMENT-DISCHARGE,OFFENDER_BOOKING-CHANGED,OFFENDER_DETAILS-CHANGED,IMPRISONMENT_STATUS-CHANGED,SENTENCE_CALCULATION_DATES-CHANGED",
                             "sortBy", "TIMESTAMP_ASC"))
                     .filter(r -> r.getStatus() == HttpStatus.OK.value())
@@ -88,7 +85,7 @@ public class EventsPullerService {
                     .map(this::asEvents)
                     .map(offenderEvents -> offenderEvents.stream()
                             .filter(offenderEvent -> offenderEvent.getNomisEventType().endsWith(OASYS))
-                            .filter(offenderEvent -> !lastPulled.toLocalDateTime().equals(offenderEvent.getEventDatetime()))
+                            .filter(offenderEvent -> !lastPulled.equals(offenderEvent.getEventDatetime()))
                             .collect(Collectors.toList()));
 
             if (maybeOffenderEvents.isPresent()) {
@@ -106,10 +103,8 @@ public class EventsPullerService {
         }
     }
 
-    private ZonedDateTime latestTimestampOf(List<OffenderEvent> offenderEvents) {
-        final LocalDateTime latestXtagEnqueueTime = offenderEvents.stream().max(Comparator.comparing(OffenderEvent::getEventDatetime)).map(OffenderEvent::getEventDatetime).orElse(null);
-
-        return latestXtagEnqueueTime.atZone(LONDON);
+    private LocalDateTime latestTimestampOf(List<OffenderEvent> offenderEvents) {
+        return offenderEvents.stream().max(Comparator.comparing(OffenderEvent::getEventDatetime)).map(OffenderEvent::getEventDatetime).orElse(null);
     }
 
     private void handleEvents(List<OffenderEvent> events) throws ExecutionException, UnirestException, NomisAPIServiceError, JsonProcessingException, OasysAPIServiceError, RetryException {
@@ -191,15 +186,14 @@ public class EventsPullerService {
         }
     }
 
-    private ZonedDateTime getInitialPullFromDateTime() {
+    private LocalDateTime getInitialPullFromDateTime() {
         final Optional<MsgStore> maybeLatestMsg = Optional.ofNullable(messageStoreRepository.findFirstByProcessNameOrderByMsgStoreSeqDesc("XTAG").orElse(messageStoreRepository.findFirstByProcessNameOrderByMsgStoreSeqDesc("OASys-REvents").orElse(null)));
 
-        final ZonedDateTime z = maybeLatestMsg.map(MsgStore::getMsgTimestamp)
+        final LocalDateTime pullFrom = maybeLatestMsg.map(MsgStore::getMsgTimestamp)
                 .map(Timestamp::toLocalDateTime)
-                .map(dt -> ZonedDateTime.of(dt, ZoneId.of("Z")))
-                .orElse(ZonedDateTime.now().minusDays(1L));
+                .orElse(LocalDateTime.now().minusDays(1L));
 
-        log.info("Startup pulling from {} which was derived from {}", z.toString(), maybeLatestMsg.map(MsgStore::toString).orElse("time now minus one day"));
-        return z;
+        log.info("Startup pulling from {} which was derived from {}", pullFrom.toString(), maybeLatestMsg.map(MsgStore::toString).orElse("time now minus one day"));
+        return pullFrom;
     }
 }
