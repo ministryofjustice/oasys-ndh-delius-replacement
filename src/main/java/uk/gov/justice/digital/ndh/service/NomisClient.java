@@ -43,6 +43,10 @@ public class NomisClient {
             oauthTokenProvider.invalidate(OAUTH_TOKEN);
         }
 
+        if (response.getStatus() > 200) {
+            log.warn("Received {} response from GET {} with params {}", response.getStatus(), relativeUrl, params);
+        }
+
         return response;
 
     }
