@@ -321,7 +321,8 @@ public class XtagTransformer {
 
     private ExternalMovement getDischargeMovement(OffenderEvent event) throws ExecutionException, RetryException, NomisAPIServiceError {
         return custodyApiClient
-                .doGetWithRetry("movements", ImmutableMap.of("bookingId", event.getBookingId()))
+                .doGetWithRetry("movements", ImmutableMap.of("bookingId", event.getBookingId(),
+                        "size", "1000"))
                 .filter(r -> r.getStatus() == HttpStatus.OK.value())
                 .map(HttpResponse::getBody)
                 .map(this::asPagedExternalMovements)
