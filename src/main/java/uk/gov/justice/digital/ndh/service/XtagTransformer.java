@@ -421,7 +421,20 @@ public class XtagTransformer {
     }
 
     private String receptionMovementFromToOf(ExternalMovement offenderMovement) {
-        return "CRT".equals(offenderMovement.getMovementTypeCode()) ? null : agencyOrOutOf(offenderMovement.getFromAgencyLocation().getAgencyLocationId());
+        final AgencyLocation fromAgencyLocation = offenderMovement.getFromAgencyLocation();
+
+        if (fromAgencyLocation == null) {
+            log.info("Offender movement has no 'fromAgencyLocation': {}", offenderMovement);
+            return null;
+        }
+
+        return "CRT".equals(offenderMovement.getMovementTypeCode()) ? null : agencyOrInOf(fromAgencyLocation.getAgencyLocationId());
+
+
+    }
+
+    private String agencyOrInOf(String anAgencyLocationId) {
+        return Optional.ofNullable(anAgencyLocationId).orElse("IN");
     }
 
     private String agencyOrOutOf(String anAgencyLocationId) {
