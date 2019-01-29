@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import uk.gov.justice.digital.ndh.api.nomis.AgencyLocation;
 import uk.gov.justice.digital.ndh.api.nomis.Booking;
 import uk.gov.justice.digital.ndh.api.nomis.ExternalMovement;
 import uk.gov.justice.digital.ndh.api.nomis.Identifier;
@@ -408,7 +409,14 @@ public class XtagTransformer {
     }
 
     private String dischargeMovementFromToOf(ExternalMovement offenderMovement) {
-        return "CRT".equals(offenderMovement.getMovementTypeCode()) ? null : agencyOrOutOf(offenderMovement.getToAgencyLocation().getAgencyLocationId());
+        final AgencyLocation toAgencyLocation = offenderMovement.getToAgencyLocation();
+
+        if (toAgencyLocation == null) {
+            log.info("Offender movement has no 'toAgencyLocation': {}", offenderMovement);
+            return null;
+        }
+
+        return "CRT".equals(offenderMovement.getMovementTypeCode()) ? null : agencyOrOutOf(toAgencyLocation.getAgencyLocationId());
 
     }
 
