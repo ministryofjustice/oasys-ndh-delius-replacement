@@ -190,13 +190,13 @@ public class XtagTransformer {
                 .flatMap(identifiers -> identifiers.stream()
                         .filter(identifier -> "PNC".equals(identifier.getIdentifierType()))
                         .findFirst()).map(Identifier::getIdentifier)
-                .map(this::normalisedPncOf)
+                .map(XtagTransformer::normalisedPncOf)
                 .orElse(null);
     }
 
-    public String normalisedPncOf(String pnc) {
+    public static String normalisedPncOf(String pnc) {
         return Optional.ofNullable(pnc)
-                .filter(s -> s.indexOf("/") == 5)
+                .filter(s -> s.indexOf("/") == 4)
                 .map(s -> s.substring(2))
                 .orElse(pnc);
     }
