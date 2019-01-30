@@ -403,14 +403,17 @@ public class XtagTransformer {
                 .findFirst();
     }
 
-    private String effectiveSentenceLengthOf(List<Sentence> activeSentences, Optional<SentenceCalculation> sentenceCalculation) {
+    private String effectiveSentenceLengthOf(List<Sentence> activeSentences, Optional<SentenceCalculation> maybeSentenceCalculation) {
 
-        return sentenceCalculation.map(sentenceCalculation1 -> activeSentences.stream()
-                .min(Comparator.comparing(Sentence::getStartDate))
-                .map(Sentence::getStartDate)
-                .map(startDate -> ChronoUnit.DAYS.between(startDate, sentenceCalculation1.getEffectiveSentenceEndDate().toLocalDate()) + 1)
-                .map(String::valueOf)
-                .orElse(null)).orElse(null);
+        return maybeSentenceCalculation
+                .filter(sentenceCalculation -> sentenceCalculation.getEffectiveSentenceEndDate() != null)
+                .map(sentenceCalculation -> activeSentences.stream()
+                        .min(Comparator.comparing(Sentence::getStartDate))
+                        .map(Sentence::getStartDate)
+                        .map(startDate -> ChronoUnit.DAYS.between(startDate, sentenceCalculation.getEffectiveSentenceEndDate().toLocalDate()) + 1)
+                        .map(String::valueOf)
+                        .orElse(null))
+                .orElse(null);
 
     }
 
