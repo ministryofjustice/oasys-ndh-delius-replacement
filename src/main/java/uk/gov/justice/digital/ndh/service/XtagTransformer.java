@@ -33,12 +33,14 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 @Slf4j
@@ -67,6 +69,30 @@ public class XtagTransformer {
         this.xtagSequence = xtagSequence;
     }
 
+    public static String normalisedPncOf(String pnc) {
+        return Optional.ofNullable(pnc)
+                .filter(s -> s.indexOf("/") == 4)
+                .map(s -> s.substring(2))
+                .orElse(pnc);
+    }
+
+    public static String pncOf(Offender offender) {
+
+        final Stream<Identifier> identifierStream1 = Optional.ofNullable(offender.getIdentifiers())
+                .stream()
+                .flatMap(Collection::stream);
+        final Stream<Identifier> identifierStream2 = Optional.ofNullable(offender.getAliases())
+                .stream()
+                .flatMap(Collection::stream)
+                .flatMap(a -> Optional.ofNullable(a.getIdentifiers()).stream().flatMap(Collection::stream));
+
+        return Stream.concat(identifierStream1, identifierStream2)
+                .filter(identifier -> "PNC".equals(identifier.getIdentifierType()))
+                .findFirst().map(Identifier::getIdentifier)
+                .map(XtagTransformer::normalisedPncOf)
+                .orElse(null);
+    }
+
     public Optional<EventMessage> offenderImprisonmentStatusUpdatedXtagOf(OffenderEvent event) throws ExecutionException, UnirestException, NomisAPIServiceError, RetryException {
 
         log.info("Handling offenderImprisonmentStatusUpdated event {}", event);
@@ -88,7 +114,7 @@ public class XtagTransformer {
         return Optional.of(EventMessage.builder()
                 .timestamp(oasysTimestampOf(event.getEventDatetime()))
                 .prisonNumber(inmateDetail.getBookingNo())
-                .pnc(this.pncOf(offender))
+                .pnc(pncOf(offender))
                 .nomisId(inmateDetail.getOffenderNo())
                 .forename1(offender.getFirstName())
                 .forename2(offender.getMiddleNames())
@@ -130,7 +156,6 @@ public class XtagTransformer {
                                 "ADM".equals(movement.getMovementTypeCode()))
                         .findFirst()).orElseThrow(() -> new NomisAPIServiceError("Can't get offender movements."));
     }
-
 
     public Optional<List<ExternalMovement>> getExternalMovements(Offender offender, InmateDetail inmateDetail) throws ExecutionException, RetryException {
         return custodyApiClient
@@ -183,22 +208,6 @@ public class XtagTransformer {
     private String statusEventTypeOf(OffenderImprisonmentStatus offenderImprisonmentStatus) {
         final Long imprisonmentStatusNumeric = mappingService.numeric1Of(offenderImprisonmentStatus.getImprisonmentStatus().getImprisonmentStatus(), IMPRISONMENT_STATUS_CODE_TYPE);
         return Long.valueOf(1).equals(imprisonmentStatusNumeric) ? OFFENDER_LIFER : STATUS_CHANGE;
-    }
-
-    private String pncOf(Offender offender) {
-        return Optional.ofNullable(offender.getIdentifiers())
-                .flatMap(identifiers -> identifiers.stream()
-                        .filter(identifier -> "PNC".equals(identifier.getIdentifierType()))
-                        .findFirst()).map(Identifier::getIdentifier)
-                .map(XtagTransformer::normalisedPncOf)
-                .orElse(null);
-    }
-
-    public static String normalisedPncOf(String pnc) {
-        return Optional.ofNullable(pnc)
-                .filter(s -> s.indexOf("/") == 4)
-                .map(s -> s.substring(2))
-                .orElse(pnc);
     }
 
     private InmateDetail asInmateDetail(String jsonStr) {
