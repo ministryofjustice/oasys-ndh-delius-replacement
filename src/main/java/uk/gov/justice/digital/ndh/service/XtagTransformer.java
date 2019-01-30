@@ -295,6 +295,7 @@ public class XtagTransformer {
                 .pnc(pncOf(offender))
                 .nomisId(offender.getNomsId())
                 .movementFromTo(dischargeMovementFromToOf(offenderMovement))
+                .movementCourtCode(dischargeMovementCourtCodeOf(offenderMovement))
                 .movementDelete("N")
                 .movementCode(dischargeMovementCodeOf(offenderMovement.getMovementReasonCode()))
                 .forename1(offender.getFirstName())
@@ -306,6 +307,17 @@ public class XtagTransformer {
                 .effectiveSentenceLength(effectiveSentenceLengthOf(activeSentences, maybeSentenceCalculation))
                 .correlationId(nextCorrelationId())
                 .build());
+    }
+
+    private String dischargeMovementCourtCodeOf(ExternalMovement offenderMovement) {
+        final AgencyLocation toAgencyLocation = offenderMovement.getToAgencyLocation();
+
+        if (toAgencyLocation == null) {
+            log.info("Offender movement has no 'toAgencyLocation': {}", offenderMovement);
+            return null;
+        }
+
+        return "CRT".equals(offenderMovement.getMovementTypeCode()) ? agencyOrOutOf(toAgencyLocation.getAgencyLocationId()) : null;
     }
 
     private Booking bookingOf(List<Booking> bookings, Long bookingId) {
