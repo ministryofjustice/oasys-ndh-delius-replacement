@@ -73,6 +73,7 @@ public class OasysAssessmentUpdateListener {
         try {
             maybeDeliusRequest = buildDeliusSoapEnvelope(maybeInputSoapMessage);
         } catch (NDHMappingException ndhme) {
+            log.error("Mapping fail: {}", ndhme.toString());
             exceptionLogService.logMappingFail(ndhme.getCode(), ndhme.getValue(), ndhme.getSubject(), correlationId, offenderId);
         }
 
@@ -110,9 +111,11 @@ public class OasysAssessmentUpdateListener {
                     try {
                         deliusResponse = xmlMapper.readValue(rawDeliusResponse, SoapEnvelopeSpec1_2.class);
                         if (deliusResponse.getBody().isSoapFault()) {
+                            log.error("Delius SOAP fault: {}", rawDeliusResponse);
                             exceptionLogService.logFault(rawDeliusResponse, maybeDeliusRequest.get().getHeader().getHeader().getMessageId(), "SOAP Fault from Delius");
                         }
                     } catch (IOException e) {
+                        log.error("Fail reading delius reponse: {}", e.getMessage());
                         exceptionLogService.logFault(rawDeliusResponse, maybeDeliusRequest.get().getHeader().getHeader().getMessageId(), "Garbage response from Delius");
                     }
 

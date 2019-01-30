@@ -80,7 +80,7 @@ public class OasysRiskService extends RequestResponseService {
             try {
                 return Optional.of(xmlMapper.readValue(rawResponse, DeliusRiskUpdateResponse.class));
             } catch (IOException e) {
-                log.error(e.getMessage());
+                log.error("Delius fail: {} {}", e.getMessage(), rawResponse);
                 exceptionLogService.logFault(rawResponse, correlationId, "Can't deserialize delius risk update response: " + e.getMessage());
                 return Optional.empty();
             }
@@ -99,7 +99,7 @@ public class OasysRiskService extends RequestResponseService {
         try {
             return Optional.of(deliusRiskUpdateClient.deliusWebServiceResponseOf(transformedXml));
         } catch (UnirestException e) {
-            log.error(e.getMessage());
+            log.error("Delius fail: {} {}", e.getMessage(), transformedXml);
             exceptionLogService.logFault(transformedXml, correlationId, "Can't talk to Delius risk update endpoint: " + e.getMessage());
             return Optional.empty();
         }

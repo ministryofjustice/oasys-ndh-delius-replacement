@@ -33,7 +33,7 @@ public abstract class RequestResponseService {
                 final String transformedXml = xmlMapper.writeValueAsString(transformed);
                 return Optional.of(transformedXml);
             } catch (JsonProcessingException e) {
-                log.error(e.getMessage());
+                log.error("SOAP fail: {} {}", e.getMessage(), transformed);
                 exceptionLogService.logFault(transformed.toString(), correlationId, "Can't serialize transformed risk update to XML: " + e.getMessage());
                 return Optional.empty();
             }
@@ -41,6 +41,8 @@ public abstract class RequestResponseService {
     }
 
     public Optional<String> handleSoapFault(String correlationId, Optional<String> maybeRawResponse, String body) {
+        log.error("SOAP fail: {}", body);
+
         exceptionLogService.logFault(maybeRawResponse.get(), correlationId, "SOAP Fault returned from Delius initialSearch service");
         try {
             return Optional.ofNullable(faultTransformer.oasysFaultResponseOf(maybeRawResponse.get(), correlationId));

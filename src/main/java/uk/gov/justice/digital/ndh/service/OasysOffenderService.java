@@ -517,6 +517,7 @@ public class OasysOffenderService extends RequestResponseService {
         try {
             maybeOasysSOAPResponse = transform.apply(maybeOasysOffenderDetailsRequest, maybeResponse);
         } catch (NDHMappingException ndhme) {
+            log.error("Mapping fail: {}", ndhme.toString());
             exceptionLogService.logMappingFail(ndhme.getCode(), ndhme.getValue(), ndhme.getSubject(), correlationId, offenderId);
             return Optional.ofNullable(faultTransformer.mappingSoapFaultOf(ndhme, correlationId));
         }
@@ -539,7 +540,7 @@ public class OasysOffenderService extends RequestResponseService {
             try {
                 return Optional.of(xmlMapper.readValue(rawResponse, SoapEnvelopeSpec1_2.class));
             } catch (IOException e) {
-                log.error(e.getMessage());
+                log.error("SOAP fail: {}", rawResponse);
                 exceptionLogService.logFault(rawResponse, correlationId, descriptionPreamble + e.getMessage());
                 return Optional.empty();
             }
@@ -561,7 +562,7 @@ public class OasysOffenderService extends RequestResponseService {
         try {
             return Optional.of(deliusSOAPClient.deliusWebServiceResponseOf(transformedXml));
         } catch (UnirestException e) {
-            log.error(e.getMessage());
+            log.error("Delius client fail: {} {}", e.getMessage(), transformedXml);
             exceptionLogService.logFault(transformedXml, correlationId, descriptionPreamble + e.getMessage());
             return Optional.empty();
         }

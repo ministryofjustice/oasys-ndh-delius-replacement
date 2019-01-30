@@ -58,6 +58,7 @@ public class CommonTransformer {
         try {
             return Optional.of(xmlMapper.readValue(updateXml, SoapEnvelopeSpec1_2.class));
         } catch (IOException e) {
+            log.error("SOAP fail: {}", e.getMessage());
             exceptionLogService.logFault(updateXml, null, "Can't asSoapEnvelope xml soap message from Oasys: " + e.getMessage());
         }
         return Optional.empty();

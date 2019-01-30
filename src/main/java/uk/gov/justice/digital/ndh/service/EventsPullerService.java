@@ -128,6 +128,7 @@ public class EventsPullerService {
             final HttpResponse<String> response = oasysSOAPClient.oasysWebServiceResponseOf(oasysSoapXml);
 
             if (response.getStatus() != HttpStatus.OK.value()) {
+                log.error("Bad oasys response:: {} {}", response.getStatusText(), response.getBody());
                 exceptionLogService.logFault(oasysSoapXml, eventMessage.getCorrelationId(), "Bad response from oasys.");
             }
             if (response.getStatus() >= HttpStatus.INTERNAL_SERVER_ERROR.value()) {
@@ -154,6 +155,7 @@ public class EventsPullerService {
                     return xtagTransformer.offenderSentenceUpdatedXtagOf(event);
             }
         } catch (NDHMappingException ndhme) {
+            log.error("Mapping fail: {}", ndhme.toString());
             exceptionLogService.logMappingFail(ndhme.getCode(), ndhme.getValue(), ndhme.getSubject(), "n/a", anIdentifierFor(event));
         }
 
