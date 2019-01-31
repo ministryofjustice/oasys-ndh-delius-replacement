@@ -97,11 +97,14 @@ public class XtagTransformer {
 
         log.info("Handling offenderImprisonmentStatusUpdated event {}", event);
         final InmateDetail inmateDetail = getInmateDetail(event);
-        final Offender offender = getOffender(inmateDetail);
-        log.info("... which is for nomsId {}", offender.getNomsId());
+        final Offender rootOffender = getOffender(inmateDetail);
+        final Optional<Long> offenderId = bookingOffenderIdOf(event, rootOffender);
+        final Offender thisOffender = bookingOffenderOf(rootOffender, offenderId);
+
+        log.info("... which is for nomsId {}", rootOffender.getNomsId());
 
         final Optional<OffenderImprisonmentStatus> maybeOffenderImprisonmentStatus = custodyApiClient
-                .doGetWithRetry("offenders/offenderId/" + offender.getOffenderId() + "/imprisonmentStatuses")
+                .doGetWithRetry("offenders/offenderId/" + rootOffender.getOffenderId() + "/imprisonmentStatuses")
                 .filter(r -> r.getStatus() == HttpStatus.OK.value())
                 .map(HttpResponse::getBody)
                 .map(this::asImprisonmentStatuses)
@@ -115,14 +118,14 @@ public class XtagTransformer {
         return Optional.of(EventMessage.builder()
                 .timestamp(oasysTimestampOf(event.getEventDatetime()))
                 .prisonNumber(inmateDetail.getBookingNo())
-                .pnc(pncOf(offender))
+                .pnc(pncOf(rootOffender))
                 .nomisId(inmateDetail.getOffenderNo())
-                .forename1(offender.getFirstName())
-                .forename2(offender.getMiddleNames())
-                .familyName(offender.getSurname())
+                .forename1(thisOffender.getFirstName())
+                .forename2(thisOffender.getMiddleNames())
+                .familyName(thisOffender.getSurname())
                 .eventType(this.statusEventTypeOf(offenderImprisonmentStatus))
                 .establishmentCode(this.establishmentCodeOf(offenderImprisonmentStatus))
-                .dateOfBirth(offender.getDateOfBirth().toString())
+                .dateOfBirth(thisOffender.getDateOfBirth().toString())
                 .correlationId(nextCorrelationId())
                 .build())
                 .filter(eventMessage -> {
@@ -130,6 +133,14 @@ public class XtagTransformer {
                     log.info("Is Lifer? {}", lifer);
                     return lifer;
                 });
+    }
+
+    public Optional<Long> bookingOffenderIdOf(OffenderEvent event, Offender rootOffender) {
+        return rootOffender.getBookings()
+                .stream()
+                .filter(b -> b.getBookingId().equals(event.getBookingId()))
+                .findFirst()
+                .map(Booking::getOffenderId);
     }
 
     public Offender getOffender(InmateDetail inmateDetail) throws NomisAPIServiceError, UnirestException, ExecutionException, RetryException {
@@ -223,11 +234,13 @@ public class XtagTransformer {
     public Optional<EventMessage> offenderReceptionXtagOf(OffenderEvent event) throws ExecutionException, UnirestException, NomisAPIServiceError, RetryException {
         log.info("Handling offenderReception event {}", event);
         final InmateDetail inmateDetail = getInmateDetail(event);
-        final Offender offender = getOffender(inmateDetail);
-        log.info("... which is for nomsId {}", offender.getNomsId());
-        final List<Sentence> activeSentences = getActiveSentences(offender, inmateDetail.getBookingId());
-        final Optional<SentenceCalculation> maybeSentenceCalculation = getSentenceCalculation(offender, inmateDetail.getBookingId());
-        final ExternalMovement offenderMovement = getAdmissionMovement(offender, inmateDetail, event);
+        final Offender rootOffender = getOffender(inmateDetail);
+        final Optional<Long> offenderId = bookingOffenderIdOf(event, rootOffender);
+        final Offender thisOffender = bookingOffenderOf(rootOffender, offenderId);
+        log.info("... which is for nomsId {}", rootOffender.getNomsId());
+        final List<Sentence> activeSentences = getActiveSentences(rootOffender, inmateDetail.getBookingId());
+        final Optional<SentenceCalculation> maybeSentenceCalculation = getSentenceCalculation(rootOffender, inmateDetail.getBookingId());
+        final ExternalMovement offenderMovement = getAdmissionMovement(rootOffender, inmateDetail, event);
 
         return Optional.ofNullable(EventMessage.builder()
                 .timestamp(oasysTimestampOf(event.getEventDatetime()))
@@ -236,19 +249,19 @@ public class XtagTransformer {
                 .sentenceDays(daysOf(maybeSentenceCalculation))
                 .releaseDate(safeReleaseDateOf(maybeSentenceCalculation))
                 .prisonNumber(inmateDetail.getBookingNo())
-                .pnc(pncOf(offender))
-                .nomisId(offender.getNomsId())
+                .pnc(pncOf(rootOffender))
+                .nomisId(rootOffender.getNomsId())
                 .movementFromTo(receptionMovementFromToOf(offenderMovement))
                 .movementDelete("N")
                 .movementCourtCode(receptionMovementCourtCodeOf(offenderMovement))
                 .movementCode(receptionMovementCodeOf(offenderMovement.getMovementReasonCode()))
-                .forename1(offender.getFirstName())
-                .forename2(offender.getMiddleNames())
-                .familyName(offender.getSurname())
+                .forename1(thisOffender.getFirstName())
+                .forename2(thisOffender.getMiddleNames())
+                .familyName(thisOffender.getSurname())
                 .eventType("OffenderReception")
-                .establishmentCode(establishmentCodeOf(offenderMovement, offender))
+                .establishmentCode(establishmentCodeOf(offenderMovement, rootOffender))
                 .effectiveSentenceLength(effectiveSentenceLengthOf(activeSentences, maybeSentenceCalculation))
-                .dateOfBirth(offender.getDateOfBirth().toString())
+                .dateOfBirth(thisOffender.getDateOfBirth().toString())
                 .correlationId(nextCorrelationId())
                 .build());
     }
@@ -275,19 +288,21 @@ public class XtagTransformer {
     public Optional<EventMessage> bookingUpdatedXtagOf(OffenderEvent event) throws ExecutionException, UnirestException, NomisAPIServiceError, RetryException {
         log.info("Handling bookingUpdated event {}", event);
         final InmateDetail inmateDetail = getInmateDetail(event);
-        final Offender offender = getOffender(inmateDetail);
-        log.info("... which is for nomsId {}", offender.getNomsId());
+        final Offender rootOffender = getOffender(inmateDetail);
+        final Optional<Long> offenderId = bookingOffenderIdOf(event, rootOffender);
+        final Offender thisOffender = bookingOffenderOf(rootOffender, offenderId);
+        log.info("... which is for nomsId {}", rootOffender.getNomsId());
 
         return Optional.ofNullable(EventMessage.builder()
                 .timestamp(oasysTimestampOf(event.getEventDatetime()))
                 .prisonNumber(inmateDetail.getBookingNo())
-                .pnc(pncOf(offender))
+                .pnc(pncOf(rootOffender))
                 .oldPrisonNumber(event.getPreviousBookingNumber())
-                .nomisId(offender.getNomsId())
-                .forename1(offender.getFirstName())
-                .forename2(offender.getMiddleNames())
-                .familyName(offender.getSurname())
-                .establishmentCode(establishmentCodeOf(null, offender))
+                .nomisId(rootOffender.getNomsId())
+                .forename1(thisOffender.getFirstName())
+                .forename2(thisOffender.getMiddleNames())
+                .familyName(thisOffender.getSurname())
+                .establishmentCode(establishmentCodeOf(null, rootOffender))
                 .eventType("OffenderPrisonNumber")
                 .correlationId(nextCorrelationId())
                 .build());
@@ -298,8 +313,8 @@ public class XtagTransformer {
         final ExternalMovement offenderMovement = getDischargeMovement(event);
         final Offender rootOffender = getOffender(offenderMovement.getOffenderId());
         final Optional<Long> offenderId = rootOffender.getBookings().stream().filter(b -> b.getBookingId().equals(offenderMovement.getBookingId())).findFirst().map(b -> b.getOffenderId());
-        final Offender thisOffender = offenderId.isPresent() ? getOffender(offenderId.get()) : rootOffender;
-        log.info("... which is for nomsId {}", thisOffender.getNomsId());
+        final Offender thisOffender = bookingOffenderOf(rootOffender, offenderId);
+        log.info("... which is for nomsId {}", rootOffender.getNomsId());
 
 
         final List<Sentence> activeSentences = getActiveSentences(rootOffender, event.getBookingId());
@@ -508,22 +523,24 @@ public class XtagTransformer {
         log.info("Handling offenderUpdated event {}", event);
         final OffenderEvent eventWithBookingId = eventWithBookingIdOf(event);
         final InmateDetail inmateDetail = getInmateDetail(eventWithBookingId);
-        final Offender offender = getOffender(inmateDetail);
-        log.info("... which is for nomsId {}", offender.getNomsId());
+        final Offender rootOffender = getOffender(inmateDetail);
+        final Optional<Long> offenderId = bookingOffenderIdOf(event, rootOffender);
+        final Offender thisOffender = bookingOffenderOf(rootOffender, offenderId);
+        log.info("... which is for nomsId {}", rootOffender.getNomsId());
 
 
         return Optional.ofNullable(EventMessage.builder()
                 .timestamp(oasysTimestampOf(event.getEventDatetime()))
                 .prisonNumber(inmateDetail.getBookingNo())
-                .pnc(pncOf(offender))
+                .pnc(pncOf(rootOffender))
                 .oldPrisonNumber(event.getPreviousBookingNumber())
-                .nomisId(offender.getNomsId())
-                .forename1(offender.getFirstName())
-                .forename2(offender.getMiddleNames())
-                .familyName(offender.getSurname())
+                .nomisId(rootOffender.getNomsId())
+                .forename1(thisOffender.getFirstName())
+                .forename2(thisOffender.getMiddleNames())
+                .familyName(thisOffender.getSurname())
                 .eventType("OffenderDetails")
-                .establishmentCode(establishmentCodeOf(null, offender))
-                .dateOfBirth(offender.getDateOfBirth().toString())
+                .establishmentCode(establishmentCodeOf(null, rootOffender))
+                .dateOfBirth(thisOffender.getDateOfBirth().toString())
                 .correlationId(nextCorrelationId())
                 .build());
     }
@@ -549,14 +566,10 @@ public class XtagTransformer {
         log.info("Handling offenderSentenceUpdated event {}", event);
         final InmateDetail inmateDetail = getInmateDetail(event);
         final Offender rootOffender = getOffender(inmateDetail);
-        final Optional<Long> offenderId = rootOffender.getBookings()
-                .stream()
-                .filter(b -> b.getBookingId().equals(event.getBookingId()))
-                .findFirst()
-                .map(Booking::getOffenderId);
-        final Offender thisOffender = offenderId.isPresent() ? getOffender(offenderId.get()) : rootOffender;
+        final Optional<Long> offenderId = bookingOffenderIdOf(event, rootOffender);
+        final Offender thisOffender = bookingOffenderOf(rootOffender, offenderId);
 
-        log.info("... which is for nomsId {}", thisOffender.getNomsId());
+        log.info("... which is for nomsId {}", rootOffender.getNomsId());
         final List<Sentence> activeSentences = getActiveSentences(rootOffender, inmateDetail.getBookingId());
         final Optional<SentenceCalculation> maybeSentenceCalculation = getSentenceCalculation(rootOffender, inmateDetail.getBookingId());
 
@@ -579,6 +592,10 @@ public class XtagTransformer {
                 .dateOfBirth(thisOffender.getDateOfBirth().toString())
                 .correlationId(nextCorrelationId())
                 .build());
+    }
+
+    public Offender bookingOffenderOf(Offender rootOffender, Optional<Long> offenderId) throws ExecutionException, UnirestException, RetryException, NomisAPIServiceError {
+        return offenderId.isPresent() ? getOffender(offenderId.get()) : rootOffender;
     }
 
     private String sentenceStartDateOf(List<Sentence> activeSentences) {
