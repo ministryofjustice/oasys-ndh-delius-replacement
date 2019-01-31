@@ -234,7 +234,7 @@ public class XtagTransformer {
                 .sentenceYears(yearsOf(maybeSentenceCalculation.map(SentenceCalculation::getEffectiveSentenceLength).orElse(null)))
                 .sentenceMonths(monthsOf(maybeSentenceCalculation.map(SentenceCalculation::getEffectiveSentenceLength).orElse(null)))
                 .sentenceDays(daysOf(maybeSentenceCalculation.map(SentenceCalculation::getEffectiveSentenceLength).orElse(null)))
-                .releaseDate(maybeSentenceCalculation.map(sc -> sc.getReleaseDate().toString()).orElse(null))
+                .releaseDate(maybeSentenceCalculation.flatMap(sc -> Optional.ofNullable(sc.getReleaseDate())).map(LocalDate::toString).orElse(null))
                 .prisonNumber(inmateDetail.getBookingNo())
                 .pnc(pncOf(offender))
                 .nomisId(offender.getNomsId())
