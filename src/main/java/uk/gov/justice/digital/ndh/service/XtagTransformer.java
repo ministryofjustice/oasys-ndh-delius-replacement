@@ -539,30 +539,45 @@ public class XtagTransformer {
     public Optional<EventMessage> offenderSentenceUpdatedXtagOf(OffenderEvent event) throws ExecutionException, UnirestException, NomisAPIServiceError, RetryException {
         log.info("Handling offenderSentenceUpdated event {}", event);
         final InmateDetail inmateDetail = getInmateDetail(event);
-        final Offender offender = getOffender(inmateDetail);
-        log.info("... which is for nomsId {}", offender.getNomsId());
-        final List<Sentence> activeSentences = getActiveSentences(offender, inmateDetail.getBookingId());
-        final Optional<SentenceCalculation> maybeSentenceCalculation = getSentenceCalculation(offender, inmateDetail.getBookingId());
+        final Offender rootOffender = getOffender(inmateDetail);
+        final Optional<Long> offenderId = rootOffender.getBookings()
+                .stream()
+                .filter(b -> b.getBookingId().equals(event.getBookingId()))
+                .findFirst()
+                .map(Booking::getOffenderId);
+        final Offender thisOffender = offenderId.isPresent() ? getOffender(offenderId.get()) : rootOffender;
+
+        log.info("... which is for nomsId {}", thisOffender.getNomsId());
+        final List<Sentence> activeSentences = getActiveSentences(rootOffender, inmateDetail.getBookingId());
+        final Optional<SentenceCalculation> maybeSentenceCalculation = getSentenceCalculation(rootOffender, inmateDetail.getBookingId());
 
         return Optional.ofNullable(EventMessage.builder()
                 .timestamp(oasysTimestampOf(event.getEventDatetime()))
-                .sentenceYears(yearsOf(maybeSentenceCalculation.map(SentenceCalculation::getEffectiveSentenceLength).orElse(null)))
+                .sentenceYears(getSentenceYears(maybeSentenceCalculation))
                 .sentenceMonths(monthsOf(maybeSentenceCalculation.map(SentenceCalculation::getEffectiveSentenceLength).orElse(null)))
                 .sentenceDays(daysOf(maybeSentenceCalculation.map(SentenceCalculation::getEffectiveSentenceLength).orElse(null)))
                 .sentenceDate(sentenceStartDateOf(activeSentences))
                 .releaseDate(safeReleaseDateOf(maybeSentenceCalculation))
                 .prisonNumber(inmateDetail.getBookingNo())
-                .pnc(pncOf(offender))
-                .nomisId(offender.getNomsId())
-                .forename1(offender.getFirstName())
-                .forename2(offender.getMiddleNames())
-                .familyName(offender.getSurname())
+                .pnc(pncOf(rootOffender))
+                .nomisId(thisOffender.getNomsId())
+                .forename1(thisOffender.getFirstName())
+                .forename2(thisOffender.getMiddleNames())
+                .familyName(thisOffender.getSurname())
                 .eventType("OffenderSentence")
-                .establishmentCode(establishmentCodeOf(null, offender))
+                .establishmentCode(establishmentCodeOf(null, rootOffender))
                 .effectiveSentenceLength(effectiveSentenceLengthOf(activeSentences, maybeSentenceCalculation))
-                .dateOfBirth(offender.getDateOfBirth().toString())
+                .dateOfBirth(thisOffender.getDateOfBirth().toString())
                 .correlationId(nextCorrelationId())
                 .build());
+    }
+
+    public String getSentenceYears(Optional<SentenceCalculation> maybeSentenceCalculation) {
+        return yearsOf(maybeSentenceCalculation.map(SentenceCalculation::getEffectiveSentenceLength).orElse(null));
+    }
+
+    private Offender bookingOffenderOf(Offender rootOffender, Long bookingId) {
+        return null;
     }
 
     private String sentenceStartDateOf(List<Sentence> activeSentences) {
