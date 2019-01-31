@@ -234,7 +234,7 @@ public class XtagTransformer {
                 .sentenceYears(yearsOf(maybeSentenceCalculation.map(SentenceCalculation::getEffectiveSentenceLength).orElse(null)))
                 .sentenceMonths(monthsOf(maybeSentenceCalculation.map(SentenceCalculation::getEffectiveSentenceLength).orElse(null)))
                 .sentenceDays(daysOf(maybeSentenceCalculation.map(SentenceCalculation::getEffectiveSentenceLength).orElse(null)))
-                .releaseDate(maybeSentenceCalculation.flatMap(sc -> Optional.ofNullable(sc.getReleaseDate())).map(LocalDate::toString).orElse(null))
+                .releaseDate(safeReleaseDateOf(maybeSentenceCalculation))
                 .prisonNumber(inmateDetail.getBookingNo())
                 .pnc(pncOf(offender))
                 .nomisId(offender.getNomsId())
@@ -251,6 +251,10 @@ public class XtagTransformer {
                 .dateOfBirth(offender.getDateOfBirth().toString())
                 .correlationId(nextCorrelationId())
                 .build());
+    }
+
+    public String safeReleaseDateOf(Optional<SentenceCalculation> maybeSentenceCalculation) {
+        return maybeSentenceCalculation.flatMap(sc -> Optional.ofNullable(sc.getReleaseDate())).map(LocalDate::toString).orElse(null);
     }
 
     private String receptionMovementCodeOf(String movementReasonCode) {
@@ -306,7 +310,7 @@ public class XtagTransformer {
                 .sentenceYears(yearsOf(maybeSentenceCalculation.map(SentenceCalculation::getEffectiveSentenceLength).orElse(null)))
                 .sentenceMonths(monthsOf(maybeSentenceCalculation.map(SentenceCalculation::getEffectiveSentenceLength).orElse(null)))
                 .sentenceDays(daysOf(maybeSentenceCalculation.map(SentenceCalculation::getEffectiveSentenceLength).orElse(null)))
-                .releaseDate(maybeSentenceCalculation.flatMap(sc -> Optional.ofNullable(sc.getReleaseDate()).map(LocalDate::toString)).orElse(null))
+                .releaseDate(safeReleaseDateOf(maybeSentenceCalculation))
                 .prisonNumber(bookingOf(rootOffender.getBookings(), event.getBookingId()).getBookingNo())
                 .pnc(pncOf(thisOffender))
                 .nomisId(thisOffender.getNomsId())
@@ -546,7 +550,7 @@ public class XtagTransformer {
                 .sentenceMonths(monthsOf(maybeSentenceCalculation.map(SentenceCalculation::getEffectiveSentenceLength).orElse(null)))
                 .sentenceDays(daysOf(maybeSentenceCalculation.map(SentenceCalculation::getEffectiveSentenceLength).orElse(null)))
                 .sentenceDate(sentenceStartDateOf(activeSentences))
-                .releaseDate(maybeSentenceCalculation.map(sc -> sc.getReleaseDate().toString()).orElse(null))
+                .releaseDate(safeReleaseDateOf(maybeSentenceCalculation))
                 .prisonNumber(inmateDetail.getBookingNo())
                 .pnc(pncOf(offender))
                 .nomisId(offender.getNomsId())
