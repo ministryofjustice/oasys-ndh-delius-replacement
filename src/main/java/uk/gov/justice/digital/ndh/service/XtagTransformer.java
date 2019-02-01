@@ -305,6 +305,7 @@ public class XtagTransformer {
                 .forename2(thisOffender.getMiddleNames())
                 .familyName(thisOffender.getSurname())
                 .establishmentCode(establishmentCodeOf(null, rootOffender))
+                .dateOfBirth(thisOffender.getDateOfBirth().toString())
                 .eventType("OffenderPrisonNumber")
                 .correlationId(nextCorrelationId())
                 .build());
