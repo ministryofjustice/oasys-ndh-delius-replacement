@@ -277,7 +277,9 @@ public class XtagTransformer {
             log.warn("Failed to lookup reception movement code {} in group {}. Trying discharge code instead...", movementReasonCode, OASYSR_RECEPTION_CODES);
         }
 
-        return dischargeMovementCodeOf(movementReasonCode);
+        dischargeMovementCodeOf(movementReasonCode);
+
+        return "R";
     }
 
     private String receptionMovementCourtCodeOf(ExternalMovement offenderMovement) {
