@@ -270,7 +270,7 @@ public class XtagTransformer {
         return maybeSentenceCalculation.flatMap(sc -> Optional.ofNullable(sc.getReleaseDate())).map(LocalDate::toString).orElse(null);
     }
 
-    private String receptionMovementCodeOf(String movementReasonCode) {
+    public String receptionMovementCodeOf(String movementReasonCode) {
         try {
             return mappingService.targetValueOf(movementReasonCode, OASYSR_RECEPTION_CODES);
         } catch (NDHMappingException ndhme) {
