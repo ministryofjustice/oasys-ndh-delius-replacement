@@ -158,32 +158,21 @@ public class XtagTransformer {
                 .map(HttpResponse::getBody)
                 .map(this::asSentenceCalculations)
                 .flatMap(sentences -> sentences.stream().findFirst());
-//        .orElseThrow(() -> new NomisAPIServiceError("Can't get offender sentence calculations."));
     }
 
-    public ExternalMovement getAdmissionMovement(Offender offender, InmateDetail inmateDetail, OffenderEvent offenderEvent) throws NomisAPIServiceError, ExecutionException, RetryException {
-        return getExternalMovements(offender, inmateDetail)
+    public ExternalMovement getAdmissionMovementFallback(Long bookingId) throws NomisAPIServiceError, ExecutionException, RetryException {
+        return getExternalMovements(bookingId)
                 .flatMap(externalMovements -> externalMovements.stream()
-                        .filter(movement -> offenderEvent.getMovementSeq().equals(movement.getSequenceNumber()) ||
-                                "ADM".equals(movement.getMovementTypeCode()))
-                        .findFirst()).orElseThrow(() -> new NomisAPIServiceError("Can't get offender movements."));
+                        .filter(movement -> "ADM".equals(movement.getMovementTypeCode()))
+                        .findFirst()).orElseThrow(() -> new NomisAPIServiceError("Can't get admission movement ADM fallback for booking " + bookingId));
     }
 
-    public Optional<List<ExternalMovement>> getExternalMovements(Offender offender, InmateDetail inmateDetail) throws ExecutionException, RetryException {
+    public Optional<List<ExternalMovement>> getExternalMovements(Long bookingId) throws ExecutionException, RetryException {
         return custodyApiClient
-                .doGetWithRetry("offenders/offenderId/" + offender.getOffenderId() + "/movements", ImmutableMap.of("bookingId", inmateDetail.getBookingId()))
+                .doGetWithRetry("/movements", ImmutableMap.of("bookingId", bookingId, "size", 2000))
                 .filter(r -> r.getStatus() == HttpStatus.OK.value())
                 .map(HttpResponse::getBody)
-                .map(this::asExternalMovements);
-    }
-
-    private List<ExternalMovement> asExternalMovements(String jsonStr) {
-        try {
-            return Arrays.asList(objectMapper.readValue(jsonStr, ExternalMovement[].class));
-        } catch (IOException e) {
-            log.error(e.getMessage());
-            return Collections.emptyList();
-        }
+                .map(this::asPagedExternalMovements);
     }
 
     private List<SentenceCalculation> asSentenceCalculations(String jsonStr) {
@@ -240,7 +229,7 @@ public class XtagTransformer {
         log.info("... which is for nomsId {}", rootOffender.getNomsId());
         final List<Sentence> activeSentences = getActiveSentences(rootOffender, inmateDetail.getBookingId());
         final Optional<SentenceCalculation> maybeSentenceCalculation = getSentenceCalculation(rootOffender, inmateDetail.getBookingId());
-        final ExternalMovement offenderMovement = getAdmissionMovement(rootOffender, inmateDetail, event);
+        final ExternalMovement offenderMovement = getAdmissionMovement(event);
 
         return Optional.ofNullable(EventMessage.builder()
                 .timestamp(oasysTimestampOf(event.getEventDatetime()))
@@ -264,6 +253,24 @@ public class XtagTransformer {
                 .dateOfBirth(thisOffender.getDateOfBirth().toString())
                 .correlationId(nextCorrelationId())
                 .build());
+    }
+
+    private ExternalMovement getAdmissionMovement(OffenderEvent event) throws ExecutionException, UnirestException, RetryException, NomisAPIServiceError {
+        if (event.getMovementSeq() != null) {
+            return getExternalMovement(event);
+        } else {
+            log.warn("Admission movement event {} does not have a movement sequence. Doing fallback by moveent type code ADM.", event);
+            return getAdmissionMovementFallback(event.getBookingId());
+        }
+    }
+
+    private ExternalMovement getExternalMovement(OffenderEvent event) throws NomisAPIServiceError, UnirestException, ExecutionException, RetryException {
+        return custodyApiClient
+                .doGetWithRetry("movements/bookingId/" + event.getBookingId() + "/sequence/" + event.getMovementSeq())
+                .filter(r -> r.getStatus() == HttpStatus.OK.value())
+                .map(HttpResponse::getBody)
+                .map(this::asExternalMovement)
+                .orElseThrow(() -> new NomisAPIServiceError("Can't get offender movement for bookingId " + event.getBookingId() + " and sequence " + event.getMovementSeq() + "."));
     }
 
     public String safeReleaseDateOf(Optional<SentenceCalculation> maybeSentenceCalculation) {
@@ -347,6 +354,25 @@ public class XtagTransformer {
                 .build());
     }
 
+    private ExternalMovement getDischargeMovement(OffenderEvent event) throws ExecutionException, RetryException, UnirestException, NomisAPIServiceError {
+
+        if (event.getMovementSeq() != null) {
+            return getExternalMovement(event);
+        } else {
+            log.warn("Discharge movement event {} does not have a movement sequence. Doing fallback by code type TRN", event);
+            return getDischargeMovementFallback(event.getBookingId());
+        }
+    }
+
+    private ExternalMovement asExternalMovement(String jsonStr) {
+        try {
+            return objectMapper.readValue(jsonStr, ExternalMovement.class);
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            return null;
+        }
+    }
+
     private String dischargeMovementCourtCodeOf(ExternalMovement offenderMovement) {
         final AgencyLocation toAgencyLocation = offenderMovement.getToAgencyLocation();
 
@@ -370,19 +396,12 @@ public class XtagTransformer {
                 .map(offenderTransformer::asOffender).orElseThrow(() -> new NomisAPIServiceError("Can't get offender detail."));
     }
 
-    private ExternalMovement getDischargeMovement(OffenderEvent event) throws ExecutionException, RetryException, NomisAPIServiceError {
-        return custodyApiClient
-                .doGetWithRetry("movements", ImmutableMap.of("bookingId", event.getBookingId(),
-                        "size", "1000"))
-                .filter(r -> r.getStatus() == HttpStatus.OK.value())
-                .map(HttpResponse::getBody)
-                .map(this::asPagedExternalMovements)
+    private ExternalMovement getDischargeMovementFallback(Long bookingId) throws ExecutionException, RetryException, NomisAPIServiceError {
+        return getExternalMovements(bookingId)
                 .flatMap(ems -> ems.stream()
-                        .filter(
-                                em -> em.getSequenceNumber().equals(event.getMovementSeq())
-                                        || "TRN".equals(em.getMovementTypeCode()))
+                        .filter(em -> "TRN".equals(em.getMovementTypeCode()))
                         .findFirst())
-                .orElseThrow(() -> new NomisAPIServiceError("Can't get offender movements for bookingId " + event.getBookingId() + " and sequence " + event.getMovementSeq() + "."));
+                .orElseThrow(() -> new NomisAPIServiceError("Can't get offender TRN movement for bookingId " + bookingId));
     }
 
     private List<ExternalMovement> asPagedExternalMovements(String s) {
