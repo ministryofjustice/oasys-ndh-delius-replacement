@@ -176,7 +176,7 @@ public class XtagTransformer {
 
     public InmateDetail getInmateDetail(OffenderEvent event) throws UnirestException, ExecutionException, NomisAPIServiceError, RetryException {
         return elite2ApiClient
-                .doGetWithRetry("bookings/" + event.getBookingId())
+                .doGetWithRetry("bookings/" + event.getBookingId(), ImmutableMap.of("basicInfo","true"))
                 .filter(r -> r.getStatus() == HttpStatus.OK.value())
                 .map(HttpResponse::getBody)
                 .map(this::asInmateDetail).orElseThrow(() -> new NomisAPIServiceError("Can't get inmate detail."));
