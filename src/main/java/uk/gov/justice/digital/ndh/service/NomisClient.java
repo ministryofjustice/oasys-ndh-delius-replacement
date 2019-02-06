@@ -71,7 +71,7 @@ public class NomisClient {
         }
     }
 
-    public Optional<HttpResponse<String>> doGetWithRetry(String relativeUrl) throws UnirestException, ExecutionException, RetryException {
+    public Optional<HttpResponse<String>> doGetWithRetry(String relativeUrl) throws ExecutionException, RetryException {
         return doGetWithRetry(relativeUrl, null);
     }
 }
