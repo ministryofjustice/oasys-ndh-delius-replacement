@@ -60,17 +60,22 @@ public class NomisClient {
         return response.getStatus() == HttpStatus.SC_BAD_GATEWAY;
     }
 
+    public boolean isServerError(HttpResponse<String> response) {
+        return response.getStatus() == HttpStatus.SC_INTERNAL_SERVER_ERROR;
+    }
+
     public boolean shouldRetry(HttpResponse<String> response) {
         return isUnauthorised(response) ||
-                isBadGateway(response);
+                isBadGateway(response) ||
+                isServerError(response);
     }
 
     public Optional<HttpResponse<String>> doGetWithRetry(String relativeUrl, Map<String, Object> params) throws ExecutionException, RetryException {
 
         Retryer<HttpResponse<String>> retryer = RetryerBuilder.<HttpResponse<String>>newBuilder()
                 .retryIfResult(this::shouldRetry)
-                .withWaitStrategy(WaitStrategies.incrementingWait(0L, TimeUnit.SECONDS, 2L, TimeUnit.SECONDS))
-                .withStopStrategy(StopStrategies.stopAfterAttempt(5))
+                .withWaitStrategy(WaitStrategies.exponentialWait(10L, TimeUnit.SECONDS))
+                .withStopStrategy(StopStrategies.stopAfterAttempt(100))
                 .build();
 
         try {
