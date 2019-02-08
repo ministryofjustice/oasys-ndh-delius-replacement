@@ -99,7 +99,13 @@ public class EventsPullerService {
                 log.info("No events to pull...");
             }
         } catch (Exception e) {
-            log.error("Caught error in processing loop: message is {}, class {}, stack trace {} ", e.getMessage(), e.getClass(), e.getStackTrace());
+            if (e.getMessage().contains("java.net.SocketTimeoutException") &&
+                    Arrays.stream(e.getStackTrace()).map(StackTraceElement::toString).collect(Collectors.joining("."))
+                            .contains("uk.gov.justice.digital.ndh.service.NomisClient")) {
+                log.warn("Timeout from a NOMIS API call of some sort. Will attempt retry: message is {}, class {}, stack trace {}", e.getMessage(), e.getClass(), e.getStackTrace());
+            } else {
+                log.error("Caught error in processing loop: message is {}, class {}, stack trace {} ", e.getMessage(), e.getClass(), e.getStackTrace());
+            }
         }
     }
 
