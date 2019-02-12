@@ -78,6 +78,7 @@ public class EventsPullerService {
             Optional<List<OffenderEvent>> maybeOffenderEvents = custodyApiClient
                     .doGetWithRetry("events", ImmutableMap.of(
                             "from", lastPulled.toString(),
+                            "to", now.minusSeconds(5L).toString(),
                             "type", "BOOKING_NUMBER-CHANGED,OFFENDER_MOVEMENT-RECEPTION,OFFENDER_MOVEMENT-DISCHARGE,OFFENDER_BOOKING-CHANGED,OFFENDER_DETAILS-CHANGED,IMPRISONMENT_STATUS-CHANGED,SENTENCE_CALCULATION_DATES-CHANGED",
                             "sortBy", "TIMESTAMP_ASC"))
                     .filter(r -> r.getStatus() == HttpStatus.OK.value())
