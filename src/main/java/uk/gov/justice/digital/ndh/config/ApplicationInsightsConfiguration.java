@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.ndh.config;
 
 import com.microsoft.applicationinsights.TelemetryClient;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
@@ -14,6 +15,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  * we don't get a telemetry bean and application won't start.  Therefore need this backup configuration.
  */
 @Configuration
+@Slf4j
 public class ApplicationInsightsConfiguration {
 
 
@@ -28,7 +30,11 @@ public class ApplicationInsightsConfiguration {
         @Override
         public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
             final var telemetryKey = context.getEnvironment().getProperty("application.insights.ikey");
-            return Strings.isBlank(telemetryKey);
+            final boolean blank = Strings.isBlank(telemetryKey);
+            if (blank) {
+                log.warn("No application.insights.ikey found! App Insights will not work.");
+            }
+            return blank;
         }
     }
 }
