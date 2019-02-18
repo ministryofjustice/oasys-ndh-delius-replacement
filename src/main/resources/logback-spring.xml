@@ -25,7 +25,7 @@
         <appender name="aiAppender" class="com.microsoft.applicationinsights.logback.ApplicationInsightsAppender"/>
     </springProfile>
 
-    <logger name="uk.gov.justice.digital.nomis" additivity="false" level="DEBUG">
+    <logger name="uk.gov.justice.digital.ndh" additivity="false" level="DEBUG">
         <appender-ref ref="consoleAppender"/>
         <appender-ref ref="aiAppender"/>
     </logger>
