@@ -89,6 +89,7 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-actuator'
     compile 'org.springframework.boot:spring-boot-starter-activemq'
     compile 'org.springframework.boot:spring-boot-starter-actuator'
+    compile 'net.logstash.logback:logstash-logback-encoder:5.2'
     compile 'com.microsoft.azure:applicationinsights-spring-boot-starter:1.1.2'
     compile 'com.microsoft.azure:applicationinsights-logging-logback:2.3.1'
     compile 'org.apache.activemq:activemq-kahadb-store:5.14.5'
