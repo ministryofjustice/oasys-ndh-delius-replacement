@@ -39,4 +39,6 @@ logging.level.uk.gov: INFO
 
 logging.level.org.apache.activemq: INFO
 
+azure.application-insights.instrumentation-key:
+
 
