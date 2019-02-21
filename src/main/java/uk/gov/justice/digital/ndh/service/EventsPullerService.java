@@ -85,6 +85,7 @@ public class EventsPullerService {
                     .map(HttpResponse::getBody)
                     .map(this::asEvents)
                     .map(offenderEvents -> offenderEvents.stream()
+                            .filter(offenderEvent -> offenderEvent.getNomisEventType() != null)
                             .filter(offenderEvent -> offenderEvent.getNomisEventType().endsWith(OASYS))
                             .filter(offenderEvent -> !lastPulled.equals(offenderEvent.getEventDatetime()))
                             .collect(Collectors.toList()));
