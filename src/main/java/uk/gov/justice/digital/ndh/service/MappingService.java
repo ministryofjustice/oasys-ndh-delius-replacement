@@ -3,9 +3,8 @@ package uk.gov.justice.digital.ndh.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.justice.digital.ndh.jpa.entity.MappingCodeData;
-import uk.gov.justice.digital.ndh.jpa.entity.MappingCodeDataPK;
-import uk.gov.justice.digital.ndh.jpa.repository.MappingRepository;
+import uk.gov.justice.digital.ndh.jpa.repository.mapping.MappingCodeData;
+import uk.gov.justice.digital.ndh.jpa.repository.mapping.MappingRepository;
 import uk.gov.justice.digital.ndh.service.exception.NDHMappingException;
 
 import java.util.Optional;
@@ -55,11 +54,7 @@ public class MappingService {
     }
 
     public Optional<MappingCodeData> getMaybeMapped(String sourceVal, Long codeType) {
-        return Optional.ofNullable(sourceVal).flatMap(
-                sv -> mappingRepository.findById(MappingCodeDataPK.builder()
-                        .codeType(codeType)
-                        .sourceValue(sourceVal)
-                        .build()));
+        return mappingRepository.findByCodeTypeAndSourceValue(codeType, sourceVal);
     }
 
     public Long numeric1Of(String sourceVal, Long codeType) throws NDHMappingException {
