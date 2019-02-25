@@ -62,7 +62,7 @@ public class XtagTransformerTest {
         final MappingService mappingService = mock(MappingService.class);
         XtagTransformer xtagTransformer = new XtagTransformer(null, null, null, mappingService, null,null);
 
-        Mockito.when(mappingService.targetValueOf("C5", 2015L)).thenReturn("Jeremy");
+        Mockito.when(mappingService.targetValueOf("C5", 2015L, false)).thenReturn("Jeremy");
 
         assertThat(xtagTransformer.receptionMovementCodeOf("C5")).isEqualTo("Jeremy");
     }
@@ -73,8 +73,8 @@ public class XtagTransformerTest {
         final MappingService mappingService = mock(MappingService.class);
         XtagTransformer xtagTransformer = new XtagTransformer(null, null, null, mappingService, null,null);
 
-        Mockito.when(mappingService.targetValueOf("C5", 2015L)).thenThrow(NDHMappingException.builder().build());
-        Mockito.when(mappingService.targetValueOf("C5", 2016L)).thenReturn("Colin");
+        Mockito.when(mappingService.targetValueOf("C5", 2015L, false)).thenThrow(NDHMappingException.builder().build());
+        Mockito.when(mappingService.targetValueOf("C5", 2016L, false)).thenReturn("Colin");
 
         assertThat(xtagTransformer.receptionMovementCodeOf("C5")).isEqualTo("R");
     }
@@ -85,7 +85,7 @@ public class XtagTransformerTest {
         final MappingService mappingService = mock(MappingService.class);
         XtagTransformer xtagTransformer = new XtagTransformer(null, null, null, mappingService, null,null);
 
-        Mockito.when(mappingService.targetValueOf("C5", 2015L)).thenThrow(NDHMappingException.builder().build());
+        Mockito.when(mappingService.targetValueOf("C5", 2015L, false)).thenThrow(NDHMappingException.builder().build());
         Mockito.when(mappingService.targetValueOf("C5", 2016L)).thenThrow(NDHMappingException.builder().build());
 
         xtagTransformer.receptionMovementCodeOf("C5");
