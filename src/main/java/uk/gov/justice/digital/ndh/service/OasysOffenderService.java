@@ -108,7 +108,7 @@ public class OasysOffenderService extends RequestResponseService {
         return doCall(transformedXml, correlationId, deliusInitialSearchClient, "Can't talk to Delius initial search endpoint: ");
     }
 
-    public Optional<String> offenderDetails(String offenderDetailsRequestXml) throws JsonProcessingException {
+    public Optional<String> offenderDetails(String offenderDetailsRequestXml) {
         val maybeOasysOffenderDetailsRequest = commonTransformer.asSoapEnvelope(offenderDetailsRequestXml);
 
         val correlationId = maybeOasysOffenderDetailsRequest.map(offenderDetails -> offenderDetails.getBody().getOffenderDetailsRequest().getHeader().getCorrelationID()).orElse(null);

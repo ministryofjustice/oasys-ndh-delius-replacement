@@ -21,13 +21,9 @@ public class MappingService {
     }
 
     public String descriptionOf(String sourceVal, Long codeType) throws NDHMappingException {
-        Optional<MappingCodeData> maybeMapped = Optional.ofNullable(sourceVal).flatMap(
-                sv -> mappingRepository.findById(MappingCodeDataPK.builder()
-                        .codeType(codeType)
-                        .sourceValue(sourceVal)
-                        .build()));
+        Optional<MappingCodeData> maybeMapped = getMaybeMapped(sourceVal, codeType);
 
-        if (!maybeMapped.isPresent()) {
+        if (maybeMapped.isEmpty()) {
             log.error("Could not map source {} and code {} to description.", sourceVal, codeType);
         }
 
@@ -39,13 +35,13 @@ public class MappingService {
     }
 
     public String targetValueOf(String sourceVal, Long codeType) throws NDHMappingException {
-        Optional<MappingCodeData> maybeMapped = Optional.ofNullable(sourceVal).flatMap(
-                sv -> mappingRepository.findById(MappingCodeDataPK.builder()
-                        .codeType(codeType)
-                        .sourceValue(sourceVal)
-                        .build()));
+        return targetValueOf(sourceVal, codeType, true);
+    }
 
-        if (!maybeMapped.isPresent()) {
+    public String targetValueOf(String sourceVal, Long codeType, boolean logMapFail) throws NDHMappingException {
+        Optional<MappingCodeData> maybeMapped = getMaybeMapped(sourceVal, codeType);
+
+        if (maybeMapped.isEmpty() && logMapFail) {
             log.error("Could not map source {} and code {} to targetValue.", sourceVal, codeType);
         }
 
@@ -58,14 +54,18 @@ public class MappingService {
 
     }
 
-    public Long numeric1Of(String sourceVal, Long codeType) throws NDHMappingException {
-        Optional<MappingCodeData> maybeMapped = Optional.ofNullable(sourceVal).flatMap(
+    public Optional<MappingCodeData> getMaybeMapped(String sourceVal, Long codeType) {
+        return Optional.ofNullable(sourceVal).flatMap(
                 sv -> mappingRepository.findById(MappingCodeDataPK.builder()
                         .codeType(codeType)
                         .sourceValue(sourceVal)
                         .build()));
+    }
 
-        if (!maybeMapped.isPresent()) {
+    public Long numeric1Of(String sourceVal, Long codeType) throws NDHMappingException {
+        Optional<MappingCodeData> maybeMapped = getMaybeMapped(sourceVal, codeType);
+
+        if (maybeMapped.isEmpty()) {
             log.error("Could not map source {} and code {} to numeric1.", sourceVal, codeType);
         }
 

@@ -266,7 +266,7 @@ public class XtagTransformer {
 
     public String receptionMovementCodeOf(String movementReasonCode) {
         try {
-            return mappingService.targetValueOf(movementReasonCode, OASYSR_RECEPTION_CODES);
+            return mappingService.targetValueOf(movementReasonCode, OASYSR_RECEPTION_CODES, false);
         } catch (NDHMappingException ndhme) {
             log.warn("Failed to lookup reception movement code {} in group {}. Trying discharge code instead...", movementReasonCode, OASYSR_RECEPTION_CODES);
         }
