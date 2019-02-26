@@ -1,35 +1,40 @@
 package uk.gov.justice.digital.ndh.jpa.repository.mapping;
 
 
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVRecord;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Component
+@Slf4j
 public class MappingRepositoryCsvBacked implements MappingRepository {
 
     private final Map<MappingCodeKey, MappingCodeData> mappingCodeData;
 
     @Autowired
     public MappingRepositoryCsvBacked(@Qualifier("mappingCodeDataResource") Resource csvResource) throws IOException {
-        InputStream resource = csvResource.getInputStream();
+        InputStream resourceStream = csvResource.getInputStream();
 
-        try (BufferedReader reader = new BufferedReader(
-                new InputStreamReader(resource))) {
-            mappingCodeData = reader.lines()
-                    .skip(1)
-                    .map(this::mappingCodeDataOf)
-                    .collect(Collectors.toMap(this::keyOf, this::valueOf));
-        }
+        Iterable<CSVRecord> records = CSVFormat.EXCEL
+                .withFirstRecordAsHeader()
+                .parse(new InputStreamReader(resourceStream));
+
+        mappingCodeData = StreamSupport.stream(records.spliterator(), false)
+                .map(this::mappingCodeDataOf)
+                .collect(Collectors.toMap(this::keyOf, this::valueOf));
     }
 
     private MappingCodeData valueOf(MappingCodeData mappingCodeData) {
@@ -46,19 +51,28 @@ public class MappingRepositoryCsvBacked implements MappingRepository {
                 MappingCodeKey.builder().codeType(codeType).sourceValue(sourceValue).build(), null));
     }
 
-    private MappingCodeData mappingCodeDataOf(String s) {
+    private MappingCodeData mappingCodeDataOf(CSVRecord csvRecord) {
         //"CODETYPE","SOURCEVALUE","TARGETVALUE","DESCRIPTION","NUMCODE","RANK","NUMERIC1"
 
-        var fields = s.split(",");
+        MappingCodeData mappingCodeData = null;
+        try {
 
-        return MappingCodeData.builder()
-                .codeType(Long.valueOf(fields[0]))
-                .sourceValue(fields[1])
-                .targetValue(fields[2])
-                .description(fields[3])
-                .numcode(Long.valueOf(fields[4]))
-                .rank(Long.valueOf(fields[5]))
-                .numeric1(Long.valueOf(fields[6]))
-                .build();
+            mappingCodeData = MappingCodeData.builder()
+                    .codeType(Long.valueOf(csvRecord.get("CODETYPE")))
+                    .sourceValue(csvRecord.get("SOURCEVALUE"))
+                    .targetValue(csvRecord.get("TARGETVALUE"))
+                    .description(csvRecord.get("DESCRIPTION"))
+                    .numcode(getSafeLong(csvRecord, "NUMCODE"))
+                    .rank(getSafeLong(csvRecord, "RANK"))
+                    .numeric1(getSafeLong(csvRecord, "NUMERIC1"))
+                    .build();
+        } catch (Throwable t) {
+            System.out.println(csvRecord);
+        }
+        return mappingCodeData;
+    }
+
+    private Long getSafeLong(CSVRecord csvRecord, String numcode) {
+        return Optional.ofNullable(csvRecord.get(numcode)).filter(Strings::isNotEmpty).map(Long::valueOf).orElse(null);
     }
 }
