@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.ndh.jpa.repository;
+package uk.gov.justice.digital.ndh.jpa.repository.requirementLookup;
 
 import lombok.Builder;
 import lombok.Value;
@@ -15,4 +15,11 @@ public class RequirementLookup {
     private String cjaSupervisionMonths;
     private String activityDesc;
 
+    public RequirementLookupKey getKey() {
+        return RequirementLookupKey.builder()
+                .reqCode(reqCode)
+                .reqType(reqType)
+                .subCode(subCode)
+                .build();
+    }
 }

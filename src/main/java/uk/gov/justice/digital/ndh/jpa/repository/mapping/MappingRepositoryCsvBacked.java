@@ -54,10 +54,7 @@ public class MappingRepositoryCsvBacked implements MappingRepository {
     private MappingCodeData mappingCodeDataOf(CSVRecord csvRecord) {
         //"CODETYPE","SOURCEVALUE","TARGETVALUE","DESCRIPTION","NUMCODE","RANK","NUMERIC1"
 
-        MappingCodeData mappingCodeData = null;
-        try {
-
-            mappingCodeData = MappingCodeData.builder()
+        return MappingCodeData.builder()
                     .codeType(Long.valueOf(csvRecord.get("CODETYPE")))
                     .sourceValue(csvRecord.get("SOURCEVALUE"))
                     .targetValue(csvRecord.get("TARGETVALUE"))
@@ -66,10 +63,6 @@ public class MappingRepositoryCsvBacked implements MappingRepository {
                     .rank(getSafeLong(csvRecord, "RANK"))
                     .numeric1(getSafeLong(csvRecord, "NUMERIC1"))
                     .build();
-        } catch (Throwable t) {
-            System.out.println(csvRecord);
-        }
-        return mappingCodeData;
     }
 
     private Long getSafeLong(CSVRecord csvRecord, String numcode) {

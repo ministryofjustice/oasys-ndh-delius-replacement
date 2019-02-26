@@ -100,4 +100,10 @@ public class ThatsNotMyNDH {
     public Resource mappingCodeDataResource() {
         return new ClassPathResource("mapping_code_data.csv");
     }
+
+    @Bean
+    public Resource requirementLookupResource() {
+        return new ClassPathResource("requirement_lookup.csv");
+    }
+
 }
