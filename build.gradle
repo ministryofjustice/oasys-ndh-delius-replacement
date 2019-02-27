@@ -100,6 +100,7 @@ dependencies {
     compile 'io.springfox:springfox-swagger-ui:2.7.0'
     compile 'com.zaxxer:HikariCP:2.7.6'
     compile 'commons-io:commons-io:2.6'
+    compile group: 'org.apache.commons', name: 'commons-csv', version: '1.6'
     compile group: 'org.dom4j', name: 'dom4j', version: '2.1.1'
     compile group: 'jaxen', name: 'jaxen', version: '1.1.6'
     compile group: 'com.github.rholder', name: 'guava-retrying', version: '2.0.0'

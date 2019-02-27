@@ -1,0 +1,1279 @@
+"CODETYPE","SOURCEVALUE","TARGETVALUE","DESCRIPTION","NUMCODE","RANK","NUMERIC1"
+3806,"91","tib","Tibetan",0,0,0
+3806,"91","bit","bitetan",0,0,0
+3806,"92","oth","Other",0,0,0
+3806,"93","tur","Turkish",0,0,0
+3806,"94","twi","Twi",0,0,0
+3806,"95","ukr","Ukrainian",0,0,0
+3806,"96","urd","Urdu",0,0,0
+3806,"97","vie","Vietnamese",0,0,0
+3806,"98","wol","Wolof",0,0,0
+3806,"99","yor","Yoruba",0,0,0
+3803,"-1","-1","Unknown Main Category",0,0,0
+3803,"1","1","Residency",0,0,0
+3803,"10","10","Supervision",0,0,0
+3803,"101","101","Residence at a specific place",0,0,0
+3803,"102","102","Restriction of residency.",0,0,0
+3803,"103","103","Making or maintaining contact with a person",0,0,0
+3803,"104","104","Participate or co-op with Programme or Activities",0,0,0
+3803,"105","105","Poss, own, control, inspect specified items /docs",0,0,0
+3803,"106","106","Disclosure of information",0,0,0
+3803,"107","107","Curfew Arrangement",0,0,0
+3803,"108","108","Freedom of movement ",0,0,0
+3803,"109","109","Supervision in the community",0,0,0
+3803,"11","11","Exclusion",0,0,0
+3803,"110","110","Alcohol",0,0,0
+3803,"111","111","Polygraph Condition",0,0,0
+3803,"112","112","Drug Testing Condition",0,0,0
+3803,"12","12","Migrated Data",0,0,0
+3803,"2","2","Accredited Programme",0,0,0
+3803,"3","3","Contact",0,0,0
+3803,"4","4","Prohibited Residency",0,0,0
+3803,"5","5","Prohibited Contact",0,0,0
+3803,"6","6","Non-Association",0,0,0
+3803,"7","7","Drug Testing",0,0,0
+3803,"8","8","Curfew",0,0,0
+3803,"9","9","Prohibited Activity",0,0,0
+5500,"I10","430","EMOTIONAL WELLBEING",0,0,0
+5500,"I10A","440","Difficulties coping",0,0,0
+5500,"I10B","450","Psychological problems",0,0,0
+5500,"I10C","460","Social isolation",0,0,0
+5500,"I10D","470","Psychiatric problems",0,0,0
+5500,"I11","480","THINKING SKILLS ",0,0,0
+5500,"I11A","490","Interpersonal skills",0,0,0
+5500,"I11B","500","Aggressive/controlling behaviour",0,0,0
+5500,"I11C","510","Temper control",0,0,0
+5500,"I11D","520","Problem solving skills",0,0,0
+5500,"I11E","530","Understanding others' views",0,0,0
+5500,"I12","540","ATTITUDES ",0,0,0
+5500,"I12A","550","Motivation to address offending (inc attitude to staff/supervision)",0,0,0
+5500,"I12B","560","Discriminatory attitudes",0,0,0
+5500,"I13","570","SECTION 13",0,0,0
+5500,"I13A","580","Make constructive use of time",0,0,0
+5500,"I13B","590","Other",0,0,0
+5500,"I14","600","No Criminogenic Need",0,0,0
+5500,"I2","190","ANALYSIS OF OFFENCES",0,0,0
+5500,"I2A","200","Attitude to victim",0,0,0
+5500,"I2B","210","Racist attitudes",0,0,0
+5500,"I3","220","ACCOMMODATION",0,0,0
+5500,"I3A","230","Need for housing/improved housing/more suitable housing",0,0,0
+5500,"I4","240","EDUCATION TRAINING AND EMPLOYMENT",0,0,0
+5500,"I4A","250","Problems with literacy/numeracy (including learning difficulties)",0,0,0
+5500,"I4B","260","Work related skills",0,0,0
+5500,"I4C","270","Attitude/motivation",0,0,0
+5500,"I5","280","FINANCIAL MANAGEMENT",0,0,0
+5500,"I5A","290","Money management",0,0,0
+5500,"I6","300","RELATIONSHIPS",0,0,0
+5500,"I6A","310","Relationships",0,0,0
+5500,"I6B","320","Domestic violence issues",0,0,0
+5500,"I6C","330","Experience of childhood",0,0,0
+5500,"I7","340","LIFESTYLE & ASSOCIATES",0,0,0
+5500,"I7A","350","Community Integration",0,0,0
+5500,"I7B","360","Gambling",0,0,0
+5500,"I7C","370","Recklessness/risk taking behaviour",0,0,0
+5500,"I8","380","DRUG MISUSE",0,0,0
+5500,"I8A","390","Drug misuse (including motivation to tackle drug misuse)",0,0,0
+5500,"I9","400","ALCOHOL MISUSE",0,0,0
+5500,"I9A","410","Violent behaviour related to alcohol (inc drink driving)",0,0,0
+5500,"I9B","420","Alcohol misuse (inc motivation to tackle alcohol misuse)",0,0,0
+5500,"IH","100","HARM",0,0,0
+5500,"IHA","110","Risk to children",0,0,0
+5500,"IHB","120","Risk to prisoners",0,0,0
+5500,"IHC","130","Risk to staff",0,0,0
+5500,"IHD","140","Risk to public",0,0,0
+5500,"IHE","150","Self harm issues",0,0,0
+5500,"IHF","160","Bullying (as perpetrator)",0,0,0
+5500,"IHG","170","Partner abuse",0,0,0
+5500,"IHH","180","Escape/abscond risk",0,0,0
+5501,"160","130","Not Achieved - entered custody",0,0,0
+5501,"170","130","Not Achieved - revoked early for good progress",0,0,0
+5501,"R","100","Not Started",0,0,0
+5501,"RI","110","Fully achieved",0,0,0
+5501,"RII","120","Ongoing",0,0,0
+5501,"RIII","130","Not Achieved",0,0,0
+5501,"RIIIB","150","No Longer Applicable / Required",0,0,0
+5504,"ACCOMMODATION","3","Accommodation",0,0,0
+5504,"ALCOHOL_MISUSE","9","Alcohol misuse",0,0,0
+5504,"ATTITUDES","12","Attitudes",0,0,0
+5504,"DRUG_MISUSE","8","Drug misuse",0,0,0
+5504,"EDUCATION_TRAINING_AND_EMPLOYABILITY","4","Education, training and employability",0,0,0
+5504,"EMOTIONAL_WELLBEING","10","Emotional wellbeing",0,0,0
+5504,"FINANCIAL_MANAGEMENT_AND_INCOME","5","Financial management and income",0,0,0
+5504,"LIFESTYLE_AND_ASSOCIATES","7","Lifestyle and associates",0,0,0
+5504,"PHYSICAL_HEALTH_IMMEDIATE_ISSUES","13","Physical health immediate issues",0,0,0
+5504,"RELATIONSHIPS","6","Relationships",0,0,0
+5504,"RISK_MANAGEMENT","14","Risk Management",0,0,0
+5504,"THINKING_AND_BEHAVIOUR","11","Thinking and behaviour",0,0,0
+5506,"ARV","2460","Alcohol Related Violence Programme",0,0,0
+5506,"BLANK","1980","Other non-accredited Programmes",0,0,0
+5506,"IV1","100","Aggression Replacement Training (ART)",0,0,0
+5506,"IV10","190","One to One Programme",0,0,0
+5506,"IV11","200","Programme for Reducing Individual's Substance Misuse (PRISM)",0,0,0
+5506,"IV12","210","Rehabilitation for Accredited Prisoners trust (RAPt)",0,0,0
+5506,"IV13","220","Reasoning and Rehabilitation",0,0,0
+5506,"IV14","230","Sex Offender Treatment Programme (SOTP) Booster",0,0,0
+5506,"IV15","240","Sex Offender Relapse Prevention",0,0,0
+5506,"IV16","250","Sex Offender Treatment Programme (SOTP",0,0,0
+5506,"IV17","260","Extended SOTP",0,0,0
+5506,"IV18","270","Rolling SOTP",0,0,0
+5506,"IV19","280","Substance Misuse *",0,0,0
+5506,"IV2","110","Addressing Substance Related Offending (ASRO)",0,0,0
+5506,"IV20","290","Thames Valley - Sex Offender Groupwork Programme (TV-SOTP)",0,0,0
+5506,"IV21","300","Think First",0,0,0
+5506,"IV22","310","Community - Sex Offender Groupwork Programme (C-SOGP)",0,0,0
+5506,"IV23","320","Women's Programme",0,0,0
+5506,"IV24","1690","Northumbria - Sex Offender Group Programme (N--SOGP)",0,0,0
+5506,"IV25","1700","Cognitive Skills Booster (CSB)",0,0,0
+5506,"IV26","1710","Violence Booster",0,0,0
+5506,"IV27","1720","Offender Substance Abuse Programme (OSAP)",0,0,0
+5506,"IV28","1730","Integrated Domestic Abuse (IDAP)",0,0,0
+5506,"IV29","1740","Community Domestic Violence Programme (CDVP)",0,0,0
+5506,"IV3","120","Controlling Anger & Learning how to Manage it (CALM)",0,0,0
+5506,"IV30","1750","Choices (Drug Programme)",0,0,0
+5506,"IV31","1760","Healthy Relationships Programme (HRP)",0,0,0
+5506,"IV32","1770","Becoming New Me (Adapted SOTP)",0,0,0
+5506,"IV33","1780","Prisons - Addressing Substance Related Offending (P-ASRO)",0,0,0
+5506,"IV34","1790","The Prisons Partnership 12 Step Programme",0,0,0
+5506,"IV35","1800","Ley Prison Programme (Drugs)",0,0,0
+5506,"IV36","1810","FOCUS",0,0,0
+5506,"IV37","1820","Substance Treatment Offending Programme (STOP)",0,0,0
+5506,"IV38","1830","Action on Drugs",0,0,0
+5506,"IV39","1840","Prison Service Drugs Therapeutic Community Programme",0,0,0
+5506,"IV4","130","Cognitive Self Change Programme (CSCP) Blocks 1-5",0,0,0
+5506,"IV40","1990","Healthy Sexual Functioning",0,0,0
+5506,"IV41","2000","Low Intensity Alcohol Programme (LIAP)",0,0,0
+5506,"IV42","2010","Democratic Therapeutic Community Core Model",0,0,0
+5506,"IV43","2020","Chromis",0,0,0
+5506,"IV44","2030","Short Duration Programme (SDP)",0,0,0
+5506,"IV46","910","Womens Acquisitive Crime",0,0,0
+5506,"IV47","920","COVAID",0,0,0
+5506,"IV48","930","Thinking Skills Programme",0,0,0
+5506,"IV49","2440","Internet Sex Offender Treatment Programme (i-SOTP)",0,0,0
+5506,"IV5","140","Cognitive Self Change Programme (CSCP) Block 6",0,0,0
+5506,"IV50","2450","Choices Actions Relationships Emotions (CARE)",0,0,0
+5506,"IV51","725","Building Better Relationships (BBR)",0,0,0
+5506,"IV52","726","Resolve",0,0,0
+5506,"IV53","880","Self-Change Programme (SCP)",0,0,0
+5506,"IV54","3030","A>Z",0,0,0
+5506,"IV55","3040","Adapted Better Lives Booster Sexual Offender Treatment Programme (ABLB)",0,0,0
+5506,"IV56","3050","Alcohol Related Violence Programme (ARV)",0,0,0
+5506,"IV57","3060","Becoming New Me Adapted Sexual Offending Treatment Programme (BNM)  2009 and 2011 versions",0,0,0
+5506,"IV58","3070","Better Lives Booster Sexual Offender Treatment Programme (BLB)",0,0,0
+5506,"IV59","724","Building Skills for Recovery (BSR)",0,0,0
+5506,"IV6","150","Drink Impaired Drivers (DIDS)",0,0,0
+5506,"IV60","3090","Focus on Resettlement (FOR)",0,0,0
+5506,"IV61","3100","Healthy Identity Intervention (HII)",0,0,0
+5506,"IV62","3110","Living as New Me Adapted Sexual Offending Treatment Programme (LNM)",0,0,0
+5506,"IV63","3120","New Me Coping Adapted Sexual Offending Treatment Programme (NMC)",0,0,0
+5506,"IV64","3130","Healthy Sex Programme (HSP)",0,0,0
+5506,"IV65","3140","Low Intensity Programme (LI SOTP)",0,0,0
+5506,"IV66","3150","High Intensity Programme (HI SOTP)",0,0,0
+5506,"IV67","3160","Kaizen",0,0,0
+5506,"IV68","3170","Horizon",0,0,0
+5506,"IV7","160","Enhanced Thinking Skills (ETS)",0,0,0
+5506,"IV8","170","Focus on Violence (FOV) *",0,0,0
+5506,"IV9","180","McGuire Problem Solving",0,0,0
+5506,"IV99","1850","Other Accredited Programme",0,0,0
+5506,"KAINOS","2470","KAINOS accredited programme",0,0,0
+5506,"UW","2040","Unpaid Work",0,0,0
+5506,"V1","340","Accommodation advocacy",0,0,0
+5506,"V2","350","Employment advocacy",0,0,0
+5506,"V3","360","Finance advocacy",0,0,0
+5506,"V4","370","Substance Abuse *",0,0,0
+5506,"V5","380","Health advocacy",0,0,0
+5506,"V6","390","Family Issues advocacy",0,0,0
+5506,"V7","400","Community Integration advocacy",0,0,0
+5506,"V8","1860","Alcohol advocacy",0,0,0
+5506,"V9","1870","Drugs advocacy",0,0,0
+5506,"V99","1880","Other advocacy",0,0,0
+5506,"VI1","420","Debt counselling",0,0,0
+5506,"VI10","1910","Other addiction counselling",0,0,0
+5506,"VI11","1920","Case Management 1 to 1 counselling",0,0,0
+5506,"VI12","1930","Motivational work counselling",0,0,0
+5506,"VI2","430","Addiction counselling *",0,0,0
+5506,"VI3","440","Victim Awareness Counselling",0,0,0
+5506,"VI4","450","Offender Centered counselling",0,0,0
+5506,"VI5","460","Relationships with partner counselling",0,0,0
+5506,"VI6","470","Other family relationships counselling",0,0,0
+5506,"VI7","480","Bereavement / Grief counselling",0,0,0
+5506,"VI8","1890","Alcohol counselling",0,0,0
+5506,"VI9","1900","Drug counselling",0,0,0
+5506,"VI99","1940","Other counselling",0,0,0
+5506,"VII1","500","Psychiatric",0,0,0
+5506,"VII2","510","Psychological Intervention",0,0,0
+5506,"VII3","520","Mental health",0,0,0
+5506,"VII4","530","Therapeutic Community",0,0,0
+5506,"VII5","540","Racially motivated offending work",0,0,0
+5506,"VII6","550","Integrated Drug treatment",0,0,0
+5506,"VII7","1950","Alcohol treatment",0,0,0
+5506,"VII8","1960","CARATS",0,0,0
+5506,"VII99","1970","Other Specialist Intervention",0,0,0
+5506,"VIII1","570","Basic skills",0,0,0
+5506,"VIII10","2410","Guided Skills Learning",0,0,0
+5506,"VIII11","2420","Pro-Social Modelling",0,0,0
+5506,"VIII12","2430","Problem Solving at Work",0,0,0
+5506,"VIII2","580","Budgetary/financial management",0,0,0
+5506,"VIII3","590","Lifeskills",0,0,0
+5506,"VIII4","600","Thinking skills - cognitive behavioural",0,0,0
+5506,"VIII5","610","Thinking skills - sexual",0,0,0
+5506,"VIII6","620","Thinking skills - violence",0,0,0
+5506,"VIII7","630","Relapse prevention",0,0,0
+5506,"VIII8","640","Vocational skills",0,0,0
+5506,"VIII9","650","Citizenship programme",0,0,0
+5506,"VIII99","1980","Other non-accredited Programmes",0,0,0
+5507,"CACD","COA","Court Of Appeal Criminal Division",0,0,0
+5507,"IMM","IMM","Immigration",0,0,0
+5507,"CC","CRN","Crown Court",0,0,0
+5507,"CO","COU","County Court",0,0,0
+5507,"GCM","CMT","Courts Martial",0,0,0
+5507,"MC","MAG","Magistrates Court",0,0,0
+5507,"OTHER","OTH","Other",0,0,0
+5507,"YC","YTH","Youth Court",0,0,0
+3802,"101","820","Adjourned - PSR",0,0,0
+3802,"102","1000","Adjourned - Other Report",0,0,0
+3802,"103","810","Adjourned - Non-Attendance",0,0,0
+3802,"104","800","Adjourned Other Reason",0,0,0
+3802,"105","830","Committed to Crown Court",0,0,0
+3802,"106","1030","Transferred to Crown Court",0,0,0
+3802,"107","1040","Adjourned for Sentence",0,0,0
+3802,"108","1050","Warrant with Bail",0,0,0
+3802,"109","1060","Warrant without Bail",0,0,0
+3802,"110","1070","No Specific Proposal (Migrated Data)",0,0,0
+3802,"111","1010","Adjourned For Reports",0,0,0
+3802,"112","1020","Remanded In Custody",0,0,0
+3802,"113","1810","Final Review",0,0,0
+3802,"190","1080","Bail/Case dealt with",0,0,0
+3802,"191","1090","Bail/Unconditional",0,0,0
+3802,"192","1100","Bail/Conditional",0,0,0
+3802,"193","1110","Bail/No Bail",0,0,0
+3802,"201","910","CJA2003 - Community Order",0,0,0
+3802,"202","950","CJA2003 - Deferred Sentence",0,0,0
+3802,"203","960","CJA2003 - Suspended Sentence Order",0,0,0
+3802,"204","970","Youth Rehabilitation Order",0,0,0
+3802,"205","130","Community Rehabilitation order",0,0,0
+3802,"206","120","Community Punishment Order",0,0,0
+3802,"207","180","CPRO",0,0,0
+3802,"208","460","Drug Treatment and testing Order - Lower",0,0,0
+3802,"209","490","Drug Treatment and testing order - Higher",0,0,0
+3802,"210","240","Drug abstinence order",0,0,0
+3802,"211","110","C & YP Act 1969 supervision order",0,0,0
+3802,"212","1120","Enforcement Order (Pre-CJA)",0,0,0
+3802,"213","170","CPO for persistent petty offenders",0,0,0
+3802,"214","160","CPO for fine defaulters",0,0,0
+3802,"215","450","+CPO hours for breach code 5",0,0,0
+3802,"216","400","SSSO",0,0,0
+3802,"217","320","Money payment supervision order",0,0,0
+3802,"218","190","Curfew Order",0,0,0
+3802,"219","550","Action Plan Order CDA1998 S69",0,0,0
+3802,"220","370","Reparation order",0,0,0
+3802,"221","560","Parenting Order CDA1998 S8",0,0,0
+3802,"222","150","CPO component of CPRO",0,0,0
+3802,"223","1130","Community Rehabilitation component of CPRO",0,0,0
+3802,"224","510","Fam Assist Order Ch/Act 1989",0,0,0
+3802,"224A","530","Family Assistance Order",0,0,0
+3802,"225","520","Care & Sup'n Order Ch/Act 1989",0,0,0
+3802,"226","1140","CJA Enforcement Order (C&AA 06)",0,0,0
+3802,"227","1150","Intensive Alternative to Custody",0,0,0
+3802,"228","1160","Intensive Supervision and Control",0,0,0
+3802,"229","1170","Supervision and Control (Suspended Sentence)",0,0,0
+3802,"230","1180","Sentenced in Migrated Data",0,0,0
+3802,"231","1800","CJA - Suspended SO (unsupervised)",0,0,0
+3802,"232","3020","SUPERVISION ORDER ? INSANITY ACT",0,0,0
+3802,"233","233","ORA Supervision Default Order",0,0,0
+3802,"235","3030","Scottish community payback order",0,0,0
+3802,"242","3040","Special Cust Sentence (S236aCJA)",0,0,0
+3802,"301","920","CJA2003-Standard Determinate Sentence >12 months",0,0,0
+3802,"302","940","CJA2003 - Extended Public Protection",0,0,0
+3802,"303","930","CJA2003 - Indeterminate Public Protection",0,0,0
+3802,"304","210","Custody (4+ years - DCR)",0,0,0
+3802,"305","440","YOI (up to 1 year)",0,0,0
+3802,"306","430","YOI (over 1 year)",0,0,0
+3802,"307","1190","Adult Custody (voluntary supervision)",0,0,0
+3802,"308","310","Life",0,0,0
+3802,"309","860","Other",0,0,0
+3802,"310","1200","Life imprisonment (Youth)",0,0,0
+3802,"311","260","Extended sentence (pre Oct 1992)",0,0,0
+3802,"312","350","Parole (before October 1992)",0,0,0
+3802,"313","610","Psych Hosp Order (Non-Prob)",0,0,0
+3802,"314","1210","Restriction Order (s.41 MHA83)",0,0,0
+3802,"315","280","Extended sup. (Sex) Pre Oct 1998",0,0,0
+3802,"316","270","Extended sup. (Sex) Post Oct 1998",0,0,0
+3802,"317","290","Extended sup. (Violence) ",0,0,0
+3802,"318","230","Detention and training order",0,0,0
+3802,"319","1220","Return to prison (S.105 C&DA)",0,0,0
+3802,"320","470","Intermittent Weekday Custody",0,0,0
+3802,"321","480","Intermittent Weekend Custody",0,0,0
+3802,"322","1230","Disc Release (parole) Adult and Youth",0,0,0
+3802,"323","1240","CJA - Custody Plus",0,0,0
+3802,"324","1790","Extended Determinate Sentence",0,0,0
+3802,"325","325","ORA Adult Custody (inc PSS)",0,0,0
+3802,"326","326","ORA Breach Committal",0,0,0
+3802,"327","327","ORA Adult Custody (not PSS)",0,0,0
+3802,"328","328","ORA Youth Custody (inc PSS)",0,0,0
+3802,"329","329","ORA Community Order",0,0,0
+3802,"330","3010","ORA Suspended Sentence Order",0,0,0
+3802,"331","331","ORA Youth Rehabilitation Order",0,0,0
+3802,"401","1250","Imprisonment - No Supervision",0,0,0
+3802,"402","1260","CJA - Trans Custody - Adult",0,0,0
+3802,"403","1270","CJA - Trans Custody - Youth",0,0,0
+3802,"404","330","Non statutory order",0,0,0
+3802,"404A","420","Voluntary supervision",0,0,0
+3802,"405","1280","Anti-Social Behaviour Order",0,0,0
+3802,"406","300","Fine",0,0,0
+3802,"407","570","Deferred Sentence",0,0,0
+3802,"408","410","Suspended Sentence",0,0,0
+3802,"409","1290","Sex Offences Prevention Order",0,0,0
+3802,"410","1300","Disqualification Order",0,0,0
+3802,"411","1310","Confiscation/Forfeiture",0,0,0
+3802,"412","100","Absolute Discharge",0,0,0
+3802,"412A","850","Conditional Discharge",0,0,0
+3802,"413","630","Bound Over",0,0,0
+3802,"414","1320","Parents Bound Over",0,0,0
+3802,"415","1330","Parents Pay Fine/Comp/Costs",0,0,0
+3802,"416","1340","Compensation",0,0,0
+3802,"417","1350","Restitution Order",0,0,0
+3802,"418","1360","Secure Training Order",0,0,0
+3802,"419","340","Detention Centre",0,0,0
+3802,"420","1370","Football - Restrictn/Exclusion",0,0,0
+3802,"421","1380","Remitted",0,0,0
+3802,"422","1390","Withdrawn",0,0,0
+3802,"423","1400","Stayed",0,0,0
+3802,"424","1410","Lie on File",0,0,0
+3802,"425","640","Not Guilty",0,0,0
+3802,"426","1420","Unfit to Plead",0,0,0
+3802,"427","1430","Not Guilty - Insanity",0,0,0
+3802,"428","840","Imprisonment - Fine - Fine Default &c",0,0,0
+3802,"429","1440","One Day Imprisonment",0,0,0
+3802,"430","620","Attendance Centre Order",0,0,0
+3802,"497","3000","Conc/Consec Adult Custody <12 mths",0,0,0
+3802,"499","860","Other",0,0,0
+3802,"501","1450","Breach - Revoked & Re-Sentenced",0,0,0
+3802,"502","1460","Breach - Revoked Good Progress",0,0,0
+3802,"503","1470","Breach - Continued/No action",0,0,0
+3802,"504","1480","Breach - Amended & Continued",0,0,0
+3802,"505","670","Fine/Order Allowed to Continue",0,0,0
+3802,"506","1490","Breach - Continued/Att Centre",0,0,0
+3802,"507","1500","Breach - Recalled to Prison",0,0,0
+3802,"508","1510","Breach - Cond Discharge Substtd",0,0,0
+3802,"509","1520","Breach - Withdrawn",0,0,0
+3802,"510","1530","Breach - Revoked/Discharged NFA",0,0,0
+3802,"601","1540","CtsMtl - Death",0,0,0
+3802,"602","1550","CtsMtl - Detention/HM Pleasure",0,0,0
+3802,"603","1560","CtsMtl - Detention - Sec State",0,0,0
+3802,"604","1570","CtsMtl - Detention Cust Order",0,0,0
+3802,"605","1580","CtsMtl - Dismissal w Disgrace",0,0,0
+3802,"606","1590","CtsMtl - Dismissal from Service",0,0,0
+3802,"607","1600","CtsMtl - Detention CTC",0,0,0
+3802,"608","1610","CtsMtl - Forfeiture Seniority",0,0,0
+3802,"609","1620","CtsMtl - Dismissal Ship/Estab",0,0,0
+3802,"610","1630","CtsMtl - Reduction to Ranks",0,0,0
+3802,"611","1640","CtsMtl - Dismissal TA/RAAF",0,0,0
+3802,"612","1650","CtsMtl - Severe Reprimand",0,0,0
+3802,"613","1660","CtsMtl - Reprimand",0,0,0
+3802,"614","1670","CtsMtl - Stoppage of Pay",0,0,0
+3802,"615","1680","CtsMtl - Order for Restitution",0,0,0
+3802,"701","1690","Sentence Quashed",0,0,0
+3802,"702","1700","Order to Continue",0,0,0
+3802,"703","1710","Resentenced on Appeal",0,0,0
+3802,"704","1820","Sentence Varied",0,0,0
+3802,"801","1720","Revoked & Re-Sentenced",0,0,0
+3802,"802","1730","Revoked Good Progress",0,0,0
+3802,"803","660","Continued/No action",0,0,0
+3802,"804","1740","Amended & Continued",0,0,0
+3802,"805","1750","Continued/Fine",0,0,0
+3802,"806","1760","Continued/Att Centre",0,0,0
+3802,"807","1770","Cond Discharge Substtd",0,0,0
+3802,"808","1780","Withdrawn",0,0,0
+3802,"809","650","Revoked/Discharged NFA",0,0,0
+3802,"OU01","380","Section 40 Licence",0,0,0
+3802,"OU06","1830","Sentence Terminated Pre-Migration",0,0,0
+3802,"OU07","1840","Adult Custody Consecutive",0,0,0
+3802,"OU08","1850","Adult Custody Concurrent",0,0,0
+3802,"OU09","1860","ICMS Miscellaneous Event",0,0,0
+3802,"OU10","770","Youth Custody Consecutive",0,0,0
+3802,"OU11","760","Youth Custody Concurrent",0,0,0
+3802,"OU12","1870","Non-Appearance Breach Warrant",0,0,0
+3802,"OU13","1880","Non-Appearance Warrant",0,0,0
+3802,"OU14","1890","Borstal",0,0,0
+3802,"OU15","1900","Youth Custody (migration)",0,0,0
+3802,"OU16","1910","Initial Court Review Requested",0,0,0
+3802,"OU17","1920","Adjourned for Next Court Review",0,0,0
+3802,"OU18","1930","No Further Review Requested",0,0,0
+3802,"OU19","1940","Post Release Voluntary Supervision",0,0,0
+3802,"OU20","1950","Approved Premises Residence",0,0,0
+3802,"OU21","1960","Adult Custody (Migration)",0,0,0
+3802,"OU22","1970","Detained - S.53(1) or S.91",0,0,0
+3802,"OU23","390","Detained - S.53(2) or S.91",0,0,0
+3802,"OU24","1980","ASPOS Case (Not Selectable - Historic) ",0,0,0
+3802,"OU25","1990","Approved Premises Referral",0,0,0
+3802,"OU26","2000","Historic Breach Outcome",0,0,0
+3802,"OU27","2010","Deportation Recommended",0,0,0
+3802,"OU28","500","Supervision Order - Adoption Act 1976 ",0,0,0
+3802,"OU29","900","Supervision Order - Childrens Act 1975",0,0,0
+3802,"OU30","540","Supervision Order - Family Courts",0,0,0
+3802,"OU31","870","Supervision Order - Matrimonial Proc",0,0,0
+3802,"OU32","890","Supervision Order - Wardship",0,0,0
+3802,"OU33","2020","Grant Parole",0,0,0
+3802,"OU34","2030","Guardianship Order MHA1983 S37",0,0,0
+3802,"OU35","2040","Guardianship Order MHA1983 S37 - No Conv",0,0,0
+3802,"OU36","880","Guardianship Supervision Order",0,0,0
+3802,"OU37","2050","Guardianship of Minors Supervision Order",0,0,0
+3802,"OU38","250","DTTO - intensity not specified",0,0,0
+3802,"OU39","2060","28 Day Bail Assessment for DTTO",0,0,0
+3802,"OU40","2070","Bail Assessment for Mental Health Institution",0,0,0
+3802,"OU41","2080","Migrated Drug Test Event",0,0,0
+3802,"OU42","2090","IIMS IOM Referrals",0,0,0
+13,"6166","A","CATEGORY A",0,0,0
+13,"6167","F","FEMALE NON CATEGORY A",0,0,0
+13,"6168","B","CATEGORY B",0,0,0
+13,"6170","C","CATEGORY C",0,0,0
+13,"6172","D","CATEGORY D",0,0,0
+13,"6174","E","EXCEPTIONALLY HIGH RISK CATEGORY A",0,0,0
+13,"6178","H","HIGH RISK CATEGORY A",0,0,0
+13,"6180","I","YOI CLOSED",0,0,0
+13,"6182","J","YOI OPEN",0,0,0
+13,"6184","K","YOI SHORT-SENTENCE",0,0,0
+13,"6186","L","YOI LONG-TERM CLOSED",0,0,0
+13,"6188","M","INTERMITTENT CUSTODY",0,0,0
+13,"6190","P","PROVISIONAL CATEGORY A",0,0,0
+13,"6192","U","CAT U UNSENTENCED MALE REMANDS",0,0,0
+13,"6194","X","NOT CATEGORISED SENTENCED MALE",0,0,0
+13,"6198","F","FEMALE NON CATEGORY A",0,0,0
+13,"6200","F","FEMALE NON CATEGORY A",0,0,0
+13,"6202","F","FEMALE NON CATEGORY A",0,0,0
+13,"6204","F","FEMALE NON CATEGORY A",0,0,0
+13,"6206","K","YOI SHORT-SENTENCE",0,0,0
+13,"A","A","CATEGORY A",0,0,0
+13,"B","B","CATEGORY B",0,0,0
+13,"C","C","CATEGORY C",0,0,0
+13,"D","D","CATEGORY D",0,0,0
+13,"E","E","EXCEPTIONALLY HIGH RISK CATEGORY A",0,0,0
+13,"F","F","FEMALE NON CATEGORY A",0,0,0
+13,"H","H","HIGH RISK CATEGORY A",0,0,0
+13,"I","I","YOI CLOSED",0,0,0
+13,"J","J","YOI OPEN",0,0,0
+13,"K","K","YOI SHORT-SENTENCE",0,0,0
+13,"L","L","YOI LONG-TERM CLOSED",0,0,0
+13,"M","M","INTERMITTENT CUSTODY",0,0,0
+13,"P","P","PROVISIONAL CATEGORY A",0,0,0
+13,"Q","F","FEMALE NON CATEGORY A",0,0,0
+13,"R","F","FEMALE NON CATEGORY A",0,0,0
+13,"S","F","FEMALE NON CATEGORY A",0,0,0
+13,"T","F","FEMALE NON CATEGORY A",0,0,0
+13,"U","U","CAT U UNSENTENCED MALE REMANDS",0,0,0
+13,"V","K","YOI SHORT-SENTENCE",0,0,0
+13,"X","X","NOT CATEGORISED SENTENCED MALE",0,0,0
+34,"ARD","ARD","AUTOMATIC RELEASE DATE",0,0,0
+34,"CRD","CRD","CONDITIONAL RELEASE DATE",0,0,0
+34,"ETD","AETD1","APPROVED 1 MONTH EARLY TRANSFER",0,0,0
+34,"LTD","ALTD1","APPROVED 1 MONTH LATE TRANSFER",0,0,0
+34,"MTD","AMTD","APPROVED MID TRANSFER DATE",0,0,0
+34,"NPD","NPD","NON PAROLE RELEASE DATE",0,0,0
+3806,"1","aka","Akan",0,0,0
+3806,"10","bul","Bulgarian",0,0,0
+3806,"100","zul","Zulu",0,0,0
+3806,"101","eng","English",0,0,0
+3806,"102","wel","Welsh",0,0,0
+3806,"103","sgn","Sign Languages",0,0,0
+3806,"104","sgn","Sign Languages",0,0,0
+3806,"11","bur","Burmese",0,0,0
+3806,"12","chi","Chinese",0,0,0
+3806,"13","ceb","Cebuano",0,0,0
+3806,"14","nya","Chichewa; Chewa; Nyanja",0,0,0
+3806,"15","chi","Chinese",0,0,0
+3806,"16","cze","Czech",0,0,0
+3806,"17","dan","Danish",0,0,0
+3806,"18","oth","Other",0,0,0
+3806,"19","dum","Dutch, Middle (ca.1050-1350)",0,0,0
+3806,"2","alb","Albanian",0,0,0
+3806,"20","bin","Bini; Edo",0,0,0
+3806,"21","est","Estonian",0,0,0
+3806,"22","fat","Fanti",0,0,0
+3806,"23","oth","Other",0,0,0
+3806,"24","fin","Finnish",0,0,0
+3806,"25","fre","French",0,0,0
+3806,"26","ful","Fulah",0,0,0
+3806,"27","gaa","Ga",0,0,0
+3806,"28","geo","Georgian",0,0,0
+3806,"29","ger","German",0,0,0
+3806,"3","amh","Amharic",0,0,0
+3806,"30","gre","Greek",0,0,0
+3806,"31","guj","Gujarati",0,0,0
+3806,"32","hau","Hausa",0,0,0
+3806,"33","heb","Hebrew",0,0,0
+3806,"34","hin","Hindi",0,0,0
+3806,"35","hun","Hungarian",0,0,0
+3806,"36","oth","Other",0,0,0
+3806,"37","oth","Other",0,0,0
+3806,"38","ibo","Igbo",0,0,0
+3806,"39","oth","Other",0,0,0
+3806,"4","ara","Arabic",0,0,0
+3806,"40","ind","Indonesian",0,0,0
+3806,"41","gle","Irish",0,0,0
+3806,"42","ita","Italian",0,0,0
+3806,"43","oth","Other",0,0,0
+3806,"44","jpn","Japanese",0,0,0
+3806,"45","kaz","Kazakh",0,0,0
+3806,"46","kin","Kinyarwanda",0,0,0
+3806,"47","kor","Korean",0,0,0
+3806,"48","oth","Other",0,0,0
+3806,"49","kur","Kurdish",0,0,0
+3806,"5","arm","Armenian",0,0,0
+3806,"50","lav","Latvian",0,0,0
+3806,"51","lin","Lingala",0,0,0
+3806,"52","lit","Lithuanian",0,0,0
+3806,"53","lug","Ganda",0,0,0
+3806,"54","mac","Macedonian",0,0,0
+3806,"55","may","Malay",0,0,0
+3806,"56","mal","Malayalam",0,0,0
+3806,"57","div","Divehi; Dhivehi; Maldivian",0,0,0
+3806,"58","oth","Other",0,0,0
+3806,"59","mlt","Maltese",0,0,0
+3806,"6","oth","Other",0,0,0
+3806,"60","chi","Chinese",0,0,0
+3806,"61","oth","Other",0,0,0
+3806,"62","mon","Mongolian",0,0,0
+3806,"63","nbl","Ndebele, South; South Ndebele",0,0,0
+3806,"64","nep","Nepali",0,0,0
+3806,"65","oth","Other",0,0,0
+3806,"66","nno","Norwegian",0,0,0
+3806,"67","pus","Pushto; Pashto",0,0,0
+3806,"68","per","Persian",0,0,0
+3806,"69","phi","Philippine languages",0,0,0
+3806,"7","aze","Azerbaijani",0,0,0
+3806,"70","cpe","Creoles and pidgins, English based",0,0,0
+3806,"71","pol","Polish",0,0,0
+3806,"72","por","Portuguese",0,0,0
+3806,"73","pan","Punjabi",0,0,0
+3806,"74","pus","Pushto; Pashto",0,0,0
+3806,"75","rum","Romanian; Moldavian; Moldovan",0,0,0
+3806,"76","rom","Romany",0,0,0
+3806,"77","oth","Other",0,0,0
+3806,"78","rus","Russian",0,0,0
+3806,"79","srp","Serbian",0,0,0
+3806,"8","bal","Baluchi",0,0,0
+3806,"80","sna","Shona",0,0,0
+3806,"81","oth","Other",0,0,0
+3806,"82","sin","Sinhala; Sinhalese",0,0,0
+3806,"83","slo","Slovak",0,0,0
+3806,"84","slv","Slovenian",0,0,0
+3806,"85","som","Somali",0,0,0
+3806,"86","spa","Spanish",0,0,0
+3806,"87","swa","Swahili",0,0,0
+3806,"88","swe","Swedish",0,0,0
+3806,"89","tam","Tamil",0,0,0
+3806,"9","ben","Bengali",0,0,0
+3806,"90","tha","Thai",0,0,0
+2005,"WEI","780","HMP WEALSTUN",0,0,0
+2005,"WHI","1670","HMRC WOODHILL",0,0,0
+2005,"WII","1890","HMP WARREN HILL",0,0,0
+2005,"WLI","1160","HMP WAYLAND",0,0,0
+2005,"WMI","640","HMP WYMOTT",0,0,0
+2005,"WNI","1710","HMYOI WERRINGTON",0,0,0
+2005,"WOI","770","HMP WOLDS",0,0,0
+2005,"WRI","1660","HMP WHITEMOOR",0,0,0
+2005,"WSI","1330","HMP WORMWOOD SCRUBS",0,0,0
+2005,"WTI","860","HMP WHATTON",0,0,0
+2005,"WWI","1320","HMP WANDSWORTH",0,0,0
+2005,"WYI","1720","HMYOI WETHERBY",0,0,0
+2016,"1","1","VISIT DYING RELATIVE",0,0,0
+2016,"10","10","ADVENTURE AND SOCIAL WELFARE",0,0,0
+2016,"11","11","INTERVIEW FOR HALF WAY HOUSE",0,0,0
+2016,"12","12","VISIT TO OUTSIDE HOSTEL FOR ASSESSMENT",0,0,0
+2016,"13","13","EMPLOYMENT INTERVIEW",0,0,0
+2016,"14","14","LONG HOME LEAVE",0,0,0
+2016,"15","15","TERMINAL HOME LEAVE",0,0,0
+2016,"16","16","SHORT HOME LEAVE",0,0,0
+2016,"17","17","PRE PAROLE LEAVE",0,0,0
+2016,"18","18","MARRIAGE",0,0,0
+2016,"19","19","COURT APPEARANCE - POLICE PRODUCTION ORDER",0,0,0
+2016,"2","2","FUNERAL",0,0,0
+2016,"20","20","RESETTLEMENT RELEASE(TOWN/SPECIAL VISITS)",0,0,0
+2016,"21","21","OTHER (IE IPV, ID PARADES ETC)",0,0,0
+2016,"22","22","WITNESS/UNESCORTED COURT APPEARANCE",0,0,0
+2016,"28","TI","TRANSFER INSIDE ENGLAND & WALES",0,0,0
+2016,"28-dup","TS","TRANSFER WITH STOPOVER (INSIDE E & W)",0,0,0
+2016,"3","3","VISIT CHILDREN",0,0,0
+2016,"4","4","OTHER COMPASSIONATE LEAVE",0,0,0
+2016,"5","5","OUTSIDE HOSPITAL ATTENDANCE",0,0,0
+2016,"6","6","EXTERNAL SPORTING ACTIVITY",0,0,0
+2016,"7","7","EXTERNAL EDUCATION CLASSES",0,0,0
+2016,"8","8","COMMUNITY SERVICE VOLUNTEER",0,0,0
+2016,"9","9","PROBATION SERVICE WORKSHOPS",0,0,0
+2016,"99","99","DISCHARGE NOT FOR RELEASE",0,0,0
+2016,"AB","AB","ABSCOND",0,0,0
+2016,"AB-dup","ES","ESCAPE",0,0,0
+2016,"ACCVISIT","TI","TRANSFER INSIDE ENGLAND & WALES",0,0,0
+2016,"ACCVISITS","TI","TRANSFER INSIDE ENGLAND & WALES",0,0,0
+2016,"AP","AP","DISCHARGE TO COURT ON APPEAL",0,0,0
+2016,"APPEAL","TI","TRANSFER INSIDE ENGLAND & WALES",0,0,0
+2016,"APPEALS","TI","TRANSFER INSIDE ENGLAND & WALES",0,0,0
+2016,"AR","AR","AUTOMATIC RELEASE UNDER CJA 91 (SHORT TERMERS)",0,0,0
+2016,"AS","AS","ACCUMULATED VISITS WITH STOPOVER",0,0,0
+2016,"AU","AU","APPEAL UPHELD ON RELEASE",0,0,0
+2016,"AV","AV","ACCUMULATED VISITS",0,0,0
+2016,"BAIL","BL","BAILED",0,0,0
+2016,"BD","BD","BAILED DETAINEE",0,0,0
+2016,"BL","BL","BAILED",0,0,0
+2016,"BREACH","CA","COURT APPEARANCE",0,0,0
+2016,"C1","C1","PRIMARY CARER",0,0,0
+2016,"C2","C2","URGENT DOMESTIC OR FAMILY NEEDS",0,0,0
+2016,"C3","C3","FUNERALS AND DEATHS",0,0,0
+2016,"C4","C4","MARRIAGE OR FAMILY OCCASIONS",0,0,0
+2016,"C5","C5","MEDICAL OR DENTAL APPOINTMENTS",0,0,0
+2016,"C6","C6","HOSPITAL/HOSPICE IN-PATIENT",0,0,0
+2016,"C7","C7","VISIT DYING RELATIVE",0,0,0
+2016,"C8","C8","OTHER SPECIAL PURPOSE",0,0,0
+2016,"C9","C9","ATTEND RELIGIOUS SERVICE",0,0,0
+2016,"CA","CA","COURT APPEARANCE",0,0,0
+2016,"CCOM","CA","COURT APPEARANCE",0,0,0
+2016,"CE","CE","CONDITIONAL RELEASE EXTENDED SENTENCE CJA 2003",0,0,0
+2016,"COM","CA","COURT APPEARANCE",0,0,0
+2016,"COMP","TI","TRANSFER INSIDE ENGLAND & WALES",0,0,0
+2016,"CR","CR","CONDITIONAL RELEASE UNDER CJA 91 -SH TERMER > 1 YR",0,0,0
+2016,"CRI","CA","COURT APPEARANCE",0,0,0
+2016,"CRT","CA","COURT APPEARANCE",0,0,0
+2016,"CT","CT","CUSTODY TIME LIMIT",0,0,0
+2016,"D1","D1","DTO DISCHARGE 2 MONTHS EARLY",0,0,0
+2016,"D2","D2","DTO DISCHARGE 1 MONTH EARLY",0,0,0
+2016,"D3","D3","DTO DISCHARGE MID TERM TRANSFER",0,0,0
+2016,"D4","D4","DTO LATE TRANSFER",0,0,0
+2016,"D5","D5","DTO 2 MONTHS LATE TRANSFER",0,0,0
+2016,"D6","D6","DTO RE-RELEASE",0,0,0
+2016,"DA","DA","DISCHARGED ON APPEAL FROM COURT",0,0,0
+2016,"DC","DC","DISCHARGED TO COURT",0,0,0
+2016,"DD","DD","DISCHARGED END OF SENTENCE AND DEPORTED",0,0,0
+2016,"DE","DE","DEPORTATION (NO SENTENCE)",0,0,0
+2016,"DEC","XX","DIED",0,0,0
+2016,"DISC","99","DISCHARGE NOT FOR RELEASE",0,0,0
+2016,"DL","DL","DEPORTATION LICENCEES(PAROLE/LIFE/HMP)",0,0,0
+2016,"DS","DS","DISCONTINUANCE/CHARGES WITHDRAWN(DISCHARGE PRISON)",0,0,0
+2016,"EL","EL","END OF CUSTODY LICENCE",0,0,0
+2016,"ELR","EL","END OF CUSTODY LICENCE",0,0,0
+2016,"ER","ER","EXECUTIVE RELEASE. SEC 32 CJA 1982",0,0,0
+2016,"ESCP","AB","ABSCOND",0,0,0
+2016,"ET","ET","Training or Education",0,0,0
+2016,"ETR","FR","DEPORT OF F/N UNDER EARLY REMOVAL SCHEME",0,0,0
+2016,"EX","EX","EXTRADITION",0,0,0
+2016,"EXP_BREACH","CA","COURT APPEARANCE",0,0,0
+2016,"F1","F1","TRAINING",0,0,0
+2016,"F2","F2","EDUCATION",0,0,0
+2016,"F3","F3","REPARATION PROJECTS",0,0,0
+2016,"F4","F4","COURT APPEARANCE (UNESCORTED)",0,0,0
+2016,"F6","F6","VISIT LEGAL ADVISER (UNESCORTED)",0,0,0
+2016,"F7","F7","WORKING OUT SCHEMES",0,0,0
+2016,"F8","F8","JOB INTERVIEW (UNDER 12M)",0,0,0
+2016,"F9","F9","INTERVIEW FOR HOSTEL ACCOMMODATION",0,0,0
+2016,"FA","FA","SEEKING OTHER ACCOMMODATION (UNDER 12M)",0,0,0
+2016,"FB","FB","RESOLVE URGENT HOUSING NEEDS",0,0,0
+2016,"FC","FC","ADVENTURE TRAINING",0,0,0
+2016,"FD","FD","EXTERNAL TEAM SPORTS",0,0,0
+2016,"FE","FE","DRIVING LESSONS",0,0,0
+2016,"FF","FF","OPENING BANK ACCOUNTS",0,0,0
+2016,"FR","FR","DEPORT OF F/N UNDER EARLY REMOVAL SCHEME",0,0,0
+2016,"HC","HC","INVALID COMMITTAL/HABEAS CORPUS",0,0,0
+2016,"HD","HD","HDC RE-RELEASE CONDITIONAL",0,0,0
+2016,"HE","HE","HDC RE-RELEASE UNCONDITIONAL",0,0,0
+2016,"HP","HP","FINAL DISCHARGE TO HOSPITAL-PSYCHIATRIC",0,0,0
+2016,"HR","HR","HDC CONDITIONAL RELEASE",0,0,0
+2016,"HU","HU","HDC UNCONDITIONAL RELEASE",0,0,0
+2016,"I1","I1","LOCAL VISIT (INCENTIVE SCHEME)",0,0,0
+2016,"IF","IF","INTERMITTENT CUSTODY FINAL RELEASE",0,0,0
+2016,"IM","CA","COURT APPEARANCE",0,0,0
+2016,"INT","TI","TRANSFER INSIDE ENGLAND & WALES",0,0,0
+2016,"IR","IR","INTERMITTENT CUSTODY RELEASE",0,0,0
+2016,"LTX","LT","Court/Legal/Police/Prison Transfer",0,0,0
+2016,"MED","TI","TRANSFER INSIDE ENGLAND & WALES",0,0,0
+2016,"MRG","99","DISCHARGE NOT FOR RELEASE",0,0,0
+2016,"NA","NA","NOT TO APPEAR COURT DATE (FOR DIARY ONLY)",0,0,0
+2016,"NCS","DA","DISCHARGED ON APPEAL FROM COURT",0,0,0
+2016,"NEWTON","CA","COURT APPEARANCE",0,0,0
+2016,"NG","DS","DISCONTINUANCE/CHARGES WITHDRAWN(DISCHARGE PRISON)",0,0,0
+2016,"NOTR","TI","TRANSFER INSIDE ENGLAND & WALES",0,0,0
+2016,"NP","NP","NON PAROLE RELEASE DATE",0,0,0
+2016,"OJ","TO","TRANSFER OUTSIDE ENGLAND & WALES",0,0,0
+2016,"OPA","21","OTHER (IE IPV, ID PARADES ETC)",0,0,0
+2016,"OTHER","TI","TRANSFER INSIDE ENGLAND & WALES",0,0,0
+2016,"OVCROW","TI","TRANSFER INSIDE ENGLAND & WALES",0,0,0
+2016,"PAP","PA","Prisoner Apprenticeships Pathway",0,0,0
+2016,"PC","PC","DISCHARGED INTO POLICE CUSTODY",0,0,0
+2016,"PD","PD","POST RECALL RELEASE",0,0,0
+2016,"PDH","CA","COURT APPEARANCE",0,0,0
+2016,"PF","PF","PAID FINE",0,0,0
+2016,"PR","PR","PRODUCTION OF UNSENTENCED INMATE AT COURT",0,0,0
+2016,"PRES","TI","TRANSFER INSIDE ENGLAND & WALES",0,0,0
+2016,"PROAT","TI","TRANSFER INSIDE ENGLAND & WALES",0,0,0
+2016,"PROD","TI","TRANSFER INSIDE ENGLAND & WALES",0,0,0
+2016,"PS","PS","PRODUCTION (SENTENCE/CIVIL CUSTODY)",0,0,0
+2016,"PWP","PW","Paid Work Placements",0,0,0
+2016,"PX","PX","FINAL PAROLE INCLD YOI RELEASED ON LICENCE ETC",0,0,0
+2016,"R1","R1","JOB INTERVIEW",0,0,0
+2016,"R2","R2","EMPLOYMENT",0,0,0
+2016,"R3","R3","MAINTAINING FAMILY TIES",0,0,0
+2016,"R4","R4","INTERVIEW FOR HOSTEL ACCOMMODATION",0,0,0
+2016,"R5","R5","SEEKING OTHER ACCOMMODATION",0,0,0
+2016,"R6","R6","PRE-PAROLE RELEASE",0,0,0
+2016,"R7","R7","COMMUNITY SERVICE VOLUNTEER",0,0,0
+2016,"R8","R8","PROBATION SERVICE WORKSHOP",0,0,0
+2016,"R9","R9","OVERNIGHT RESETTLEMENT UNIT/PRES HOSTEL",0,0,0
+2016,"RE","RE","REPATRIATED",0,0,0
+2016,"REL","21","OTHER (IE IPV, ID PARADES ETC)",0,0,0
+2016,"REM","CA","COURT APPEARANCE",0,0,0
+2016,"RO","RO","RESETTLEMENT OVERNIGHT RELEASE",0,0,0
+2016,"RW","RW","ROYAL WARRANT-FREE PARDON/COMPASSIONATE GROUNDS",0,0,0
+2016,"SC","SC","SENTENCE COMPLETED/CONTEMPT PURGED",0,0,0
+2016,"SE","SE","Other security escort",0,0,0
+2016,"SEC","TI","TRANSFER INSIDE ENGLAND & WALES",0,0,0
+2016,"SENT","CA","COURT APPEARANCE",0,0,0
+2016,"SP","SP","HELPING POLICE WITH ENQUIRIES",0,0,0
+2016,"ST","TI","TRANSFER INSIDE ENGLAND & WALES",0,0,0
+2016,"TRIAL","CA","TRANSFER INSIDE ENGLAND & WALES",0,0,0
+2016,"TRN","TI","TRANSFER INSIDE ENGLAND & WALES",0,0,0
+2016,"TRNCRT","TI","TRANSFER INSIDE ENGLAND & WALES",0,0,0
+2016,"TRNTAP","TI","TRANSFER INSIDE ENGLAND & WALES",0,0,0
+2016,"UAL","AB","ABSCOND",0,0,0
+2016,"UAL_ECL","AB","ABSCOND",0,0,0
+2016,"UPW","UP","Unpaid Work Placements",0,0,0
+2016,"VL","NA","NOT TO APPEAR COURT DATE (FOR DIARY ONLY)",0,0,0
+2016,"WIT","CA","COURT APPEARANCE",0,0,0
+2016,"YMI","YM","Meetings and Interviews",0,0,0
+2016,"YOTR","YO","Other Temp Release linked to Sent&Resett Planning",0,0,0
+2016,"YRDR","YR","Resettlement Day Release",0,0,0
+2016,"Z","ZZ","INTERMEDIATE TRANSFER SAME DAY LINK UP",0,0,0
+3804,"-1","-1","Unknown Sub Category",0,0,0
+3804,"1","1","Work / Organised Activity",0,0,0
+3804,"10","10","Give talks/Sermons",0,0,0
+3804,"101","101","Not to reside (not even to stay for one night) in the same household as ANY child under the age of  [AGE] without the prior approval of your supervising officer",0,0,0
+3804,"102","102","Attend all appointments arranged for you with a psychiatrist / psychologist / medical practitioner and co-operate fully with any care or treatment they recommend.",0,0,0
+3804,"103","103","Receive home visits from Mental Health Worker",0,0,0
+3804,"104","104","Attend as directed, to address your dependency on, or propensity to misuse, a controlled drug",0,0,0
+3804,"105","105","Should you return to the UK and Islands before the expiry date of your licence then your licence conditions will be in force and you must report within two working days to your supervising officer.",0,0,0
+3804,"106","106","Not to seek to approach or communicate with VICTIM AND / OR FAMILY MEMBERS without the prior approval of your supervising officer",0,0,0
+3804,"107","107","Not to have unsupervised contact with  [ANY / ANY FEMALE / ANY MALE] children under the age of [INSERT AGE] without the prior approval of your supervising officer and / or [INSERT NAME OF APPROPRIATE SOCIAL SERVICES DEPARTMENT] except where that contact is inadvertent and not reasonably avoidable in the course of lawful daily life.",0,0,0
+3804,"108","108","Not to contact or associate with [NAMED OFFENDER(S) / NAMED INDIVIDUAL(S)] without the prior approval of your supervising officer.",0,0,0
+3804,"109","109","Not to contact or associate with a known sex offender other than when compelled by attendance at a Treatment Programme or when residing at Approved Premises without the prior approval of your supervising officer.",0,0,0
+3804,"11","11","Material-Hate/Violence/Military",0,0,0
+3804,"110","110","Not to contact directly or indirectly any person who is a serving or remand prisoner or detained in State custody, without the prior approval of your supervising officer",0,0,0
+3804,"111","111","Not to associate with any person currently or formerly associated with [NAMED GROUP(S)] without the prior approval of your supervising officer.",0,0,0
+3804,"112","112","To comply with any requirements specified by your supervising officer for the purpose of ensuring that you address your alcohol / drug / sexual / violent / gambling / solvent abuse / anger / debt / prolific / offending behaviour problems at the [NAME OF COURSE / CENTRE].",0,0,0
+3804,"113","113","Not to undertake work or other organised activity which will involve a person under the age of [INSERT AGE], either on a paid or unpaid basis without the prior approval of your supervising officer",0,0,0
+3804,"114","114","Not to own or possess more than one mobile phone or SIM card without the prior approval of your supervising officer and to provide your supervising officer with details of that mobile telephone, including the IMEI number and the SIM card that you possess.",0,0,0
+3804,"115","115","Not to own or possess a mobile phone with a photographic function without the prior approval of your supervising officer.",0,0,0
+3804,"116","116","Not to own or use a camera without the prior approval of your supervising officer.",0,0,0
+3804,"117","117","To make any device capable of making or storing digital images (including a camera and a mobile phone with a camera function) available for inspection on request by your supervising officer and/or a police officer.",0,0,0
+3804,"118","118","To surrender your passport(s) to your supervising officer and to notify your supervising officer of any intention to apply for a new passport.",0,0,0
+3804,"119","119","Not to use or access any computer or device which is internet enabled without the prior approval of your supervising officer; and only for the purpose, and only at a public location, as specified by that officer.",0,0,0
+3804,"12","12","Promote Radicalisation",0,0,0
+3804,"120","120","Not to delete the usage history on any internet enabled device or computer used and to allow such items to be inspected as required by the police or your supervising officer. Such inspection may include removal of the device for inspection and the installation of monitoring software.",0,0,0
+3804,"121","121","Provide your supervising officer with details of any vehicle you own, hire for more than a short journey or have regular use of, prior to any journey taking place.",0,0,0
+3804,"122","122","Notify your supervising officer of any developing intimate relationships with [WOMEN / MEN / WOMEN OR MEN].",0,0,0
+3804,"123","123","Notify your supervising officer of any developing personal relationships, whether intimate or not, with any person you know or believe to be resident in a household containing children under the age of 18. This includes persons known to you prior to your time in custody with whom you are renewing or developing a personal relationship with.",0,0,0
+3804,"124","124","To notify your supervising officer of the details of any passport that you possess (including passport number), and of any intention to apply for a new passport.",0,0,0
+3804,"125","125","Confine yourself to an address approved by your supervising officer between the hours daily unless otherwise authorised by your supervising officer. ",0,0,0
+3804,"126","126","Confine yourself to remain at [CURFEW ADDRESS] initially from [START OF CURFEW HOURS] until [END OF CURFEW HOURS] each day, and, thereafter, for such a period as may be reasonably notified to you by your supervising officer; and comply with such arrangements as may be reasonably put in place and notified to you by your supervising officer so as to allow for your whereabouts and your compliance with your curfew requirement be monitored ",0,0,0
+3804,"128","128","Not to enter [NAMED PLACE] without the prior approval of your supervising officer.",0,0,0
+3804,"129","129","Not to enter or remain in sight of any [NAMED PLACE] without the prior approval of your supervising officer.  ",0,0,0
+3804,"13","13","Medical/Psychiatric Appointments",0,0,0
+3804,"130","130","On release to be escorted by police to Approved Premises",0,0,0
+3804,"131","131","Report to staff at [NAMED PLACE] at [TIME / DAILY], unless otherwise authorised by your supervising officer.  This condition will be reviewed by your supervising officer on a [SPECIFIED] basis and may be amended or removed if it is felt that the level of risk you present has reduced appropriately.",0,0,0
+3804,"132","132","To comply with any instruction given by your supervising officer requiring you to attend polygraph testing. To participate in polygraph sessions and examinations as instructed by or under the authority of your supervising officer and to comply with any instruction given to you during a polygraph session by the person conducting the polygraph.",0,0,0
+3804,"133","133","Attend [INSERT NAME AND ADDRESS], as reasonably required by your supervising officer, to give a sample of oral fluid / urine in order to test whether you have any specified Class A and specified Class B drugs in your body, for the purpose of ensuring that you are complying with the condition of your licence requiring you to be of good behaviour.",0,0,0
+3804,"134","134","Not to take any action that could hamper or frustrate the drug testing process",0,0,0
+3804,"14","14","Home Visits (Mental Health Wrkr)",0,0,0
+3804,"15","15","Victim and/or Family Members",0,0,0
+3804,"16","16","Children",0,0,0
+3804,"17","17","Terrorist Related Offender",0,0,0
+3804,"18","18","Specific Reporting",0,0,0
+3804,"19","19","Notify Car / Vehicle",0,0,0
+3804,"2","2","Internet / Messaging",0,0,0
+3804,"20","20","Notify Relationships",0,0,0
+3804,"201","201","Not to contact directly or indirectly any person whom you know or believe to have been charged or convicted of any extremist related offence, without the prior approval of your supervising officer.",0,0,0
+3804,"202","202","Not to attend or organise any meetings or gatherings other than those convened solely for the purposes of worship without the prior approval of your supervising officer.",0,0,0
+3804,"203","203","Not to give or engage in the delivery of any lecture, talk, or sermon whether part of an act of worship or not, without the prior approval of your supervising officer.",0,0,0
+3804,"204","204","Not to engage in any discussion or act to promote grooming or influencing of an individual or a group for the purpose of extremism or radicalisation.",0,0,0
+3804,"205","205","Not to participate directly or indirectly in organising and/or contributing to any demonstration, meeting, gathering or website without the prior approval of your supervising officer.  This condition will be reviewed on a monthly basis and may be amended or removed if your risk is assessed as having changed.",0,0,0
+3804,"206","206","Not to have in your possession any printed or electronically recorded material or handwritten notes which contain encoded information or that promote the destruction of or hatred for any religious or ethnic group or that celebrates, justifies or promotes acts of violence, or that contain information about military or paramilitary technology, weapons, techniques or tactics without the prior approval of your supervising officer",0,0,0
+3804,"207","207","Provide your supervising officer with the details of any bank accounts to which you are a signatory and of any credit cards you possess. You must also notify your supervising officer when becoming a signatory to any new bank account or credit card, and provide the account/card details.  This condition will be reviewed on a monthly basis and may be amended or removed if it is felt that the level of risk that you present has reduced appropriately.",0,0,0
+3804,"208","208","To only attend places of worship which have been previously agreed with your supervising officer.",0,0,0
+3804,"209","209","Bespoke Condition (See Notes)",0,0,0
+3804,"21","21","Offending Behaviour Problems",0,0,0
+3804,"210","210","Not to enter [NAME/TYPE OF PREMISES / ADDRESS / ROAD] without the prior approval of your supervising officer. This will be monitored by Electronic Monitoring GPS Satellite Tagging during your HDC period",0,0,0
+3804,"211","211","Not to enter the area of [CLEARLY SPECIFIED AREA], as defined by the attached map without the prior approval of your supervising officer. This condition will be monitored by Electronically Monitored Satellite Tagging during your HDC period",0,0,0
+3804,"212","212","Report to staff at [NAME OF APPROVED PREMISES / POLICE STATION] at [TIME / DAILY], unless otherwise authorised by your supervising officer.  This condition will be reviewed by your supervising officer on a [WEEKLY / MONTHLY / ETC] basis and may be amended or removed if it is felt that the level of risk you present has reduced appropriately. This will be monitored by Electronic Monitoring GPS Satellite Tagging during your HDC period",0,0,0
+3804,"213","213","Attend [INSERT APPOINTMENT TIME DATE AND ADDRESS], as directed, to address your dependency on, or propensity to misuse, a controlled drug. This will be monitored by Electronic Monitoring GPS Satellite Tagging during your HDC period",0,0,0
+3804,"214","214","Attend [INSERT NAME AND ADDRESS], as reasonably required by your supervising officer, to give a sample of oral fluid / urine in order to test whether you have any specified Class A and specified Class B drugs in your body, for the purpose of ensuring that you are complying with the condition of your licence requiring you to be of good behaviour. Your attendance will be monitored by Electronic Monitoring GPS Satellite Tagging during your HDC period",0,0,0
+3804,"215","215","To comply with any requirements specified by your supervising officer for the purpose of ensuring that you address your alcohol / drug / sexual / violent / gambling / solvent abuse / anger / debt / prolific / offending behaviour problems at the [NAME OF COURSE / CENTRE]. Any specified requirement of attendance in relation to this condition will be monitored by Electronic Monitoring GPS Satellite Tagging during your HDC period",0,0,0
+3804,"216","216","You will be subject to trail monitoring. Your whereabouts will be electronically monitored by GPS satellite tagging during your HDC period and you must cooperate with the monitoring as directed by your Offender Supervisor",0,0,0
+3804,"217","217","Allow person(s) as designated by your supervising officer to install an electronic monitoring tag on you and access to install any associated equipment in your property, and for the purpose of ensuring that equipment is functioning correctly. You must not damage or tamper with these devices and ensure that the tag is charged, and report to your supervising officer immediately if the tag or the associated equipment are not working correctly.",0,0,0
+3804,"218","218","Confine yourself to an address approved by your supervising officer between 5pm and midnight until [INSERT DATE TWO DAYS AFTER RELEASE], for the installation of your electronic monitoring device.  This condition no longer applies once the device has been installed.",0,0,0
+2015,"24","R","RETURNS",0,0,0
+2015,"25","3","INDETERMINATE SENTENCE FOR PUBLIC PROTECTION",0,0,0
+2015,"26","4","EXTENDED SENTENCE FOR PUBLIC PROTECTION",0,0,0
+2015,"27","5","CUSTODY FOR LIFE UNDER 18 SEC93",0,0,0
+2015,"29","6","CUSTODY FOR LIFE AT LEAST 18 AND UNDER 21 SEC 94",0,0,0
+2015,"A","A","LATE RETURN (VOLUNTARY)",0,0,0
+2015,"ADMN","R","RETURNS",0,0,0
+2015,"B","B","RECALL FROM HDC",0,0,0
+2015,"C","C","CIVIL COMMITTAL",0,0,0
+2015,"D","D","SENTENCED TO DEATH",0,0,0
+2015,"E","E","DETAINED IMMIGRATION ACT 1971 (AWAITING DEPORT)",0,0,0
+2015,"ELR","7","RECALL FROM END OF CUSTODY",0,0,0
+2015,"ETB","L","LICENCE REVOKEE",0,0,0
+2015,"F","F","FINE DEFAULTER",0,0,0
+2015,"G","G","CUSTODY FOR LIFE CJA 1982",0,0,0
+2015,"H","H","HOME LEAVE FAILURE",0,0,0
+2015,"I","I","IMPRISONMENT WITHOUT OPTION",0,0,0
+2015,"INT","M","TRANSFER IN FROM OTHER ESTABLISHMENT",0,0,0
+2015,"INTAKE","I","IMPRISONMENT WITHOUT OPTION",0,0,0
+2015,"INTER","1","INTERMITTENT CUSTODY",0,0,0
+2015,"J","J","DETAINED AT HER MAJESTY'S PLEASURE SEC 90",0,0,0
+2015,"K","K","DETAINED UNDER SEC 91 PCC(SENT) ACT 2000",0,0,0
+2015,"L","L","LICENCE REVOKEE",0,0,0
+2015,"M","M","TRANSFER IN FROM OTHER ESTABLISHMENT",0,0,0
+2015,"N","N","UNCONVICTED REMAND",0,0,0
+2015,"O","O","AWAITING REMOVAL TO PYSCHIATRIC HOSPITAL",0,0,0
+2015,"P","P","PARTLY SUSPENDED SENTENCE",0,0,0
+2015,"Q","Q","OVERNIGHT STOPOVER EN ROUTE TO ACCUMULATIVE VISITS",0,0,0
+2015,"R","R","RETURNS",0,0,0
+2015,"RECA","U","LATE RETURN (INVOLUNTARY)",0,0,0
+2015,"S","S","OVERNIGHT STOPOVER BEFORE TRANSFER TO ANOTHER EST",0,0,0
+2015,"T","T","TRANSFER IN FROM FOREIGN PRISON",0,0,0
+2015,"U","U","LATE RETURN (INVOLUNTARY)",0,0,0
+2015,"V","V","CONVICTED UNSENTENCED",0,0,0
+2015,"W","W","DETENTION IN A YOUNG OFFENDER INSTITUTION",0,0,0
+2015,"Y","Y","RECALL FROM DTO",0,0,0
+2015,"Z","Z","SAME DAY STOPOVER EN ROUTE TO ANOTHER ESTAB",0,0,0
+3804,"219","219","Confine yourself to remain at [CURFEW ADDRESS] initially from [START OF CURFEW HOURS] until [END OF CURFEW HOURS] each day, and, thereafter, for such a period as may be reasonably notified to you by your supervising officer; and comply with such arrangements as may be reasonably put in place and notified to you by your supervising officer so as to allow for your whereabouts and your compliance with your curfew requirement be monitored by Electronic Monitoring GPS Satellite Tagging. This conditio",0,0,0
+3804,"22","22","Notify Passport Details",0,0,0
+3804,"220","220","Not to enter [NAME/TYPE OF PREMISES / ADDRESS / ROAD] without the prior approval of your supervising officer. This will be monitored by Electronic Monitoring GPS Satellite Tagging for a period of [INSERT TIMEFRAME UP TO A MAXIMUM OF SIX MONTHS] weeks / months.",0,0,0
+3804,"221","221","Not to enter the area of [CLEARLY SPECIFIED AREA], as defined by the attached map without the prior approval of your supervising officer. This condition will be monitored by Electronically Monitored GPS Satellite Tagging for a period of [INSERT TIMEFRAME UP TO A MAXIMUM OF SIX MONTHS] weeks / months.",0,0,0
+3804,"222","222","Report to staff at [NAME OF APPROVED PREMISES / POLICE STATION] at [TIME / DAILY], unless otherwise authorised by your supervising officer. This condition will be reviewed by your supervising officer on a [WEEKLY / MONTHLY / ETC] basis and may be amended or removed if it is felt that the level of risk you present has reduced appropriately. This will be monitored by Electronic Monitoring GPS Satellite Tagging for a period of [INSERT TIMEFRAME UP TO A MAXIMUM OF SIX MONTHS] weeks / months.",0,0,0
+3804,"223","223","Attend [INSERT APPOINTMENT TIME DATE AND ADDRESS], as directed, to address your dependency on, or propensity to misuse, a controlled drug. This will be monitored by Electronic Monitoring GPS Satellite Tagging for a period of [INSERT TIMEFRAME UP TO A MAXIMUM OF SIX MONTHS] weeks / months.",0,0,0
+3804,"224","224","Attend [INSERT NAME AND ADDRESS], as reasonably required by your supervising officer, to give a sample of oral fluid / urine in order to test whether you have any specified Class A and specified Class B drugs in your body, for the purpose of ensuring that you are complying with the condition of your licence requiring you to be of good behaviour. Your attendance will be monitored by Electronic Monitoring GPS Satellite Tagging for a period of [INSERT TIMEFRAME UP TO A MAXIMUM OF SIX MONTHS] weeks ",0,0,0
+3804,"225","225","To comply with any requirements specified by your supervising officer for the purpose of ensuring that you address your alcohol / drug / sexual / violent / gambling / solvent abuse / anger / debt / prolific / offending behaviour problems at the [NAME OF COURSE / CENTRE]. Any specified requirement of attendance in relation to this condition will be monitored by Electronic Monitoring GPS Satellite Tagging for a period of [INSERT TIMEFRAME UP TO A MAXIMUM OF SIX MONTHS] weeks / months.",0,0,0
+3804,"226","226","You will be subject to trail monitoring. Your whereabouts will be electronically monitored by GPS Satellite Tagging for a period of [INSERT TIMEFRAME UP TO A MAXIMUM OF SIX MONTHS] weeks / months and you must cooperate with the monitoring as directed by your Offender Supervisor.",0,0,0
+3804,"23","23","Escorted to Approved Premises",0,0,0
+3804,"24","24","Curfew",0,0,0
+3804,"25","25","Electronic Monitoring",0,0,0
+3804,"26","26","Specified Area",0,0,0
+3804,"27","27","Specified Premises/Address",0,0,0
+3804,"28","28","Child Areas/Premises",0,0,0
+3804,"29","29","Named Individual",0,0,0
+3804,"3","3","Own / Use Computer",0,0,0
+3804,"30","30","Known Sex Offender",0,0,0
+3804,"31","31","Serving/Remand Prisoner",0,0,0
+3804,"32","32","Attend/Organise Gatherings",0,0,0
+3804,"33","33","PPO Project",0,0,0
+3804,"34","34","One to One",0,0,0
+3804,"35","35","Aggression Replacement Training",0,0,0
+3804,"36","36","ASRO",0,0,0
+3804,"37","37","CALM",0,0,0
+3804,"38","38","Cognitive Skills Booster",0,0,0
+3804,"39","39","CDVP - Domestic Violence",0,0,0
+3804,"4","4","Own/Use Camera/Phone Camera",0,0,0
+3804,"40","40","Drink Impaired Drivers",0,0,0
+3804,"41","41","Enhanced Thinking Skills",0,0,0
+3804,"42","42","NBR Sex Offender Rolling Prog",0,0,0
+3804,"43","43","PRISM",0,0,0
+3804,"44","44","C-SOGP",0,0,0
+3804,"45","45","TV-SOGP",0,0,0
+3804,"46","46","Think First",0,0,0
+3804,"47","47","Offender Substance Abuse Prog",0,0,0
+3804,"48","48","Integrated Domestic Abuse",0,0,0
+3804,"49","49","Womens Acquisitive Crime",0,0,0
+3804,"5","5","Other - See Notes",0,0,0
+3804,"50","50","Violence Booster",0,0,0
+3804,"51","51","Cognitive Self Change Block 6",0,0,0
+3804,"52","52","Internet Sex Offender Treatment",0,0,0
+3804,"53","53","Low Intensity Alcohol Programme",0,0,0
+3804,"54","54","Control - Angry Impulsive Drinkers",0,0,0
+3804,"55","55","Thinking Skills",0,0,0
+3804,"56","56","Migrated Data",0,0,0
+3804,"57","57","Attend medical/psychiatric appointments and co-operate with treatment",0,0,0
+3804,"58","58","Receive home visits from mental health worker",0,0,0
+3804,"59","59","Not to undertake work/other organised activity which will involve a person under the age of (see notes)",0,0,0
+3804,"6","6","Provide Details of Mobile Phone",0,0,0
+3804,"60","60","Not to use a computer or other electronic device for the purpose of accessing the internet/instant messaging services/online message board/forum",0,0,0
+3804,"61","61","Not to own or use any computer",0,0,0
+3804,"62","62","Not to own or use any camera or mobile phone with a photographic function",0,0,0
+3804,"63","63","Provide details of mobile phone",0,0,0
+3804,"64","64","Not to possess mobile phone with a photographic function without approval",0,0,0
+3804,"65","65","Not to own/use a camera without approval",0,0,0
+3804,"66","66","Attend places of worship only with approval",0,0,0
+3804,"67","67","Not to give talks/sermons without approval",0,0,0
+3804,"68","68","Not possess material promoting hatred/violence or containing military information",0,0,0
+3804,"69","69","Not to promote radicalisation",0,0,0
+3804,"7","7","Own/Use Phone with Camera",0,0,0
+3804,"70","70","Not to seek to approach or communicate with victim/family member",0,0,0
+3804,"71","71","Not to have unsupervised contact with children",0,0,0
+3804,"72","72","Not to contact person with terrorist related offence",0,0,0
+3804,"73","73","Not to contact/associate with named individual",0,0,0
+3804,"74","74","Not to contact known sex offender",0,0,0
+3804,"75","75","Not contact serving/remand prisoner",0,0,0
+3804,"76","76","Not to associate with any person linked with specific group/organisation",0,0,0
+3804,"77","77","Not attend/organise meetings/gatherings except for worship",0,0,0
+3804,"78","78","Comply with any requirements for the purpose of addressing alcohol/drug/sexual/gambling/solvent abuse/anger/debt/prolific offending behaviour problems",0,0,0
+3804,"79","79","Participate in a prolific or other priority offender (PPO) project",0,0,0
+3804,"8","8","Own/Use Camera",0,0,0
+3804,"80","80","Confined to an address between certain hours",0,0,0
+3804,"81","81","Electronic monitoring",0,0,0
+3804,"82","82","Not to enter a specific area",0,0,0
+3804,"83","83","Not to enter specified premises/address",0,0,0
+3804,"84","84","Not to enter or remain in sight of any children's play area swimming baths school etc.",0,0,0
+3804,"85","85","Report to hostel/police station",0,0,0
+3804,"86","86","Provide details of vehicle owned or hired prior to any journey",0,0,0
+3804,"87","87","Notify developing relationships",0,0,0
+3804,"88","88","Attend and participate in polygraph sessions",0,0,0
+3804,"89","89","To be escorted to Approved Premises",0,0,0
+3804,"9","9","Attend Places of Worship",0,0,0
+3804,"90","90","Notify passport details and any intention to apply for a new passport",0,0,0
+3804,"91","91","Other (see notes)",0,0,0
+3804,"92","92","Standard Conditions",0,0,0
+3804,"99","99","No Subtype",0,0,0
+14,"14FTRHDC_ORA","FTR/08","FIXED TERM RECALL - CJIB 2008",35,103,2
+14,"14FTR_ORA","FTR/08","FIXED TERM RECALL - CJIB 2008",35,103,2
+14,"ADIMP_ORA","SENTCJ03","ADULT IMPRISONMENT WITHOUT OPTION CJA03",24,110,2
+14,"AFIXED","AFIXED","ADULT IMPRISONMENT - FIXED PENALTY",51,220,3
+14,"ALP","LIFE","SERVING LIFE IMPRISONMENT",24,20,1
+14,"ALP_LASPO","LIFE","SERVING LIFE IMPRISONMENT",24,20,1
+14,"A_CFINE","A/CFINE","CIVIL PRISONER FINE (ADULT)",32,510,10
+14,"A_FINE","A/FINE","ADULT IMPRISONMENT IN DEFAULT OF FINE",25,211,3
+14,"A_FINE1","A/FINE1","ADULT IMPRISONMENT FINE PAYMENT - TIME ALLOWED",25,210,3
+14,"A_FINE2","A/FINE2","ADULT IMPRISONMENT IN DEFAULT OF FINE NO TIME ALLW",26,215,3
+14,"BOAR","BOAR","BREACH OF AT RISK CJA '91",88,125,2
+14,"BOBC","BOBC","FAILED TO APPEAR - BREACH OF BAIL CONDITIONS",69,810,17
+14,"BOTUS","BOTUS","BREACH TOP UP",35,103,2
+14,"CFLIFE","CFLIFE","CUSTODY FOR LIFE S8 CJA82-OFFENCE COMMITTED+18&-21",43,40,1
+14,"CIVIL","CIVIL","CIVIL COMMITAL (ADULT)",32,490,9
+14,"CIVIL_CON","A/CV/CON","ADULT CIVIL CONTEMPT",32,495,9
+14,"CIVIL_DT","CIVIL/DT","CIVIL COMMITTAL DETENTION AGED 17-20 SEC9 CJA 1982",50,500,9
+14,"CIV_RMD","CIV/RMD","CIVIL REMAND FAMILY LAW ACT 1996",17,581,14
+14,"CJCON08","CJCON08","IMPRISONMENT WITHOUT OPTION CJIB 2008",24,110,2
+14,"CRIM_CON","CRIM/CON","CRIMINAL CONTEMPT",32,168,2
+14,"CUR_ORA","LR/HDC","HDC RECALL - BREACH OF HDC CONDITIONS",35,122,2
+14,"CUSTPLUS","CUSTPLUS","CJA 2003 CUSTODY PLUS",24,110,2
+14,"DEATH","DEATH","SENTENCED TO DEATH",18,10,1
+14,"DEF_SENT","DEF/SENT","DEFERRED SENTENCE",68,760,16
+14,"DEPORT","DEPORT","AWAITING DEPORTATION ONLY",33,530,11
+14,"DET","DET","IMMIGRATION DETAINEE",13,550,11
+14,"DFL","LIFE","SERVING LIFE IMPRISONMENT",24,20,1
+14,"DIED","DIED","DIED",67,1,0
+14,"DISCHARG","N/GUILTY","NOT GUILTY/ACQUITTED/DISMISSED/DISCHARGED",62,780,17
+14,"DISCHARGED","N/GUILTY","NOT GUILTY/ACQUITTED/DISMISSED/DISCHARGED",62,780,17
+14,"DISCONT","DISCONT","CASE WITHDRAWN OR NOT TRIED/PROCEEDINGS DISCONT",84,790,17
+14,"DLP","LIFE","SERVING LIFE IMPRISONMENT",24,20,1
+14,"DPP","LIFE","SERVING LIFE IMPRISONMENT",24,20,1
+14,"DTO","DTO","DETENTION TRAINING ORDER",44,191,2
+14,"DTOR_104","DTOR/104","DTO SECTION 104 RECALL",44,192,2
+14,"DTOR_105","DTOR/105","DTO SECTION 105 RECALL",44,192,2
+14,"DTO_ORA","DTO","DETENTION TRAINING ORDER",44,191,2
+14,"DTO_YOI","DTO/YOI","DTO WITH CONSECUTIVE YOI",44,191,2
+14,"DTTO","DTTO","DRUG TESTING AND TREATMENT ORDER",162,662,15
+14,"EXSENT","EXSENT","EXTENDED SENTENCE CJA '91",21,100,2
+14,"EXSENT03","EXSENT03","EXTENDED SENTENCE CJA 03",21,100,2
+14,"EXSENT08","EXSENT08","EXTENDED SENTENCE CJIB 2008",21,110,2
+14,"EXTRAD","EXTRAD","AWAITING EXTRADITION ONLY",34,540,11
+14,"FTR/08","FTR/08","FIXED TERM RECALL - CJIB 2008",35,103,2
+14,"FTRSCH15_ORA","FTR/08","FIXED TERM RECALL - CJIB 2008",35,103,2
+14,"FTR_HDC","FTR_HDC","FIXED TERM RECALL WHILE ON HDC",35,103,2
+14,"FTR_HDC_ORA","FTR/08","FIXED TERM RECALL - CJIB 2008",35,103,2
+14,"FTR_ORA","FTR/08","FIXED TERM RECALL - CJIB 2008",35,103,2
+14,"FTR_SCH15","FTR/08","FIXED TERM RECALL CJIB2008",35,103,2
+14,"HDR_ORA","LR/HDC","HDC RECALL - BREACH OF HDC CONDITIONS",35,122,2
+14,"HMP","HMP","S53(1)C&YP33-LIFE-MURDER ONLY-OFFENCE COMMITTED-18",22,60,1
+14,"HMPL","LIFE","SERVING LIFE IMPRISONMENT",24,20,1
+14,"INT_CUST","INT/CUST","INTERMITTENT CUSTODY",24,110,2
+14,"IPP","ISPPCJ03","INDETERMINATE SENTENCE FOR PUBLIC PROTECTION",24,20,1
+14,"JR","JR","CONV - JUDGEMENT RESPITED",8,250,4
+14,"LASPO_AR","LASPO_AR","EDS LASPO AUTOMATIC RELEASE",60,720,2
+14,"LASPO_DR","LASPO_DR","EDS LASPO DISCRETIONARY RELEASE",60,720,2
+14,"LIFE","LIFE","SERVING LIFE IMPRISONMENT",24,20,1
+14,"LR","LR","RECALLED TO PRISON FROM PAROLE - NORMAL SENTENCE",35,120,2
+14,"LR_ALP","LR/LIFE","RECALLED TO PRISON FROM PAROLE - LIFE",35,30,1
+14,"LR_ALP_LASPO","LR/LIFE","RECALLED TO PRISON FROM PAROLE - LIFE",35,30,1
+14,"LR_DLP","LR/LIFE","RECALLED TO PRISON FROM PAROLE - LIFE",35,30,1
+14,"LR_DPP","LR/LIFE","RECALLED TO PRISON FROM PAROLE - LIFE",35,30,1
+14,"LR_EPP","LRE/CJ03","RECALLED TO PRISON FROM EXTENDED SENTENCE CJA'03",35,103,2
+14,"LR_ES","LR/EX/ST","RECALLED TO PRISON FROM PAROLE - EXTENDED SENTENCE",35,103,2
+14,"LR_HDC","LR/HDC","HDC RECALL - BREACH OF HDC CONDITIONS",35,122,2
+14,"LR_IPP","LRI/CJ03","LICENCE RECALL IPP",35,30,1
+14,"LR_LASPO_AR","LR/LIFE","RECALLED TO PRISON FROM PAROLE - LIFE",35,30,1
+14,"LR_LASPO_DR","LR/LIFE","RECALLED TO PRISON FROM PAROLE - LIFE",35,30,1
+14,"LR_LIFE","LR/LIFE","RECALLED TO PRISON FROM PAROLE - LIFE",35,30,1
+14,"LR_MLP","LR/LIFE","RECALLED TO PRISON FROM PAROLE - LIFE",35,30,1
+14,"LR_ORA","LR","RECALLED TO PRISON FROM PAROLE - NORMAL SENTENCE",35,120,2
+14,"LR_S53","LR/S53","RECALLED FROM RELEASE - LIFE NOT MURDER",38,90,1
+14,"LR_S53_2","LR/S53/2","RECALLED FROM RELEASE SEC 53/2 DETAINED NOT LIFE",38,180,2
+14,"LR_SEC236A","LRE/CJ03","RECALLED TO PRISON FROM EXTENDED SENTENCE CJA'03",35,103,2
+14,"LR_SEC91_ORA","SEC91","SEC 91 POFCC(SENT) ACT 2000 - SERIOUS OFFENCE - 18",23,170,2
+14,"LR_YOI","LR/YOI","RECALLED TO A YOI FROM PAROLE - YOI",47,200,2
+14,"LR_YOI_ORA","LR/YOI","RECALLED TO A YOI FROM PAROLE - YOI",47,200,2
+14,"L_W","L/W","REMAND-TERMINATED BY LODGE WARRANT",80,239,3
+14,"MLP","LIFE","SERVING LIFE IMPRISONMENT",24,20,1
+14,"NON-CUST","UNKNOWN","DISPOSAL NOT KNOWN",69,820,17
+14,"POLICE","POLICE","IN POLICE CELLS-(FINAL OUTCOME NOT POLICE REMAND)",85,620,15
+14,"PPEXT_SENT","EXSENT03","EXTENDED SENTENCE PUBLIC PROTECTION CJA 03",21,100,2
+14,"PSS","PSS","PARTLY SUSPENDED SENTENCE",40,130,2
+14,"PSS_RT_C","PSS/RT/C","PARTLY SUSPENDED SENTENCE - WHOLLY RESTORED",41,140,2
+14,"PSS_RT_P","PSS/RT/P","PARTLY SUSPENDED SENTENCE - PARTLY RESTORED",41,150,2
+14,"REC_DEP","REC/DEP","RECOMMENDED FOR DEPORTATION",71,600,14
+14,"REFER","REFER","DTO/YOI REFERAL",44,191,2
+14,"REST_ORD","REST/ORD","RESTRICTION ORDER RE:ATTENDING FOOTBALL MATCHES",36,740,15
+14,"RX","RX","REMANDED TO MAGISTRATES COURT - SEC 128 MCA 1980",17,590,14
+14,"S35MHA","SEC35MHA","REMANDED TO PSYCHIATRIC HOSP BY CC OR MC - MHA '83",17,580,13
+14,"S36MHA","SEC36MHA","REMAND TO PSYCHIATRIC HOSPITAL BY CC - MHA 1983",17,570,12
+14,"S37MHA","S37/4MHA","CONV-REMOVAL TO PSYCH/HOSP-UNDER HOSP ORDER-MHA'83",31,280,4
+14,"S38MHA","SEC38MHA","CONV-AWAIT REMOVAL TO HOSP(INTERIM ORDER) - MHA'83",31,420,6
+14,"S41MHA","SEC41MHA","CONV - HOSPITAL ORDER WITH RESTRICTIONS - MHA 1983",74,260,4
+14,"S43MHA","SEC43MHA","CONV-COMM TO CC FOR ORDER WITH RESTRICTIONS-MHA'83",9,300,5
+14,"S45MHA","S45AMHA","CONV HOSP DIRECTION SEC45A MHA83",89,264,4
+14,"S47MHA","SEC47MHA","HOME SEC ORDER TO PYSCH HOSP - SENTENCED INMATES",89,165,2
+14,"S48MHA","SEC48MHA","PSYCHIATRIC HOSPITAL FROM PRISON WHILST ON REMAND",78,565,12
+14,"SEC10_3","SEC10/3","CONV - ADJOURNED FOR REPORTS - MCA 1980",6,450,7
+14,"SEC17_3","SEC17/3","CONV - BREACH OF CSO - CJA 1972",9,370,5
+14,"SEC18_2","SEC18/2","CONV - COMM TO CC-REVOKE/AMEND CSO - CJA 1972",9,360,5
+14,"SEC18_3","SEC18/3","CUSTODY TO CROWN COURT CJA 1972",9,410,6
+14,"SEC19_3B","SEC19/3B","CONV - COMM TO CC-BREACHED ATTENDANCE ORDER-CJA'82",9,350,5
+14,"SEC236A","EXSENT03","EXTENDED SENTENCE CJA 03",21,100,2
+14,"SEC24_2A","SEC24/2A","CONV - COMM TO CC-BREACHED SUSPENDED SENT-PCCA '73",9,340,5
+14,"SEC2_1","SEC2/1","CONV - YO AWAITING REPORTS - CJA 1982",9,470,7
+14,"SEC30","SEC30","CONV - AWAITING MEDICAL REPORTS - MCA 1980",14,440,7
+14,"SEC37","SEC37","CONV - YO COMM TO CC FOR SENTENCE - MCA 1980",7,256,5
+14,"SEC38","SEC38","CONVICTED/COMMITTED TO CROWN COURT FOR SENTENCE",7,255,5
+14,"SEC39","SEC39MCA","CONVICTED/REMITTED TO MAGISTRATE'S COURT",7,257,5
+14,"SEC42","SEC42","CONV - COMM TO CC FOR SENTENCE - PCCA 1973",7,310,5
+14,"SEC43","SEC43","COMMITTED TO CROWN COURT SEC43MHA 1983",9,301,5
+14,"SEC45","SEC45","CONV - AWAITING SOCIAL INQUIRY REPORTS - PCCA 1973",7,410,6
+14,"SEC5","SEC5","CONV UNDER SEC 5 VAGRANCY ACT 1824",9,430,7
+14,"SEC53","SEC53","S53(2)C&YP33-LIFE NOT MURDER-OFFENCE COMMITTED -17",23,80,1
+14,"SEC53_2","SEC53/2","SEC 53(2) C&YP ACT 1933 - DETAINED NOT LIFE",23,170,2
+14,"SEC56","SEC56","CONV - BREACHED NON-CUST ALTERNATIVES - CJA 1967",9,290,5
+14,"SEC6","SEC6","BREACH OF PROBATION - CONVICTED REMAND",9,381,5
+14,"SEC6B","SEC6B","CONV - COMM TO CC-BREACHED BAIL - BAIL ACT 1976",9,400,5
+14,"SEC6_4","SEC6/4","CONV-COMM TO CC-BREACHED PO REQUIREMENTS-PCCA 1973",9,390,5
+14,"SEC8","SEC8","BREACH OF PROBATION BY A FURTHER OFFENCE",9,371,5
+14,"SEC8_6","SEC8/6","CONV-COMM TO CC-BREACHED PO BY OFFENDING-PCCA '73",9,380,5
+14,"SEC90","SEC90","SEC90 POFCC ACT 2000 LIFE MURDER UNDER HMP -18",22,60,1
+14,"SEC90_03","SEC90/03","SEC90 POFCC ACT 2000 LIFE MURDER UNDER HMP -18",22,60,1
+14,"SEC91","SEC91","SEC 91 POFCC(SENT) ACT 2000 - SERIOUS OFFENCE - 18",23,170,2
+14,"SEC91_03","SEC91/03","SEC 91 POFCC(SENT) ACT 2000 - SERIOUS OFFENCE - 18",23,170,2
+14,"SEC91_03_ORA","SEC91/03","SEC 91 POFCC(SENT) ACT 2000 - SERIOUS OFFENCE - 18",23,170,2
+14,"SEC93","SEC93","SEC 93 POFCC(SENT) ACT 2000 - CUSTODY FOR LIFE -21",23,80,1
+14,"SEC93_03","SEC93/03","SEC 93 POFCC(SENT) ACT 2000 - CUSTODY FOR LIFE -21",23,80,1
+14,"SEC94","SEC94","SEC 94 POFCC(SENT)ACT2000 - CUSTODY LIFE +18 & -21",23,80,1
+14,"SENT","SENT","ADULT IMPRISONMENT WITHOUT OPTION",24,110,2
+14,"SENT03","SENTCJ03","ADULT IMPRISONMENT WITHOUT OPTION CJA03",24,110,2
+14,"SENTCJ03","SENTCJ03","ADULT IMPRISONMENT WITHOUT OPTION CJA03",24,110,2
+14,"SENT_EXL","SENT/EXL","SENTENCED - EXTENDED LICENCE",87,105,2
+14,"SINE DIE","SINE DIE","ADJOURNED SINE DIE - TO LIE ON FILE",61,800,17
+14,"SUP_ORD","SUP/ORD","SUPERVISION ORDER",81,670,15
+14,"SUSP_SEN","SUSP/SEN","SUSPENDED SENTENCE",82,630,15
+14,"TRL","TRL","COMMITTED TO CC FOR TRIAL",4,560,12
+14,"UNFIT","UNFIT","UNFIT TO PLEAD",83,770,17
+14,"UNKNOWN","UNKNOWN","DISPOSAL NOT KNOWN",69,820,17
+14,"UNK_CONV","UNKNOWN","DISPOSAL NOT KNOWN",69,820,17
+14,"UNK_CUST","UNKNOWN","DISPOSAL NOT KNOWN",69,820,17
+14,"UNK_SENT","UNKNOWN","DISPOSAL NOT KNOWN",69,820,17
+14,"YOC_CONT","YOC/CONT","YO CIVIL CONTEMPT",50,498,9
+14,"YOFINE","YOFINE","DETENTION (YOUNG OFFENDER) FINE PAYMENT",45,231,3
+14,"YOFINE1","YOFINE1","DETENTION(YOUNG OFFENDER) FINE PAYMENT NO TIME",45,230,3
+14,"YOFINE2","YOFINE2","DETENTION(YOUNG OFFENDER) FINE PAYMENT TIME ALLOW",48,235,3
+14,"YOFIXED","YOFIXED","YO IMPRISONMENT - FIXED PENALTY",49,240,3
+14,"YOI","YOI","DETENTION IN A YOUNG OFFENDER INSTITUTION",44,190,2
+3803,"113","113","Licence-Location Monitoring (GPS Tagging)",,,
+3807,"-1","OTHER","Wildcard value from PCMS",0,0,0
+3807,"ALL","OTHER","All Courts",0,0,0
+3807,"CIV","OTHER","Civil Court",0,0,0
+3807,"CMT","GCM","Courts Martial",0,0,0
+3807,"COA","CACD","Court Of Appeal Criminal Division",0,0,0
+3807,"COM","OTHER","Community",0,0,0
+3807,"COU","CO","County Court",0,0,0
+3807,"CRN","CC","Crown Court",0,0,0
+3807,"DHB","OTHER","Deputy High Baliff Court (IOM)",0,0,0
+3807,"DIS","DIS","District Court (Scottish)",0,0,0
+3807,"EXJ","OTHER","Juvenile Court Outside Area",0,0,0
+3807,"EXM","OTHER","Magistrates Court outside area",0,0,0
+3807,"EXY","OTHER","Youth Court Outside Area",0,0,0
+3807,"FAM","OTHER","Family/Chancery Div. High Crt",0,0,0
+3807,"GCA","OTHER","Court of Appeal (Guernsey)",0,0,0
+3807,"GCD","OTHER","Court of Gen Gaol Del (IOM)",0,0,0
+3807,"GMC","OTHER","Mag's Court (Guernsey)",0,0,0
+3807,"GRC","OTHER","Royal Court (Guernsey)",0,0,0
+3807,"HGH","HGH","High Court (Scottish)",0,0,0
+3807,"IMM","IMM","Immigration",0,0,0
+3807,"JCA","OTHER","Court of Appeal (Jersey)",0,0,0
+3807,"JMC","OTHER","Mag's Court (Jersey)",0,0,0
+3807,"JRC","OTHER","Royal Court (Jersey)",0,0,0
+3807,"JUV","OTHER","Juvenile Court",0,0,0
+3807,"LRR","OTHER","Lifer Review and Recall Section",0,0,0
+3807,"MAG","MC","Magistrates Court",0,0,0
+3807,"MBC","OTHER","High Baliff Court (IOM)",0,0,0
+3807,"MCA","OTHER","Appeal Court (IOM)",0,0,0
+3807,"MMC","OTHER","Magistrates Court (IOM)",0,0,0
+3807,"OEW","OEW","Court Outside England/Wales",0,0,0
+3807,"OTH","OTHER","Other",0,0,0
+3807,"SEU","OTHER","Sentence Enforcement Unit",0,0,0
+3807,"SHF","SHF","Sherriff's Court (Scottish)",0,0,0
+3807,"SUM","OTHER","Summary Court (Scottish)",0,0,0
+3807,"TCT","OTHER","Temporary Court Type",0,0,0
+3807,"YTH","YC","Youth Court",0,0,0
+14,"YOI_ORA","YOI","DETENTION IN A YOUNG OFFENDER INSTITUTION",44,190,2
+14,"YO_CFINE","YO/CFINE","CIVIL PRISONER FINE (YOUNG OFFENDER)",50,520,10
+2005,"ACI","520","HMP ALTCOURSE",0,0,0
+2005,"AGI","1730","HMP ASKHAM GRANGE",0,0,0
+2005,"AKI","650","HMP ACKLINGTON",0,0,0
+2005,"ALI","1180","HMP ALBANY",0,0,0
+2005,"ASI","1690","HMPYOI ASHFIELD",0,0,0
+2005,"AWI","870","HMP ASHWELL",0,0,0
+2005,"AYI","1190","HMYOI AYLESBURY",0,0,0
+2005,"BAI","1600","HMP BELMARSH",0,0,0
+2005,"BCI","1760","HMP BUCKLEY HALL",0,0,0
+2005,"BDI","1100","HMP BLUNDESTON",0,0,0
+2005,"BFI","1090","HMP BEDFORD",0,0,0
+2005,"BHI","1350","HMP BLANTYRE HOUSE",0,0,0
+2005,"BKI","1740","HMRC BROCKHILL",0,0,0
+2005,"BLI","1470","HMP BRISTOL",0,0,0
+2005,"BMI","950","HMP BIRMINGHAM",0,0,0
+2005,"BNI","1200","HMP BULLINGDON",0,0,0
+2005,"BRI","1940","HMP BURE",0,0,0
+2005,"BSI","970","HMRC BRINSFORD",0,0,0
+2005,"BTI","960","HMP BLAKENHURST",0,0,0
+2005,"BUI","1750","HMP BULLWOOD HALL",0,0,0
+2005,"BWI","5020","HMP BERWYN",0,0,0
+2005,"BXI","1290","HMP BRIXTON",0,0,0
+2005,"BZI","1910","HMP BRONZEFIELD",0,0,0
+2005,"CDI","1110","HMP CHELMSFORD",0,0,0
+2005,"CFI","1050","HMP CARDIFF",0,0,0
+2005,"CHI","1210","HMP CAMPHILL",0,0,0
+2005,"CKI","1770","HMP COOKHAM WOOD",0,0,0
+2005,"CLI","1370","HMP COLDINGLEY",0,0,0
+2005,"CSI","690","HMYOI CASTINGTON",0,0,0
+2005,"CWI","1480","HMP CHANNINGS WOOD",0,0,0
+2005,"CYI","1360","HMP CANTERBURY",0,0,0
+2005,"DAI","1490","HMP DARTMOOR",0,0,0
+2005,"DGI","980","HMP DOVEGATE",0,0,0
+2005,"DHI","1780","HMP DRAKE HALL",0,0,0
+2005,"DMI","1610","HMP DURHAM",0,0,0
+2005,"DNI","700","HMP DONCASTER",0,0,0
+2005,"DRI","1500","HMP DORCHESTER",0,0,0
+2005,"DTI","660","HMYOI DEERBOLT",0,0,0
+2005,"DVI","1380","DOVER IMMIGRATION REMOVAL CENTRE",0,0,0
+2005,"DWI","1870","HMP DOWNVIEW",0,0,0
+2005,"EEI","1510","HMP ERLESTOKE",0,0,0
+2005,"EHI","1450","HMP STANDFORD HILL",0,0,0
+2005,"ESI","1790","HMP EAST SUTTON PK",0,0,0
+2005,"EVI","710","HMP EVERTHORPE",0,0,0
+2005,"EWI","1800","HMP EASTWOOD PARK",0,0,0
+2005,"EXI","1520","HMP EXETER",0,0,0
+2005,"EYI","1390","HMP ELMLEY",0,0,0
+2005,"FBI","530","HMP FOREST BANK",0,0,0
+2005,"FDI","1400","HMP FORD",0,0,0
+2005,"FHI","1810","HMP FOSTON HALL",0,0,0
+2005,"FKI","1620","HMP FRANKLAND",0,0,0
+2005,"FMI","1340","HMRC FELTHAM",0,0,0
+2005,"FNI","1630","HMP FULL SUTTON",0,0,0
+2005,"FSI","990","HMP FEATHERSTONE",0,0,0
+2005,"GHI","590","HMP GARTH",0,0,0
+2005,"GLI","1530","HMP GLOUCESTER",0,0,0
+2005,"GMI","1540","HMP GUYS MARSH",0,0,0
+2005,"GNI","1220","HMP GRENDON",0,0,0
+2005,"GPI","890","HMRC GLEN PARVA",0,0,0
+2005,"GTI","880","HMP GARTREE",0,0,0
+2005,"HBI","1170","HMP HOLLESLEY BAY",0,0,0
+2005,"HCI","1700","HMYOI HUNTERCOMBE",0,0,0
+2005,"HDI","790","HMYOI MOORLAND OPEN",0,0,0
+2005,"HEI","960","HMP HEWELL",0,0,0
+2005,"HGI","1000","HMP HEWELL GRANGE",0,0,0
+2005,"HHI","670","HMP HOLME HOUSE",0,0,0
+2005,"HII","540","HMYOI HINDLEY",0,0,0
+2005,"HLI","720","HMP HULL",0,0,0
+2005,"HMI","5001","HMP HUMBER",0,0,0
+2005,"HOI","1410","HMP HIGH DOWN",0,0,0
+2005,"HPI","1120","HMP HIGHPOINT",0,0,0
+2005,"HRI","1240","IMMIGRATION REMOVAL CENTRE HASLAR",0,0,0
+2005,"HVI","600","HMP HAVERIGG",0,0,0
+2005,"HYI","1820","HMP HOLLOWAY",0,0,0
+2005,"ISI","1960","HMYOI ISIS",0,0,0
+2005,"IWI","2040","HMP ISLE OF WIGHT",0,0,0
+2005,"KMI","610","HMP KIRKHAM",0,0,0
+2005,"KTI","1930","HMP KENNETT",0,0,0
+2005,"KVI","680","HMP KIRKLEVINGTON",0,0,0
+2005,"LAI","620","HMP LANCASTER",0,0,0
+2005,"LCI","900","HMP LEICESTER",0,0,0
+2005,"LEI","730","HMP LEEDS",0,0,0
+2005,"LFI","570","HMYOI LANCASTER FARMS",0,0,0
+2005,"LGI","810","HMP LOWDHAM GRANGE",0,0,0
+2005,"LHI","740","HMP LINDHOLME",0,0,0
+2005,"LII","800","HMP LINCOLN",0,0,0
+2005,"LLI","1640","HMP LONG LARTIN",0,0,0
+2005,"LMI","1300","HMP LATCHMERE HOUSE",0,0,0
+2005,"LNI","1830","HMP LOW NEWTON",0,0,0
+2005,"LPI","550","HMP LIVERPOOL",0,0,0
+2005,"LTI","1130","HMP LITTLEHEY",0,0,0
+2005,"LWI","1420","HMP LEWES",0,0,0
+2005,"LYI","1550","HMP LEYHILL",0,0,0
+2005,"MDI","750","HMP MOORLAND",0,0,0
+2005,"MHI","1880","HMP MORTON HALL",0,0,0
+2005,"MRI","1680","HMP MANCHESTER",0,0,0
+2005,"MSI","1430","HMP MAIDSTONE",0,0,0
+2005,"MTI","1150","HMP THE MOUNT",0,0,0
+2005,"MWI","5010","STC MEDWAY",0,0,0
+2005,"NEI","1900","HMP EDMUNDS HILL",0,0,0
+2005,"NHI","1840","HMP NEW HALL",0,0,0
+2005,"NLI","2000","HMP NORTHUMBERLAND",0,0,0
+2005,"NMI","830","HMP NOTTINGHAM",0,0,0
+2005,"NNI","760","HMYOI NORTHALLERTON",0,0,0
+2005,"NSI","820","HMP NORTH SEA CAMP",0,0,0
+2005,"NWI","1140","HMRC NORWICH",0,0,0
+2005,"ONI","940","HMP ONLEY",0,0,0
+2005,"OWI","1980","HMP OAKWOOD",0,0,0
+2005,"PBI","1920","HMP PETERBOROUGH",0,0,0
+2005,"PDI","1590","HMYOI PORTLAND",0,0,0
+2005,"PFI","1950","HMP PETERBOROUGH - FEMALE",0,0,0
+2005,"PKI","1260","HMP PARKHURST",0,0,0
+2005,"PNI","630","HMP PRESTON",0,0,0
+2005,"PRI","1060","HMP PARC",0,0,0
+2005,"PTI","1250","HMP KINGSTON",0,0,0
+2005,"PVI","1310","HMP PENTONVILLE",0,0,0
+2005,"RCI","1440","HMRC ROCHESTER",0,0,0
+2005,"RDI","1270","HMRC READING",0,0,0
+2005,"RHI","910","HMP RYE HILL",0,0,0
+2005,"RNI","840","HMP RANBY",0,0,0
+2005,"RSI","560","HMRC RISLEY",0,0,0
+2005,"SDI","1850","HMP SEND",0,0,0
+2005,"SFI","1020","HMP STAFFORD",0,0,0
+2005,"SHI","1040","HMYOI STOKE HEATH",0,0,0
+2005,"SKI","920","HMP STOCKEN",0,0,0
+2005,"SLI","1460","HMP SWALESIDE",0,0,0
+2005,"SMI","1560","HMP SHEPTON MALLET",0,0,0
+2005,"SNI","1030","HMP SWINFEN HALL",0,0,0
+2005,"SPI","1230","HMP SPRING HILL",0,0,0
+2005,"STI","1860","HMP STYAL",0,0,0
+2005,"SUI","850","HMP SUDBURY",0,0,0
+2005,"SWI","1070","HMP SWANSEA",0,0,0
+2005,"SYI","1010","HMP SHREWSBURY",0,0,0
+2005,"TCI","580","HMYOI THORN CROSS",0,0,0
+2005,"TSI","1990","HMP THAMESIDE",0,0,0
+2005,"UKI","1080","HMP USK",0,0,0
+2005,"UPI","1970","HMP PRESCOED",0,0,0
+2005,"VEI","1570","HMP THE VERNE",0,0,0
+2005,"WAI","1580","HMP THE WEARE",0,0,0
+2005,"WBI","930","HMP WELLINGBOROUGH",0,0,0
+2005,"WCI","1280","HMP WINCHESTER",0,0,0
+2005,"WDI","1650","HMP WAKEFIELD",0,0,0
+2016,"R10","R10","Paid Work - Retail and Wholesale",,,
+2016,"R11","R11","Paid Work - Manufacturing",,,
+2016,"R12","R12","Paid Work - Catering and Hospitality",,,
+2016,"R13","R13","Paid Work - Transportation and Storage",,,
+2016,"R14","R14","Paid Work - Construction and Recycling",,,
+2016,"R15","R15","Paid Work - IT and Communication",,,
+2016,"R16","R16","Paid Work - Agriculture and Horticulture",,,
+2016,"R17","R17","Paid Work - Other",,,
+2016,"R18","R18","Unpaid Work - Retail and Wholesale",,,
+2016,"R19","R19","Unpaid Work - Manufacturing",,,
+2016,"R20","R20","Unpaid Work - Catering and Hospitality",,,
+2016,"R21","R21","Unpaid Work - Transportation and Storage",,,
+2016,"R22","R22","Unpaid Work - Construction and Recycling",,,
+2016,"R23","R23","Unpaid Work - IT and Communication",,,
+2016,"R24","R24","Unpaid Work - Agriculture and Horticulture",,,
+2016,"R25","R25","Unpaid Work - Other",,,

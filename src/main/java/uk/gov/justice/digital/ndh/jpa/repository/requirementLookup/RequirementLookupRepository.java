@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.ndh.jpa.repository;
+package uk.gov.justice.digital.ndh.jpa.repository.requirementLookup;
 
 import java.util.Optional;
 

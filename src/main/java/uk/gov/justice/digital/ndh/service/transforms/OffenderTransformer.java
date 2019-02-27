@@ -47,8 +47,8 @@ import uk.gov.justice.digital.ndh.api.oasys.response.SubSetOffender;
 import uk.gov.justice.digital.ndh.api.soap.SoapBody;
 import uk.gov.justice.digital.ndh.api.soap.SoapEnvelopeSpec1_2;
 import uk.gov.justice.digital.ndh.api.soap.SoapHeader;
-import uk.gov.justice.digital.ndh.jpa.repository.RequirementLookup;
-import uk.gov.justice.digital.ndh.jpa.repository.RequirementLookupRepository;
+import uk.gov.justice.digital.ndh.jpa.repository.requirementLookup.RequirementLookup;
+import uk.gov.justice.digital.ndh.jpa.repository.requirementLookup.RequirementLookupRepository;
 import uk.gov.justice.digital.ndh.service.MappingService;
 import uk.gov.justice.digital.ndh.service.exception.NDHRequirementLookupException;
 

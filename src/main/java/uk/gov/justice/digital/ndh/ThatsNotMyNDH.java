@@ -19,6 +19,8 @@ import org.springframework.boot.info.BuildProperties;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 import org.springframework.jms.annotation.EnableJms;
@@ -93,4 +95,15 @@ public class ThatsNotMyNDH {
         return new Sequence(initialValue, maxValue);
 
     }
+
+    @Bean
+    public Resource mappingCodeDataResource() {
+        return new ClassPathResource("mapping_code_data.csv");
+    }
+
+    @Bean
+    public Resource requirementLookupResource() {
+        return new ClassPathResource("requirement_lookup.csv");
+    }
+
 }
