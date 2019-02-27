@@ -79,6 +79,7 @@
 "N","Q","4","CJA_ACTIVITY","FINANCE","","",""
 "N","Q","5","CJA_ACTIVITY","ACCOMMODATION","","",""
 "N","Q","6","CJA_ACTIVITY","OTHER","","",""
+"N","MDup","","CJA_REQUIREMENT","CURFEW","","",""
 "N","X","","CJA_REQUIREMENT","EXCLUSION","","",""
 "N","3","","CJA_REQUIREMENT","RESIDENCE","","",""
 "N","P","","CJA_REQUIREMENT","MENTAL_HEALTH_TREATMENT","","",""
