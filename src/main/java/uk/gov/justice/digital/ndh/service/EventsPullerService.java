@@ -58,7 +58,7 @@ public class EventsPullerService {
                                ExceptionLogService exceptionLogService,
                                MessageStoreService messageStoreService,
                                MessageStoreRepository messageStoreRepository,
-                               @Value("windback.seconds:30") int windbackSeconds) {
+                               @Value("${windback.seconds:30}") int windbackSeconds) {
         this.custodyApiClient = custodyApiClient;
         this.objectMapper = objectMapper;
         this.xmlMapper = xmlMapper;

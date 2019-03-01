@@ -1,6 +1,4 @@
 spring:
-  datasource:
-    data: 'classpath:NDH_MAPPING_CODE_DATA.sql'
   jpa:
     hibernate:
       ddl-auto: create
