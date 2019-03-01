@@ -292,7 +292,7 @@ public class XtagTransformer {
                 .prisonNumber(inmateDetail.getBookingNo())
                 .pnc(pncOf(rootOffender))
                 .oldPrisonNumber(event.getPreviousBookingNumber())
-                .nomisId(rootOffender.getNomsId())
+                .nomisId(inmateDetail.getOffenderNo())
                 .forename1(inmateDetail.getFirstName())
                 .forename2(inmateDetail.getMiddleName())
                 .familyName(inmateDetail.getLastName())
@@ -405,9 +405,20 @@ public class XtagTransformer {
                         .map(x -> x.getFromAgencyLocation().getAgencyLocationId())
                         .orElse(activeBookingOf(offender)
                                 .map(booking -> booking.getAgencyLocation().getAgencyLocationId())
-                                .orElse(null)),
+                                .orElse(fromAgencyCodeOfLastMovementOutOf(offender))),
                 AGENCY_LOCATION_CODE_TYPE);
 
+    }
+
+    private String fromAgencyCodeOfLastMovementOutOf(Offender offender) {
+        return offender.getBookings()
+                .stream()
+                .filter(b -> b.getBookingSequence() == 1)
+                .findFirst()
+                .map(Booking::getLastMovement)
+                .filter(m -> "OUT".equals(m.getMovementDirection()))
+                .map(m -> m.getFromAgencyLocation().getAgencyLocationId())
+                .orElse(null);
     }
 
     private Optional<Booking> activeBookingOf(Offender offender) {
