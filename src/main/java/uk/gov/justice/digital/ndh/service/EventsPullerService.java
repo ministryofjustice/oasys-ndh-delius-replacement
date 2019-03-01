@@ -10,6 +10,7 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -47,6 +48,7 @@ public class EventsPullerService {
     private final MessageStoreRepository messageStoreRepository;
     private final LocalDateTime startupPullFromDateTime;
     private LocalDateTime lastPulled;
+    private final int windbackSeconds;
 
     public EventsPullerService(NomisClient custodyApiClient,
                                @Qualifier("globalObjectMapper") ObjectMapper objectMapper,
@@ -55,7 +57,8 @@ public class EventsPullerService {
                                OasysSOAPClient oasysSOAPClient,
                                ExceptionLogService exceptionLogService,
                                MessageStoreService messageStoreService,
-                               MessageStoreRepository messageStoreRepository) {
+                               MessageStoreRepository messageStoreRepository,
+                               @Value("windback.seconds:30") int windbackSeconds) {
         this.custodyApiClient = custodyApiClient;
         this.objectMapper = objectMapper;
         this.xmlMapper = xmlMapper;
@@ -66,6 +69,7 @@ public class EventsPullerService {
         this.messageStoreRepository = messageStoreRepository;
         startupPullFromDateTime = getInitialPullFromDateTime();
         lastPulled = startupPullFromDateTime;
+        this.windbackSeconds = windbackSeconds;
     }
 
     @Scheduled(fixedDelayString = "${xtag.poll.period:10000}")
@@ -78,7 +82,7 @@ public class EventsPullerService {
             Optional<List<OffenderEvent>> maybeOffenderEvents = custodyApiClient
                     .doGetWithRetry("events", ImmutableMap.of(
                             "from", lastPulled.toString(),
-                            "to", now.minusSeconds(5L).toString(),
+                            "to", now.minusSeconds(windbackSeconds).toString(),
                             "type", "BOOKING_NUMBER-CHANGED,OFFENDER_MOVEMENT-RECEPTION,OFFENDER_MOVEMENT-DISCHARGE,OFFENDER_BOOKING-CHANGED,OFFENDER_DETAILS-CHANGED,IMPRISONMENT_STATUS-CHANGED,SENTENCE_CALCULATION_DATES-CHANGED",
                             "sortBy", "TIMESTAMP_ASC"))
                     .filter(r -> r.getStatus() == HttpStatus.OK.value())
