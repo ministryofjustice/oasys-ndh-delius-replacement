@@ -149,7 +149,7 @@ public class EventsPullerService {
         }
     }
 
-    private Optional<EventMessage> xtagEventMessageOf(OffenderEvent event) throws ExecutionException, UnirestException, NomisAPIServiceError, RetryException {
+    private Optional<EventMessage> xtagEventMessageOf(OffenderEvent event) throws ExecutionException, NomisAPIServiceError, RetryException {
 
         try {
             switch (event.getNomisEventType()) {
