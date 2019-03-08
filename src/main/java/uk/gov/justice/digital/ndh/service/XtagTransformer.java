@@ -6,11 +6,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.github.rholder.retry.RetryException;
 import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableMap;
-import com.mashape.unirest.http.HttpResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import uk.gov.justice.digital.ndh.api.nomis.AgencyLocation;
 import uk.gov.justice.digital.ndh.api.nomis.Booking;
@@ -25,7 +23,6 @@ import uk.gov.justice.digital.ndh.api.nomis.elite2.InmateDetail;
 import uk.gov.justice.digital.ndh.api.oasys.xtag.EventMessage;
 import uk.gov.justice.digital.ndh.service.exception.NDHMappingException;
 import uk.gov.justice.digital.ndh.service.exception.NomisAPIServiceError;
-import uk.gov.justice.digital.ndh.service.transforms.OffenderTransformer;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -52,21 +49,20 @@ public class XtagTransformer {
     public static final String STATUS_CHANGE = "StatusChange";
     public static final long OASYSR_RECEPTION_CODES = 2015L;
     public static final long OASYSR_DISCHARGE_CODES = 2016L;
-    private final NomisClient custodyApiClient;
-    private final NomisClient elite2ApiClient;
+    final NomisApiServices nomisApiServices;
     private final ObjectMapper objectMapper;
     private final MappingService mappingService;
-    private final OffenderTransformer offenderTransformer;
-    private final Sequence xtagSequence;
+    private final CorrelationService correlationService;
 
-
-    public XtagTransformer(NomisClient custodyApiClient, NomisClient elite2ApiClient, @Qualifier("globalObjectMapper") ObjectMapper objectMapper, MappingService mappingService, OffenderTransformer offenderTransformer, Sequence xtagSequence) {
-        this.custodyApiClient = custodyApiClient;
-        this.elite2ApiClient = elite2ApiClient;
+    @Autowired
+    public XtagTransformer(@Qualifier("globalObjectMapper") ObjectMapper objectMapper,
+                           MappingService mappingService,
+                           NomisApiServices nomisApiServices,
+                           CorrelationService correlationService) {
         this.objectMapper = objectMapper;
         this.mappingService = mappingService;
-        this.offenderTransformer = offenderTransformer;
-        this.xtagSequence = xtagSequence;
+        this.correlationService = correlationService;
+        this.nomisApiServices = nomisApiServices;
     }
 
     public static String normalisedPncOf(String pnc) {
@@ -95,21 +91,22 @@ public class XtagTransformer {
 
     public Optional<EventMessage> offenderImprisonmentStatusUpdatedXtagOf(OffenderEvent event) throws ExecutionException, NomisAPIServiceError, RetryException {
 
+        /*
+        The OFF_IMP_STAT_OASYS raw xtag event only ever contains a booking Id. The Elite2 API uses cacheing on bookings.
+        Work around the cacheing...
+         */
         log.info("Handling offenderImprisonmentStatusUpdated event {}", event);
-        final InmateDetail inmateDetail = getInmateDetail(event);
-        final Offender rootOffender = getOffender(inmateDetail);
+        final InmateDetail inmateDetail = nomisApiServices.getInmateDetail(event, this);
+        final Offender rootOffender = nomisApiServices.getOffenderByNomsId(inmateDetail.getOffenderNo());
+        final Offender thisOffender = thisOffenderFromRootOffender(rootOffender);
+        log.info("... which is for nomsId {}", thisOffender.getNomsId());
 
-        log.info("... which is for nomsId {}", inmateDetail.getOffenderNo());
-
-        final Optional<OffenderImprisonmentStatus> maybeOffenderImprisonmentStatus = custodyApiClient
-                .doGetWithRetry("offenders/offenderId/" + rootOffender.getOffenderId() + "/imprisonmentStatuses")
-                .filter(this::okOrNotFound)
-                .map(HttpResponse::getBody)
-                .map(this::asImprisonmentStatuses)
-                .flatMap(imprisonmentStatuses -> imprisonmentStatuses.stream()
+        final Optional<OffenderImprisonmentStatus> maybeOffenderImprisonmentStatus =
+                nomisApiServices.getImprisonmentStatuses(rootOffender, event, this)
+                        .stream()
                         .filter(imprisonmentStatus -> (event.getImprisonmentStatusSeq() == null) || event.getImprisonmentStatusSeq().equals(imprisonmentStatus.getImprisonmentStatus().getImprisonmentStatusSeq()))
                         .filter(OffenderImprisonmentStatus::getLatestStatus)
-                        .findFirst());
+                        .findFirst();
 
         final OffenderImprisonmentStatus offenderImprisonmentStatus = maybeOffenderImprisonmentStatus.orElseThrow(() -> new NomisAPIServiceError("Can't get offender imprisonment statuses."));
 
@@ -117,14 +114,14 @@ public class XtagTransformer {
                 .timestamp(oasysTimestampOf(event.getEventDatetime()))
                 .prisonNumber(inmateDetail.getBookingNo())
                 .pnc(pncOf(rootOffender))
-                .nomisId(inmateDetail.getOffenderNo())
-                .forename1(inmateDetail.getFirstName())
-                .forename2(inmateDetail.getMiddleName())
-                .familyName(inmateDetail.getLastName())
+                .nomisId(thisOffender.getNomsId())
+                .forename1(thisOffender.getFirstName())
+                .forename2(thisOffender.getMiddleNames())
+                .familyName(thisOffender.getSurname())
                 .eventType(this.statusEventTypeOf(offenderImprisonmentStatus))
                 .establishmentCode(this.establishmentCodeOf(offenderImprisonmentStatus))
-                .dateOfBirth(inmateDetail.getDateOfBirth().toString())
-                .correlationId(nextCorrelationId())
+                .dateOfBirth(thisOffender.getDateOfBirth().toString())
+                .correlationId(correlationService.nextCorrelationId())
                 .build())
                 .filter(eventMessage -> {
                     final boolean lifer = OFFENDER_LIFER.equals(eventMessage.getEventType());
@@ -133,39 +130,29 @@ public class XtagTransformer {
                 });
     }
 
-    public Offender getOffender(InmateDetail inmateDetail) throws NomisAPIServiceError, ExecutionException, RetryException {
-        return custodyApiClient
-                .doGetWithRetry("offenders/nomsId/" + inmateDetail.getOffenderNo())
-                .filter(this::okOrNotFound)
-                .map(HttpResponse::getBody)
-                .map(offenderTransformer::asOffender).orElseThrow(() -> new NomisAPIServiceError("Can't get offender detail."));
+    public Offender thisOffenderFromRootOffender(Offender rootOffender) throws ExecutionException, RetryException, NomisAPIServiceError {
+
+        final Long bookingOffenderId = bookingOffenderIdOf(rootOffender);
+        if (bookingOffenderId.equals(rootOffender.getOffenderId())) {
+            return rootOffender;
+        }
+
+        return nomisApiServices.getOffenderByOffenderId(bookingOffenderId);
+
     }
 
-    public Optional<SentenceCalculation> getSentenceCalculation(Offender offender, Long bookingId) throws ExecutionException, RetryException {
-        return custodyApiClient
-                .doGetWithRetry("offenders/offenderId/" + offender.getOffenderId() + "/sentenceCalculations", ImmutableMap.of("bookingId", bookingId))
-                .filter(this::okOrNotFound)
-                .map(HttpResponse::getBody)
-                .map(this::asSentenceCalculations)
-                .flatMap(sentences -> sentences.stream().findFirst());
+    private Long bookingOffenderIdOf(Offender rootOffender) {
+        return rootOffender.getBookings().stream().findFirst().map(Booking::getOffenderId).orElse(null);
     }
 
     public ExternalMovement getAdmissionMovementFallback(Long bookingId) throws NomisAPIServiceError, ExecutionException, RetryException {
-        return getExternalMovements(bookingId)
+        return nomisApiServices.getExternalMovements(bookingId, this)
                 .flatMap(externalMovements -> externalMovements.stream()
                         .filter(movement -> "ADM".equals(movement.getMovementTypeCode()))
                         .findFirst()).orElseThrow(() -> new NomisAPIServiceError("Can't get admission movement ADM fallback for booking " + bookingId));
     }
 
-    public Optional<List<ExternalMovement>> getExternalMovements(Long bookingId) throws ExecutionException, RetryException {
-        return custodyApiClient
-                .doGetWithRetry("/movements", ImmutableMap.of("bookingId", bookingId, "size", 2000))
-                .filter(this::okOrNotFound)
-                .map(HttpResponse::getBody)
-                .map(this::asPagedExternalMovements);
-    }
-
-    private List<SentenceCalculation> asSentenceCalculations(String jsonStr) {
+    public List<SentenceCalculation> asSentenceCalculations(String jsonStr) {
         if (Strings.isNullOrEmpty(jsonStr)) {
             return null;
         }
@@ -178,19 +165,11 @@ public class XtagTransformer {
         }
     }
 
-    public InmateDetail getInmateDetail(OffenderEvent event) throws ExecutionException, NomisAPIServiceError, RetryException {
-        return elite2ApiClient
-                .doGetWithRetry("bookings/" + event.getBookingId(), ImmutableMap.of("basicInfo","true"))
-                .filter(this::okOrNotFound)
-                .map(HttpResponse::getBody)
-                .map(this::asInmateDetail).orElseThrow(() -> new NomisAPIServiceError("Can't get inmate detail."));
-    }
-
     private String establishmentCodeOf(OffenderImprisonmentStatus offenderImprisonmentStatus) {
         return mappingService.targetValueOf(offenderImprisonmentStatus.getAgencyLocationId(), AGENCY_LOCATION_CODE_TYPE);
     }
 
-    private List<OffenderImprisonmentStatus> asImprisonmentStatuses(String jsonStr) {
+    public List<OffenderImprisonmentStatus> asImprisonmentStatuses(String jsonStr) {
         if (Strings.isNullOrEmpty(jsonStr)) {
             return null;
         }
@@ -209,7 +188,7 @@ public class XtagTransformer {
         return Long.valueOf(1).equals(imprisonmentStatusNumeric) ? OFFENDER_LIFER : STATUS_CHANGE;
     }
 
-    private InmateDetail asInmateDetail(String jsonStr) {
+    public InmateDetail asInmateDetail(String jsonStr) {
         if (Strings.isNullOrEmpty(jsonStr)) {
             return null;
         }
@@ -223,13 +202,20 @@ public class XtagTransformer {
     }
 
     public Optional<EventMessage> offenderReceptionXtagOf(OffenderEvent event) throws ExecutionException, NomisAPIServiceError, RetryException {
+        /*
+        The OFF_RECEP_OASYS raw xtag event only ever contains a booking Id. The Elite2 API uses cacheing on bookings.
+        Work around the cacheing...
+         */
         log.info("Handling offenderReception event {}", event);
-        final InmateDetail inmateDetail = getInmateDetail(event);
-        final Offender rootOffender = getOffender(inmateDetail);
-        log.info("... which is for nomsId {}", inmateDetail.getOffenderNo());
-        final List<Sentence> activeSentences = getActiveSentences(rootOffender, inmateDetail.getBookingId());
-        final Optional<SentenceCalculation> maybeSentenceCalculation = getSentenceCalculation(rootOffender, inmateDetail.getBookingId());
-        final ExternalMovement offenderMovement = getAdmissionMovement(event);
+        final InmateDetail inmateDetail = nomisApiServices.getInmateDetail(event, this);
+        final Offender rootOffender = nomisApiServices.getOffenderByNomsId(inmateDetail.getOffenderNo());
+        final Offender thisOffender = thisOffenderFromRootOffender(rootOffender);
+        log.info("... which is for nomsId {}", thisOffender.getNomsId());
+
+        final Long bookingId = event.getBookingId();
+        final List<Sentence> activeSentences = nomisApiServices.getActiveSentences(rootOffender, bookingId, this);
+        final Optional<SentenceCalculation> maybeSentenceCalculation = nomisApiServices.getSentenceCalculation(rootOffender, bookingId, this);
+        final ExternalMovement offenderMovement = nomisApiServices.getAdmissionMovement(event, this);
 
         return Optional.ofNullable(EventMessage.builder()
                 .timestamp(oasysTimestampOf(event.getEventDatetime()))
@@ -244,37 +230,15 @@ public class XtagTransformer {
                 .movementDelete("N")
                 .movementCourtCode(receptionMovementCourtCodeOf(offenderMovement))
                 .movementCode(receptionMovementCodeOf(offenderMovement.getMovementReasonCode()))
-                .forename1(inmateDetail.getFirstName())
-                .forename2(inmateDetail.getMiddleName())
-                .familyName(inmateDetail.getLastName())
+                .forename1(thisOffender.getFirstName())
+                .forename2(thisOffender.getMiddleNames())
+                .familyName(thisOffender.getSurname())
                 .eventType("OffenderReception")
                 .establishmentCode(establishmentCodeOf(offenderMovement, rootOffender))
                 .effectiveSentenceLength(effectiveSentenceLengthOf(activeSentences, maybeSentenceCalculation))
-                .dateOfBirth(inmateDetail.getDateOfBirth().toString())
-                .correlationId(nextCorrelationId())
+                .dateOfBirth(thisOffender.getDateOfBirth().toString())
+                .correlationId(correlationService.nextCorrelationId())
                 .build());
-    }
-
-    private ExternalMovement getAdmissionMovement(OffenderEvent event) throws ExecutionException, RetryException, NomisAPIServiceError {
-        if (event.getMovementSeq() != null) {
-            return getExternalMovement(event);
-        } else {
-            log.warn("Admission movement event {} does not have a movement sequence. Doing fallback by moveent type code ADM.", event);
-            return getAdmissionMovementFallback(event.getBookingId());
-        }
-    }
-
-    private ExternalMovement getExternalMovement(OffenderEvent event) throws NomisAPIServiceError, ExecutionException, RetryException {
-        return custodyApiClient
-                .doGetWithRetry("movements/bookingId/" + event.getBookingId() + "/sequence/" + event.getMovementSeq())
-                .filter(this::okOrNotFound)
-                .map(HttpResponse::getBody)
-                .map(this::asExternalMovement)
-                .orElseThrow(() -> new NomisAPIServiceError("Can't get offender movement for bookingId " + event.getBookingId() + " and sequence " + event.getMovementSeq() + "."));
-    }
-
-    private boolean okOrNotFound(HttpResponse<String> r) {
-        return r.getStatus() == HttpStatus.OK.value() || r.getStatus( ) == HttpStatus.NOT_FOUND.value();
     }
 
     public String safeReleaseDateOf(Optional<SentenceCalculation> maybeSentenceCalculation) {
@@ -300,36 +264,39 @@ public class XtagTransformer {
 
     public Optional<EventMessage> bookingUpdatedXtagOf(OffenderEvent event) throws ExecutionException, NomisAPIServiceError, RetryException {
         log.info("Handling bookingUpdated event {}", event);
-        final InmateDetail inmateDetail = getInmateDetail(event);
-        final Offender rootOffender = getOffender(inmateDetail);
-        log.info("... which is for nomsId {}", inmateDetail.getOffenderNo());
+        final InmateDetail inmateDetail = nomisApiServices.getInmateDetail(event, this);
+        final Offender rootOffender = nomisApiServices.getOffenderByNomsId(inmateDetail.getOffenderNo());
+        final Offender thisOffender = thisOffenderFromRootOffender(rootOffender);
+        log.info("... which is for nomsId {}", thisOffender.getNomsId());
 
         return Optional.ofNullable(EventMessage.builder()
                 .timestamp(oasysTimestampOf(event.getEventDatetime()))
                 .prisonNumber(inmateDetail.getBookingNo())
                 .pnc(pncOf(rootOffender))
                 .oldPrisonNumber(event.getPreviousBookingNumber())
-                .nomisId(inmateDetail.getOffenderNo())
-                .forename1(inmateDetail.getFirstName())
-                .forename2(inmateDetail.getMiddleName())
-                .familyName(inmateDetail.getLastName())
+                .nomisId(rootOffender.getNomsId())
+                .forename1(thisOffender.getFirstName())
+                .forename2(thisOffender.getMiddleNames())
+                .familyName(thisOffender.getSurname())
                 .establishmentCode(establishmentCodeOf(null, rootOffender))
-                .dateOfBirth(inmateDetail.getDateOfBirth().toString())
+                .dateOfBirth(thisOffender.getDateOfBirth().toString())
                 .eventType("OffenderPrisonNumber")
-                .correlationId(nextCorrelationId())
+                .correlationId(correlationService.nextCorrelationId())
                 .build());
     }
 
     public Optional<EventMessage> offenderDischargeXtagOf(OffenderEvent event) throws ExecutionException, NomisAPIServiceError, RetryException {
+        // OFF_DISCH_OASYS always contains booking id
         log.info("Handling offenderDischarge event {}", event);
-        final ExternalMovement offenderMovement = getDischargeMovement(event);
-        final InmateDetail inmateDetail = getInmateDetail(event);
-        final Offender rootOffender = getOffender(inmateDetail);
-        log.info("... which is for nomsId {}", inmateDetail.getOffenderNo());
+        final ExternalMovement offenderMovement = nomisApiServices.getDischargeMovement(event, this);
+        final InmateDetail inmateDetail = nomisApiServices.getInmateDetail(event, this);
+        final Offender rootOffender = nomisApiServices.getOffenderByNomsId(inmateDetail.getOffenderNo());
+        final Offender thisOffender = thisOffenderFromRootOffender(rootOffender);
+        log.info("... which is for nomsId {}", thisOffender.getNomsId());
 
 
-        final List<Sentence> activeSentences = getActiveSentences(rootOffender, event.getBookingId());
-        final Optional<SentenceCalculation> maybeSentenceCalculation = getSentenceCalculation(rootOffender, event.getBookingId());
+        final List<Sentence> activeSentences = nomisApiServices.getActiveSentences(rootOffender, event.getBookingId(), this);
+        final Optional<SentenceCalculation> maybeSentenceCalculation = nomisApiServices.getSentenceCalculation(rootOffender, event.getBookingId(), this);
 
         return Optional.ofNullable(EventMessage.builder()
                 .timestamp(oasysTimestampOf(event.getEventDatetime()))
@@ -339,33 +306,23 @@ public class XtagTransformer {
                 .releaseDate(safeReleaseDateOf(maybeSentenceCalculation))
                 .prisonNumber(inmateDetail.getBookingNo())
                 .pnc(pncOf(rootOffender))
-                .nomisId(inmateDetail.getOffenderNo())
+                .nomisId(thisOffender.getNomsId())
                 .movementFromTo(dischargeMovementFromToOf(offenderMovement))
                 .movementCourtCode(dischargeMovementCourtCodeOf(offenderMovement))
                 .movementDelete("N")
                 .movementCode(dischargeMovementCodeOf(offenderMovement.getMovementReasonCode()))
-                .forename1(inmateDetail.getFirstName())
-                .forename2(inmateDetail.getMiddleName())
-                .familyName(inmateDetail.getLastName())
-                .dateOfBirth(inmateDetail.getDateOfBirth().toString())
+                .forename1(thisOffender.getFirstName())
+                .forename2(thisOffender.getMiddleNames())
+                .familyName(thisOffender.getSurname())
+                .dateOfBirth(thisOffender.getDateOfBirth().toString())
                 .establishmentCode(establishmentCodeOf(offenderMovement, rootOffender))
                 .eventType("OffenderDischarge")
                 .effectiveSentenceLength(effectiveSentenceLengthOf(activeSentences, maybeSentenceCalculation))
-                .correlationId(nextCorrelationId())
+                .correlationId(correlationService.nextCorrelationId())
                 .build());
     }
 
-    private ExternalMovement getDischargeMovement(OffenderEvent event) throws ExecutionException, RetryException, NomisAPIServiceError {
-
-        if (event.getMovementSeq() != null) {
-            return getExternalMovement(event);
-        } else {
-            log.warn("Discharge movement event {} does not have a movement sequence. Doing fallback by code type TRN", event);
-            return getDischargeMovementFallback(event.getBookingId());
-        }
-    }
-
-    private ExternalMovement asExternalMovement(String jsonStr) {
+    public ExternalMovement asExternalMovement(String jsonStr) {
         if (Strings.isNullOrEmpty(jsonStr)) {
             return null;
         }
@@ -389,15 +346,7 @@ public class XtagTransformer {
         return "CRT".equals(offenderMovement.getMovementTypeCode()) ? agencyOrOutOf(toAgencyLocation.getAgencyLocationId()) : null;
     }
 
-    private ExternalMovement getDischargeMovementFallback(Long bookingId) throws ExecutionException, RetryException, NomisAPIServiceError {
-        return getExternalMovements(bookingId)
-                .flatMap(ems -> ems.stream()
-                        .filter(em -> "TRN".equals(em.getMovementTypeCode()))
-                        .findFirst())
-                .orElseThrow(() -> new NomisAPIServiceError("Can't get offender TRN movement for bookingId " + bookingId));
-    }
-
-    private List<ExternalMovement> asPagedExternalMovements(String s) {
+    public List<ExternalMovement> asPagedExternalMovements(String s) {
         try {
             final JsonNode jsonNode = objectMapper.readTree(s);
             ObjectReader reader = objectMapper.readerFor(new TypeReference<List<ExternalMovement>>() {
@@ -411,12 +360,6 @@ public class XtagTransformer {
 
     private String dischargeMovementCodeOf(String movementReasonCode) {
         return mappingService.targetValueOf(movementReasonCode, OASYSR_DISCHARGE_CODES);
-    }
-
-    private String nextCorrelationId() {
-        return "NOMISHNOMIS" +
-                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) +
-                xtagSequence.nextVal();
     }
 
     private String establishmentCodeOf(ExternalMovement offenderMovement, Offender offender) {
@@ -462,16 +405,7 @@ public class XtagTransformer {
 
     }
 
-    private List<Sentence> getActiveSentences(Offender offender, Long bookingId) throws ExecutionException, NomisAPIServiceError, RetryException {
-        return custodyApiClient
-                .doGetWithRetry("offenders/offenderId/" + offender.getOffenderId() + "/sentences", ImmutableMap.of("bookingId", bookingId))
-                .filter(this::okOrNotFound)
-                .map(HttpResponse::getBody)
-                .map(this::asSentences)
-                .orElseThrow(() -> new NomisAPIServiceError("Can't get offender sentence calculations."));
-    }
-
-    private List<Sentence> asSentences(String jsonStr) {
+    public List<Sentence> asSentences(String jsonStr) {
         if (Strings.isNullOrEmpty(jsonStr)) {
             return null;
         }
@@ -509,8 +443,6 @@ public class XtagTransformer {
         }
 
         return "CRT".equals(offenderMovement.getMovementTypeCode()) ? null : agencyOrInOf(fromAgencyLocation.getAgencyLocationId());
-
-
     }
 
     private String agencyOrInOf(String anAgencyLocationId) {
@@ -551,10 +483,22 @@ public class XtagTransformer {
 
     public Optional<EventMessage> offenderUpdatedXtagOf(OffenderEvent event) throws ExecutionException, NomisAPIServiceError, RetryException {
         log.info("Handling offenderUpdated event {}", event);
-        final OffenderEvent eventWithBookingId = eventWithBookingIdOf(event);
-        final InmateDetail inmateDetail = getInmateDetail(eventWithBookingId);
-        final Offender rootOffender = getOffender(inmateDetail);
-        log.info("... which is for nomsId {}", inmateDetail.getOffenderNo());
+        final Offender rootOffender;
+        final InmateDetail inmateDetail;
+        // OFF_UPD_OASYS event contains either:
+        // root offender id only,
+        // root offender id and offender id,
+        // or booking id and offender id
+        if (event.getRootOffenderId() != null) {
+            rootOffender = nomisApiServices.getOffenderByOffenderId(event.getRootOffenderId());
+            inmateDetail = nomisApiServices.getInmateDetail(bookingIdOf(rootOffender.getBookings()), this);
+        } else {
+            // event must have a booking id
+            inmateDetail = nomisApiServices.getInmateDetail(event.getBookingId(), this);
+            rootOffender = nomisApiServices.getOffenderByNomsId(inmateDetail.getOffenderNo());
+        }
+        final Offender thisOffender = thisOffenderFromRootOffender(rootOffender);
+        log.info("... which is for nomsId {}", thisOffender.getNomsId());
 
 
         return Optional.ofNullable(EventMessage.builder()
@@ -562,41 +506,31 @@ public class XtagTransformer {
                 .prisonNumber(inmateDetail.getBookingNo())
                 .pnc(pncOf(rootOffender))
                 .oldPrisonNumber(event.getPreviousBookingNumber())
-                .nomisId(inmateDetail.getOffenderNo())
-                .forename1(inmateDetail.getFirstName())
-                .forename2(inmateDetail.getMiddleName())
-                .familyName(inmateDetail.getLastName())
+                .nomisId(thisOffender.getNomsId())
+                .forename1(thisOffender.getFirstName())
+                .forename2(thisOffender.getMiddleNames())
+                .familyName(thisOffender.getSurname())
                 .eventType("OffenderDetails")
                 .establishmentCode(establishmentCodeOf(null, rootOffender))
-                .dateOfBirth(inmateDetail.getDateOfBirth().toString())
-                .correlationId(nextCorrelationId())
+                .dateOfBirth(thisOffender.getDateOfBirth().toString())
+                .correlationId(correlationService.nextCorrelationId())
                 .build());
     }
 
-    private OffenderEvent eventWithBookingIdOf(OffenderEvent event) throws ExecutionException, NomisAPIServiceError, RetryException {
-
-        if (event.getBookingId() == null) {
-            final Offender offender = custodyApiClient
-                    .doGetWithRetry("offenders/offenderId/" + event.getRootOffenderId())
-                    .filter(this::okOrNotFound)
-                    .map(HttpResponse::getBody)
-                    .map(offenderTransformer::asOffender)
-                    .orElseThrow(() -> new NomisAPIServiceError("Can't get offender " + event.getRootOffenderId()));
-
-            final Long bookingId = offender.getBookings().stream().findFirst().map(Booking::getBookingId).orElse(null);
-            return event.toBuilder().bookingId(bookingId).build();
-        }
-
-        return event;
+    private Long bookingIdOf(List<Booking> bookings) {
+        return bookings.stream().findFirst().map(Booking::getBookingId).orElse(null);
     }
 
     public Optional<EventMessage> offenderSentenceUpdatedXtagOf(OffenderEvent event) throws ExecutionException, NomisAPIServiceError, RetryException {
+        // OFF_SENT_OASYS always has a booking id
         log.info("Handling offenderSentenceUpdated event {}", event);
-        final InmateDetail inmateDetail = getInmateDetail(event);
-        final Offender rootOffender = getOffender(inmateDetail);
-        log.info("... which is for nomsId {}", inmateDetail.getOffenderNo());
-        final List<Sentence> activeSentences = getActiveSentences(rootOffender, inmateDetail.getBookingId());
-        final Optional<SentenceCalculation> maybeSentenceCalculation = getSentenceCalculation(rootOffender, inmateDetail.getBookingId());
+        final InmateDetail inmateDetail = nomisApiServices.getInmateDetail(event, this);
+        final Offender rootOffender = nomisApiServices.getOffenderByNomsId(inmateDetail.getOffenderNo());
+        final Offender thisOffender = thisOffenderFromRootOffender(rootOffender);
+        log.info("... which is for nomsId {}", thisOffender.getNomsId());
+
+        final List<Sentence> activeSentences = nomisApiServices.getActiveSentences(rootOffender, event.getBookingId(), this);
+        final Optional<SentenceCalculation> maybeSentenceCalculation = nomisApiServices.getSentenceCalculation(rootOffender, event.getBookingId(), this);
 
         return Optional.ofNullable(EventMessage.builder()
                 .timestamp(oasysTimestampOf(event.getEventDatetime()))
@@ -607,15 +541,15 @@ public class XtagTransformer {
                 .releaseDate(safeReleaseDateOf(maybeSentenceCalculation))
                 .prisonNumber(inmateDetail.getBookingNo())
                 .pnc(pncOf(rootOffender))
-                .nomisId(inmateDetail.getOffenderNo())
-                .forename1(inmateDetail.getFirstName())
-                .forename2(inmateDetail.getMiddleName())
-                .familyName(inmateDetail.getLastName())
+                .nomisId(thisOffender.getNomsId())
+                .forename1(thisOffender.getFirstName())
+                .forename2(thisOffender.getMiddleNames())
+                .familyName(thisOffender.getSurname())
                 .eventType("OffenderSentence")
                 .establishmentCode(establishmentCodeOf(null, rootOffender))
                 .effectiveSentenceLength(effectiveSentenceLengthOf(activeSentences, maybeSentenceCalculation))
-                .dateOfBirth(inmateDetail.getDateOfBirth().toString())
-                .correlationId(nextCorrelationId())
+                .dateOfBirth(thisOffender.getDateOfBirth().toString())
+                .correlationId(correlationService.nextCorrelationId())
                 .build());
     }
 
