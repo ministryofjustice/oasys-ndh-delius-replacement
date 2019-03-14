@@ -138,7 +138,6 @@ public class XtagTransformer {
         }
 
         return nomisApiServices.getOffenderByOffenderId(bookingOffenderId);
-
     }
 
     private Long bookingOffenderIdOf(Offender rootOffender) {
@@ -264,25 +263,42 @@ public class XtagTransformer {
 
     public Optional<EventMessage> bookingUpdatedXtagOf(OffenderEvent event) throws ExecutionException, NomisAPIServiceError, RetryException {
         log.info("Handling bookingUpdated event {}", event);
-        final InmateDetail inmateDetail = nomisApiServices.getInmateDetail(event, this);
-        final Offender rootOffender = nomisApiServices.getOffenderByNomsId(inmateDetail.getOffenderNo());
-        final Offender thisOffender = thisOffenderFromRootOffender(rootOffender);
+
+        // BOOK_UPD_OASYS will always contain the new offender Id
+
+        final Offender thisOffender = nomisApiServices.getOffenderByOffenderId(event.getOffenderId());
+
         log.info("... which is for nomsId {}", thisOffender.getNomsId());
+
+        // Not sure if thisOffender will necessarily be a root offender but safest not to assume.
+        // The following being absent is a good indicator that we are not dealing with root offender.
+        String pnc = pncOf(thisOffender);
+        String prisonNumber = bookingNoOf(thisOffender);
+
+        if (pnc == null || prisonNumber == null) {
+            final Offender rootOffender = nomisApiServices.getOffenderByNomsId(thisOffender.getNomsId());
+            pnc = pncOf(rootOffender);
+            prisonNumber = bookingNoOf(rootOffender);
+        }
 
         return Optional.ofNullable(EventMessage.builder()
                 .timestamp(oasysTimestampOf(event.getEventDatetime()))
-                .prisonNumber(inmateDetail.getBookingNo())
-                .pnc(pncOf(rootOffender))
+                .prisonNumber(prisonNumber)
+                .pnc(pnc)
                 .oldPrisonNumber(event.getPreviousBookingNumber())
-                .nomisId(rootOffender.getNomsId())
+                .nomisId(thisOffender.getNomsId())
                 .forename1(thisOffender.getFirstName())
                 .forename2(thisOffender.getMiddleNames())
                 .familyName(thisOffender.getSurname())
-                .establishmentCode(establishmentCodeOf(null, rootOffender))
+                .establishmentCode(establishmentCodeOf(null, thisOffender))
                 .dateOfBirth(thisOffender.getDateOfBirth().toString())
                 .eventType("OffenderPrisonNumber")
                 .correlationId(correlationService.nextCorrelationId())
                 .build());
+    }
+
+    private String bookingNoOf(Offender rootOffender) {
+        return rootOffender.getBookings().stream().findFirst().map(Booking::getBookingNo).orElse(null);
     }
 
     public Optional<EventMessage> offenderDischargeXtagOf(OffenderEvent event) throws ExecutionException, NomisAPIServiceError, RetryException {
