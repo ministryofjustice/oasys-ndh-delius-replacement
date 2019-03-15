@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.management.AttributeNotFoundException;
 import javax.management.InstanceNotFoundException;
-import javax.management.IntrospectionException;
 import javax.management.MBeanException;
 import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
@@ -29,7 +28,7 @@ public class ActiveMQAdminController {
     private MBeanServer mBeanServer;
 
     @RequestMapping(path = "/activemq/queues/{queueName}", method = RequestMethod.GET, produces = "application/json")
-    public ResponseEntity<Object> getStatus(@PathVariable("queueName") String queueName) throws MalformedObjectNameException, ReflectionException, IntrospectionException, AttributeNotFoundException, MBeanException {
+    public ResponseEntity<Object> getStatus(@PathVariable("queueName") String queueName) throws MalformedObjectNameException, ReflectionException, AttributeNotFoundException, MBeanException {
 
         log.info("Received GET queue status for queue {}", queueName);
 

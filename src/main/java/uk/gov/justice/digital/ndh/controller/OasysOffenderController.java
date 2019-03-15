@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.ndh.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -36,7 +35,7 @@ public class OasysOffenderController {
     }
 
     @RequestMapping(path = "/${oasys.offender.details.path:offenderDetails}", method = RequestMethod.POST, consumes = {"application/soap+xml", "application/xml", "text/xml", "text/plain"}, produces = "application/xml")
-    public ResponseEntity<String> handleOffenderDetails(@RequestBody String offenderDetailsRequestXml) throws JsonProcessingException {
+    public ResponseEntity<String> handleOffenderDetails(@RequestBody String offenderDetailsRequestXml) {
         log.info("Received POSTed offender details request beginning {}...", commonTransformer.limitLength(offenderDetailsRequestXml, 50));
         final Optional<String> maybeResponse = oasysOffenderService.offenderDetails(offenderDetailsRequestXml);
 

@@ -93,7 +93,7 @@ public class NomisApiServices {
                 .orElseThrow(() -> new NomisAPIServiceError("Can't get offender sentence calculations."));
     }
 
-    List<OffenderImprisonmentStatus> getImprisonmentStatuses(Offender rootOffender, OffenderEvent event, XtagTransformer xtagTransformer) throws ExecutionException, RetryException, NomisAPIServiceError {
+    List<OffenderImprisonmentStatus> getImprisonmentStatuses(Offender rootOffender, XtagTransformer xtagTransformer) throws ExecutionException, RetryException, NomisAPIServiceError {
         return custodyApiClient
                 .doGetWithRetry("offenders/offenderId/" + rootOffender.getOffenderId() + "/imprisonmentStatuses")
                 .filter(this::okOrNotFound)

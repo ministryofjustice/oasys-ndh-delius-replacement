@@ -63,7 +63,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 
@@ -298,7 +297,7 @@ public class OffenderTransformer {
         final Optional<String> maybeSourceSubcategory = maybeDescriptionSubCategory.map(tsc -> mappingService.descriptionOf(tsc, LICENCE_SUB_CATEGORY));
 
         return maybeSourceSubcategory
-                .map(sc -> Stream.of(mainCategory, sc).collect(Collectors.joining(":")))
+                .map(sc -> String.join(":", mainCategory, sc))
                 .orElse(mainCategory);
     }
 
@@ -611,9 +610,7 @@ public class OffenderTransformer {
         return maybePhysicals
                 .map(physicals -> physicals
                         .stream()
-                        .flatMap(p -> Optional.ofNullable(p.getProfileDetails())
-                                .map(Collection::stream)
-                                .orElse(Stream.empty()))
+                        .flatMap(p -> Optional.ofNullable(p.getProfileDetails()).stream().flatMap(Collection::stream))
                         .filter(pd -> "RELF".equals(pd.getProfileType()))
                         .findFirst()
                         .map(ProfileDetails::getProfileCode)

@@ -102,7 +102,7 @@ public class XtagTransformer {
         log.info("... which is for nomsId {}", thisOffender.getNomsId());
 
         final Optional<OffenderImprisonmentStatus> maybeOffenderImprisonmentStatus =
-                nomisApiServices.getImprisonmentStatuses(rootOffender, event, this)
+                nomisApiServices.getImprisonmentStatuses(rootOffender, this)
                         .stream()
                         .filter(imprisonmentStatus -> (event.getImprisonmentStatusSeq() == null) || event.getImprisonmentStatusSeq().equals(imprisonmentStatus.getImprisonmentStatus().getImprisonmentStatusSeq()))
                         .filter(OffenderImprisonmentStatus::getLatestStatus)

@@ -9,7 +9,6 @@ import com.github.tomakehurst.wiremock.matching.EqualToPattern;
 import com.github.tomakehurst.wiremock.standalone.JsonFileMappingsSource;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -94,10 +93,6 @@ public class OasysOffenderControllerTest {
     @Before
     public void setup() {
         RestAssured.port = port;
-    }
-
-    @After
-    public void tearDown() {
     }
 
     @Test

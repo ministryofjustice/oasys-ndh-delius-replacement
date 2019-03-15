@@ -56,7 +56,7 @@ public class OasysAssessmentUpdateListener {
     }
 
     @JmsListener(destination = OASYS_MESSAGES, concurrency = "1", containerFactory = "jmsListenerContainerFactory")
-    public void onMessage(Message message) throws UnirestException, JMSException, DocumentException {
+    public void onMessage(Message message) throws UnirestException, DocumentException {
         log.info("HANDLING MESSAGE {}", message.toString());
 
         Optional<String> maybeSoapXmlFromOasys = readFromQueue(message);
@@ -77,7 +77,7 @@ public class OasysAssessmentUpdateListener {
             exceptionLogService.logMappingFail(ndhme.getCode(), ndhme.getValue(), ndhme.getSubject(), correlationId, offenderId);
         }
 
-        Optional<String> maybeRawDeliusRequest = rawDeliusRequestOf(maybeDeliusRequest, message, correlationId, offenderId);
+        Optional<String> maybeRawDeliusRequest = rawDeliusRequestOf(maybeDeliusRequest, message, correlationId);
 
         maybeRawDeliusRequest.ifPresent(xml -> logIdempotent(message, xml, correlationId, offenderId, MessageStoreService.ProcStates.GLB_ProcState_InboundAfterTransformation));
 
@@ -101,9 +101,9 @@ public class OasysAssessmentUpdateListener {
         }
     }
 
-    private Optional<SoapEnvelopeSpec1_2> handleDeliusResponse(Optional<String> maybeRawDeliusResponse, Optional<SoapEnvelopeSpec1_2> maybeDeliusRequest) {
+    private void handleDeliusResponse(Optional<String> maybeRawDeliusResponse, Optional<SoapEnvelopeSpec1_2> maybeDeliusRequest) {
 
-        return maybeRawDeliusResponse.map(
+        maybeRawDeliusResponse.map(
                 rawDeliusResponse -> {
 
                     SoapEnvelopeSpec1_2 deliusResponse = null;
@@ -124,7 +124,7 @@ public class OasysAssessmentUpdateListener {
         );
     }
 
-    private Optional<String> rawDeliusResponseOf(Optional<String> maybeRawDeliusRequest, Optional<SoapEnvelopeSpec1_2> maybeDeliusRequest, Optional<String> maybeSoapXmlFromOasys, Message message) throws JMSException, UnirestException {
+    private Optional<String> rawDeliusResponseOf(Optional<String> maybeRawDeliusRequest, Optional<SoapEnvelopeSpec1_2> maybeDeliusRequest, Optional<String> maybeSoapXmlFromOasys, Message message) throws UnirestException {
 
         if (maybeRawDeliusRequest.isPresent()) {
             try {
@@ -142,7 +142,7 @@ public class OasysAssessmentUpdateListener {
 
 
 
-    private Optional<String> rawDeliusRequestOf(Optional<SoapEnvelopeSpec1_2> maybeDeliusRequest, Message message, String correlationId, String offenderId) throws JMSException {
+    private Optional<String> rawDeliusRequestOf(Optional<SoapEnvelopeSpec1_2> maybeDeliusRequest, Message message, String correlationId) {
 
         final Optional<String> maybeRawDeliusRequest = maybeDeliusRequest.map(deliusAssessmentUpdateSoapEnvelope -> {
 
@@ -157,38 +157,28 @@ public class OasysAssessmentUpdateListener {
             return rawDeliusRequest;
         });
 
-        if (maybeRawDeliusRequest == null) {
-            return Optional.empty();
-        }
-
         return maybeRawDeliusRequest;
     }
 
     private Optional<SoapEnvelopeSpec1_2> buildNdhSoapEnvelope(Optional<String> maybeSoapXmlFromOasys, String correlationId, Message message) {
 
-        final Optional<SoapEnvelopeSpec1_2> maybeNdhAssessmentUpdateSoapEnvelope = maybeSoapXmlFromOasys.map(soapXmlFromOasys -> {
+        return maybeSoapXmlFromOasys.map(soapXmlFromOasys -> {
             try {
                 final SoapEnvelopeSpec1_2 soapEnvelope = xmlMapper.readValue(soapXmlFromOasys, SoapEnvelopeSpec1_2.class);
 
                 if (soapEnvelope.getBody() == null) {
                     log.error("Input message has no SOAP body. Ignore and continue: {}", soapXmlFromOasys);
-                    idempotentLogger.errorIdempotent(correlationId, Optional.ofNullable(soapXmlFromOasys), message, "Input message has no SOAP body");
+                    idempotentLogger.errorIdempotent(correlationId, Optional.of(soapXmlFromOasys), message, "Input message has no SOAP body");
                     return null;
                 }
 
                 return soapEnvelope;
             } catch (IOException e) {
                 log.error("Can't parse input message. Ignore and continue: {}", e.getMessage());
-                idempotentLogger.errorIdempotent(correlationId, Optional.ofNullable(soapXmlFromOasys), message, "Can't parse input message");
+                idempotentLogger.errorIdempotent(correlationId, Optional.of(soapXmlFromOasys), message, "Can't parse input message");
                 return null;
             }
         });
-
-        if (maybeNdhAssessmentUpdateSoapEnvelope == null) {
-            return Optional.empty();
-        }
-
-        return maybeNdhAssessmentUpdateSoapEnvelope;
 
     }
 
