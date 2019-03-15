@@ -274,11 +274,13 @@ public class XtagTransformer {
         // The following being absent is a good indicator that we are not dealing with root offender.
         String pnc = pncOf(thisOffender);
         String prisonNumber = bookingNoOf(thisOffender);
+        String establishmentCode = establishmentCodeOf(null, thisOffender);
 
-        if (pnc == null || prisonNumber == null) {
+        if (pnc == null || prisonNumber == null || establishmentCode == null) {
             final Offender rootOffender = nomisApiServices.getOffenderByNomsId(thisOffender.getNomsId());
             pnc = pncOf(rootOffender);
             prisonNumber = bookingNoOf(rootOffender);
+            establishmentCode = establishmentCodeOf(null, rootOffender);
         }
 
         return Optional.ofNullable(EventMessage.builder()
@@ -290,7 +292,7 @@ public class XtagTransformer {
                 .forename1(thisOffender.getFirstName())
                 .forename2(thisOffender.getMiddleNames())
                 .familyName(thisOffender.getSurname())
-                .establishmentCode(establishmentCodeOf(null, thisOffender))
+                .establishmentCode(establishmentCode)
                 .dateOfBirth(thisOffender.getDateOfBirth().toString())
                 .eventType("OffenderPrisonNumber")
                 .correlationId(correlationService.nextCorrelationId())
@@ -380,7 +382,7 @@ public class XtagTransformer {
         return mappingService.targetValueOf(movementReasonCode, OASYSR_DISCHARGE_CODES);
     }
 
-    private String establishmentCodeOf(ExternalMovement offenderMovement, Offender offender) {
+    public String establishmentCodeOf(ExternalMovement offenderMovement, Offender offender) {
         return mappingService.targetValueOf(
                 Optional.ofNullable(offenderMovement)
                         .filter(om -> "OUT".equals(om.getMovementDirection()))
@@ -393,20 +395,21 @@ public class XtagTransformer {
     }
 
     private String fromAgencyCodeOfLastMovementOutOf(Offender offender) {
-        return offender.getBookings()
+        return Optional.ofNullable(offender.getBookings())
+                .flatMap(bookings -> bookings
                 .stream()
                 .filter(b -> b.getBookingSequence() == 1)
                 .findFirst()
                 .map(Booking::getLastMovement)
                 .filter(m -> "OUT".equals(m.getMovementDirection()))
-                .map(m -> m.getFromAgencyLocation().getAgencyLocationId())
+                .map(m -> m.getFromAgencyLocation().getAgencyLocationId()))
                 .orElse(null);
     }
 
     private Optional<Booking> activeBookingOf(Offender offender) {
-        return offender.getBookings().stream()
+        return Optional.ofNullable(offender.getBookings()).flatMap(bookings -> bookings.stream()
                 .filter(Booking::getActiveFlag)
-                .findFirst();
+                .findFirst());
     }
 
     private String effectiveSentenceLengthOf(List<Sentence> activeSentences, Optional<SentenceCalculation> maybeSentenceCalculation) {

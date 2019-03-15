@@ -5,6 +5,7 @@ import com.github.rholder.retry.RetryException;
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import uk.gov.justice.digital.ndh.ThatsNotMyNDH;
+import uk.gov.justice.digital.ndh.api.nomis.AgencyLocation;
 import uk.gov.justice.digital.ndh.api.nomis.Booking;
 import uk.gov.justice.digital.ndh.api.nomis.Identifier;
 import uk.gov.justice.digital.ndh.api.nomis.Offender;
@@ -309,4 +310,21 @@ public class XtagTransformerTest {
                 .build())).isEqualTo("MEMEME");
     }
 
+    @Test
+    public void establishmentCodeOfBehavesApropriately() {
+        final MappingService mappingService = mock(MappingService.class);
+        final NomisApiServices nomisApiServices = mock(NomisApiServices.class);
+        final ObjectMapper objectMapper = new ThatsNotMyNDH().objectMapper();
+        final CorrelationService correlationService = mock(CorrelationService.class);
+        XtagTransformer xtagTransformer = new XtagTransformer(objectMapper, mappingService, nomisApiServices, correlationService);
+
+        when(mappingService.targetValueOf("MOON", 2005L)).thenReturn("HOTH");
+        assertThat(xtagTransformer.establishmentCodeOf(null, Offender.builder().build())).isNull();
+        assertThat(xtagTransformer.establishmentCodeOf(null, Offender.builder()
+                .bookings(ImmutableList.of(Booking.builder()
+                        .activeFlag(true)
+                        .bookingSequence(1L)
+                        .agencyLocation(AgencyLocation.builder().agencyLocationId("MOON").build()).build()))
+                .build())).isEqualTo("HOTH");
+    }
 }
