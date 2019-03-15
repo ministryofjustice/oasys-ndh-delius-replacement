@@ -5,6 +5,7 @@ import com.github.rholder.retry.RetryException;
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import uk.gov.justice.digital.ndh.ThatsNotMyNDH;
+import uk.gov.justice.digital.ndh.api.nomis.Booking;
 import uk.gov.justice.digital.ndh.api.nomis.Identifier;
 import uk.gov.justice.digital.ndh.api.nomis.Offender;
 import uk.gov.justice.digital.ndh.api.nomis.OffenderAlias;
@@ -292,6 +293,20 @@ public class XtagTransformerTest {
             fail(e.getMessage());
         }
 
+    }
+
+    @Test
+    public void bookingNoBehavesAppropriately() {
+        final MappingService mappingService = mock(MappingService.class);
+        final NomisApiServices nomisApiServices = mock(NomisApiServices.class);
+        final ObjectMapper objectMapper = new ThatsNotMyNDH().objectMapper();
+        final CorrelationService correlationService = mock(CorrelationService.class);
+        XtagTransformer xtagTransformer = new XtagTransformer(objectMapper, mappingService, nomisApiServices, correlationService);
+
+        assertThat(xtagTransformer.bookingNoOf(Offender.builder().build())).isNull();
+        assertThat(xtagTransformer.bookingNoOf(Offender.builder()
+                .bookings(ImmutableList.of(Booking.builder().bookingNo("MEMEME").build()))
+                .build())).isEqualTo("MEMEME");
     }
 
 }

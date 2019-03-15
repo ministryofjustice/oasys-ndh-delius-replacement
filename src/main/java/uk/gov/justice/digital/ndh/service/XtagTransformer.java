@@ -297,8 +297,10 @@ public class XtagTransformer {
                 .build());
     }
 
-    private String bookingNoOf(Offender rootOffender) {
-        return rootOffender.getBookings().stream().findFirst().map(Booking::getBookingNo).orElse(null);
+    public String bookingNoOf(Offender rootOffender) {
+        return Optional.ofNullable(rootOffender.getBookings())
+                .flatMap(bookings -> bookings.stream().findFirst())
+                .map(Booking::getBookingNo).orElse(null);
     }
 
     public Optional<EventMessage> offenderDischargeXtagOf(OffenderEvent event) throws ExecutionException, NomisAPIServiceError, RetryException {
