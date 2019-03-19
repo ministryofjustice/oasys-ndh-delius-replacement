@@ -265,34 +265,20 @@ public class XtagTransformer {
         log.info("Handling bookingUpdated event {}", event);
 
         // BOOK_UPD_OASYS will always contain the new offender Id
-
         final Offender thisOffender = nomisApiServices.getOffenderByOffenderId(event.getOffenderId());
-
         log.info("... which is for nomsId {}", thisOffender.getNomsId());
-
-        // Not sure if thisOffender will necessarily be a root offender but safest not to assume.
-        // The following being absent is a good indicator that we are not dealing with root offender.
-        String pnc = pncOf(thisOffender);
-        String prisonNumber = bookingNoOf(thisOffender);
-        String establishmentCode = establishmentCodeOf(null, thisOffender);
-
-        if (pnc == null || prisonNumber == null || establishmentCode == null) {
-            final Offender rootOffender = nomisApiServices.getOffenderByNomsId(thisOffender.getNomsId());
-            pnc = pncOf(rootOffender);
-            prisonNumber = bookingNoOf(rootOffender);
-            establishmentCode = establishmentCodeOf(null, rootOffender);
-        }
+        final Offender rootOffender = nomisApiServices.getOffenderByNomsId(thisOffender.getNomsId());
 
         return Optional.ofNullable(EventMessage.builder()
                 .timestamp(oasysTimestampOf(event.getEventDatetime()))
-                .prisonNumber(prisonNumber)
-                .pnc(pnc)
+                .prisonNumber(bookingNoOf(rootOffender))
+                .pnc(pncOf(rootOffender))
                 .oldPrisonNumber(event.getPreviousBookingNumber())
                 .nomisId(thisOffender.getNomsId())
                 .forename1(thisOffender.getFirstName())
                 .forename2(thisOffender.getMiddleNames())
                 .familyName(thisOffender.getSurname())
-                .establishmentCode(establishmentCode)
+                .establishmentCode(establishmentCodeOf(null, rootOffender))
                 .dateOfBirth(thisOffender.getDateOfBirth().toString())
                 .eventType("OffenderPrisonNumber")
                 .correlationId(correlationService.nextCorrelationId())
