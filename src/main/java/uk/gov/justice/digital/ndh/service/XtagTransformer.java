@@ -267,16 +267,19 @@ public class XtagTransformer {
         // BOOK_UPD_OASYS will always contain the new offender Id
 
         final Offender thisOffender = nomisApiServices.getOffenderByOffenderId(event.getOffenderId());
-
         log.info("... which is for nomsId {}", thisOffender.getNomsId());
 
         // Not sure if thisOffender will necessarily be a root offender but safest not to assume.
         // The following being absent is a good indicator that we are not dealing with root offender.
-        String pnc = pncOf(thisOffender);
-        String prisonNumber = bookingNoOf(thisOffender);
-        String establishmentCode = establishmentCodeOf(null, thisOffender);
+        final String pnc;
+        final String prisonNumber;
+        final String establishmentCode;
 
-        if (pnc == null || prisonNumber == null || establishmentCode == null) {
+        if (activeBookingOf(thisOffender).isPresent()) {
+            pnc = pncOf(thisOffender);
+            prisonNumber = bookingNoOf(thisOffender);
+            establishmentCode = establishmentCodeOf(null, thisOffender);
+        } else {
             final Offender rootOffender = nomisApiServices.getOffenderByNomsId(thisOffender.getNomsId());
             pnc = pncOf(rootOffender);
             prisonNumber = bookingNoOf(rootOffender);
