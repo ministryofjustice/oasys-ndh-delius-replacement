@@ -149,7 +149,7 @@ public class EventsPullerService {
         }
     }
 
-    public Optional<EventMessage> xtagEventMessageOf(OffenderEvent event) throws ExecutionException, NomisAPIServiceError, RetryException {
+    public Optional<EventMessage> xtagEventMessageOf(OffenderEvent event) throws ExecutionException, RetryException {
 
         try {
             switch (event.getNomisEventType()) {
@@ -169,6 +169,8 @@ public class EventsPullerService {
         } catch (NDHMappingException ndhme) {
             log.error("Mapping fail: {}", ndhme.toString());
             exceptionLogService.logMappingFail(ndhme.getCode(), ndhme.getValue(), ndhme.getSubject(), "n/a", anIdentifierFor(event));
+        } catch (NomisAPIServiceError nomisAPIServiceError) {
+            log.warn(nomisAPIServiceError.getMessage());
         }
 
         return Optional.empty();
