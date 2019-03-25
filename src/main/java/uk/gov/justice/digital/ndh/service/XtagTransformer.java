@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Component
 @Slf4j
@@ -72,21 +71,18 @@ public class XtagTransformer {
                 .orElse(pnc);
     }
 
-    public static String pncOf(Offender offender) {
+    public static Optional<String> pncOf(Offender offender) {
 
-        final Stream<Identifier> identifierStream1 = Optional.ofNullable(offender.getIdentifiers())
-                .stream()
-                .flatMap(Collection::stream);
-        final Stream<Identifier> identifierStream2 = Optional.ofNullable(offender.getAliases())
+        return Optional.ofNullable(offender.getIdentifiers())
                 .stream()
                 .flatMap(Collection::stream)
-                .flatMap(a -> Optional.ofNullable(a.getIdentifiers()).stream().flatMap(Collection::stream));
-
-        return Stream.concat(identifierStream1, identifierStream2)
                 .filter(identifier -> "PNC".equals(identifier.getIdentifierType()))
                 .findFirst().map(Identifier::getIdentifier)
-                .map(XtagTransformer::normalisedPncOf)
-                .orElse(null);
+                .map(XtagTransformer::normalisedPncOf);
+    }
+
+    public static String pncOf(Offender offender, Offender rootOffender) {
+        return pncOf(offender).orElseGet(() -> pncOf(rootOffender).orElse(null));
     }
 
     public Optional<EventMessage> offenderImprisonmentStatusUpdatedXtagOf(OffenderEvent event) throws ExecutionException, NomisAPIServiceError, RetryException {
@@ -113,7 +109,7 @@ public class XtagTransformer {
         return Optional.of(EventMessage.builder()
                 .timestamp(oasysTimestampOf(event.getEventDatetime()))
                 .prisonNumber(inmateDetail.getBookingNo())
-                .pnc(pncOf(rootOffender))
+                .pnc(pncOf(thisOffender, rootOffender))
                 .nomisId(thisOffender.getNomsId())
                 .forename1(thisOffender.getFirstName())
                 .forename2(thisOffender.getMiddleNames())
@@ -223,7 +219,7 @@ public class XtagTransformer {
                 .sentenceDays(daysOf(maybeSentenceCalculation))
                 .releaseDate(safeReleaseDateOf(maybeSentenceCalculation))
                 .prisonNumber(inmateDetail.getBookingNo())
-                .pnc(pncOf(rootOffender))
+                .pnc(pncOf(thisOffender, rootOffender))
                 .nomisId(rootOffender.getNomsId())
                 .movementFromTo(receptionMovementFromToOf(offenderMovement))
                 .movementDelete("N")
@@ -265,23 +261,21 @@ public class XtagTransformer {
         log.info("Handling bookingUpdated event {}", event);
 
         // BOOK_UPD_OASYS will always contain the new offender Id
-
         final Offender thisOffender = nomisApiServices.getOffenderByOffenderId(event.getOffenderId());
+        final Offender rootOffender = nomisApiServices.getOffenderByNomsId(thisOffender.getNomsId());
+
         log.info("... which is for nomsId {}", thisOffender.getNomsId());
 
         // Not sure if thisOffender will necessarily be a root offender but safest not to assume.
         // The following being absent is a good indicator that we are not dealing with root offender.
-        final String pnc;
+        final String pnc = pncOf(thisOffender, rootOffender);
         final String prisonNumber;
         final String establishmentCode;
 
         if (activeBookingOf(thisOffender).isPresent()) {
-            pnc = pncOf(thisOffender);
             prisonNumber = bookingNoOf(thisOffender);
             establishmentCode = establishmentCodeOf(null, thisOffender);
         } else {
-            final Offender rootOffender = nomisApiServices.getOffenderByNomsId(thisOffender.getNomsId());
-            pnc = pncOf(rootOffender);
             prisonNumber = bookingNoOf(rootOffender);
             establishmentCode = establishmentCodeOf(null, rootOffender);
         }
@@ -328,7 +322,7 @@ public class XtagTransformer {
                 .sentenceDays(daysOf(maybeSentenceCalculation))
                 .releaseDate(safeReleaseDateOf(maybeSentenceCalculation))
                 .prisonNumber(inmateDetail.getBookingNo())
-                .pnc(pncOf(rootOffender))
+                .pnc(pncOf(thisOffender, rootOffender))
                 .nomisId(thisOffender.getNomsId())
                 .movementFromTo(dischargeMovementFromToOf(offenderMovement))
                 .movementCourtCode(dischargeMovementCourtCodeOf(offenderMovement))
@@ -528,7 +522,7 @@ public class XtagTransformer {
         return Optional.ofNullable(EventMessage.builder()
                 .timestamp(oasysTimestampOf(event.getEventDatetime()))
                 .prisonNumber(inmateDetail.getBookingNo())
-                .pnc(pncOf(rootOffender))
+                .pnc(pncOf(thisOffender, rootOffender))
                 .oldPrisonNumber(event.getPreviousBookingNumber())
                 .nomisId(thisOffender.getNomsId())
                 .forename1(thisOffender.getFirstName())
@@ -564,7 +558,7 @@ public class XtagTransformer {
                 .sentenceDate(sentenceStartDateOf(activeSentences))
                 .releaseDate(safeReleaseDateOf(maybeSentenceCalculation))
                 .prisonNumber(inmateDetail.getBookingNo())
-                .pnc(pncOf(rootOffender))
+                .pnc(pncOf(thisOffender, rootOffender))
                 .nomisId(thisOffender.getNomsId())
                 .forename1(thisOffender.getFirstName())
                 .forename2(thisOffender.getMiddleNames())

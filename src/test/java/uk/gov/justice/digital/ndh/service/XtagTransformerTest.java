@@ -9,7 +9,6 @@ import uk.gov.justice.digital.ndh.api.nomis.AgencyLocation;
 import uk.gov.justice.digital.ndh.api.nomis.Booking;
 import uk.gov.justice.digital.ndh.api.nomis.Identifier;
 import uk.gov.justice.digital.ndh.api.nomis.Offender;
-import uk.gov.justice.digital.ndh.api.nomis.OffenderAlias;
 import uk.gov.justice.digital.ndh.api.nomis.OffenderEvent;
 import uk.gov.justice.digital.ndh.api.nomis.elite2.InmateDetail;
 import uk.gov.justice.digital.ndh.api.oasys.xtag.EventMessage;
@@ -36,7 +35,7 @@ public class XtagTransformerTest {
     }
 
     @Test
-    public void pncOfOffenderIsDerivedFromAllIdentifiers() {
+    public void pncOfOffenderIsDerivedFromThisOffendersIdentifiers() {
         Offender anOffenderWithIdentifiersAtRootLevel = Offender.builder()
                 .identifiers(ImmutableList.of(Identifier.builder()
                         .identifierType("PNC")
@@ -44,31 +43,29 @@ public class XtagTransformerTest {
                         .build()))
                 .build();
 
-        Offender anOffenderWithoutIdentifiersAtRootLevel = Offender.builder()
-                .aliases(ImmutableList.of(OffenderAlias.builder()
-                        .identifiers(ImmutableList.of(Identifier.builder()
-                                .identifierType("PNC")
-                                .identifier("71/3344B")
-                                .build()))
-                        .build())
-                ).build();
 
-        Offender anOffenderWithIdentifiersAtRootLevelAndAliases = Offender.builder()
+        assertThat(XtagTransformer.pncOf(anOffenderWithIdentifiersAtRootLevel)).isEqualTo(Optional.of("70/1122A"));
+    }
+
+    @Test
+    public void pncOffenderHasFallbackToRoot() {
+        Offender aRootOffenderWithIdentifiers = Offender.builder()
+                .identifiers(ImmutableList.of(Identifier.builder()
+                        .identifierType("PNC")
+                        .identifier("70/1122A")
+                        .build()))
+                .build();
+
+        Offender anAliasOffenderWithoutIdentifiers = Offender.builder().build();
+
+        Offender anAliasOffenderWithIdentifiers = Offender.builder()
                 .identifiers(ImmutableList.of(Identifier.builder()
                         .identifierType("PNC")
                         .identifier("72/5566C")
-                        .build()))
-                .aliases(ImmutableList.of(OffenderAlias.builder()
-                        .identifiers(ImmutableList.of(Identifier.builder()
-                                .identifierType("PNC")
-                                .identifier("73/7788D")
-                                .build()))
-                        .build())
-                ).build();
+                        .build())).build();
 
-        assertThat(XtagTransformer.pncOf(anOffenderWithIdentifiersAtRootLevel)).isEqualTo("70/1122A");
-        assertThat(XtagTransformer.pncOf(anOffenderWithoutIdentifiersAtRootLevel)).isEqualTo("71/3344B");
-        assertThat(XtagTransformer.pncOf(anOffenderWithIdentifiersAtRootLevelAndAliases)).isEqualTo("72/5566C");
+        assertThat(XtagTransformer.pncOf(anAliasOffenderWithIdentifiers, aRootOffenderWithIdentifiers)).isEqualTo("72/5566C");
+        assertThat(XtagTransformer.pncOf(anAliasOffenderWithoutIdentifiers, aRootOffenderWithIdentifiers)).isEqualTo("70/1122A");
     }
 
     @Test
