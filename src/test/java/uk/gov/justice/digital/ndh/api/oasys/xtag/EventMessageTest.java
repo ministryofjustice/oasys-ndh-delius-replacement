@@ -26,7 +26,7 @@ public class EventMessageTest {
                 "   <soapenv:Body>\n" +
                 "      <even:EVENT_MESSAGEInput>\n" +
                 "         <!--Optional:-->\n" +
-                "         <even:TIMESTAMP-VARCHAR2-IN>?</even:TIMESTAMP-VARCHAR2-IN>\n" +
+                "         <even:TIMESTAMP-VARCHAR2-IN>20190325131853.03004</even:TIMESTAMP-VARCHAR2-IN>\n" +
                 "         <!--Optional:-->\n" +
                 "         <even:SENTENCEYEARS-VARCHAR2-IN>?</even:SENTENCEYEARS-VARCHAR2-IN>\n" +
                 "         <!--Optional:-->\n" +
@@ -101,7 +101,7 @@ public class EventMessageTest {
                                         .sentenceDays("?")
                                         .sentenceMonths("?")
                                         .sentenceYears("?")
-                                        .rawEventDateTime(LocalDateTime.MIN)
+                                        .rawEventDateTime(LocalDateTime.parse("2019-03-25T13:18:53.03004"))
                                         .build())
                         .build())
                 .build();

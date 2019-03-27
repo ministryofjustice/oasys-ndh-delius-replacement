@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.ndh.api.oasys.xtag;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import lombok.Builder;
 import lombok.Value;
@@ -10,6 +11,7 @@ import java.time.format.DateTimeFormatter;
 
 @Value
 @Builder
+@JsonPropertyOrder("timestamp")
 public class EventMessage {
     @JsonIgnore
     public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss.SSSSS");
