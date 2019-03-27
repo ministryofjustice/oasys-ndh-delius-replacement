@@ -24,12 +24,17 @@ public class MessageStoreService {
 
     @Transactional
     public void writeMessage(String body, String correlationId, String crnOrPnc, String processName, ProcStates procState) {
+        writeMessage(body, correlationId, crnOrPnc, processName, procState, LocalDateTime.now());
+    }
+
+    @Transactional
+    public void writeMessage(String body, String correlationId, String crnOrPnc, String processName, ProcStates procState, LocalDateTime messageTimestamp) {
         messageStoreRepository.save(MsgStore
                 .builder()
                 .correlationId(correlationId)
                 .payload(body)
                 .storeDatetime(Timestamp.valueOf(LocalDateTime.now()))
-                .msgTimestamp(Timestamp.valueOf(LocalDateTime.now()))
+                .msgTimestamp(Timestamp.valueOf(messageTimestamp))
                 .processName(processName)
                 .msgProcState(procState.getValue())
                 .customId(crnOrPnc)
@@ -40,8 +45,7 @@ public class MessageStoreService {
         GLB_ProcState_InboundBeforeTransformation("1"),
         GLB_ProcState_InboundAfterTransformation("2"),
         GLB_ProcState_OutboundBeforeTransformation("3"),
-        GLB_ProcState_OutboundAfterTransformation("4"),
-        GLB_ProcState_Undefined("0");
+        GLB_ProcState_OutboundAfterTransformation("4");
         private String value;
 
         ProcStates(String value) {

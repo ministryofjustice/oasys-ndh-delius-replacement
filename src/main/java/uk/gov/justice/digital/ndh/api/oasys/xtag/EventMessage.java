@@ -1,14 +1,27 @@
 package uk.gov.justice.digital.ndh.api.oasys.xtag;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import lombok.Builder;
 import lombok.Value;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 @Value
 @Builder
 public class EventMessage {
+    @JsonIgnore
+    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss.SSSSS");
+
+    @JsonIgnore
+    private LocalDateTime rawEventDateTime;
+
     @JacksonXmlProperty(namespace = "http://xmlns.oracle.com/orawsv/EOR/SERVICES_PKG/EVENT_MESSAGE", localName = "TIMESTAMP-VARCHAR2-IN")
-    private String timestamp;
+    public String getTimestamp() {
+        return rawEventDateTime.format(DATE_TIME_FORMATTER);
+    }
+
     @JacksonXmlProperty(namespace = "http://xmlns.oracle.com/orawsv/EOR/SERVICES_PKG/EVENT_MESSAGE", localName = "SENTENCEYEARS-VARCHAR2-IN")
     private String sentenceYears;
     @JacksonXmlProperty(namespace = "http://xmlns.oracle.com/orawsv/EOR/SERVICES_PKG/EVENT_MESSAGE", localName = "SENTENCEMONTHS-VARCHAR2-IN")

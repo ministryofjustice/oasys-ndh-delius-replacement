@@ -26,8 +26,6 @@ import uk.gov.justice.digital.ndh.service.exception.NomisAPIServiceError;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Collection;
@@ -107,7 +105,7 @@ public class XtagTransformer {
         final OffenderImprisonmentStatus offenderImprisonmentStatus = maybeOffenderImprisonmentStatus.orElseThrow(() -> new NomisAPIServiceError("Can't get offender imprisonment statuses."));
 
         return Optional.of(EventMessage.builder()
-                .timestamp(oasysTimestampOf(event.getEventDatetime()))
+                .rawEventDateTime(event.getEventDatetime())
                 .prisonNumber(inmateDetail.getBookingNo())
                 .pnc(pncOf(thisOffender, rootOffender))
                 .nomisId(thisOffender.getNomsId())
@@ -213,7 +211,7 @@ public class XtagTransformer {
         final ExternalMovement offenderMovement = nomisApiServices.getAdmissionMovement(event, this);
 
         return Optional.ofNullable(EventMessage.builder()
-                .timestamp(oasysTimestampOf(event.getEventDatetime()))
+                .rawEventDateTime(event.getEventDatetime())
                 .sentenceYears(yearsOf(maybeSentenceCalculation))
                 .sentenceMonths(monthsOf(maybeSentenceCalculation))
                 .sentenceDays(daysOf(maybeSentenceCalculation))
@@ -281,7 +279,7 @@ public class XtagTransformer {
         }
 
         return Optional.ofNullable(EventMessage.builder()
-                .timestamp(oasysTimestampOf(event.getEventDatetime()))
+                .rawEventDateTime(event.getEventDatetime())
                 .prisonNumber(prisonNumber)
                 .pnc(pnc)
                 .oldPrisonNumber(event.getPreviousBookingNumber())
@@ -316,7 +314,7 @@ public class XtagTransformer {
         final Optional<SentenceCalculation> maybeSentenceCalculation = nomisApiServices.getSentenceCalculation(rootOffender, event.getBookingId(), this);
 
         return Optional.ofNullable(EventMessage.builder()
-                .timestamp(oasysTimestampOf(event.getEventDatetime()))
+                .rawEventDateTime(event.getEventDatetime())
                 .sentenceYears(yearsOf(maybeSentenceCalculation))
                 .sentenceMonths(monthsOf(maybeSentenceCalculation))
                 .sentenceDays(daysOf(maybeSentenceCalculation))
@@ -471,9 +469,9 @@ public class XtagTransformer {
         return Optional.ofNullable(anAgencyLocationId).orElse("OUT");
     }
 
-    private String oasysTimestampOf(LocalDateTime dateTime) {
-        return dateTime.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss.SSSSS"));
-    }
+//    private String oasysTimestampOf(LocalDateTime dateTime) {
+//        return dateTime.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss.SSSSS"));
+//    }
 
     private String yearsOf(Optional<SentenceCalculation> maybeSentenceCalculation) {
         return maybeSentenceCalculation
@@ -520,7 +518,7 @@ public class XtagTransformer {
 
 
         return Optional.ofNullable(EventMessage.builder()
-                .timestamp(oasysTimestampOf(event.getEventDatetime()))
+                .rawEventDateTime(event.getEventDatetime())
                 .prisonNumber(inmateDetail.getBookingNo())
                 .pnc(pncOf(thisOffender, rootOffender))
                 .oldPrisonNumber(event.getPreviousBookingNumber())
@@ -551,7 +549,7 @@ public class XtagTransformer {
         final Optional<SentenceCalculation> maybeSentenceCalculation = nomisApiServices.getSentenceCalculation(rootOffender, event.getBookingId(), this);
 
         return Optional.ofNullable(EventMessage.builder()
-                .timestamp(oasysTimestampOf(event.getEventDatetime()))
+                .rawEventDateTime(event.getEventDatetime())
                 .sentenceYears(yearsOf(maybeSentenceCalculation))
                 .sentenceMonths(monthsOf(maybeSentenceCalculation))
                 .sentenceDays(daysOf(maybeSentenceCalculation))

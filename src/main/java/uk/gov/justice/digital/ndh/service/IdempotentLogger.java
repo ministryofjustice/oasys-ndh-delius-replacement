@@ -8,8 +8,6 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import java.util.Optional;
 
-import static uk.gov.justice.digital.ndh.ThatsNotMyNDH.ASSESSMENT_PROCESS;
-
 @Component
 @Slf4j
 public class IdempotentLogger {
@@ -30,21 +28,6 @@ public class IdempotentLogger {
         } catch (JMSException e) {
             log.error(e.getMessage());
             exceptionLogService.logFault(maybeSoapXml.get(), correlationId, e.getMessage());
-        }
-    }
-
-    public void logIdempotent(Message message, String xml, String correlationId, String offenderId, MessageStoreService.ProcStates procState) {
-        try {
-            if (!message.getJMSRedelivered()) {
-                messageStoreService.writeMessage(
-                        xml,
-                        correlationId,
-                        offenderId,
-                        ASSESSMENT_PROCESS,
-                        procState);
-            }
-        } catch (JMSException e) {
-            log.error(e.getMessage());
         }
     }
 }

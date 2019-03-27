@@ -125,7 +125,7 @@ public class EventsPullerService {
         }
     }
 
-    private void sendToOAsys(Optional<EventMessage> maybeEventMessage) throws JsonProcessingException, UnirestException, OasysAPIServiceError {
+    public void sendToOAsys(Optional<EventMessage> maybeEventMessage) throws JsonProcessingException, UnirestException, OasysAPIServiceError {
         if (maybeEventMessage.isPresent()) {
             final EventMessage eventMessage = maybeEventMessage.get();
             final String oasysSoapXml = xmlMapper.writeValueAsString(eventMessage);
@@ -135,7 +135,8 @@ public class EventsPullerService {
                     eventMessage.getCorrelationId(),
                     eventMessage.getNomisId(),
                     "XTAG",
-                    MessageStoreService.ProcStates.GLB_ProcState_OutboundAfterTransformation);
+                    MessageStoreService.ProcStates.GLB_ProcState_OutboundAfterTransformation,
+                    eventMessage.getRawEventDateTime());
 
             final HttpResponse<String> response = oasysSOAPClient.oasysWebServiceResponseOf(oasysSoapXml);
 

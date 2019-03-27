@@ -2,14 +2,18 @@ package uk.gov.justice.digital.ndh.api.oasys.xtag;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.junit.Test;
 import org.xmlunit.builder.DiffBuilder;
 import org.xmlunit.diff.Diff;
 import org.xmlunit.diff.DifferenceEvaluators;
+import uk.gov.justice.digital.ndh.ThatsNotMyNDH;
 import uk.gov.justice.digital.ndh.api.soap.SoapBody;
 import uk.gov.justice.digital.ndh.api.soap.SoapEnvelopeSpec1_1;
 import uk.gov.justice.digital.ndh.api.soap.SoapHeader;
+
+import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -97,7 +101,7 @@ public class EventMessageTest {
                                         .sentenceDays("?")
                                         .sentenceMonths("?")
                                         .sentenceYears("?")
-                                        .timestamp("?")
+                                        .rawEventDateTime(LocalDateTime.MIN)
                                         .build())
                         .build())
                 .build();
@@ -115,5 +119,28 @@ public class EventMessageTest {
                 .build();
 
         assertThat(myDiff.hasDifferences()).isFalse();
+    }
+
+    @Test
+    public void eventTimestampIsHandledAppropriately() throws JsonProcessingException {
+        final LocalDateTime now = LocalDateTime.now();
+        final String oasysTimestamp = now.format(EventMessage.DATE_TIME_FORMATTER);
+
+        final String expectedJson = "{\"timestamp\":\"" + oasysTimestamp + "\"}";
+        final String expectedXml = "<?xml version='1.0' encoding='UTF-8'?><EventMessage><wstxns1:TIMESTAMP-VARCHAR2-IN xmlns:wstxns1=\"http://xmlns.oracle.com/orawsv/EOR/SERVICES_PKG/EVENT_MESSAGE\">" + oasysTimestamp + "</wstxns1:TIMESTAMP-VARCHAR2-IN></EventMessage>";
+        EventMessage eventMessage = EventMessage.builder()
+                .rawEventDateTime(now)
+                .build();
+
+        assertThat(eventMessage.getRawEventDateTime()).isEqualTo(now);
+        assertThat(eventMessage.getTimestamp()).isEqualTo(oasysTimestamp);
+
+        final ThatsNotMyNDH thatsNotMyNDH = new ThatsNotMyNDH();
+
+        ObjectMapper objectMapper = thatsNotMyNDH.objectMapper();
+        assertThat(objectMapper.writeValueAsString(eventMessage)).isEqualTo(expectedJson);
+
+        XmlMapper xmlMapper = thatsNotMyNDH.xmlMapper(thatsNotMyNDH.xmlConverter());
+        assertThat(xmlMapper.writeValueAsString(eventMessage)).isEqualTo(expectedXml);
     }
 }

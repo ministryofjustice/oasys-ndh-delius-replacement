@@ -59,7 +59,7 @@ public class ThatsNotMyNDH {
     }
 
     @Bean
-    XmlMapper xmlMapper(MappingJackson2XmlHttpMessageConverter xmlConverter) {
+    public XmlMapper xmlMapper(MappingJackson2XmlHttpMessageConverter xmlConverter) {
         final ObjectMapper objectMapper = xmlConverter.getObjectMapper();
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         return (XmlMapper) objectMapper;
