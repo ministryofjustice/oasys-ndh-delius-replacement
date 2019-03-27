@@ -19,6 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.justice.digital.ndh.api.soap.SoapEnvelopeSpec1_2;
 import uk.gov.justice.digital.ndh.jpa.repository.requirementLookup.RequirementLookup;
@@ -66,6 +67,7 @@ import static uk.gov.justice.digital.ndh.service.transforms.OffenderTransformer.
         "oauth.url=http://localhost:8090/oauth/token"
 })
 @RunWith(SpringJUnit4ClassRunner.class)
+@ActiveProfiles("OASYS_LINKS")
 @DirtiesContext
 public class OasysOffenderControllerTest {
 

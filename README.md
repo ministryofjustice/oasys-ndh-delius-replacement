@@ -31,6 +31,14 @@ SPRING_PROFILES_ACTIVE=dev java -jar build/libs/new-nomis-api.jar
 SPRING_PROFILES_ACTIVE=oracle SPRING_DATASOURCE_URL=jdbc:oracle:thin:@<VM Oracle IP address>:1521:<sid> SPRING_DATASOURCE_USERNAME=myuser SPRING_DATASOURCE_PASSWORD=mypassword -jar build/libs/new-nomis-api.jar
 ```
 
+### Start the application with the OASys SOAP links to NDH
+IMPORTANT: This profile is disabled by default. Make active profile OASYS_LINKS to enable the inbound SOAP endpoints.  
+Without this profile enabled, the application SOAP endpoints will not be active.
+
+### Start the application with the XTAG event feed into OASys
+IMPORTANT: This profile is disabled by default. Make active profile XTAG_FEED to enable the event feed into OASys  
+Without this profile enabled, the XTAG event feed from NOMIS into OASys will not be active.
+
 ### Additional configuration
 The application is configured with conventional Spring parameters.
 The Spring documentation can be found here:
@@ -62,7 +70,7 @@ curl http://localhost:8080/activemq/queues/OASYS_MESSAGES
 curl -X GET http://localhost:8080/info
 ```
 
-### Application health
+### Application health  
 ```
 curl -X GET http://localhost:8080/health
 ```

@@ -49,8 +49,7 @@ public class EventsPullerServiceTest {
     }
 
     @Test
-    public void eventsSentToOasysAreLoggedWithTheRawEventTimestamp() throws ExecutionException, RetryException, NomisAPIServiceError, OasysAPIServiceError, UnirestException, JsonProcessingException {
-        final XtagTransformer xtagTransformer = mock(XtagTransformer.class);
+    public void eventsSentToOasysAreLoggedWithTheRawEventTimestamp() throws OasysAPIServiceError, UnirestException, JsonProcessingException {
         final MessageStoreRepository messageStoreRepository = mock(MessageStoreRepository.class);
         final MessageStoreService messageStoreService = mock(MessageStoreService.class);
         final OasysSOAPClient oasysSOAPClient = mock(OasysSOAPClient.class);

@@ -17,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.justice.digital.ndh.api.oasys.request.Header;
 import uk.gov.justice.digital.ndh.api.oasys.response.RiskUpdateResponse;
@@ -67,6 +68,7 @@ import static org.mockito.Mockito.when;
         "oauth.url=http://localhost:8090/oauth/token"
 })
 @RunWith(SpringJUnit4ClassRunner.class)
+@ActiveProfiles("OASYS_LINKS")
 @DirtiesContext
 public class OasysAssessmentControllerTest {
 
