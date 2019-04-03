@@ -72,19 +72,20 @@ public class EventsPullerService {
         startupPullFromDateTime = getInitialPullFromDateTime();
         lastPulled = startupPullFromDateTime;
         this.windbackSeconds = windbackSeconds;
+        log.info("Using windbackSeconds {}", windbackSeconds);
     }
 
     @Scheduled(fixedDelayString = "${xtag.poll.period:10000}")
     public void pullEvents() {
-        final LocalDateTime now = LocalDateTime.now();
+        final LocalDateTime pullTo = LocalDateTime.now().minusSeconds(windbackSeconds);
 
-        log.info("Pulling events from {} to {}", lastPulled, now);
+        log.info("Pulling events from {} to {}", lastPulled, pullTo);
 
         try {
             Optional<List<OffenderEvent>> maybeOffenderEvents = custodyApiClient
                     .doGetWithRetry("events", ImmutableMap.of(
                             "from", lastPulled.toString(),
-                            "to", now.minusSeconds(windbackSeconds).toString(),
+                            "to",   pullTo.toString(),
                             "type", "BOOKING_NUMBER-CHANGED,OFFENDER_MOVEMENT-RECEPTION,OFFENDER_MOVEMENT-DISCHARGE,OFFENDER_BOOKING-CHANGED,OFFENDER_DETAILS-CHANGED,IMPRISONMENT_STATUS-CHANGED,SENTENCE_CALCULATION_DATES-CHANGED",
                             "sortBy", "TIMESTAMP_ASC"))
                     .filter(r -> r.getStatus() == HttpStatus.OK.value())
@@ -121,7 +122,7 @@ public class EventsPullerService {
         return offenderEvents.stream().max(Comparator.comparing(OffenderEvent::getEventDatetime)).map(OffenderEvent::getEventDatetime).orElse(null);
     }
 
-    private void handleEvents(List<OffenderEvent> events) throws ExecutionException, UnirestException, NomisAPIServiceError, JsonProcessingException, OasysAPIServiceError, RetryException {
+    private void handleEvents(List<OffenderEvent> events) throws ExecutionException, UnirestException, JsonProcessingException, OasysAPIServiceError, RetryException {
         for (OffenderEvent offenderEvent : events) {
             sendToOAsys(xtagEventMessageOf(offenderEvent));
         }
