@@ -384,21 +384,31 @@ public class XtagTransformer {
                         .map(x -> x.getFromAgencyLocation().getAgencyLocationId())
                         .orElse(activeBookingOf(offender)
                                 .map(booking -> booking.getAgencyLocation().getAgencyLocationId())
-                                .orElse(fromAgencyCodeOfLastMovementOutOf(offender))),
+                                .orElse(fromAgencyCodeOfLastMovementOutOf(offender)
+                                        .orElse(anyEstablishmentCodeOf(offenderMovement)))),
                 AGENCY_LOCATION_CODE_TYPE);
 
     }
 
-    private String fromAgencyCodeOfLastMovementOutOf(Offender offender) {
+    private String anyEstablishmentCodeOf(ExternalMovement offenderMovement) {
+        final Optional<ExternalMovement> maybeOffenderMovement = Optional.ofNullable(offenderMovement);
+
+        return maybeOffenderMovement.map(ExternalMovement::getToAgencyLocation)
+                .map(AgencyLocation::getAgencyLocationId)
+                .orElseGet(() -> maybeOffenderMovement.map(ExternalMovement::getFromAgencyLocation)
+                        .map(AgencyLocation::getAgencyLocationId)
+                        .orElse(null));
+    }
+
+    private Optional<String> fromAgencyCodeOfLastMovementOutOf(Offender offender) {
         return Optional.ofNullable(offender.getBookings())
                 .flatMap(bookings -> bookings
-                .stream()
-                .filter(b -> b.getBookingSequence() == 1)
-                .findFirst()
-                .map(Booking::getLastMovement)
-                .filter(m -> "OUT".equals(m.getMovementDirection()))
-                .map(m -> m.getFromAgencyLocation().getAgencyLocationId()))
-                .orElse(null);
+                        .stream()
+                        .filter(b -> b.getBookingSequence() == 1)
+                        .findFirst()
+                        .map(Booking::getLastMovement)
+                        .filter(m -> "OUT".equals(m.getMovementDirection()))
+                        .map(m -> m.getFromAgencyLocation().getAgencyLocationId()));
     }
 
     private Optional<Booking> activeBookingOf(Offender offender) {
