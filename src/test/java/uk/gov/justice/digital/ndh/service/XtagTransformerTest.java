@@ -23,6 +23,7 @@ import java.util.concurrent.ExecutionException;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 
@@ -324,4 +325,28 @@ public class XtagTransformerTest {
                         .agencyLocation(AgencyLocation.builder().agencyLocationId("MOON").build()).build()))
                 .build())).isEqualTo("HOTH");
     }
+
+    @Test
+    public void offenderUpdatedXtagOfDeletedOffenderIsHandledAppropriately() throws ExecutionException, RetryException, NomisAPIServiceError {
+        final MappingService mappingService = mock(MappingService.class);
+        final NomisApiServices nomisApiServices = mock(NomisApiServices.class);
+        final ObjectMapper objectMapper = new ThatsNotMyNDH().objectMapper();
+        final CorrelationService correlationService = mock(CorrelationService.class);
+
+        XtagTransformer xtagTransformer = new XtagTransformer(objectMapper, mappingService, nomisApiServices, correlationService);
+        OffenderEvent event = OffenderEvent.builder().rootOffenderId(1L).build();
+
+        when(nomisApiServices.getOffenderByOffenderId(1L)).thenReturn(Offender.builder().build());
+
+        try {
+            assertThat(xtagTransformer.offenderUpdatedXtagOf(event)).isEmpty();
+        } catch (Throwable t) {
+            fail("Should not have thrown.");
+        }
+
+        verify(nomisApiServices).getOffenderByOffenderId(1L);
+
+    }
+
+
 }

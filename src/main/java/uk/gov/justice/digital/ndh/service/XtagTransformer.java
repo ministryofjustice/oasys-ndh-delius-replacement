@@ -511,19 +511,27 @@ public class XtagTransformer {
         log.info("Handling offenderUpdated event {}", event);
         final Offender rootOffender;
         final InmateDetail inmateDetail;
+        final Offender thisOffender;
         // OFF_UPD_OASYS event contains either:
         // root offender id only,
         // root offender id and offender id,
         // or booking id and offender id
-        if (event.getRootOffenderId() != null) {
-            rootOffender = nomisApiServices.getOffenderByOffenderId(event.getRootOffenderId());
-            inmateDetail = nomisApiServices.getInmateDetail(bookingIdOf(rootOffender.getBookings()), this);
-        } else {
-            // event must have a booking id
-            inmateDetail = nomisApiServices.getInmateDetail(event.getBookingId(), this);
-            rootOffender = nomisApiServices.getOffenderByNomsId(inmateDetail.getOffenderNo());
+
+        try {
+            if (event.getRootOffenderId() != null) {
+                rootOffender = nomisApiServices.getOffenderByOffenderId(event.getRootOffenderId());
+                inmateDetail = nomisApiServices.getInmateDetail(bookingIdOf(rootOffender.getBookings()), this);
+            } else {
+                // event must have a booking id
+                inmateDetail = nomisApiServices.getInmateDetail(event.getBookingId(), this);
+                rootOffender = nomisApiServices.getOffenderByNomsId(inmateDetail.getOffenderNo());
+            }
+            thisOffender = thisOffenderFromRootOffender(rootOffender);
+        } catch (NullPointerException npe) {
+            log.warn("Failed to identify offender from event {}. Ignoring this event.", event);
+            return Optional.empty();
         }
-        final Offender thisOffender = thisOffenderFromRootOffender(rootOffender);
+
         log.info("... which is for nomsId {}", thisOffender.getNomsId());
 
 
