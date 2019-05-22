@@ -17,9 +17,11 @@ import uk.gov.justice.digital.ndh.api.nomis.elite2.InmateDetail;
 import uk.gov.justice.digital.ndh.service.exception.NomisAPIServiceError;
 import uk.gov.justice.digital.ndh.service.transforms.OffenderTransformer;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -28,9 +30,10 @@ public class NomisApiServices {
     private final NomisClient custodyApiClient;
     private final NomisClient elite2ApiClient;
     private final OffenderTransformer offenderTransformer;
+    public static final String OASYS = "OASYS";
 
     @Autowired
-    public NomisApiServices(NomisClient custodyApiClient, NomisClient elite2ApiClient, OffenderTransformer offenderTransformer){
+    public NomisApiServices(NomisClient custodyApiClient, NomisClient elite2ApiClient, OffenderTransformer offenderTransformer) {
         this.custodyApiClient = custodyApiClient;
         this.elite2ApiClient = elite2ApiClient;
         this.offenderTransformer = offenderTransformer;
@@ -139,5 +142,22 @@ public class NomisApiServices {
 
     public boolean okOrNotFound(HttpResponse<String> r) {
         return r.getStatus() == HttpStatus.OK.value() || r.getStatus() == HttpStatus.NOT_FOUND.value();
+    }
+
+    public Optional<List<OffenderEvent>> getEvents(LocalDateTime lastPulled, LocalDateTime pullTo, XtagTransformer xtagTransformer) throws ExecutionException, RetryException {
+        return custodyApiClient
+                .doGetWithRetry("events", ImmutableMap.of(
+                        "from", lastPulled.toString(),
+                        "to", pullTo.toString(),
+                        "type", "BOOKING_NUMBER-CHANGED,OFFENDER_MOVEMENT-RECEPTION,OFFENDER_MOVEMENT-DISCHARGE,OFFENDER_BOOKING-CHANGED,OFFENDER_DETAILS-CHANGED,IMPRISONMENT_STATUS-CHANGED,SENTENCE_CALCULATION_DATES-CHANGED",
+                        "sortBy", "TIMESTAMP_ASC"))
+                .filter(r -> r.getStatus() == HttpStatus.OK.value())
+                .map(HttpResponse::getBody)
+                .map(xtagTransformer::asEvents)
+                .map(offenderEvents -> offenderEvents.stream()
+                        .filter(offenderEvent -> offenderEvent.getNomisEventType() != null)
+                        .filter(offenderEvent -> offenderEvent.getNomisEventType().endsWith(OASYS))
+                        .filter(offenderEvent -> !lastPulled.equals(offenderEvent.getEventDatetime()))
+                        .collect(Collectors.toList()));
     }
 }

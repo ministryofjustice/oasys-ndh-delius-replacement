@@ -251,7 +251,7 @@ public class XtagTransformer {
     }
 
     private String receptionMovementCourtCodeOf(ExternalMovement offenderMovement) {
-        return ("CRT".equals(offenderMovement.getMovementTypeCode())) ? offenderMovement.getFromAgencyLocation().getAgencyLocationId() : null;
+        return ("CRT".equals(offenderMovement.getMovementTypeCode())) ? Optional.ofNullable(offenderMovement.getFromAgencyLocation()).map(AgencyLocation::getAgencyLocationId).orElse(null) : null;
     }
 
 
@@ -594,4 +594,14 @@ public class XtagTransformer {
                 .map(LocalDate::toString)
                 .orElse(null);
     }
+
+    public List<OffenderEvent> asEvents(String jsonStr) {
+        try {
+            return Arrays.asList(objectMapper.readValue(jsonStr, OffenderEvent[].class));
+        } catch (IOException e) {
+            log.error("Failed to turn json {} into OffenderEvent list.", e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
 }

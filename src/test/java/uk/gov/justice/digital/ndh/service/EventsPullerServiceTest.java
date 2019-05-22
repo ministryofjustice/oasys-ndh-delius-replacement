@@ -3,6 +3,7 @@ package uk.gov.justice.digital.ndh.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.github.rholder.retry.RetryException;
+import com.google.common.collect.ImmutableList;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import org.junit.Test;
@@ -36,7 +37,7 @@ public class EventsPullerServiceTest {
     public void nomisService404sAreIgnored() throws ExecutionException, RetryException, NomisAPIServiceError {
         final XtagTransformer xtagTransformer = mock(XtagTransformer.class);
         final MessageStoreRepository messageStoreRepository = mock(MessageStoreRepository.class);
-        EventsPullerService eventsPullerService = new EventsPullerService(null, null, null, xtagTransformer, null, null, null, messageStoreRepository, 0);
+        EventsPullerService eventsPullerService = new EventsPullerService(null, xtagTransformer, null, null, null, messageStoreRepository, 0, null);
 
         when(xtagTransformer.offenderImprisonmentStatusUpdatedXtagOf(any(OffenderEvent.class))).thenThrow(new NomisAPIServiceError("bang."));
         when(messageStoreRepository.findFirstByProcessNameOrderByMsgStoreSeqDesc(any(String.class))).thenReturn(Optional.of(MsgStore.builder().msgTimestamp(Timestamp.from(Instant.now())).build()));
@@ -56,7 +57,7 @@ public class EventsPullerServiceTest {
 
         final ThatsNotMyNDH thatsNotMyNDH = new ThatsNotMyNDH();
         XmlMapper xmlMapper = thatsNotMyNDH.xmlMapper(thatsNotMyNDH.xmlConverter());
-        EventsPullerService eventsPullerService = new EventsPullerService(null, null, xmlMapper, null, oasysSOAPClient, null, messageStoreService, messageStoreRepository, 0);
+        EventsPullerService eventsPullerService = new EventsPullerService(xmlMapper, null, oasysSOAPClient, null, messageStoreService, messageStoreRepository, 0, null);
 
         when(messageStoreRepository.findFirstByProcessNameOrderByMsgStoreSeqDesc(any(String.class))).thenReturn(Optional.of(MsgStore.builder().msgTimestamp(Timestamp.from(Instant.now())).build()));
         final HttpResponse<String> httpResponse = mock(HttpResponse.class);
@@ -75,5 +76,40 @@ public class EventsPullerServiceTest {
 
         verify(messageStoreService).writeMessage(anyString(), eq(null), eq(null), eq("XTAG"), eq(MessageStoreService.ProcStates.GLB_ProcState_OutboundAfterTransformation), eq(now));
 
+    }
+
+    @Test
+    public void poisonousMessageAdvancesPulledFromToTheLastSuccessfull() throws ExecutionException, RetryException, NomisAPIServiceError, UnirestException, JsonProcessingException {
+        var now = LocalDateTime.now();
+        final XtagTransformer xtagTransformer = mock(XtagTransformer.class);
+        final MessageStoreRepository messageStoreRepository = mock(MessageStoreRepository.class);
+        final NomisApiServices nomisApiServices = mock(NomisApiServices.class);
+        final MessageStoreService messageStoreService = mock(MessageStoreService.class);
+        final OasysSOAPClient oasysSOAPClient = mock(OasysSOAPClient.class);
+        final XmlMapper xmlMapper = mock(XmlMapper.class);
+
+        OffenderEvent event1 = OffenderEvent.builder().nomisEventType("OFF_RECEP_OASYS").eventDatetime(now.minusHours(3L)).build();
+        OffenderEvent event2 = OffenderEvent.builder().nomisEventType("OFF_RECEP_OASYS").eventDatetime(now.minusHours(2L)).build();
+        OffenderEvent event3 = OffenderEvent.builder().nomisEventType("OFF_RECEP_OASYS").eventDatetime(now.minusHours(1L)).build();
+
+        var events = ImmutableList.of(event1, event2, event3);
+
+        when(nomisApiServices.getEvents(any(LocalDateTime.class), any(LocalDateTime.class), eq(xtagTransformer))).thenReturn(Optional.of(events));
+        when(xtagTransformer.offenderReceptionXtagOf(eq(event1))).thenReturn(Optional.of(EventMessage.builder().build()));
+        when(xtagTransformer.offenderReceptionXtagOf(eq(event2))).thenReturn(Optional.of(EventMessage.builder().build()));
+        when(xtagTransformer.offenderReceptionXtagOf(eq(event3))).thenThrow(new NullPointerException("bang."));
+        final HttpResponse<String> httpResponse = mock(HttpResponse.class);
+        when(httpResponse.getStatus()).thenReturn(200);
+        when(oasysSOAPClient.oasysWebServiceResponseOf(any(String.class))).thenReturn(httpResponse);
+
+        when(xmlMapper.writeValueAsString(any(Object.class))).thenReturn("");
+
+//        when(messageStoreService.writeMessage(any(String.class), any(String.class), any(String.class), any(String.class), any(MessageStoreService.ProcStates.class), any(LocalDateTime.class))).thenReturn()
+
+        EventsPullerService eventsPullerService = new EventsPullerService(xmlMapper, xtagTransformer, oasysSOAPClient, null, messageStoreService, messageStoreRepository, 0, nomisApiServices);
+
+        eventsPullerService.pullEvents();
+
+        assertThat(eventsPullerService.getLastPulled()).isEqualTo(event2.getEventDatetime());
     }
 }

@@ -1,15 +1,13 @@
 package uk.gov.justice.digital.ndh.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.github.rholder.retry.RetryException;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
@@ -23,12 +21,9 @@ import uk.gov.justice.digital.ndh.service.exception.NDHMappingException;
 import uk.gov.justice.digital.ndh.service.exception.NomisAPIServiceError;
 import uk.gov.justice.digital.ndh.service.exception.OasysAPIServiceError;
 
-import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
@@ -39,9 +34,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class EventsPullerService {
 
-    public static final String OASYS = "OASYS";
-    private final NomisClient custodyApiClient;
-    private final ObjectMapper objectMapper;
     private final XmlMapper xmlMapper;
     private final XtagTransformer xtagTransformer;
     private final OasysSOAPClient oasysSOAPClient;
@@ -49,26 +41,26 @@ public class EventsPullerService {
     private final MessageStoreService messageStoreService;
     private final MessageStoreRepository messageStoreRepository;
     private final LocalDateTime startupPullFromDateTime;
-    private LocalDateTime lastPulled;
     private final int windbackSeconds;
+    private final NomisApiServices nomisApiServices;
+    private LocalDateTime lastPulled;
 
-    public EventsPullerService(NomisClient custodyApiClient,
-                               @Qualifier("globalObjectMapper") ObjectMapper objectMapper,
-                               XmlMapper xmlMapper,
+    @Autowired
+    public EventsPullerService(XmlMapper xmlMapper,
                                XtagTransformer xtagTransformer,
                                OasysSOAPClient oasysSOAPClient,
                                ExceptionLogService exceptionLogService,
                                MessageStoreService messageStoreService,
                                MessageStoreRepository messageStoreRepository,
-                               @Value("${windback.seconds:30}") int windbackSeconds) {
-        this.custodyApiClient = custodyApiClient;
-        this.objectMapper = objectMapper;
+                               @Value("${windback.seconds:30}") int windbackSeconds,
+                               NomisApiServices nomisApiServices) {
         this.xmlMapper = xmlMapper;
         this.xtagTransformer = xtagTransformer;
         this.oasysSOAPClient = oasysSOAPClient;
         this.exceptionLogService = exceptionLogService;
         this.messageStoreService = messageStoreService;
         this.messageStoreRepository = messageStoreRepository;
+        this.nomisApiServices = nomisApiServices;
         startupPullFromDateTime = getInitialPullFromDateTime();
         lastPulled = startupPullFromDateTime;
         this.windbackSeconds = windbackSeconds;
@@ -82,28 +74,12 @@ public class EventsPullerService {
         log.info("Pulling events from {} to {}", lastPulled, pullTo);
 
         try {
-            Optional<List<OffenderEvent>> maybeOffenderEvents = custodyApiClient
-                    .doGetWithRetry("events", ImmutableMap.of(
-                            "from", lastPulled.toString(),
-                            "to",   pullTo.toString(),
-                            "type", "BOOKING_NUMBER-CHANGED,OFFENDER_MOVEMENT-RECEPTION,OFFENDER_MOVEMENT-DISCHARGE,OFFENDER_BOOKING-CHANGED,OFFENDER_DETAILS-CHANGED,IMPRISONMENT_STATUS-CHANGED,SENTENCE_CALCULATION_DATES-CHANGED",
-                            "sortBy", "TIMESTAMP_ASC"))
-                    .filter(r -> r.getStatus() == HttpStatus.OK.value())
-                    .map(HttpResponse::getBody)
-                    .map(this::asEvents)
-                    .map(offenderEvents -> offenderEvents.stream()
-                            .filter(offenderEvent -> offenderEvent.getNomisEventType() != null)
-                            .filter(offenderEvent -> offenderEvent.getNomisEventType().endsWith(OASYS))
-                            .filter(offenderEvent -> !lastPulled.equals(offenderEvent.getEventDatetime()))
-                            .collect(Collectors.toList()));
+            Optional<List<OffenderEvent>> maybeOffenderEvents = nomisApiServices.getEvents(lastPulled, pullTo, xtagTransformer);
 
             if (maybeOffenderEvents.isPresent()) {
                 final List<OffenderEvent> events = maybeOffenderEvents.get();
                 log.info("Pulled {} events...", events.size());
                 handleEvents(events);
-                if (!events.isEmpty()) {
-                    lastPulled = latestTimestampOf(maybeOffenderEvents.get());
-                }
             } else {
                 log.info("No events to pull...");
             }
@@ -118,13 +94,10 @@ public class EventsPullerService {
         }
     }
 
-    private LocalDateTime latestTimestampOf(List<OffenderEvent> offenderEvents) {
-        return offenderEvents.stream().max(Comparator.comparing(OffenderEvent::getEventDatetime)).map(OffenderEvent::getEventDatetime).orElse(null);
-    }
-
-    private void handleEvents(List<OffenderEvent> events) throws ExecutionException, UnirestException, JsonProcessingException, OasysAPIServiceError, RetryException {
+    private void handleEvents(List<OffenderEvent> events) throws ExecutionException, RetryException, OasysAPIServiceError, UnirestException, JsonProcessingException {
         for (OffenderEvent offenderEvent : events) {
             sendToOAsys(xtagEventMessageOf(offenderEvent));
+            lastPulled = offenderEvent.getEventDatetime();
         }
     }
 
@@ -196,16 +169,6 @@ public class EventsPullerService {
                 .findFirst().orElse("n/a");
     }
 
-
-    private List<OffenderEvent> asEvents(String jsonStr) {
-        try {
-            return Arrays.asList(objectMapper.readValue(jsonStr, OffenderEvent[].class));
-        } catch (IOException e) {
-            log.error("Failed to turn json {} into OffenderEvent list.", e.getMessage());
-            return Collections.emptyList();
-        }
-    }
-
     private LocalDateTime getInitialPullFromDateTime() {
         final Optional<MsgStore> maybeLatestMsg = Optional.ofNullable(messageStoreRepository.findFirstByProcessNameOrderByMsgStoreSeqDesc("XTAG").orElse(messageStoreRepository.findFirstByProcessNameOrderByMsgStoreSeqDesc("OASys-REvents").orElse(null)));
 
@@ -215,5 +178,9 @@ public class EventsPullerService {
 
         log.info("Startup pulling from {} which was derived from {}", pullFrom.toString(), maybeLatestMsg.map(MsgStore::toString).orElse("time now minus one day"));
         return pullFrom;
+    }
+
+    public LocalDateTime getLastPulled() {
+        return lastPulled;
     }
 }
