@@ -28,6 +28,7 @@ import uk.gov.justice.digital.ndh.service.ExceptionLogService;
 import uk.gov.justice.digital.ndh.service.MappingService;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -402,6 +403,18 @@ public class OffenderTransformerTest {
 
         assertThat(myDiff.hasDifferences()).isFalse();
 
+    }
+
+    @Test
+    public void firstNonNullDateOfReturnsDateComponentsOnly() {
+        var today = LocalDate.now();
+        var tomorrow = today.plusDays(1L);
+
+        var now = LocalDateTime.now();
+
+        assertThat(OffenderTransformer.firstNonNullDateOf.apply(now, null)).isEqualTo(Optional.of(today));
+        assertThat(OffenderTransformer.firstNonNullDateOf.apply(null, now)).isEqualTo(Optional.of(today));
+        assertThat(OffenderTransformer.firstNonNullDateOf.apply(now.plusDays(1L), now)).isEqualTo(Optional.of(tomorrow));
     }
 
 

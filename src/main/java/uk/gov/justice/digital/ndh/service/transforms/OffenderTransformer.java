@@ -536,24 +536,22 @@ public class OffenderTransformer {
     }
 
     private String conditionalReleaseDateOf(Optional<SentenceCalculation> maybeSentenceCalc) {
-        return maybeSentenceCalc.flatMap(sc -> firstNonNullDateOf(sc.getCrdOverridedDate(), sc.getCrdCalculatedDate())).map(LocalDateTime::toString).orElse(null);
+        return maybeSentenceCalc.flatMap(sc -> firstNonNullDateOf.apply(sc.getCrdOverridedDate(), sc.getCrdCalculatedDate())).map(LocalDate::toString).orElse(null);
     }
 
     private String sentenceExpiryDateOf(Optional<SentenceCalculation> maybeSentenceCalc) {
-        return maybeSentenceCalc.flatMap(sc -> firstNonNullDateOf(sc.getSedOverridedDate(), sc.getSedCalculatedDate())).map(LocalDateTime::toString).orElse(null);
+        return maybeSentenceCalc.flatMap(sc -> firstNonNullDateOf.apply(sc.getSedOverridedDate(), sc.getSedCalculatedDate())).map(LocalDate::toString).orElse(null);
     }
 
     private String licenceExpiryDateOf(Optional<SentenceCalculation> maybeSentenceCalc) {
-        return maybeSentenceCalc.flatMap(sc -> firstNonNullDateOf(sc.getLedOverridedDate(), sc.getLedCalculatedDate())).map(LocalDateTime::toString).orElse(null);
+        return maybeSentenceCalc.flatMap(sc -> firstNonNullDateOf.apply(sc.getLedOverridedDate(), sc.getLedCalculatedDate())).map(LocalDate::toString).orElse(null);
     }
 
     private String curfewDateOf(Optional<SentenceCalculation> maybeSentenceCalc) {
-        return maybeSentenceCalc.flatMap(sc -> firstNonNullDateOf(sc.getHdcadOverridedDate(), sc.getHdcadCalculatedDate())).map(LocalDateTime::toString).orElse(null);
+        return maybeSentenceCalc.flatMap(sc -> firstNonNullDateOf.apply(sc.getHdcadOverridedDate(), sc.getHdcadCalculatedDate())).map(LocalDate::toString).orElse(null);
     }
 
-    public Optional<LocalDateTime> firstNonNullDateOf(LocalDateTime a, LocalDateTime b) {
-        return Optional.ofNullable(Optional.ofNullable(a).orElse(b));
-    }
+    public static BiFunction<LocalDateTime, LocalDateTime, Optional<LocalDate>> firstNonNullDateOf = (a, b) -> Optional.ofNullable(Optional.ofNullable(a).orElse(b)).map(LocalDateTime::toLocalDate);
 
     private String appealPendingOf(Optional<List<CourtEvent>> maybeCourtEvents, Long bookingId) {
         return maybeCourtEvents.flatMap(
