@@ -17,6 +17,8 @@ import uk.gov.justice.digital.ndh.api.delius.request.GetSubSetOffenderEventReque
 import uk.gov.justice.digital.ndh.api.delius.response.GetSubSetOffenderDetailsResponse;
 import uk.gov.justice.digital.ndh.api.delius.response.SubSetEvent;
 import uk.gov.justice.digital.ndh.api.delius.response.SubSetOffender;
+import uk.gov.justice.digital.ndh.api.nomis.Sentence;
+import uk.gov.justice.digital.ndh.api.nomis.SentenceCalculation;
 import uk.gov.justice.digital.ndh.api.oasys.request.Header;
 import uk.gov.justice.digital.ndh.api.oasys.request.InitialSearchRequest;
 import uk.gov.justice.digital.ndh.api.oasys.response.InitialSearchResponse;
@@ -378,15 +380,15 @@ public class OffenderTransformerTest {
 
         when(mappingService.targetValueOf("MAG", COURT_CODE_TYPE)).thenReturn("MC");
         when(mappingService.targetValueOf("201", SENTENCE_CODE_TYPE)).thenReturn("910");
-        when(requirementLookupRepository.findByReqTypeAndReqCodeAndSubCode("N", "X","X02")).thenReturn(
+        when(requirementLookupRepository.findByReqTypeAndReqCodeAndSubCode("N", "X", "X02")).thenReturn(
                 Optional.of(RequirementLookup.builder()
-                    .activityDesc("Named Licenced Premises")
-                    .reqType("N")
-                .reqCode("X")
-                .subCode("X02")
-                .sentenceAttributeCat("CJA_REQUIREMENT")
-                .sentenceAttributeElm("EXCLUSION")
-                .build()));
+                        .activityDesc("Named Licenced Premises")
+                        .reqType("N")
+                        .reqCode("X")
+                        .subCode("X02")
+                        .sentenceAttributeCat("CJA_REQUIREMENT")
+                        .sentenceAttributeElm("EXCLUSION")
+                        .build()));
 
         OffenderTransformer offenderTransformer = new OffenderTransformer(new CommonTransformer(xmlMapper, mock(ObjectMapper.class), mock(ExceptionLogService.class)), mappingService, requirementLookupRepository, mock(ObjectMapper.class));
 
@@ -415,6 +417,53 @@ public class OffenderTransformerTest {
         assertThat(OffenderTransformer.firstNonNullDateOf.apply(now, null)).isEqualTo(Optional.of(today));
         assertThat(OffenderTransformer.firstNonNullDateOf.apply(null, now)).isEqualTo(Optional.of(today));
         assertThat(OffenderTransformer.firstNonNullDateOf.apply(now.plusDays(1L), now)).isEqualTo(Optional.of(tomorrow));
+    }
+
+    @Test
+    public void sentenceLengthInDaysReturnsEmptyWhenNoReleaseDate() {
+        assertThat(OffenderTransformer.sentenceLengthInDaysOf(
+                Optional.of(
+                        Sentence
+                                .builder()
+                                .startDate(LocalDate.now())
+                                .build()), Optional.of(SentenceCalculation.builder().build()))).isEmpty();
+    }
+
+    @Test
+    public void sentenceLengthInDaysReturnsEmptyWhenNoStartDate() {
+        assertThat(OffenderTransformer.sentenceLengthInDaysOf(
+                Optional.of(
+                        Sentence
+                                .builder()
+                                .build()),
+                Optional.of(SentenceCalculation.builder().releaseDate(LocalDate.now()).build()))).isEmpty();
+    }
+
+    @Test
+    public void sentenceLengthInDaysReturnsEmptyWhenNoSentence() {
+        assertThat(OffenderTransformer.sentenceLengthInDaysOf(
+                Optional.empty(), Optional.of(SentenceCalculation.builder().releaseDate(LocalDate.now()).build()))).isEmpty();
+    }
+
+    @Test
+    public void sentenceLengthInDaysReturnsEmptyWhenNoSentenceCalculation() {
+        assertThat(OffenderTransformer.sentenceLengthInDaysOf(
+                Optional.of(
+                        Sentence
+                                .builder()
+                                .build()), Optional.empty()).isEmpty());
+    }
+
+    @Test
+    public void sentenceLengthInDaysBehavesAppropriately() {
+        final LocalDate today = LocalDate.now();
+        assertThat(OffenderTransformer.sentenceLengthInDaysOf(
+                Optional.of(
+                        Sentence
+                                .builder()
+                                .startDate(today)
+                                .build()),
+                Optional.of(SentenceCalculation.builder().releaseDate(today.plusDays(7L)).build()))).isEqualTo(Optional.of(7L));
     }
 
 

@@ -78,15 +78,15 @@ public class OffenderTransformer {
     public static final String NO = "NO";
     public static final String YES = "YES";
     public static final long SECURITY_CATEGORY_CODE_TYPE = 13L;
-    private static final String ADDITIONAL_SENTENCING_REQUIREMENTS = "ADDITIONAL_SENTENCING_REQUIREMENTS";
     public static final long RELEASE_NAME_CODE_TYPE = 34L;
+    private static final String ADDITIONAL_SENTENCING_REQUIREMENTS = "ADDITIONAL_SENTENCING_REQUIREMENTS";
+    public static BiFunction<LocalDateTime, LocalDateTime, Optional<LocalDate>> firstNonNullDateOf = (a, b) -> Optional.ofNullable(Optional.ofNullable(a).orElse(b)).map(LocalDateTime::toLocalDate);
     public final BiFunction<Optional<SoapEnvelopeSpec1_2>, Optional<SoapEnvelopeSpec1_2>, Optional<SoapEnvelopeSpec1_2>> initialSearchResponseTransform;
     public final BiFunction<Optional<SoapEnvelopeSpec1_2>, Optional<SoapEnvelopeSpec1_2>, Optional<SoapEnvelopeSpec1_2>> offenderDetailsResponseTransform;
     private final CommonTransformer commonTransformer;
     private final MappingService mappingService;
     private final RequirementLookupRepository requirementLookupRepository;
     private final ObjectMapper objectMapper;
-
 
     @Autowired
     public OffenderTransformer(CommonTransformer commonTransformer,
@@ -551,8 +551,6 @@ public class OffenderTransformer {
         return maybeSentenceCalc.flatMap(sc -> firstNonNullDateOf.apply(sc.getHdcadOverridedDate(), sc.getHdcadCalculatedDate())).map(LocalDate::toString).orElse(null);
     }
 
-    public static BiFunction<LocalDateTime, LocalDateTime, Optional<LocalDate>> firstNonNullDateOf = (a, b) -> Optional.ofNullable(Optional.ofNullable(a).orElse(b)).map(LocalDateTime::toLocalDate);
-
     private String appealPendingOf(Optional<List<CourtEvent>> maybeCourtEvents, Long bookingId) {
         return maybeCourtEvents.flatMap(
                 courtEvents -> courtEvents
@@ -662,12 +660,14 @@ public class OffenderTransformer {
         return "310";
     }
 
-    private Optional<Long> sentenceLengthInDaysOf
+    public static Optional<Long> sentenceLengthInDaysOf
             (Optional<Sentence> maybeSentence, Optional<SentenceCalculation> maybeSentenceCalc) {
 
         return maybeSentence
-                .map(Sentence::getStartDate)
-                .flatMap(startDate -> maybeSentenceCalc.map(sc -> DAYS.between(startDate, sc.getReleaseDate())));
+                .flatMap(s -> Optional.ofNullable(s.getStartDate()))
+                .flatMap(startDate -> maybeSentenceCalc
+                        .filter(sc -> sc.getReleaseDate() != null)
+                        .map(sc -> DAYS.between(startDate, sc.getReleaseDate())));
     }
 
     private String sentenceDateOf(Optional<Sentence> maybeSentence) {
