@@ -7,4 +7,4 @@ RUN apt-get install -y telnet
 
 COPY build/libs/oasys-ndh-delius-replacement*.jar /root/oasys-ndh-delius-replacement.jar
 
-ENTRYPOINT ["/usr/bin/java", "-jar", "/root/oasys-ndh-delius-replacement.jar"]
+ENTRYPOINT ["java", "-jar", "/root/oasys-ndh-delius-replacement.jar"]
