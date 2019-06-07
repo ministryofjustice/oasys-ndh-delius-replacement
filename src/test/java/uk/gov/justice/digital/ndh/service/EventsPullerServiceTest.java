@@ -10,6 +10,8 @@ import org.junit.Test;
 import uk.gov.justice.digital.ndh.ThatsNotMyNDH;
 import uk.gov.justice.digital.ndh.api.nomis.OffenderEvent;
 import uk.gov.justice.digital.ndh.api.oasys.xtag.EventMessage;
+import uk.gov.justice.digital.ndh.api.soap.SoapBody;
+import uk.gov.justice.digital.ndh.api.soap.SoapEnvelopeSpec1_1;
 import uk.gov.justice.digital.ndh.jpa.entity.MsgStore;
 import uk.gov.justice.digital.ndh.jpa.repository.MessageStoreRepository;
 import uk.gov.justice.digital.ndh.service.exception.NomisAPIServiceError;
@@ -104,12 +106,42 @@ public class EventsPullerServiceTest {
 
         when(xmlMapper.writeValueAsString(any(Object.class))).thenReturn("");
 
-//        when(messageStoreService.writeMessage(any(String.class), any(String.class), any(String.class), any(String.class), any(MessageStoreService.ProcStates.class), any(LocalDateTime.class))).thenReturn()
-
         EventsPullerService eventsPullerService = new EventsPullerService(xmlMapper, xtagTransformer, oasysSOAPClient, null, messageStoreService, messageStoreRepository, 0, nomisApiServices);
 
         eventsPullerService.pullEvents();
 
         assertThat(eventsPullerService.getLastPulled()).isEqualTo(event2.getEventDatetime());
+    }
+
+    @Test
+    public void soapIsSentToOAsys() throws OasysAPIServiceError, UnirestException, JsonProcessingException {
+        final MessageStoreRepository messageStoreRepository = mock(MessageStoreRepository.class);
+        final MessageStoreService messageStoreService = mock(MessageStoreService.class);
+        final OasysSOAPClient oasysSOAPClient = mock(OasysSOAPClient.class);
+
+        final ThatsNotMyNDH thatsNotMyNDH = new ThatsNotMyNDH();
+        XmlMapper xmlMapper = thatsNotMyNDH.xmlMapper(thatsNotMyNDH.xmlConverter());
+        EventsPullerService eventsPullerService = new EventsPullerService(xmlMapper, null, oasysSOAPClient, null, messageStoreService, messageStoreRepository, 0, null);
+
+        when(messageStoreRepository.findFirstByProcessNameOrderByMsgStoreSeqDesc(any(String.class))).thenReturn(Optional.of(MsgStore.builder().msgTimestamp(Timestamp.from(Instant.now())).build()));
+        final HttpResponse<String> httpResponse = mock(HttpResponse.class);
+        when(httpResponse.getStatus()).thenReturn(200);
+        when(oasysSOAPClient.oasysWebServiceResponseOf(any(String.class))).thenReturn(httpResponse);
+
+        final LocalDateTime now = LocalDateTime.now();
+        doAnswer(invocation -> {
+            assertThat(invocation.<LocalDateTime>getArgument(5)).isEqualTo(now);
+            return null;
+        }).when(messageStoreService).writeMessage(any(String.class), any(String.class), any(String.class), any(String.class), any(MessageStoreService.ProcStates.class), any(LocalDateTime.class));
+
+        final EventMessage eventMessage = EventMessage.builder()
+                .rawEventDateTime(now)
+                .build();
+
+        var expected = xmlMapper.writeValueAsString(SoapEnvelopeSpec1_1.builder().body(SoapBody.builder().eventMessage(eventMessage).build()).build());
+        eventsPullerService.sendToOAsys(Optional.of(eventMessage));
+
+
+        verify(oasysSOAPClient).oasysWebServiceResponseOf(expected);
     }
 }

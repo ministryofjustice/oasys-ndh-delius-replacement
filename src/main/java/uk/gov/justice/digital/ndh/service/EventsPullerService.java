@@ -15,6 +15,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import uk.gov.justice.digital.ndh.api.nomis.OffenderEvent;
 import uk.gov.justice.digital.ndh.api.oasys.xtag.EventMessage;
+import uk.gov.justice.digital.ndh.api.soap.SoapBody;
+import uk.gov.justice.digital.ndh.api.soap.SoapEnvelopeSpec1_1;
 import uk.gov.justice.digital.ndh.jpa.entity.MsgStore;
 import uk.gov.justice.digital.ndh.jpa.repository.MessageStoreRepository;
 import uk.gov.justice.digital.ndh.service.exception.NDHMappingException;
@@ -104,7 +106,8 @@ public class EventsPullerService {
     public void sendToOAsys(Optional<EventMessage> maybeEventMessage) throws JsonProcessingException, UnirestException, OasysAPIServiceError {
         if (maybeEventMessage.isPresent()) {
             final EventMessage eventMessage = maybeEventMessage.get();
-            final String oasysSoapXml = xmlMapper.writeValueAsString(eventMessage);
+            final SoapEnvelopeSpec1_1 soapEnvelope = SoapEnvelopeSpec1_1.builder().body(SoapBody.builder().eventMessage(eventMessage).build()).build();
+            final String oasysSoapXml = xmlMapper.writeValueAsString(soapEnvelope);
 
             messageStoreService.writeMessage(
                     oasysSoapXml,

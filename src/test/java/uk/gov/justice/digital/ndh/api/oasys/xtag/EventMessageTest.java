@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.ndh.api.oasys.xtag;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
@@ -106,8 +105,8 @@ public class EventMessageTest {
                         .build())
                 .build();
 
-        XmlMapper xmlMapper = new XmlMapper();
-        xmlMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        final ThatsNotMyNDH thatsNotMyNDH = new ThatsNotMyNDH();
+        XmlMapper xmlMapper = thatsNotMyNDH.xmlMapper(thatsNotMyNDH.xmlConverter());
 
         String actual = xmlMapper.writeValueAsString(oasysRequest);
 
