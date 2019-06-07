@@ -62,6 +62,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.time.temporal.ChronoUnit.DAYS;
@@ -361,19 +362,22 @@ public class OffenderTransformer {
     }
 
     public String oasysGenderOf(String gender) {
-        return Optional.ofNullable(gender).map(this::mapGender).orElse(null);
+        return Optional.ofNullable(gender).map(mapGender).orElse(null);
     }
 
-    private String mapGender(String g) {
+    public static Function<String, String> mapGender = (s) -> {
+        var g = s.trim();
         switch (g) {
             case "M":
                 return "1";
             case "F":
                 return "2";
+            case "O":
+                return "3";
             default:
                 return "9";
         }
-    }
+    };
 
     private List<SubSetEvent> subsetEventsOf(List<uk.gov.justice.digital.ndh.api.delius.response.SubSetEvent> subSetEvents) {
         return subSetEvents.stream().map(

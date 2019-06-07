@@ -466,5 +466,18 @@ public class OffenderTransformerTest {
                 Optional.of(SentenceCalculation.builder().releaseDate(today.plusDays(7L)).build()))).isEqualTo(Optional.of(7L));
     }
 
+    @Test
+    public void genderIsMappedAppropriately() {
+        assertThat(OffenderTransformer.mapGender.apply("M")).isEqualTo("1");
+        assertThat(OffenderTransformer.mapGender.apply("F")).isEqualTo("2");
+        assertThat(OffenderTransformer.mapGender.apply("O")).isEqualTo("3");
+        assertThat(OffenderTransformer.mapGender.apply("M ")).isEqualTo("1");
+        assertThat(OffenderTransformer.mapGender.apply("F ")).isEqualTo("2");
+        assertThat(OffenderTransformer.mapGender.apply("O ")).isEqualTo("3");
+
+        assertThat(OffenderTransformer.mapGender.apply("dbdsjgfdhjsfgs")).isEqualTo("9");
+        assertThat(OffenderTransformer.mapGender.apply("")).isEqualTo("9");
+
+    }
 
 }
