@@ -302,9 +302,11 @@ public class OffenderTransformer {
                 .orElse(mainCategory);
     }
 
-    private String oasysLanguageOf(String language) {
-        return Optional.ofNullable(language).map(lang -> mappingService.targetValueOf(language, LANGUAGE_CODE_TYPE)).orElse(null);
+    public String oasysLanguageOf(String language) {
+        return Optional.ofNullable(language).map(lang -> stripLeadingZeroes.apply(lang)).map(lang -> mappingService.targetValueOf(lang, LANGUAGE_CODE_TYPE)).orElse(null);
     }
+
+    public static Function<String,String> stripLeadingZeroes = (s) -> s.replaceAll("^0+", "");
 
     private String releaseDateOf(DeliusOffenderDetailsResponse deliusOffenderDetailsResponse) {
         return Optional.ofNullable(deliusOffenderDetailsResponse.getEvent())

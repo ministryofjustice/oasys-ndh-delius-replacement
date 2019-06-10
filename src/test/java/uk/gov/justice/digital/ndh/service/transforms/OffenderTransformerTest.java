@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
+import org.springframework.core.io.ClassPathResource;
 import org.xmlunit.builder.DiffBuilder;
 import org.xmlunit.builder.Input;
 import org.xmlunit.diff.Diff;
@@ -24,6 +25,7 @@ import uk.gov.justice.digital.ndh.api.oasys.request.InitialSearchRequest;
 import uk.gov.justice.digital.ndh.api.oasys.response.InitialSearchResponse;
 import uk.gov.justice.digital.ndh.api.soap.SoapBody;
 import uk.gov.justice.digital.ndh.api.soap.SoapEnvelopeSpec1_2;
+import uk.gov.justice.digital.ndh.jpa.repository.mapping.MappingRepositoryCsvBacked;
 import uk.gov.justice.digital.ndh.jpa.repository.requirementLookup.RequirementLookup;
 import uk.gov.justice.digital.ndh.jpa.repository.requirementLookup.RequirementLookupRepository;
 import uk.gov.justice.digital.ndh.service.ExceptionLogService;
@@ -480,4 +482,16 @@ public class OffenderTransformerTest {
 
     }
 
+    @Test
+    public void oasysLanguageOfStripsLeadingZeros() throws IOException {
+        final OffenderTransformer transformer = new OffenderTransformer(COMMON_TRANSFORMER, new MappingService(new MappingRepositoryCsvBacked(new ClassPathResource("mapping_code_data.csv"))), mock(RequirementLookupRepository.class), mock(ObjectMapper.class));
+
+        assertThat(transformer.oasysLanguageOf("9")).isEqualTo("ben");
+        assertThat(transformer.oasysLanguageOf("09")).isEqualTo("ben");
+        assertThat(transformer.oasysLanguageOf("009")).isEqualTo("ben");
+        assertThat(transformer.oasysLanguageOf("000000000000000000009")).isEqualTo("ben");
+
+
+
+    }
 }
