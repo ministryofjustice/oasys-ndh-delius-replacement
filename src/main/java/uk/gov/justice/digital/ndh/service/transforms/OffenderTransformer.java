@@ -381,14 +381,14 @@ public class OffenderTransformer {
         }
     };
 
-    private List<SubSetEvent> subsetEventsOf(List<uk.gov.justice.digital.ndh.api.delius.response.SubSetEvent> subSetEvents) {
-        return subSetEvents.stream().map(
+    public List<SubSetEvent> subsetEventsOf(List<uk.gov.justice.digital.ndh.api.delius.response.SubSetEvent> subSetEvents) {
+        return Optional.ofNullable(subSetEvents).map(s -> s.stream().map(
                 subSetEvent -> SubSetEvent.builder()
                         .eventNumber(subSetEvent.getEventNumber())
                         .sentenceDate(subSetEvent.getCommencementDate())
                         .sentenceCode(oasysSentenceDescriptionOf(subSetEvent.getOrderType()))
                         .build()
-        ).collect(Collectors.toList());
+        ).collect(Collectors.toList())).orElse(null);
     }
 
     private String oasysSentenceDescriptionOf(String orderType) {

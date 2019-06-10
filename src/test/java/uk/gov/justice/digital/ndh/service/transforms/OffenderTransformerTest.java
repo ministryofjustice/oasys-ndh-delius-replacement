@@ -490,8 +490,12 @@ public class OffenderTransformerTest {
         assertThat(transformer.oasysLanguageOf("09")).isEqualTo("ben");
         assertThat(transformer.oasysLanguageOf("009")).isEqualTo("ben");
         assertThat(transformer.oasysLanguageOf("000000000000000000009")).isEqualTo("ben");
+    }
 
+    @Test
+    public void subsetEventsOfHandlesNull() throws IOException {
+        final OffenderTransformer transformer = new OffenderTransformer(COMMON_TRANSFORMER, new MappingService(new MappingRepositoryCsvBacked(new ClassPathResource("mapping_code_data.csv"))), mock(RequirementLookupRepository.class), mock(ObjectMapper.class));
 
-
+        assertThat(transformer.subsetEventsOf(null)).isNull();
     }
 }
