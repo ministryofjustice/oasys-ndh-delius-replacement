@@ -446,11 +446,11 @@ public class OasysOffenderService extends RequestResponseService {
         );
     }
 
-    private Optional<AgencyLocation> sentencingAgencyLocationOf(Optional<List<CourtEvent>> maybeCourtEvents) {
+    public static Optional<AgencyLocation> sentencingAgencyLocationOf(Optional<List<CourtEvent>> maybeCourtEvents) {
         return maybeCourtEvents
                 .flatMap(ces -> ces
                         .stream()
-                        .filter(ce -> "SENTENCE".equals(ce.getComments()))
+                        .filter(ce -> "SENT".equals(ce.getCourtEventType()))
                         .findFirst())
                 .flatMap(ce -> Optional.of(ce.getAgencyLocation()));
     }
