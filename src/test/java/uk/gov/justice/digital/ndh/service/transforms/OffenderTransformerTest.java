@@ -496,8 +496,8 @@ public class OffenderTransformerTest {
         final SentenceCalculation sentenceCalculationWithNeither = SentenceCalculation.builder().build();
 
         assertThat(OffenderTransformer.sentenceLengthInDaysOf(Optional.of(sentence), Optional.of(sentenceCalculationWithSed))).isPresent();
-        assertThat(OffenderTransformer.sentenceLengthInDaysOf(Optional.of(sentence), Optional.of(sentenceCalculationWithSed)).get()).isEqualTo(100L);
-        assertThat(OffenderTransformer.sentenceLengthInDaysOf(Optional.of(sentence), Optional.of(sentenceCalculationWithSedOverride)).get()).isEqualTo(200L);
+        assertThat(OffenderTransformer.sentenceLengthInDaysOf(Optional.of(sentence), Optional.of(sentenceCalculationWithSed)).get()).isEqualTo(101L);
+        assertThat(OffenderTransformer.sentenceLengthInDaysOf(Optional.of(sentence), Optional.of(sentenceCalculationWithSedOverride)).get()).isEqualTo(201L);
 
         assertThat(OffenderTransformer.sentenceLengthInDaysOf(Optional.empty(), Optional.of(sentenceCalculationWithSedOverride))).isEmpty();
         assertThat(OffenderTransformer.sentenceLengthInDaysOf(Optional.of(sentence), Optional.empty())).isEmpty();
