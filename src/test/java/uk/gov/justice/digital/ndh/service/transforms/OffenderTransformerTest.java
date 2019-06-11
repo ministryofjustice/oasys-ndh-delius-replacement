@@ -457,18 +457,6 @@ public class OffenderTransformerTest {
     }
 
     @Test
-    public void sentenceLengthInDaysBehavesAppropriately() {
-        final LocalDate today = LocalDate.now();
-        assertThat(OffenderTransformer.sentenceLengthInDaysOf(
-                Optional.of(
-                        Sentence
-                                .builder()
-                                .startDate(today)
-                                .build()),
-                Optional.of(SentenceCalculation.builder().releaseDate(today.plusDays(7L)).build()))).isEqualTo(Optional.of(7L));
-    }
-
-    @Test
     public void genderIsMappedAppropriately() {
         assertThat(OffenderTransformer.mapGender.apply("M")).isEqualTo("1");
         assertThat(OffenderTransformer.mapGender.apply("F")).isEqualTo("2");
@@ -501,7 +489,7 @@ public class OffenderTransformerTest {
 
     @Test
     public void sentenceLengthUsesSedAppropriately() {
-    LocalDate today = LocalDate.now();
+        LocalDate today = LocalDate.now();
         final Sentence sentence = Sentence.builder().startDate(today).build();
         final SentenceCalculation sentenceCalculationWithSed = SentenceCalculation.builder().sedCalculatedDate(today.plusDays(100L).atStartOfDay()).build();
         final SentenceCalculation sentenceCalculationWithSedOverride = SentenceCalculation.builder().sedOverridedDate(today.plusDays(200L).atStartOfDay()).build();
