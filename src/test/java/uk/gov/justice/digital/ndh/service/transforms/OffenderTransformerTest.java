@@ -504,4 +504,20 @@ public class OffenderTransformerTest {
         assertThat(OffenderTransformer.sentenceLengthInDaysOf(Optional.of(sentence), Optional.of(sentenceCalculationWithNeither))).isEmpty();
 
     }
+
+    @Test
+    public void curfewDateUsesHdcEligibilityDateAppropriately() {
+        final OffenderTransformer transformer = new OffenderTransformer(COMMON_TRANSFORMER, mock(MappingService.class), mock(RequirementLookupRepository.class), mock(ObjectMapper.class));
+        LocalDate today = LocalDate.now();
+        LocalDate tomorrow = today.plusDays(1L);
+        assertThat(transformer.curfewDateOf(Optional.of(SentenceCalculation.builder().hdcedCalculatedDate(today.atStartOfDay()).build()))).isEqualTo(today.toString());
+        assertThat(transformer.curfewDateOf(Optional.of(SentenceCalculation.builder()
+                .hdcedCalculatedDate(today.atStartOfDay())
+                .hdcedOverridedDate(tomorrow.atStartOfDay())
+                .build())))
+                .isEqualTo(tomorrow.toString());
+        assertThat(transformer.curfewDateOf(Optional.of(SentenceCalculation.builder()
+                .build()))).isNull();
+
+    }
 }

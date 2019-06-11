@@ -553,8 +553,8 @@ public class OffenderTransformer {
         return maybeSentenceCalc.flatMap(sc -> firstNonNullDateOf.apply(sc.getLedOverridedDate(), sc.getLedCalculatedDate())).map(LocalDate::toString).orElse(null);
     }
 
-    private String curfewDateOf(Optional<SentenceCalculation> maybeSentenceCalc) {
-        return maybeSentenceCalc.flatMap(sc -> firstNonNullDateOf.apply(sc.getHdcadOverridedDate(), sc.getHdcadCalculatedDate())).map(LocalDate::toString).orElse(null);
+    public String curfewDateOf(Optional<SentenceCalculation> maybeSentenceCalc) {
+        return maybeSentenceCalc.flatMap(sc -> firstNonNullDateOf.apply(sc.getHdcedOverridedDate(), sc.getHdcedCalculatedDate())).map(LocalDate::toString).orElse(null);
     }
 
     private String appealPendingOf(Optional<List<CourtEvent>> maybeCourtEvents, Long bookingId) {
