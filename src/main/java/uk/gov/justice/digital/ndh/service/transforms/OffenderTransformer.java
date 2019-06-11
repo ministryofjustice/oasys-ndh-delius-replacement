@@ -672,8 +672,8 @@ public class OffenderTransformer {
         return maybeSentence
                 .flatMap(s -> Optional.ofNullable(s.getStartDate()))
                 .flatMap(startDate -> maybeSentenceCalc
-                        .filter(sc -> sc.getReleaseDate() != null)
-                        .map(sc -> DAYS.between(startDate, sc.getReleaseDate())));
+                        .filter(sc -> sc.getSedCalculatedDate() != null || sc.getSedOverridedDate() != null)
+                        .map(sc -> DAYS.between(startDate, firstNonNullDateOf.apply(sc.getSedOverridedDate(), sc.getSedCalculatedDate()).get())));
     }
 
     private String sentenceDateOf(Optional<Sentence> maybeSentence) {

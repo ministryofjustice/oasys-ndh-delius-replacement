@@ -498,4 +498,22 @@ public class OffenderTransformerTest {
 
         assertThat(transformer.subsetEventsOf(null)).isNull();
     }
+
+    @Test
+    public void sentenceLengthUsesSedAppropriately() {
+    LocalDate today = LocalDate.now();
+        final Sentence sentence = Sentence.builder().startDate(today).build();
+        final SentenceCalculation sentenceCalculationWithSed = SentenceCalculation.builder().sedCalculatedDate(today.plusDays(100L).atStartOfDay()).build();
+        final SentenceCalculation sentenceCalculationWithSedOverride = SentenceCalculation.builder().sedOverridedDate(today.plusDays(200L).atStartOfDay()).build();
+        final SentenceCalculation sentenceCalculationWithNeither = SentenceCalculation.builder().build();
+
+        assertThat(OffenderTransformer.sentenceLengthInDaysOf(Optional.of(sentence), Optional.of(sentenceCalculationWithSed))).isPresent();
+        assertThat(OffenderTransformer.sentenceLengthInDaysOf(Optional.of(sentence), Optional.of(sentenceCalculationWithSed)).get()).isEqualTo(100L);
+        assertThat(OffenderTransformer.sentenceLengthInDaysOf(Optional.of(sentence), Optional.of(sentenceCalculationWithSedOverride)).get()).isEqualTo(200L);
+
+        assertThat(OffenderTransformer.sentenceLengthInDaysOf(Optional.empty(), Optional.of(sentenceCalculationWithSedOverride))).isEmpty();
+        assertThat(OffenderTransformer.sentenceLengthInDaysOf(Optional.of(sentence), Optional.empty())).isEmpty();
+        assertThat(OffenderTransformer.sentenceLengthInDaysOf(Optional.of(sentence), Optional.of(sentenceCalculationWithNeither))).isEmpty();
+
+    }
 }
