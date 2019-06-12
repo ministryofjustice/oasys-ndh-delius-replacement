@@ -50,6 +50,7 @@ import uk.gov.justice.digital.ndh.api.soap.SoapHeader;
 import uk.gov.justice.digital.ndh.jpa.repository.requirementLookup.RequirementLookup;
 import uk.gov.justice.digital.ndh.jpa.repository.requirementLookup.RequirementLookupRepository;
 import uk.gov.justice.digital.ndh.service.MappingService;
+import uk.gov.justice.digital.ndh.service.exception.NDHMappingException;
 import uk.gov.justice.digital.ndh.service.exception.NDHRequirementLookupException;
 
 import java.io.IOException;
@@ -491,10 +492,15 @@ public class OffenderTransformer {
                 .build();
     }
 
-    private String releaseTypeOf(Optional<SentenceCalculation> maybeSentenceCalc) {
-        return maybeSentenceCalc.flatMap(sc -> Optional.ofNullable(sc.getNonDtoReleaseType()))
-                .map(rt -> mappingService.targetValueOf(rt, RELEASE_NAME_CODE_TYPE))
-                .orElse(null);
+    public String releaseTypeOf(Optional<SentenceCalculation> maybeSentenceCalc) {
+        try {
+            return maybeSentenceCalc.flatMap(sc -> Optional.ofNullable(sc.getNonDtoReleaseType()))
+                    .map(rt -> mappingService.targetValueOf(rt, RELEASE_NAME_CODE_TYPE))
+                    .orElse(null);
+        } catch (NDHMappingException ndhme) {
+            log.warn("Mapping fail for release type, returning null.");
+        }
+        return null;
     }
 
     private String f2052AlertOf(Optional<List<Alert>> maybeF2052Alerts) {

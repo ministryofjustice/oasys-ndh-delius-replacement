@@ -520,4 +520,11 @@ public class OffenderTransformerTest {
                 .build()))).isNull();
 
     }
+
+    @Test
+    public void releaseTypeOfReturnsNullIfUnmapped() throws IOException {
+        final OffenderTransformer transformer = new OffenderTransformer(COMMON_TRANSFORMER, new MappingService(new MappingRepositoryCsvBacked(new ClassPathResource("mapping_code_data.csv"))), mock(RequirementLookupRepository.class), mock(ObjectMapper.class));
+
+        assertThat(transformer.releaseTypeOf(Optional.of(SentenceCalculation.builder().releaseType("Aardvark").build()))).isNull();
+    }
 }
