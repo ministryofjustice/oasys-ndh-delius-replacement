@@ -605,9 +605,9 @@ public class OffenderTransformer {
     }
 
 
-    private String identifierOf(Optional<Offender> maybeOffender, String type) {
-        return maybeOffender.flatMap(offender -> offender.getIdentifiers()
-                .stream()
+    public String identifierOf(Optional<Offender> maybeOffender, String type) {
+        return maybeOffender.flatMap(offender -> Optional.ofNullable(offender.getIdentifiers()))
+                .flatMap(identifiers -> identifiers.stream()
                 .filter(identifier -> type.equals(identifier.getIdentifierType()))
                 .findFirst()
                 .map(Identifier::getIdentifier))

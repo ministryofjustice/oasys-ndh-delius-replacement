@@ -18,6 +18,8 @@ import uk.gov.justice.digital.ndh.api.delius.request.GetSubSetOffenderEventReque
 import uk.gov.justice.digital.ndh.api.delius.response.GetSubSetOffenderDetailsResponse;
 import uk.gov.justice.digital.ndh.api.delius.response.SubSetEvent;
 import uk.gov.justice.digital.ndh.api.delius.response.SubSetOffender;
+import uk.gov.justice.digital.ndh.api.nomis.Identifier;
+import uk.gov.justice.digital.ndh.api.nomis.Offender;
 import uk.gov.justice.digital.ndh.api.nomis.Sentence;
 import uk.gov.justice.digital.ndh.api.nomis.SentenceCalculation;
 import uk.gov.justice.digital.ndh.api.oasys.request.Header;
@@ -526,5 +528,15 @@ public class OffenderTransformerTest {
         final OffenderTransformer transformer = new OffenderTransformer(COMMON_TRANSFORMER, new MappingService(new MappingRepositoryCsvBacked(new ClassPathResource("mapping_code_data.csv"))), mock(RequirementLookupRepository.class), mock(ObjectMapper.class));
 
         assertThat(transformer.releaseTypeOf(Optional.of(SentenceCalculation.builder().releaseType("Aardvark").build()))).isNull();
+    }
+
+    @Test
+    public void identifierOfBehavesAppropriately() {
+        final OffenderTransformer transformer = new OffenderTransformer(COMMON_TRANSFORMER, mock(MappingService.class), mock(RequirementLookupRepository.class), mock(ObjectMapper.class));
+
+        assertThat(transformer.identifierOf(Optional.of(Offender.builder().build()),"whatever")).isNull();
+        assertThat(transformer.identifierOf(Optional.of(Offender.builder().identifiers(ImmutableList.of(Identifier.builder().identifierType("pnc").identifier("a_pnc_number").build())).build()),"pnc")).isEqualTo("a_pnc_number");
+        assertThat(transformer.identifierOf(Optional.of(Offender.builder().identifiers(ImmutableList.of(Identifier.builder().identifierType("pnc").identifier("a_pnc_number").build())).build()),"cheese")).isNull();
+        assertThat(transformer.identifierOf(Optional.empty(),"whatever")).isNull();
     }
 }
