@@ -28,10 +28,9 @@ import java.util.stream.Collectors;
 public class CommonTransformer {
 
     public static final String VERSION = "1.0";
-
+    public static final SAXReader READER = new SAXReader();
     private final XmlMapper xmlMapper;
     private final ExceptionLogService exceptionLogService;
-    public static final SAXReader READER = new SAXReader();
 
     @Autowired
     public CommonTransformer(XmlMapper xmlMapper, @Qualifier("globalObjectMapper") ObjectMapper objectMapper, ExceptionLogService exceptionLogService) {
@@ -70,7 +69,10 @@ public class CommonTransformer {
 
 
     public uk.gov.justice.digital.ndh.api.oasys.request.Header oasysHeaderOf(uk.gov.justice.digital.ndh.api.oasys.request.Header header) {
-        return header.toBuilder().oasysRUsername("PCMS").build();
+        return header.toBuilder()
+                .correlationID(header.getCorrelationID())
+                .oasysRUsername(header.getOasysRUsername())
+                .build();
     }
 
     public String evaluateXpathText(String source, String xpath) throws DocumentException {

@@ -24,7 +24,9 @@ import uk.gov.justice.digital.ndh.api.nomis.Sentence;
 import uk.gov.justice.digital.ndh.api.nomis.SentenceCalculation;
 import uk.gov.justice.digital.ndh.api.oasys.request.Header;
 import uk.gov.justice.digital.ndh.api.oasys.request.InitialSearchRequest;
+import uk.gov.justice.digital.ndh.api.oasys.request.OffenderDetailsRequest;
 import uk.gov.justice.digital.ndh.api.oasys.response.InitialSearchResponse;
+import uk.gov.justice.digital.ndh.api.oasys.response.OffenderDetailsResponse;
 import uk.gov.justice.digital.ndh.api.soap.SoapBody;
 import uk.gov.justice.digital.ndh.api.soap.SoapEnvelopeSpec1_2;
 import uk.gov.justice.digital.ndh.jpa.repository.mapping.MappingRepositoryCsvBacked;
@@ -538,5 +540,31 @@ public class OffenderTransformerTest {
         assertThat(transformer.identifierOf(Optional.of(Offender.builder().identifiers(ImmutableList.of(Identifier.builder().identifierType("pnc").identifier("a_pnc_number").build())).build()),"pnc")).isEqualTo("a_pnc_number");
         assertThat(transformer.identifierOf(Optional.of(Offender.builder().identifiers(ImmutableList.of(Identifier.builder().identifierType("pnc").identifier("a_pnc_number").build())).build()),"cheese")).isNull();
         assertThat(transformer.identifierOf(Optional.empty(),"whatever")).isNull();
+    }
+
+    @Test
+    public void oasysHeadersAreReturnedForInitialSearch() {
+        final OffenderTransformer transformer = new OffenderTransformer(COMMON_TRANSFORMER, mock(MappingService.class), mock(RequirementLookupRepository.class), mock(ObjectMapper.class));
+
+        SoapEnvelopeSpec1_2 request = SoapEnvelopeSpec1_2.builder().body(SoapBody.builder().initialSearchRequest(InitialSearchRequest.builder().header(Header.builder().correlationID("correlationId").oasysRUsername("oasysUser").build()).build()).build()).build();
+        SoapEnvelopeSpec1_2 response = SoapEnvelopeSpec1_2.builder().body(SoapBody.builder().getSubSetOffenderDetailsResponse(GetSubSetOffenderDetailsResponse.builder().build()).build()).build();
+
+        final Optional<SoapEnvelopeSpec1_2> actual = transformer.initialSearchResponseTransform.apply(Optional.of(request), Optional.of(response));
+
+        assertThat(actual.get().getBody().getInitialSearchResponse().getHeader()).extracting("correlationID").containsExactly("correlationId");
+        assertThat(actual.get().getBody().getInitialSearchResponse().getHeader()).extracting("oasysRUsername").containsExactly("oasysUser");
+    }
+
+    @Test
+    public void oasysHeadersAreReturnedForOffenderDetails() {
+        final OffenderTransformer transformer = new OffenderTransformer(COMMON_TRANSFORMER, mock(MappingService.class), mock(RequirementLookupRepository.class), mock(ObjectMapper.class));
+
+        SoapEnvelopeSpec1_2 request = SoapEnvelopeSpec1_2.builder().body(SoapBody.builder().offenderDetailsRequest(OffenderDetailsRequest.builder().header(Header.builder().correlationID("correlationId").oasysRUsername("oasysUser").build()).build()).build()).build();
+        SoapEnvelopeSpec1_2 response = SoapEnvelopeSpec1_2.builder().body(SoapBody.builder().offenderDetailsResponse(OffenderDetailsResponse.builder().build()).build()).build();
+
+        final Optional<SoapEnvelopeSpec1_2> actual = transformer.offenderDetailsResponseTransform.apply(Optional.of(request), Optional.of(response));
+
+        assertThat(actual.get().getBody().getOffenderDetailsResponse().getHeader()).extracting("correlationID").containsExactly("correlationId");
+        assertThat(actual.get().getBody().getOffenderDetailsResponse().getHeader()).extracting("oasysRUsername").containsExactly("oasysUser");
     }
 }

@@ -349,17 +349,18 @@ public class OffenderTransformer {
 
         final ImmutableList.Builder<SubSetOffender> builder = ImmutableList.builder();
 
-        final uk.gov.justice.digital.ndh.api.delius.response.SubSetOffender subSetOffender = getSubSetOffenderDetailsResponse.getSubSetOffender();
-        builder.add(SubSetOffender
+        final Optional<uk.gov.justice.digital.ndh.api.delius.response.SubSetOffender> subSetOffender = Optional.ofNullable(getSubSetOffenderDetailsResponse.getSubSetOffender());
+
+        subSetOffender.ifPresent(sso -> builder.add(SubSetOffender
                 .builder()
-                .cmsProbNumber(subSetOffender.getCaseReferenceNumber())
-                .dateOfBirth(subSetOffender.getDateOfBirth())
-                .familyName(subSetOffender.getLastName())
-                .forename1(subSetOffender.getForename1())
-                .gender(oasysGenderOf(subSetOffender.getGender()))
-                .laoIndicator(subSetOffender.getLaoIndicator())
+                .cmsProbNumber(sso.getCaseReferenceNumber())
+                .dateOfBirth(sso.getDateOfBirth())
+                .familyName(sso.getLastName())
+                .forename1(sso.getForename1())
+                .gender(oasysGenderOf(sso.getGender()))
+                .laoIndicator(sso.getLaoIndicator())
                 .subSetEvents(subsetEventsOf(getSubSetOffenderDetailsResponse.getSubSetEvents()))
-                .build());
+                .build()));
 
         return builder.build();
     }
