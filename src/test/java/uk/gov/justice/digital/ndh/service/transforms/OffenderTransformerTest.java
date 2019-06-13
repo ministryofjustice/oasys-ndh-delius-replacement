@@ -50,6 +50,7 @@ import static uk.gov.justice.digital.ndh.service.transforms.OffenderTransformer.
 public class OffenderTransformerTest {
 
     public static final CommonTransformer COMMON_TRANSFORMER = new CommonTransformer(new XmlMapper(), mock(ObjectMapper.class), mock(ExceptionLogService.class));
+    public static final String CORRELATION_ID = "OASYSRPCWWS20180910130951604609";
 
     @Test
     public void canTransformOasysInitialSearchRequest() {
@@ -59,7 +60,7 @@ public class OffenderTransformerTest {
 
         SoapEnvelopeSpec1_2 expected = SoapEnvelopeSpec1_2
                 .builder()
-                .header(COMMON_TRANSFORMER.deliusSoapHeaderOf("1234567890123456789012345678901"))
+                .header(COMMON_TRANSFORMER.deliusSoapHeaderOf("OASYSRPCWWS20180910130951604609"))
                 .body(SoapBody
                         .builder()
                         .getSubSetOffenderEventRequest(
@@ -89,9 +90,9 @@ public class OffenderTransformerTest {
                                 .forename1("forename1")
                                 .header(Header
                                         .builder()
-                                        .oasysRUsername("oasysRUsername")
+                                        .oasysRUsername("oasysUser")
                                         .messageTimestamp(LocalDateTime.now().toString())
-                                        .correlationID("1234567890123456789012345678901")
+                                        .correlationID(CORRELATION_ID)
                                         .applicationMode("applicationMode")
                                         .build())
                                 .build())
@@ -153,7 +154,7 @@ public class OffenderTransformerTest {
                         .builder()
                         .initialSearchResponse(InitialSearchResponse
                                 .builder()
-                                .header(oasysRequest.getBody().getInitialSearchRequest().getHeader().toBuilder().oasysRUsername("PCMS").build())
+                                .header(oasysRequest.getBody().getInitialSearchRequest().getHeader().toBuilder().oasysRUsername("oasysUser").correlationID(CORRELATION_ID).build())
                                 .subSetOffenders(ImmutableList.of(
                                         uk.gov.justice.digital.ndh.api.oasys.response.SubSetOffender
                                                 .builder()
@@ -331,7 +332,7 @@ public class OffenderTransformerTest {
                 "\t\t\t\t\txmlns:ns1=\"http://www.hp.com/NDH_Web_Service/DomainTypes\">OASYSRPCWWS20180910130951604609\n" +
                 "\t\t\t\t</ns1:CorrelationID>\n" +
                 "\t\t\t\t<ns1:OASysRUsername\n" +
-                "\t\t\t\t\txmlns:ns1=\"http://www.hp.com/NDH_Web_Service/DomainTypes\">PCMS\n" +
+                "\t\t\t\t\txmlns:ns1=\"http://www.hp.com/NDH_Web_Service/DomainTypes\">CENTRALSUPPORTONE\n" +
                 "\t\t\t\t</ns1:OASysRUsername>\n" +
                 "\t\t\t\t<ns1:MessageTimestamp\n" +
                 "\t\t\t\t\txmlns:ns1=\"http://www.hp.com/NDH_Web_Service/DomainTypes\">2018-09-10T13:59:51+01:00\n" +
@@ -546,12 +547,12 @@ public class OffenderTransformerTest {
     public void oasysHeadersAreReturnedForInitialSearch() {
         final OffenderTransformer transformer = new OffenderTransformer(COMMON_TRANSFORMER, mock(MappingService.class), mock(RequirementLookupRepository.class), mock(ObjectMapper.class));
 
-        SoapEnvelopeSpec1_2 request = SoapEnvelopeSpec1_2.builder().body(SoapBody.builder().initialSearchRequest(InitialSearchRequest.builder().header(Header.builder().correlationID("correlationId").oasysRUsername("oasysUser").build()).build()).build()).build();
+        SoapEnvelopeSpec1_2 request = SoapEnvelopeSpec1_2.builder().body(SoapBody.builder().initialSearchRequest(InitialSearchRequest.builder().header(Header.builder().correlationID(CORRELATION_ID).oasysRUsername("oasysUser").build()).build()).build()).build();
         SoapEnvelopeSpec1_2 response = SoapEnvelopeSpec1_2.builder().body(SoapBody.builder().getSubSetOffenderDetailsResponse(GetSubSetOffenderDetailsResponse.builder().build()).build()).build();
 
         final Optional<SoapEnvelopeSpec1_2> actual = transformer.initialSearchResponseTransform.apply(Optional.of(request), Optional.of(response));
 
-        assertThat(actual.get().getBody().getInitialSearchResponse().getHeader()).extracting("correlationID").containsExactly("correlationId");
+        assertThat(actual.get().getBody().getInitialSearchResponse().getHeader()).extracting("correlationID").containsExactly(CORRELATION_ID);
         assertThat(actual.get().getBody().getInitialSearchResponse().getHeader()).extracting("oasysRUsername").containsExactly("oasysUser");
     }
 
@@ -559,12 +560,12 @@ public class OffenderTransformerTest {
     public void oasysHeadersAreReturnedForOffenderDetails() {
         final OffenderTransformer transformer = new OffenderTransformer(COMMON_TRANSFORMER, mock(MappingService.class), mock(RequirementLookupRepository.class), mock(ObjectMapper.class));
 
-        SoapEnvelopeSpec1_2 request = SoapEnvelopeSpec1_2.builder().body(SoapBody.builder().offenderDetailsRequest(OffenderDetailsRequest.builder().header(Header.builder().correlationID("correlationId").oasysRUsername("oasysUser").build()).build()).build()).build();
+        SoapEnvelopeSpec1_2 request = SoapEnvelopeSpec1_2.builder().body(SoapBody.builder().offenderDetailsRequest(OffenderDetailsRequest.builder().header(Header.builder().correlationID(CORRELATION_ID).oasysRUsername("oasysUser").build()).build()).build()).build();
         SoapEnvelopeSpec1_2 response = SoapEnvelopeSpec1_2.builder().body(SoapBody.builder().offenderDetailsResponse(OffenderDetailsResponse.builder().build()).build()).build();
 
         final Optional<SoapEnvelopeSpec1_2> actual = transformer.offenderDetailsResponseTransform.apply(Optional.of(request), Optional.of(response));
 
-        assertThat(actual.get().getBody().getOffenderDetailsResponse().getHeader()).extracting("correlationID").containsExactly("correlationId");
+        assertThat(actual.get().getBody().getOffenderDetailsResponse().getHeader()).extracting("correlationID").containsExactly(CORRELATION_ID);
         assertThat(actual.get().getBody().getOffenderDetailsResponse().getHeader()).extracting("oasysRUsername").containsExactly("oasysUser");
     }
 }

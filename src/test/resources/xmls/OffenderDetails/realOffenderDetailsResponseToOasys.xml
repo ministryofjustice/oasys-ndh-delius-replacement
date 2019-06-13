@@ -11,7 +11,7 @@
                 <ns1:CorrelationID
                         xmlns:ns1="http://www.hp.com/NDH_Web_Service/DomainTypes">OASYSRPCWWS20180910130951604609</ns1:CorrelationID>
                 <ns1:OASysRUsername
-                        xmlns:ns1="http://www.hp.com/NDH_Web_Service/DomainTypes">PCMS</ns1:OASysRUsername>
+                        xmlns:ns1="http://www.hp.com/NDH_Web_Service/DomainTypes">CENTRALSUPPORTONE</ns1:OASysRUsername>
                 <ns1:MessageTimestamp
                         xmlns:ns1="http://www.hp.com/NDH_Web_Service/DomainTypes">2018-09-10T13:59:51+01:00</ns1:MessageTimestamp>
             </ns0:Header>

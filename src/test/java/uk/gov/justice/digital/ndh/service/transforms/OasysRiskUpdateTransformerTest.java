@@ -111,7 +111,7 @@ public class OasysRiskUpdateTransformerTest {
     }
 
     private String aCorrelationId() {
-        return "1234567890123456789012345678901";
+        return "OASYSRPCWWS20180910130951604609";
     }
 
 
