@@ -38,6 +38,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
+import java.util.stream.Stream;
 
 @Service
 @Slf4j
@@ -70,6 +71,19 @@ public class OasysOffenderService extends RequestResponseService {
         this.objectMapper = objectMapper;
     }
 
+    public static Optional<AgencyLocation> sentencingAgencyLocationOf(Optional<List<CourtEvent>> maybeCourtEvents, Optional<Sentence> maybeSentence) {
+
+        return maybeSentence.map(Sentence::getSentenceSequenceNumber)
+                .flatMap(sentSeq -> maybeCourtEvents
+                        .flatMap(ces -> ces.stream()
+                                .flatMap(ce -> Optional.ofNullable(ce.getCourtEventCharges())
+                                        .map(cecs -> cecs.stream()
+                                                .flatMap(cec -> cec.getSentences().stream())
+                                                .filter(s -> sentSeq.equals(s.getSentenceSequenceNumber()))
+                                                .map(x -> ce.getAgencyLocation())).orElse(Stream.empty())
+                                ).findFirst()));
+    }
+
     public Optional<String> initialSearch(String initialSearchXml) {
         val maybeOasysInitialSearch = commonTransformer.asSoapEnvelope(initialSearchXml);
 
@@ -90,7 +104,6 @@ public class OasysOffenderService extends RequestResponseService {
 
         return handleResponse(maybeOasysInitialSearch, correlationId, offenderId, maybeRawResponse, maybeResponse, offenderTransformer.initialSearchResponseTransform);
     }
-
 
     private Optional<SoapEnvelopeSpec1_2> deliusInitialSearchResponseOf(Optional<String> maybeRawResponse, String correlationId) {
         return getSoapEnvelope(maybeRawResponse, correlationId, "Can't deserialize delius initial search response: ");
@@ -157,7 +170,7 @@ public class OasysOffenderService extends RequestResponseService {
 
         final Optional<List<CourtEvent>> maybeCourtEvents = maybeCourtEventsOf(maybeOffender, latestBooking);
 
-        final Optional<AgencyLocation> sentencingCourtAgencyLocation = sentencingAgencyLocationOf(maybeCourtEvents);
+        final Optional<AgencyLocation> sentencingCourtAgencyLocation = sentencingAgencyLocationOf(maybeCourtEvents, maybeSentence);
 
         final Optional<List<Address>> maybeAddresses = maybeAddressesOf(maybeOffender, latestBooking);
 
@@ -215,7 +228,6 @@ public class OasysOffenderService extends RequestResponseService {
             return Collections.emptyList();
         }
     }
-
 
     private Optional<List<OffenderAssessment>> maybeAssessmentsOf(Optional<Offender> maybeOffender, Booking latestBooking) {
         return maybeOffender.flatMap(
@@ -445,16 +457,6 @@ public class OasysOffenderService extends RequestResponseService {
                 }
         );
     }
-
-    public static Optional<AgencyLocation> sentencingAgencyLocationOf(Optional<List<CourtEvent>> maybeCourtEvents) {
-        return maybeCourtEvents
-                .flatMap(ces -> ces
-                        .stream()
-                        .filter(ce -> "SENT".equals(ce.getCourtEventType()))
-                        .findFirst())
-                .flatMap(ce -> Optional.of(ce.getAgencyLocation()));
-    }
-
 
     private List<OffenderImprisonmentStatus> asImprisonmentStatuses(String jsonStr) {
         try {
