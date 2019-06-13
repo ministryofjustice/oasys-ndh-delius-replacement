@@ -233,7 +233,7 @@ public class OasysRiskUpdateTransformerTest {
                 "\t\t\t\t\t<ndh:Code>OASYSERR003</ndh:Code>\n" +
                 "\t\t\t\t\t<ndh:Description>Input Data Failed XML Schema Validation</ndh:Description>\n" +
                 "\t\t\t\t\t<ndh:Timestamp>2018-08-01T12:06:26.075+01:00</ndh:Timestamp>\n" +
-                "\t\t\t\t\t<ndh:RequestMessage>1234567890123456789012345678901</ndh:RequestMessage>\n" +
+                "\t\t\t\t\t<ndh:RequestMessage>OASYSRPCWWS20180910130951604609</ndh:RequestMessage>\n" +
                 "\t\t\t\t</ndh:ValidationFailureException>\n" +
                 "\t\t\t</S:Detail>\n" +
                 "\t\t</S:Fault>\n" +
