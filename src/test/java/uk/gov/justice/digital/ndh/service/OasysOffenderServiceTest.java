@@ -34,4 +34,24 @@ public class OasysOffenderServiceTest {
         assertThat(actual).isPresent();
         assertThat(actual.get().getAgencyLocationId()).isEqualTo("HUDRCT");
     }
+
+    @Test
+    public void sentencingAgencyLocationOfHandlesCourtEventChargesWithNoSentence() {
+        final Optional<AgencyLocation> actual = OasysOffenderService.sentencingAgencyLocationOf(Optional.of(ImmutableList.of(
+                CourtEvent.builder().courtEventType("Colin").build(),
+                CourtEvent.builder()
+                        .courtEventType("SENT")
+                        .agencyLocation(AgencyLocation.builder().agencyLocationId("CROMER").build())
+                        .build()
+                ,
+                CourtEvent.builder().courtEventType("Colin").build(),
+                CourtEvent.builder()
+                        .courtEventType("CHAINSAWS")
+                        .agencyLocation(AgencyLocation.builder().agencyLocationId("HUDRCT").build())
+                        .courtEventCharges(ImmutableList.of(Charge.builder().build()))
+                        .build()
+        )), Optional.of(Sentence.builder().sentenceSequenceNumber(1234).build()));
+
+        assertThat(actual).isEmpty();
+    }
 }

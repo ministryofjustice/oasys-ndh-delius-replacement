@@ -78,6 +78,7 @@ public class OasysOffenderService extends RequestResponseService {
                         .flatMap(ces -> ces.stream()
                                 .flatMap(ce -> Optional.ofNullable(ce.getCourtEventCharges())
                                         .map(cecs -> cecs.stream()
+                                                .filter(cec -> cec.getSentences() != null)
                                                 .flatMap(cec -> cec.getSentences().stream())
                                                 .filter(s -> sentSeq.equals(s.getSentenceSequenceNumber()))
                                                 .map(x -> ce.getAgencyLocation())).orElse(Stream.empty())
