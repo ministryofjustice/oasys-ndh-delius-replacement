@@ -208,8 +208,7 @@ public class OasysOffenderService extends RequestResponseService {
                                 .doGetWithRetry("offenders/offenderId/" + offender.getOffenderId() + "/alerts",
                                         ImmutableMap.of("bookingId", latestBooking.getBookingId(),
                                                 "alertType", "H",
-                                                "alertCode", "HA",
-                                                "alertStatus", "ACTIVE"))
+                                                "alertCode", "HA"))
                                 .filter(r -> r.getStatus() == HttpStatus.OK.value())
                                 .map(HttpResponse::getBody)
                                 .map(this::asAlerts);

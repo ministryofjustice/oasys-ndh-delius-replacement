@@ -504,7 +504,20 @@ public class OffenderTransformer {
     }
 
     private String f2052AlertOf(Optional<List<Alert>> maybeF2052Alerts) {
-        return maybeF2052Alerts.map(alerts -> alerts.isEmpty() ? NO : YES).orElse(NO);
+        return maybeF2052Alerts.map(alerts -> {
+            var thereAreActiveAlerts = alerts.stream().anyMatch(alert -> "ACTIVE".equals(alert.getAlertStatus()));
+
+            if (thereAreActiveAlerts) {
+                return YES;
+            }
+
+            if (!alerts.isEmpty()) {
+                return NO;
+            }
+
+            return null;
+        }).orElse(null);
+
     }
 
     private String securityCategoryOf(Optional<List<OffenderAssessment>> maybeAssessments) {
