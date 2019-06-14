@@ -50,6 +50,7 @@ import uk.gov.justice.digital.ndh.api.soap.SoapHeader;
 import uk.gov.justice.digital.ndh.jpa.repository.requirementLookup.RequirementLookup;
 import uk.gov.justice.digital.ndh.jpa.repository.requirementLookup.RequirementLookupRepository;
 import uk.gov.justice.digital.ndh.service.MappingService;
+import uk.gov.justice.digital.ndh.service.XtagTransformer;
 import uk.gov.justice.digital.ndh.service.exception.NDHMappingException;
 import uk.gov.justice.digital.ndh.service.exception.NDHRequirementLookupException;
 
@@ -65,8 +66,6 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import static java.time.temporal.ChronoUnit.DAYS;
 
 @Component
 @Slf4j
@@ -676,11 +675,10 @@ public class OffenderTransformer {
     public static Optional<Long> sentenceLengthInDaysOf
             (Optional<Sentence> maybeSentence, Optional<SentenceCalculation> maybeSentenceCalc) {
 
-        return maybeSentence
-                .flatMap(s -> Optional.ofNullable(s.getStartDate()))
-                .flatMap(startDate -> maybeSentenceCalc
-                        .filter(sc -> sc.getSedCalculatedDate() != null || sc.getSedOverridedDate() != null)
-                        .map(sc -> DAYS.between(startDate, firstNonNullDateOf.apply(sc.getSedOverridedDate(), sc.getSedCalculatedDate()).get()) + 1));
+        return Optional.ofNullable(XtagTransformer.effectiveSentenceLengthOf(
+                maybeSentence.stream().collect(Collectors.toList()),
+                maybeSentenceCalc
+        )).map(Long::valueOf);
     }
 
     private String sentenceDateOf(Optional<Sentence> maybeSentence) {

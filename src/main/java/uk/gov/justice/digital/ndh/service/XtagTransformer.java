@@ -417,7 +417,7 @@ public class XtagTransformer {
                 .findFirst());
     }
 
-    private String effectiveSentenceLengthOf(List<Sentence> activeSentences, Optional<SentenceCalculation> maybeSentenceCalculation) {
+    public static String effectiveSentenceLengthOf(List<Sentence> activeSentences, Optional<SentenceCalculation> maybeSentenceCalculation) {
 
         return maybeSentenceCalculation
                 .filter(sentenceCalculation -> sentenceCalculation.getEffectiveSentenceEndDate() != null)
