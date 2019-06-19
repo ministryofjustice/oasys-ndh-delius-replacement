@@ -165,13 +165,13 @@ public class OasysOffenderService extends RequestResponseService {
 
         final Optional<SentenceCalculation> maybeSentenceCalc = maybeSentenceCalculationOf(maybeOffender, latestBooking);
 
-        final Optional<Sentence> maybeSentence = maybeSentenceOf(maybeOffender, latestBooking);
+        final Optional<Sentence> maybeLatestActiveSentence = maybeSentenceOf(maybeOffender, latestBooking);
 
         final Optional<OffenderImprisonmentStatus> maybeImprisonmentStatus = maybeImprisonmentStatusOf(maybeOffender, latestBooking);
 
         final Optional<List<CourtEvent>> maybeCourtEvents = maybeCourtEventsOf(maybeOffender, latestBooking);
 
-        final Optional<AgencyLocation> sentencingCourtAgencyLocation = sentencingAgencyLocationOf(maybeCourtEvents, maybeSentence);
+        final Optional<AgencyLocation> sentencingCourtAgencyLocation = sentencingAgencyLocationOf(maybeCourtEvents, maybeLatestActiveSentence);
 
         final Optional<List<Address>> maybeAddresses = maybeAddressesOf(maybeOffender, latestBooking);
 
@@ -185,7 +185,7 @@ public class OasysOffenderService extends RequestResponseService {
 
         final Optional<List<Alert>> maybeAlerts = maybeF2052AlertsOf(maybeOffender, latestBooking);
 
-        final Optional<SoapEnvelopeSpec1_2> oasysOffenderDetailsResponse = maybeOffender.map(offender -> offenderTransformer.oasysOffenderDetailResponseOf(maybeOasysOffenderDetailsRequest, maybeOffender, latestBooking, maybeSentenceCalc, maybeSentence, maybeImprisonmentStatus, maybeCourtEvents, sentencingCourtAgencyLocation, maybeHomeAddress, maybeDischargeAddress, maybePhysicals, maybeAssessments, maybeAlerts, offender));
+        final Optional<SoapEnvelopeSpec1_2> oasysOffenderDetailsResponse = maybeOffender.map(offender -> offenderTransformer.oasysOffenderDetailResponseOf(maybeOasysOffenderDetailsRequest, maybeOffender, latestBooking, maybeSentenceCalc, maybeLatestActiveSentence, maybeImprisonmentStatus, maybeCourtEvents, sentencingCourtAgencyLocation, maybeHomeAddress, maybeDischargeAddress, maybePhysicals, maybeAssessments, maybeAlerts, offender));
 
         Optional<String> response;
 
@@ -403,7 +403,7 @@ public class OasysOffenderService extends RequestResponseService {
                                 .map(this::asSentences)
                                 .flatMap(sentences -> sentences.stream()
                                         .filter(Sentence::getIsActive)
-                                        .min(Comparator.comparing(Sentence::getSentenceSequenceNumber)));
+                                        .max(Comparator.comparing(Sentence::getSentenceSequenceNumber)));
 
                     } catch (Exception e) {
                         log.error(e.getMessage());
