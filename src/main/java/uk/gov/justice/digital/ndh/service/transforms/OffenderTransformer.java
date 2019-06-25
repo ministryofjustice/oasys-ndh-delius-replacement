@@ -171,12 +171,7 @@ public class OffenderTransformer {
                                                     .lengthInMonths(lengthInMonthsOf(mapped, requirement))
                                                     .lengthInHours(lengthInHoursOf(mapped, requirement))
                                                     .build())
-                                    .orElseThrow(() -> NDHRequirementLookupException
-                                            .builder()
-                                            .reqType("N")
-                                            .reqCode(requirement.getMainCategory())
-                                            .subCode(requirement.getSubCategory())
-                                            .build());
+                                    .orElse(null);
                         })
                         .collect(Collectors.toList()))
                 .orElse(Collections.emptyList());
