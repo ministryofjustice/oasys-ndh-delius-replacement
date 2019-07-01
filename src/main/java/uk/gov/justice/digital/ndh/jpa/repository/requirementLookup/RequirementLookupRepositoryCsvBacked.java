@@ -61,11 +61,32 @@ public class RequirementLookupRepositoryCsvBacked implements RequirementLookupRe
 
     @Override
     public Optional<RequirementLookup> findByReqTypeAndReqCodeAndSubCode(String reqType, String reqCode, String subCode) {
-        return Optional.ofNullable(requirementLookupMap.getOrDefault(
+        var maybeMapped = Optional.ofNullable(requirementLookupMap.getOrDefault(
                 RequirementLookupKey.builder()
                         .reqCode(reqCode)
                         .reqType(reqType)
                         .subCode(subCode)
                         .build(), null));
+
+        if (maybeMapped.isPresent()) {
+            return maybeMapped;
+        }
+
+        log.warn("Failed to resolve primary mapping reqType {}, reqCode {}, subCode {}. Falling back to resolve by reqCode alone...", reqType, reqCode, subCode);
+
+        var maybeMapped2 = Optional.ofNullable(requirementLookupMap.getOrDefault(
+                RequirementLookupKey.builder()
+                        .reqCode(reqCode)
+                        .reqType(reqType)
+                        .subCode("")
+                        .build(), null));
+
+        if (maybeMapped2.isPresent()) {
+            return maybeMapped2;
+        }
+
+        log.error("... failed to resolve fallback mapping reqType {}, reqCode {}, subCode \"\".", reqType, reqCode);
+        return Optional.empty();
+
     }
 }

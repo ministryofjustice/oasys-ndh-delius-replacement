@@ -4,6 +4,9 @@ import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 
 import java.io.IOException;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class RequirementLookupRepositoryCsvBackedTest {
 
@@ -12,4 +15,31 @@ public class RequirementLookupRepositoryCsvBackedTest {
         new RequirementLookupRepositoryCsvBacked(new ClassPathResource("requirement_lookup_with_duplicates.csv"));
     }
 
+    @Test
+    public void requirementLookupSucceedsForCodeAndSubCode() throws IOException {
+        var repo = new RequirementLookupRepositoryCsvBacked(new ClassPathResource("requirement_lookup.csv"));
+
+        final Optional<RequirementLookup> actual = repo.findByReqTypeAndReqCodeAndSubCode("N", "G", "");
+        assertThat(actual).isPresent();
+        assertThat(actual.get().getSentenceAttributeCat()).isEqualTo("CJA_REQUIREMENT");
+        assertThat(actual.get().getSentenceAttributeElm()).isEqualTo("DRUG_REHABILITATION");
+    }
+
+    @Test
+    public void requirementLookupFallsBackToCodeIfSubCodeUnmapped() throws IOException {
+        var repo = new RequirementLookupRepositoryCsvBacked(new ClassPathResource("requirement_lookup.csv"));
+
+        final Optional<RequirementLookup> actual = repo.findByReqTypeAndReqCodeAndSubCode("N", "G", "G03");
+        assertThat(actual).isPresent();
+        assertThat(actual.get().getSentenceAttributeCat()).isEqualTo("CJA_REQUIREMENT");
+        assertThat(actual.get().getSentenceAttributeElm()).isEqualTo("DRUG_REHABILITATION");
+    }
+
+    @Test
+    public void requirementLookupIsEmptyIfNeitherCodeNorSubcodeMapped() throws IOException {
+        var repo = new RequirementLookupRepositoryCsvBacked(new ClassPathResource("requirement_lookup.csv"));
+
+        final Optional<RequirementLookup> actual = repo.findByReqTypeAndReqCodeAndSubCode("N", "Colin", "Jeremy");
+        assertThat(actual).isEmpty();
+    }
 }
