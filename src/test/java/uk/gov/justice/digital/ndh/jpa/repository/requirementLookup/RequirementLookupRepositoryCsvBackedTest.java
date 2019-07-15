@@ -12,12 +12,12 @@ public class RequirementLookupRepositoryCsvBackedTest {
 
     @Test(expected = IllegalStateException.class)
     public void requirementLookupCsvCannotContainDuplicates() throws IOException {
-        new RequirementLookupRepositoryCsvBacked(new ClassPathResource("requirement_lookup_with_duplicates.csv"));
+        new RequirementLookupRepositoryCsvBacked(new ClassPathResource("requirement_lookup_with_duplicates.csv"), new ClassPathResource("ignored_requirement_codes.json"));
     }
 
     @Test
     public void requirementLookupSucceedsForCodeAndSubCode() throws IOException {
-        var repo = new RequirementLookupRepositoryCsvBacked(new ClassPathResource("requirement_lookup.csv"));
+        var repo = new RequirementLookupRepositoryCsvBacked(new ClassPathResource("requirement_lookup.csv"), new ClassPathResource("ignored_requirement_codes.json"));
 
         final Optional<RequirementLookup> actual = repo.findByReqTypeAndReqCodeAndSubCode("N", "G", "");
         assertThat(actual).isPresent();
@@ -27,7 +27,7 @@ public class RequirementLookupRepositoryCsvBackedTest {
 
     @Test
     public void requirementLookupFallsBackToCodeIfSubCodeUnmapped() throws IOException {
-        var repo = new RequirementLookupRepositoryCsvBacked(new ClassPathResource("requirement_lookup.csv"));
+        var repo = new RequirementLookupRepositoryCsvBacked(new ClassPathResource("requirement_lookup.csv"), new ClassPathResource("ignored_requirement_codes.json"));
 
         final Optional<RequirementLookup> actual = repo.findByReqTypeAndReqCodeAndSubCode("N", "G", "G03");
         assertThat(actual).isPresent();
@@ -37,9 +37,17 @@ public class RequirementLookupRepositoryCsvBackedTest {
 
     @Test
     public void requirementLookupIsEmptyIfNeitherCodeNorSubcodeMapped() throws IOException {
-        var repo = new RequirementLookupRepositoryCsvBacked(new ClassPathResource("requirement_lookup.csv"));
+        var repo = new RequirementLookupRepositoryCsvBacked(new ClassPathResource("requirement_lookup.csv"), new ClassPathResource("ignored_requirement_codes.json"));
 
         final Optional<RequirementLookup> actual = repo.findByReqTypeAndReqCodeAndSubCode("N", "Colin", "Jeremy");
+        assertThat(actual).isEmpty();
+    }
+
+    @Test
+    public void blacklistedRequirementsAreIgnored() throws IOException {
+        var repo = new RequirementLookupRepositoryCsvBacked(new ClassPathResource("requirement_lookup.csv"), new ClassPathResource("ignored_requirement_codes.json"));
+
+        final Optional<RequirementLookup> actual = repo.findByReqTypeAndReqCodeAndSubCode("N", "7", "");
         assertThat(actual).isEmpty();
     }
 }
