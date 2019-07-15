@@ -2,7 +2,7 @@ package uk.gov.justice.digital.ndh.jpa.repository.requirementLookup;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.microsoft.applicationinsights.core.dependencies.google.common.collect.Sets;
+import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
@@ -47,10 +47,10 @@ public class RequirementLookupRepositoryCsvBacked implements RequirementLookupRe
                 .filter(rlk -> "N".equals(rlk.getReqType()))
                 .map(RequirementLookupKey::getReqCode)
                 .collect(Collectors.toSet());
-        
+
         var blacklistCodes = ignoredRequirementCodes.keySet();
 
-        var intersection = Sets.intersection(whitelistCodes, blacklistCodes);
+            var intersection = Sets.intersection(whitelistCodes, blacklistCodes);
 
         if (!intersection.isEmpty()) {
             log.error("Requirements mapping contains blacklisted (unwanted) requirement codes!: {}", intersection.toString());
