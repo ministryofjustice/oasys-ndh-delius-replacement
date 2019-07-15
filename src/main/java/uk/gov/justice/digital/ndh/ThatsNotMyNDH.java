@@ -106,4 +106,9 @@ public class ThatsNotMyNDH {
         return new ClassPathResource("requirement_lookup.csv");
     }
 
+    @Bean
+    public Resource requirementBlacklistResource() {
+        return new ClassPathResource("ignored_requirement_codes.json");
+    }
+
 }

@@ -52,7 +52,6 @@ import uk.gov.justice.digital.ndh.jpa.repository.requirementLookup.RequirementLo
 import uk.gov.justice.digital.ndh.service.MappingService;
 import uk.gov.justice.digital.ndh.service.XtagTransformer;
 import uk.gov.justice.digital.ndh.service.exception.NDHMappingException;
-import uk.gov.justice.digital.ndh.service.exception.NDHRequirementLookupException;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -82,6 +81,20 @@ public class OffenderTransformer {
     public static final long RELEASE_NAME_CODE_TYPE = 34L;
     private static final String ADDITIONAL_SENTENCING_REQUIREMENTS = "ADDITIONAL_SENTENCING_REQUIREMENTS";
     public static BiFunction<LocalDateTime, LocalDateTime, Optional<LocalDate>> firstNonNullDateOf = (a, b) -> Optional.ofNullable(Optional.ofNullable(a).orElse(b)).map(LocalDateTime::toLocalDate);
+    public static Function<String, String> stripLeadingZeroes = (s) -> s.replaceAll("^0+", "");
+    public static Function<String, String> mapGender = (s) -> {
+        var g = s.trim();
+        switch (g) {
+            case "M":
+                return "1";
+            case "F":
+                return "2";
+            case "O":
+                return "3";
+            default:
+                return "9";
+        }
+    };
     public final BiFunction<Optional<SoapEnvelopeSpec1_2>, Optional<SoapEnvelopeSpec1_2>, Optional<SoapEnvelopeSpec1_2>> initialSearchResponseTransform;
     public final BiFunction<Optional<SoapEnvelopeSpec1_2>, Optional<SoapEnvelopeSpec1_2>, Optional<SoapEnvelopeSpec1_2>> offenderDetailsResponseTransform;
     private final CommonTransformer commonTransformer;
@@ -136,6 +149,15 @@ public class OffenderTransformer {
         this.objectMapper = objectMapper;
     }
 
+    public static Optional<Long> sentenceLengthInDaysOf
+            (Optional<Sentence> maybeSentence, Optional<SentenceCalculation> maybeSentenceCalc) {
+
+        return Optional.ofNullable(XtagTransformer.effectiveSentenceLengthOf(
+                maybeSentence.stream().collect(Collectors.toList()),
+                maybeSentenceCalc
+        )).map(Long::valueOf);
+    }
+
     private EventDetail oasysEventDetailOf(DeliusOffenderDetailsResponse deliusOffenderDetailsResponse) {
         return Optional.ofNullable(deliusOffenderDetailsResponse)
                 .flatMap(deliusResponse -> Optional.ofNullable(deliusResponse.getEvent()))
@@ -155,7 +177,7 @@ public class OffenderTransformer {
                 .orElse(null);
     }
 
-    private List<SentenceDetail> oasysSentenceDetailsOf(Event event) throws NDHRequirementLookupException {
+    private List<SentenceDetail> oasysSentenceDetailsOf(Event event) {
         final List<SentenceDetail> requirementSentenceDetails = Optional.ofNullable(event).flatMap(e -> Optional.ofNullable(e.getRequirements()))
                 .map(requirements -> requirements
                         .stream()
@@ -170,14 +192,10 @@ public class OffenderTransformer {
                                                     .description(mapped.getActivityDesc())
                                                     .lengthInMonths(lengthInMonthsOf(mapped, requirement))
                                                     .lengthInHours(lengthInHoursOf(mapped, requirement))
-                                                    .build())
-                                    .orElseThrow(() -> NDHRequirementLookupException
-                                            .builder()
-                                            .reqType("N")
-                                            .reqCode(requirement.getMainCategory())
-                                            .subCode(requirement.getSubCategory())
-                                            .build());
+                                                    .build());
                         })
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
                         .collect(Collectors.toList()))
                 .orElse(Collections.emptyList());
 
@@ -306,8 +324,6 @@ public class OffenderTransformer {
         return Optional.ofNullable(language).map(lang -> stripLeadingZeroes.apply(lang)).map(lang -> mappingService.targetValueOf(lang, LANGUAGE_CODE_TYPE)).orElse(null);
     }
 
-    public static Function<String,String> stripLeadingZeroes = (s) -> s.replaceAll("^0+", "");
-
     private String releaseDateOf(DeliusOffenderDetailsResponse deliusOffenderDetailsResponse) {
         return Optional.ofNullable(deliusOffenderDetailsResponse.getEvent())
                 .flatMap(event -> Optional.ofNullable(event.getCustody()))
@@ -367,20 +383,6 @@ public class OffenderTransformer {
     public String oasysGenderOf(String gender) {
         return Optional.ofNullable(gender).map(mapGender).orElse(null);
     }
-
-    public static Function<String, String> mapGender = (s) -> {
-        var g = s.trim();
-        switch (g) {
-            case "M":
-                return "1";
-            case "F":
-                return "2";
-            case "O":
-                return "3";
-            default:
-                return "9";
-        }
-    };
 
     public List<SubSetEvent> subsetEventsOf(List<uk.gov.justice.digital.ndh.api.delius.response.SubSetEvent> subSetEvents) {
         return Optional.ofNullable(subSetEvents).map(s -> s.stream().map(
@@ -617,13 +619,12 @@ public class OffenderTransformer {
                         .collect(Collectors.toList())).orElse(null);
     }
 
-
     public String identifierOf(Optional<Offender> maybeOffender, String type) {
         return maybeOffender.flatMap(offender -> Optional.ofNullable(offender.getIdentifiers()))
                 .flatMap(identifiers -> identifiers.stream()
-                .filter(identifier -> type.equals(identifier.getIdentifierType()))
-                .findFirst()
-                .map(Identifier::getIdentifier))
+                        .filter(identifier -> type.equals(identifier.getIdentifierType()))
+                        .findFirst()
+                        .map(Identifier::getIdentifier))
                 .orElse(null);
     }
 
@@ -683,15 +684,6 @@ public class OffenderTransformer {
         }
 
         return "310";
-    }
-
-    public static Optional<Long> sentenceLengthInDaysOf
-            (Optional<Sentence> maybeSentence, Optional<SentenceCalculation> maybeSentenceCalc) {
-
-        return Optional.ofNullable(XtagTransformer.effectiveSentenceLengthOf(
-                maybeSentence.stream().collect(Collectors.toList()),
-                maybeSentenceCalc
-        )).map(Long::valueOf);
     }
 
     private String sentenceDateOf(Optional<Sentence> maybeSentence) {
