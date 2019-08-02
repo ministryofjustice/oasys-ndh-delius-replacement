@@ -137,7 +137,7 @@ public class OasysAssessmentUpdateTransformer {
                 .dateCreated(ndhAssessment.getDateCreated())
                 .assessedBy(ndhAssessment.getAssessedBy())
                 .court(ndhAssessment.getCourtCode())
-                .courtType(Optional.ofNullable(mappingService.targetValueOf(ndhAssessment.getCourtType(), OASYSRPCMS_COURTTYPE, true)).orElse(null))
+                .courtType(Optional.ofNullable(mappingService.targetValueOf(ndhAssessment.getCourtType(), OASYSRPCMS_COURTTYPE, false)).orElse(null))
                 .offenceCode(ndhAssessment.getOffence().getOffenceGroupCode().concat(ndhAssessment.getOffence().getOffenceSubCode()))
                 .ogrsScore1(ndhAssessment.getOgrsScore1())
                 .ogrsScore2(ndhAssessment.getOgrsScore2())
