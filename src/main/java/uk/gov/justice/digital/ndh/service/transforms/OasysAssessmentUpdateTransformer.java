@@ -3,6 +3,7 @@ package uk.gov.justice.digital.ndh.service.transforms;
 import org.dom4j.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import uk.gov.justice.digital.ndh.api.delius.request.OasysAssessmentSummary;
 import uk.gov.justice.digital.ndh.api.delius.request.OasysSupervisionPlan;
 import uk.gov.justice.digital.ndh.api.delius.request.RiskType;
@@ -137,7 +138,7 @@ public class OasysAssessmentUpdateTransformer {
                 .dateCreated(ndhAssessment.getDateCreated())
                 .assessedBy(ndhAssessment.getAssessedBy())
                 .court(ndhAssessment.getCourtCode())
-                .courtType(Optional.ofNullable(ndhAssessment.getCourtType()).map(c-> mappingService.targetValueOf(c, OASYSRPCMS_COURTTYPE)).orElse(null))
+                .courtType(StringUtils.isEmpty(ndhAssessment.getCourtType()) ? null : mappingService.targetValueOf(ndhAssessment.getCourtType(), OASYSRPCMS_COURTTYPE))
                 .offenceCode(ndhAssessment.getOffence().getOffenceGroupCode().concat(ndhAssessment.getOffence().getOffenceSubCode()))
                 .ogrsScore1(ndhAssessment.getOgrsScore1())
                 .ogrsScore2(ndhAssessment.getOgrsScore2())
