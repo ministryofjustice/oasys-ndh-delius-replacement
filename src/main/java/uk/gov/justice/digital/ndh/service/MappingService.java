@@ -53,15 +53,6 @@ public class MappingService {
 
     }
 
-    public String targetValueOfOrNull(String sourceVal, Long codeType) throws NDHMappingException {
-        try {
-            return targetValueOf(sourceVal, codeType, true);
-        }
-        catch(NDHMappingException e) {
-            return null;
-        }
-    }
-
     public Optional<MappingCodeData> getMaybeMapped(String sourceVal, Long codeType) {
         return mappingRepository.findByCodeTypeAndSourceValue(codeType, sourceVal);
     }
