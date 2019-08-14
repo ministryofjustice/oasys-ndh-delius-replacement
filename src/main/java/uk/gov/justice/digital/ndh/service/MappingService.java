@@ -3,6 +3,7 @@ package uk.gov.justice.digital.ndh.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import uk.gov.justice.digital.ndh.jpa.repository.mapping.MappingCodeData;
 import uk.gov.justice.digital.ndh.jpa.repository.mapping.MappingRepository;
 import uk.gov.justice.digital.ndh.service.exception.NDHMappingException;
@@ -20,6 +21,10 @@ public class MappingService {
     }
 
     public String descriptionOf(String sourceVal, Long codeType) throws NDHMappingException {
+        if(StringUtils.isEmpty(sourceVal)) {
+            return null;
+        }
+
         Optional<MappingCodeData> maybeMapped = getMaybeMapped(sourceVal, codeType);
 
         if (maybeMapped.isEmpty()) {
@@ -38,6 +43,10 @@ public class MappingService {
     }
 
     public String targetValueOf(String sourceVal, Long codeType, boolean logMapFail) throws NDHMappingException {
+        if(StringUtils.isEmpty(sourceVal)) {
+            return null;
+        }
+
         Optional<MappingCodeData> maybeMapped = getMaybeMapped(sourceVal, codeType);
 
         if (maybeMapped.isEmpty() && logMapFail) {
