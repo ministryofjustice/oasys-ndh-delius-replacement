@@ -56,6 +56,7 @@
 "N","W","W02","CJA_REQUIREMENT","UNPAID_WORK","LENGTH","",""
 "N","RM59","EM1","CJA_REQUIREMENT","ELEC_MONITORING","","","Monitored Appointment"
 "N","RM59","EM2","CJA_REQUIREMENT","ELEC_MONITORING","","","Monitored Exclusion"
+"N","T","ALCMON","CJA_REQUIREMENT","ALCMON","","","Alcohol Abstinence and Monitoring"
 "A","M","","M","Electronic Monitoring","","",""
 "A","E","","8","Other","","",""
 "A","X","","8","Other","","",""
