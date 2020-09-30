@@ -1,4 +1,20 @@
 "CODETYPE","SOURCEVALUE","TARGETVALUE","DESCRIPTION","NUMCODE","RANK","NUMERIC1"
+0,"0","0","Codetype Catolog",0,0,0
+0,"3807","3807","PCMSOASYSR COURTTYPE",0,0,0
+0,"5500","5500","OASYSRCMS CRIM NEED",0,0,0
+0,"5501","5501","OASYSRCMS OBJ STATUS CODE",0,0,0
+0,"5506","5506","OASYSRCMS INTERVENTION",0,0,0
+0,"5504","5504","OASYSRPCMS LAYER1OBJ",0,0,0
+0,"5507","5507","OASYSRPCMS COURTTYPE",0,0,0
+0,"14","14","STATUS CODES",0,0,0
+0,"2005","2005","OASYSR ESTABLISHMENT CODES",0,0,0
+0,"2016","2016","OASYSR DISCHARGE CODES",0,0,0
+0,"2015","2015","OASYSR RECEPTION CODES",0,0,0
+0,"3802","3802","PCMSOASYSR SENTENCE",0,0,0
+0,"34","34","RELEASE NAME",0,0,0
+0,"3806","3806","PCMSOASYSR LANGUAGE",0,0,0
+0,"3803","3803","PCMSOASYSR LICENCEMAINCATEGORY",0,0,0
+0,"3804","3804","PCMSOASYSR LICENCESUBCATEGORY",0,0,0
 3806,"91","tib","Tibetan",0,0,0
 3806,"92","oth","Other",0,0,0
 3806,"93","tur","Turkish",0,0,0
@@ -228,6 +244,10 @@
 5507,"MC","MAG","Magistrates Court",0,0,0
 5507,"OTHER","OTH","Other",0,0,0
 5507,"YC","YTH","Youth Court",0,0,0
+5507,"DIS","DIS","District Court (Scottish)",0,0,0
+5507,"HGH","HGH","High Court (Scottish)",0,0,0
+5507,"OEW","OEW","Court Outside England/Wales",0,0,0
+5507,"SHF","SHF","Sherriff's Court (Scottish)",0,0,0
 3802,"101","820","Adjourned - PSR",0,0,0
 3802,"102","1000","Adjourned - Other Report",0,0,0
 3802,"103","810","Adjourned - Non-Attendance",0,0,0
@@ -653,9 +673,9 @@
 2016,"ESCP","AB","ABSCOND",0,0,0
 2016,"ET","ET","Training or Education",0,0,0
 2016,"ETR","FR","DEPORT OF F/N UNDER EARLY REMOVAL SCHEME",0,0,0
-2016,"ETR1","AR","EMERGENCY TEMPORARY RELEASE - PREG/MBU",0,0,0
-2016,"ETR2","AR","EMERGENCY TEMPORARY RELEASE - VULNERABLE",0,0,0
-2016,"ETR3","AR","EMERGENCY TEMPORARY RELEASE",0,0,0
+2016,"ETR1","4","EMERGENCY TEMPORARY RELEASE - PREG/MBU",0,0,0
+2016,"ETR2","4","EMERGENCY TEMPORARY RELEASE - VULNERABLE",0,0,0
+2016,"ETR3","4","EMERGENCY TEMPORARY RELEASE",0,0,0
 2016,"EX","EX","EXTRADITION",0,0,0
 2016,"EXP_BREACH","CA","COURT APPEARANCE",0,0,0
 2016,"F1","F1","TRAINING",0,0,0
@@ -1263,19 +1283,19 @@
 2005,"WBI","930","HMP WELLINGBOROUGH",0,0,0
 2005,"WCI","1280","HMP WINCHESTER",0,0,0
 2005,"WDI","1650","HMP WAKEFIELD",0,0,0
-2016,"R10","R10","Paid Work - Retail and Wholesale",,,
-2016,"R11","R11","Paid Work - Manufacturing",,,
-2016,"R12","R12","Paid Work - Catering and Hospitality",,,
-2016,"R13","R13","Paid Work - Transportation and Storage",,,
-2016,"R14","R14","Paid Work - Construction and Recycling",,,
-2016,"R15","R15","Paid Work - IT and Communication",,,
-2016,"R16","R16","Paid Work - Agriculture and Horticulture",,,
-2016,"R17","R17","Paid Work - Other",,,
-2016,"R18","R18","Unpaid Work - Retail and Wholesale",,,
-2016,"R19","R19","Unpaid Work - Manufacturing",,,
-2016,"R20","R20","Unpaid Work - Catering and Hospitality",,,
-2016,"R21","R21","Unpaid Work - Transportation and Storage",,,
-2016,"R22","R22","Unpaid Work - Construction and Recycling",,,
-2016,"R23","R23","Unpaid Work - IT and Communication",,,
-2016,"R24","R24","Unpaid Work - Agriculture and Horticulture",,,
-2016,"R25","R25","Unpaid Work - Other",,,
+2016,"R10","R10","Paid Work - Retail and Wholesale",0,0,0
+2016,"R11","R11","Paid Work - Manufacturing",0,0,0
+2016,"R12","R12","Paid Work - Catering and Hospitality",0,0,0
+2016,"R13","R13","Paid Work - Transportation and Storage",0,0,0
+2016,"R14","R14","Paid Work - Construction and Recycling",0,0,0
+2016,"R15","R15","Paid Work - IT and Communication",0,0,0
+2016,"R16","R16","Paid Work - Agriculture and Horticulture",0,0,0
+2016,"R17","R17","Paid Work - Other",0,0,0
+2016,"R18","R18","Unpaid Work - Retail and Wholesale",0,0,0
+2016,"R19","R19","Unpaid Work - Manufacturing",0,0,0
+2016,"R20","R20","Unpaid Work - Catering and Hospitality",0,0,0
+2016,"R21","R21","Unpaid Work - Transportation and Storage",0,0,0
+2016,"R22","R22","Unpaid Work - Construction and Recycling",0,0,0
+2016,"R23","R23","Unpaid Work - IT and Communication",0,0,0
+2016,"R24","R24","Unpaid Work - Agriculture and Horticulture",0,0,0
+2016,"R25","R25","Unpaid Work - Other",0,0,0
